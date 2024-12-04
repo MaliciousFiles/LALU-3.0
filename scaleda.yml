@@ -1,0 +1,5 @@
+---
+name: LALU 3.0
+type: rtl
+source: src
+test: test
