@@ -16,6 +16,5 @@ end
     always #`PERIOD clk = ~clk;
 
     // run simulation
-    wire LED0;
-    LALU lalu(clk, LED0);
+    LALU lalu(clk);
 endmodule

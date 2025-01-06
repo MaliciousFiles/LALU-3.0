@@ -1,5 +1,5 @@
 $date
-	Sun Jan  5 18:52:38 2025
+	Mon Jan  6 02:12:38 2025
 $end
 $version
 	Icarus Verilog
@@ -8,69 +8,2929 @@ $timescale
 	1ps
 $end
 $scope module LALU_tb $end
-$var wire 1 ! LED0 $end
-$var reg 1 " clk $end
+$var reg 1 ! clk $end
 $scope module lalu $end
 $var wire 1 " CLOCK_50 $end
-$var reg 1 ! LED0 $end
+$var wire 1 # executiveOverride $end
+$var wire 16 $ fetchAddress [15:0] $end
+$var wire 16 % memAccessAddress [15:0] $end
+$var wire 32 & memAccessInput [31:0] $end
+$var wire 1 ' memAccessRden $end
+$var wire 1 ( memAccessWren $end
+$var wire 32 ) memAccessOutput [31:0] $end
+$var wire 1 * instruction $end
+$var wire 32 + fetchOutput [31:0] $end
+$var reg 16 , IP [15:0] $end
+$var reg 16 - IP_d [15:0] $end
+$var reg 16 . IP_f [15:0] $end
+$var reg 5 / Rd_d [4:0] $end
+$var reg 5 0 Rs0_d [4:0] $end
+$var reg 5 1 Rs1_d [4:0] $end
+$var reg 5 2 Rs2_d [4:0] $end
+$var reg 1 3 conditional $end
+$var reg 16 4 expectedIP [15:0] $end
+$var reg 1 5 extendedImmediate $end
+$var reg 3 6 format [2:0] $end
+$var reg 9 7 funcID [8:0] $end
+$var reg 1 8 i0 $end
+$var reg 1 9 i1 $end
+$var reg 1 : i2 $end
+$var reg 1 ; isMemAccess_d $end
+$var reg 1 < isWriteback_d $end
+$var reg 21 = jumpLoc [20:0] $end
+$var reg 1 > negate $end
+$var reg 1 ? operationMode $end
+$var reg 1 @ sticky_d $end
+$scope module MEM $end
+$var wire 1 " clk $end
+$var wire 16 A fetchAddress [15:0] $end
+$var wire 16 B memAccessAddress [15:0] $end
+$var wire 32 C memAccessData [31:0] $end
+$var wire 1 ' memAccessRden $end
+$var wire 1 ( memAccessWren $end
+$var wire 1 ? operationMode $end
+$var wire 32 D userOut_memAccess [31:0] $end
+$var wire 32 E userOut_fetch [31:0] $end
+$var wire 32 F memAccessOutput [31:0] $end
+$var wire 32 G kernOut_memAccess [31:0] $end
+$var wire 32 H kernOut_fetch [31:0] $end
+$var wire 32 I fetchOutput [31:0] $end
+$scope module KERN_MEM $end
+$var wire 15 J address_a [14:0] $end
+$var wire 15 K address_b [14:0] $end
+$var wire 1 " clk $end
+$var wire 32 L data_a [31:0] $end
+$var wire 32 M data_b [31:0] $end
+$var wire 1 N rden_a $end
+$var wire 1 ' rden_b $end
+$var wire 1 O wren_a $end
+$var wire 1 ( wren_b $end
+$var wire 32 P q_b [31:0] $end
+$var wire 32 Q q_a [31:0] $end
+$var parameter 48 R initfile $end
+$var parameter 32 S widthad $end
+$scope module ram $end
+$var wire 1 T aclr0 $end
+$var wire 1 U aclr1 $end
+$var wire 15 V address_a [14:0] $end
+$var wire 15 W address_b [14:0] $end
+$var wire 1 X addressstall_a $end
+$var wire 1 Y addressstall_b $end
+$var wire 1 Z byteena_a $end
+$var wire 1 [ byteena_b $end
+$var wire 1 " clock0 $end
+$var wire 1 \ clock1 $end
+$var wire 1 ] clocken0 $end
+$var wire 1 ^ clocken1 $end
+$var wire 1 _ clocken2 $end
+$var wire 1 ` clocken3 $end
+$var wire 32 a data_a [31:0] $end
+$var wire 32 b data_b [31:0] $end
+$var wire 3 c eccstatus [2:0] $end
+$var wire 1 N rden_a $end
+$var wire 1 ' rden_b $end
+$var wire 1 O wren_a $end
+$var wire 1 ( wren_b $end
+$var wire 32 d q_b [31:0] $end
+$var wire 32 e q_a [31:0] $end
+$var parameter 32 f address_aclr_a $end
+$var parameter 32 g address_aclr_b $end
+$var parameter 48 h address_reg_b $end
+$var parameter 32 i byte_size $end
+$var parameter 32 j byteena_aclr_a $end
+$var parameter 32 k byteena_aclr_b $end
+$var parameter 48 l byteena_reg_b $end
+$var parameter 120 m clock_enable_core_a $end
+$var parameter 120 n clock_enable_core_b $end
+$var parameter 48 o clock_enable_input_a $end
+$var parameter 48 p clock_enable_input_b $end
+$var parameter 48 q clock_enable_output_a $end
+$var parameter 48 r clock_enable_output_b $end
+$var parameter 40 s ecc_pipeline_stage_enabled $end
+$var parameter 40 t enable_ecc $end
+$var parameter 32 u family_arria10 $end
+$var parameter 24 v implement_in_les $end
+$var parameter 32 w indata_aclr_a $end
+$var parameter 32 x indata_aclr_b $end
+$var parameter 48 y indata_reg_b $end
+$var parameter 48 z init_file $end
+$var parameter 48 { init_file_layout $end
+$var parameter 72 | intended_device_family $end
+$var parameter 48 } lpm_hint $end
+$var parameter 80 ~ lpm_type $end
+$var parameter 32 !" maximum_depth $end
+$var parameter 47 "" numwords_a $end
+$var parameter 47 #" numwords_b $end
+$var parameter 120 $" operation_mode $end
+$var parameter 32 %" outdata_aclr_a $end
+$var parameter 32 &" outdata_aclr_b $end
+$var parameter 96 '" outdata_reg_a $end
+$var parameter 96 (" outdata_reg_b $end
+$var parameter 40 )" power_up_uninitialized $end
+$var parameter 32 *" ram_block_type $end
+$var parameter 32 +" rdcontrol_aclr_b $end
+$var parameter 48 ," rdcontrol_reg_b $end
+$var parameter 64 -" read_during_write_mode_mixed_ports $end
+$var parameter 160 ." read_during_write_mode_port_a $end
+$var parameter 160 /" read_during_write_mode_port_b $end
+$var parameter 32 0" width_a $end
+$var parameter 32 1" width_b $end
+$var parameter 32 2" width_byteena_a $end
+$var parameter 32 3" width_byteena_b $end
+$var parameter 32 4" width_eccstatus $end
+$var parameter 32 5" widthad_a $end
+$var parameter 32 6" widthad_b $end
+$var parameter 32 7" wrcontrol_aclr_a $end
+$var parameter 32 8" wrcontrol_aclr_b $end
+$var parameter 48 9" wrcontrol_wraddress_reg_b $end
+$scope begin m_default $end
+$scope module altsyncram_inst $end
+$var wire 1 T aclr0 $end
+$var wire 1 U aclr1 $end
+$var wire 15 :" address_a [14:0] $end
+$var wire 15 ;" address_b [14:0] $end
+$var wire 1 X addressstall_a $end
+$var wire 1 Y addressstall_b $end
+$var wire 1 Z byteena_a $end
+$var wire 1 [ byteena_b $end
+$var wire 1 " clock0 $end
+$var wire 1 \ clock1 $end
+$var wire 1 ] clocken0 $end
+$var wire 1 ^ clocken1 $end
+$var wire 1 _ clocken2 $end
+$var wire 1 ` clocken3 $end
+$var wire 32 <" data_a [31:0] $end
+$var wire 32 =" data_b [31:0] $end
+$var wire 3 >" eccstatus [2:0] $end
+$var wire 1 ?" i_address_aclr_a $end
+$var wire 1 @" i_address_aclr_b $end
+$var wire 1 A" i_byteena_a $end
+$var wire 1 B" i_byteena_aclr_a $end
+$var wire 1 C" i_byteena_aclr_b $end
+$var wire 1 D" i_byteena_b $end
+$var wire 1 E" i_clocken0 $end
+$var wire 1 F" i_clocken0_b $end
+$var wire 1 G" i_clocken1_b $end
+$var wire 1 H" i_core_clocken0_b $end
+$var wire 1 I" i_core_clocken1_b $end
+$var wire 1 J" i_core_clocken_a $end
+$var wire 1 K" i_core_clocken_b $end
+$var wire 1 L" i_indata_aclr_a $end
+$var wire 1 M" i_indata_aclr_b $end
+$var wire 1 N" i_outdata_aclr_a $end
+$var wire 1 O" i_outdata_aclr_b $end
+$var wire 1 P" i_outdata_clken_a $end
+$var wire 1 Q" i_outdata_clken_b $end
+$var wire 1 R" i_outlatch_clken_a $end
+$var wire 1 S" i_outlatch_clken_b $end
+$var wire 1 T" i_rdcontrol_aclr_b $end
+$var wire 1 U" i_wrcontrol_aclr_a $end
+$var wire 1 V" i_wrcontrol_aclr_b $end
+$var wire 32 W" q_a [31:0] $end
+$var wire 32 X" q_b [31:0] $end
+$var wire 1 N rden_a $end
+$var wire 1 ' rden_b $end
+$var wire 1 O wren_a $end
+$var wire 1 ( wren_b $end
+$var wire 1 Y" i_good_to_write_b $end
+$var wire 1 Z" i_good_to_write_a $end
+$var parameter 32 [" address_aclr_a $end
+$var parameter 32 \" address_aclr_b $end
+$var parameter 48 ]" address_reg_b $end
+$var parameter 32 ^" byte_size $end
+$var parameter 32 _" byteena_aclr_a $end
+$var parameter 32 `" byteena_aclr_b $end
+$var parameter 48 a" byteena_reg_b $end
+$var parameter 32 b" check_simultaneous_read_write $end
+$var parameter 120 c" clock_enable_core_a $end
+$var parameter 120 d" clock_enable_core_b $end
+$var parameter 48 e" clock_enable_input_a $end
+$var parameter 48 f" clock_enable_input_b $end
+$var parameter 48 g" clock_enable_output_a $end
+$var parameter 48 h" clock_enable_output_b $end
+$var parameter 32 i" dual_port_addreg_b_clk0 $end
+$var parameter 32 j" dual_port_addreg_b_clk1 $end
+$var parameter 40 k" ecc_pipeline_stage_enabled $end
+$var parameter 40 l" enable_ecc $end
+$var parameter 32 m" enable_mem_data_b_reading $end
+$var parameter 32 n" family_arria10 $end
+$var parameter 32 o" family_arriaiigx $end
+$var parameter 32 p" family_arriaiigz $end
+$var parameter 32 q" family_arriav $end
+$var parameter 32 r" family_arriavgz $end
+$var parameter 32 s" family_arriavi $end
+$var parameter 32 t" family_base_arriav $end
+$var parameter 32 u" family_base_cycloneii $end
+$var parameter 32 v" family_base_stratix $end
+$var parameter 32 w" family_base_stratixii $end
+$var parameter 32 x" family_cyclone $end
+$var parameter 32 y" family_cycloneii $end
+$var parameter 32 z" family_cycloneiii $end
+$var parameter 32 {" family_cyclonev $end
+$var parameter 32 |" family_hardcopyii $end
+$var parameter 32 }" family_hardcopyiii $end
+$var parameter 32 ~" family_hardcopyiv $end
+$var parameter 32 !# family_has_lutram $end
+$var parameter 32 "# family_has_m512 $end
+$var parameter 32 ## family_has_megaram $end
+$var parameter 32 $# family_has_stratixi_style_ram $end
+$var parameter 32 %# family_has_stratixiii_style_ram $end
+$var parameter 32 &# family_has_stratixv_style_ram $end
+$var parameter 32 '# family_nightfury $end
+$var parameter 32 (# family_stratix10 $end
+$var parameter 32 )# family_stratixiii $end
+$var parameter 32 *# family_stratixv $end
+$var parameter 32 +# family_zippleback $end
+$var parameter 32 ,# i_address_aclr_family_a $end
+$var parameter 32 -# i_address_aclr_family_b $end
+$var parameter 32 .# i_byte_size_tmp $end
+$var parameter 32 /# i_lutram_read $end
+$var parameter 24 0# implement_in_les $end
+$var parameter 32 1# indata_aclr_a $end
+$var parameter 32 2# indata_aclr_b $end
+$var parameter 48 3# indata_reg_b $end
+$var parameter 48 4# init_file $end
+$var parameter 48 5# init_file_layout $end
+$var parameter 72 6# intended_device_family $end
+$var parameter 32 7# is_bidir_and_wrcontrol_addb_clk0 $end
+$var parameter 32 8# is_bidir_and_wrcontrol_addb_clk1 $end
+$var parameter 32 9# is_lutram $end
+$var parameter 32 :# is_write_on_positive_edge $end
+$var parameter 48 ;# lpm_hint $end
+$var parameter 80 <# lpm_type $end
+$var parameter 32 =# lutram_dual_port_fast_read $end
+$var parameter 32 ># lutram_single_port_fast_read $end
+$var parameter 32 ?# maximum_depth $end
+$var parameter 47 @# numwords_a $end
+$var parameter 47 A# numwords_b $end
+$var parameter 120 B# operation_mode $end
+$var parameter 32 C# outdata_aclr_a $end
+$var parameter 32 D# outdata_aclr_b $end
+$var parameter 96 E# outdata_reg_a $end
+$var parameter 96 F# outdata_reg_b $end
+$var parameter 40 G# power_up_uninitialized $end
+$var parameter 32 H# ram_block_type $end
+$var parameter 32 I# rdcontrol_aclr_b $end
+$var parameter 48 J# rdcontrol_reg_b $end
+$var parameter 64 K# read_during_write_mode_mixed_ports $end
+$var parameter 160 L# read_during_write_mode_port_a $end
+$var parameter 160 M# read_during_write_mode_port_b $end
+$var parameter 32 N# s3_address_aclr_a $end
+$var parameter 32 O# s3_address_aclr_b $end
+$var parameter 24 P# sim_show_memory_data_in_port_b_layout $end
+$var parameter 32 Q# width_a $end
+$var parameter 32 R# width_b $end
+$var parameter 32 S# width_byteena_a $end
+$var parameter 32 T# width_byteena_b $end
+$var parameter 32 U# width_eccstatus $end
+$var parameter 32 V# widthad_a $end
+$var parameter 32 W# widthad_b $end
+$var parameter 32 X# wrcontrol_aclr_a $end
+$var parameter 32 Y# wrcontrol_aclr_b $end
+$var parameter 48 Z# wrcontrol_wraddress_reg_b $end
+$var reg 47 [# add_reg_a_mult_wa [46:0] $end
+$var reg 47 \# add_reg_a_mult_wa_pl_wa [46:0] $end
+$var reg 47 ]# add_reg_b_mult_wb [46:0] $end
+$var reg 47 ^# add_reg_b_mult_wb_pl_wb [46:0] $end
+$var reg 169 _# cread_during_write_mode_mixed_ports [168:0] $end
+$var reg 1 `# good_to_go_a $end
+$var reg 1 a# good_to_go_b $end
+$var reg 1 b# i_address_aclr_a_flag $end
+$var reg 1 c# i_address_aclr_a_prev $end
+$var reg 1 d# i_address_aclr_b_flag $end
+$var reg 1 e# i_address_aclr_b_prev $end
+$var reg 15 f# i_address_reg_a [14:0] $end
+$var reg 15 g# i_address_reg_b [14:0] $end
+$var reg 32 h# i_byteena_mask_reg_a [31:0] $end
+$var reg 32 i# i_byteena_mask_reg_a_out [31:0] $end
+$var reg 32 j# i_byteena_mask_reg_a_out_b [31:0] $end
+$var reg 32 k# i_byteena_mask_reg_a_x [31:0] $end
+$var reg 32 l# i_byteena_mask_reg_b [31:0] $end
+$var reg 32 m# i_byteena_mask_reg_b_out [31:0] $end
+$var reg 32 n# i_byteena_mask_reg_b_out_a [31:0] $end
+$var reg 32 o# i_byteena_mask_reg_b_x [31:0] $end
+$var reg 1 p# i_core_clocken0_b_reg $end
+$var reg 1 q# i_core_clocken1_b_reg $end
+$var reg 1 r# i_core_clocken_a_reg $end
+$var reg 32 s# i_data_reg_a [31:0] $end
+$var reg 32 t# i_data_reg_b [31:0] $end
+$var reg 64 u# i_data_write_time_a [63:0] $end
+$var reg 64 v# i_data_write_time_b [63:0] $end
+$var reg 1 w# i_force_reread_a $end
+$var reg 1 x# i_force_reread_a1 $end
+$var reg 1 y# i_force_reread_a_signal $end
+$var reg 1 z# i_force_reread_b $end
+$var reg 1 {# i_force_reread_b1 $end
+$var reg 1 |# i_force_reread_b_signal $end
+$var reg 1 }# i_good_to_write_a2 $end
+$var reg 1 ~# i_good_to_write_b2 $end
+$var reg 1 !$ i_nmram_write_a $end
+$var reg 1 "$ i_nmram_write_b $end
+$var reg 15 #$ i_original_address_a [14:0] $end
+$var reg 32 $$ i_original_data_a [31:0] $end
+$var reg 32 %$ i_original_data_b [31:0] $end
+$var reg 1 &$ i_outdata_aclr_a_prev $end
+$var reg 1 '$ i_outdata_aclr_b_prev $end
+$var reg 32 ($ i_q_reg_a [31:0] $end
+$var reg 32 )$ i_q_reg_b [31:0] $end
+$var reg 32 *$ i_q_tmp2_a [31:0] $end
+$var reg 32 +$ i_q_tmp2_b [31:0] $end
+$var reg 32 ,$ i_q_tmp_a [31:0] $end
+$var reg 32 -$ i_q_tmp_b [31:0] $end
+$var reg 57 .$ i_ram_block_type [56:0] $end
+$var reg 1 /$ i_rden_reg_a $end
+$var reg 1 0$ i_rden_reg_b $end
+$var reg 1 1$ i_read_flag_a $end
+$var reg 1 2$ i_read_flag_b $end
+$var reg 1 3$ i_wren_reg_a $end
+$var reg 1 4$ i_wren_reg_b $end
+$var reg 1 5$ i_write_flag_a $end
+$var reg 1 6$ i_write_flag_b $end
+$var reg 1 7$ same_clock_pulse0 $end
+$var reg 1 8$ same_clock_pulse1 $end
+$var reg 32 9$ temp_wa [31:0] $end
+$var reg 32 :$ temp_wb [31:0] $end
+$var reg 32 ;$ wa_mult_x [31:0] $end
+$var reg 32 <$ wa_mult_x_ii [31:0] $end
+$var reg 32 =$ wa_mult_x_iii [31:0] $end
+$var integer 32 >$ i [31:0] $end
+$var integer 32 ?$ i2 [31:0] $end
+$var integer 32 @$ i3 [31:0] $end
+$var integer 32 A$ i4 [31:0] $end
+$var integer 32 B$ i5 [31:0] $end
+$var integer 32 C$ i_aclr_flag_a [31:0] $end
+$var integer 32 D$ i_aclr_flag_b [31:0] $end
+$var integer 32 E$ i_byte_size [31:0] $end
+$var integer 32 F$ i_byteena_count [31:0] $end
+$var integer 32 G$ i_numwords_a [31:0] $end
+$var integer 32 H$ i_numwords_b [31:0] $end
+$var integer 32 I$ i_q_tmp2_a_idx [31:0] $end
+$var integer 32 J$ port_a_bit_count_high [31:0] $end
+$var integer 32 K$ port_a_bit_count_low [31:0] $end
+$var integer 32 L$ port_b_bit_count_high [31:0] $end
+$var integer 32 M$ port_b_bit_count_low [31:0] $end
+$scope module dev $end
+$scope function FEATURE_FAMILY_ARRIA10 $end
+$var reg 160 N$ device [160:1] $end
+$var reg 1 O$ var_family_arria10 $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAIIGX $end
+$var reg 160 P$ device [160:1] $end
+$var reg 1 Q$ var_family_arriaiigx $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAIIGZ $end
+$var reg 160 R$ device [160:1] $end
+$var reg 1 S$ var_family_arriaiigz $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAV $end
+$var reg 160 T$ device [160:1] $end
+$var reg 1 U$ var_family_arriav $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAVGZ $end
+$var reg 160 V$ device [160:1] $end
+$var reg 1 W$ var_family_arriavgz $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_CYCLONE $end
+$var reg 160 X$ device [160:1] $end
+$var reg 1 Y$ var_family_base_cyclone $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_CYCLONEII $end
+$var reg 160 Z$ device [160:1] $end
+$var reg 1 [$ var_family_base_cycloneii $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_STRATIX $end
+$var reg 160 \$ device [160:1] $end
+$var reg 1 ]$ var_family_base_stratix $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_STRATIXII $end
+$var reg 160 ^$ device [160:1] $end
+$var reg 1 _$ var_family_base_stratixii $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONE $end
+$var reg 160 `$ device [160:1] $end
+$var reg 1 a$ var_family_cyclone $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONE10LP $end
+$var reg 160 b$ device [160:1] $end
+$var reg 1 c$ var_family_cyclone10lp $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEII $end
+$var reg 160 d$ device [160:1] $end
+$var reg 1 e$ var_family_cycloneii $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEIII $end
+$var reg 160 f$ device [160:1] $end
+$var reg 1 g$ var_family_cycloneiii $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEIVE $end
+$var reg 160 h$ device [160:1] $end
+$var reg 1 i$ var_family_cycloneive $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEIVGX $end
+$var reg 160 j$ device [160:1] $end
+$var reg 1 k$ var_family_cycloneivgx $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEV $end
+$var reg 160 l$ device [160:1] $end
+$var reg 1 m$ var_family_cyclonev $end
+$upscope $end
+$scope function FEATURE_FAMILY_HARDCOPYIII $end
+$var reg 160 n$ device [160:1] $end
+$var reg 1 o$ var_family_hardcopyiii $end
+$upscope $end
+$scope function FEATURE_FAMILY_HARDCOPYIV $end
+$var reg 160 p$ device [160:1] $end
+$var reg 1 q$ var_family_hardcopyiv $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_ALTERA_MULT_ADD_FLOW $end
+$var reg 160 r$ device [160:1] $end
+$var reg 1 s$ var_family_has_altera_mult_add_flow $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_INVERTED_OUTPUT_DDIO $end
+$var reg 160 t$ device [160:1] $end
+$var reg 1 u$ var_family_has_inverted_output_ddio $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIXIII_STYLE_RAM $end
+$var reg 160 v$ device [160:1] $end
+$var reg 1 w$ var_family_has_stratixiii_style_ram $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIXII_STYLE_PLL $end
+$var reg 160 x$ device [160:1] $end
+$var reg 1 y$ var_family_has_stratixii_style_pll $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIXII_STYLE_RAM $end
+$var reg 160 z$ device [160:1] $end
+$var reg 1 {$ var_family_has_stratixii_style_ram $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIX_STYLE_PLL $end
+$var reg 160 |$ device [160:1] $end
+$var reg 1 }$ var_family_has_stratix_style_pll $end
+$upscope $end
+$scope function FEATURE_FAMILY_IS_ALTMULT_ADD_EOL $end
+$var reg 160 ~$ device [160:1] $end
+$var reg 1 !% var_family_is_altmult_add_eol $end
+$upscope $end
+$scope function FEATURE_FAMILY_MAX10 $end
+$var reg 160 "% device [160:1] $end
+$var reg 1 #% var_family_max10 $end
+$upscope $end
+$scope function FEATURE_FAMILY_MAXII $end
+$var reg 160 $% device [160:1] $end
+$var reg 1 %% var_family_maxii $end
+$upscope $end
+$scope function FEATURE_FAMILY_MAXV $end
+$var reg 160 &% device [160:1] $end
+$var reg 1 '% var_family_maxv $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIX $end
+$var reg 160 (% device [160:1] $end
+$var reg 1 )% var_family_stratix $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIX10 $end
+$var reg 160 *% device [160:1] $end
+$var reg 1 +% var_family_stratix10 $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXGX $end
+$var reg 160 ,% device [160:1] $end
+$var reg 1 -% var_family_stratixgx $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXII $end
+$var reg 160 .% device [160:1] $end
+$var reg 1 /% var_family_stratixii $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXIIGX $end
+$var reg 160 0% device [160:1] $end
+$var reg 1 1% var_family_stratixiigx $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXIII $end
+$var reg 160 2% device [160:1] $end
+$var reg 1 3% var_family_stratixiii $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXIV $end
+$var reg 160 4% device [160:1] $end
+$var reg 1 5% var_family_stratixiv $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXV $end
+$var reg 160 6% device [160:1] $end
+$var reg 1 7% var_family_stratixv $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIX_HC $end
+$var reg 160 8% device [160:1] $end
+$var reg 1 9% var_family_stratix_hc $end
+$upscope $end
+$scope function IS_FAMILY_ARRIA10 $end
+$var reg 160 :% device [160:1] $end
+$var reg 1 ;% is_arria10 $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAGX $end
+$var reg 160 <% device [160:1] $end
+$var reg 1 =% is_arriagx $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAIIGX $end
+$var reg 160 >% device [160:1] $end
+$var reg 1 ?% is_arriaiigx $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAIIGZ $end
+$var reg 160 @% device [160:1] $end
+$var reg 1 A% is_arriaiigz $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAV $end
+$var reg 160 B% device [160:1] $end
+$var reg 1 C% is_arriav $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAVGZ $end
+$var reg 160 D% device [160:1] $end
+$var reg 1 E% is_arriavgz $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONE $end
+$var reg 160 F% device [160:1] $end
+$var reg 1 G% is_cyclone $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONE10LP $end
+$var reg 160 H% device [160:1] $end
+$var reg 1 I% is_cyclone10lp $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEII $end
+$var reg 160 J% device [160:1] $end
+$var reg 1 K% is_cycloneii $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIII $end
+$var reg 160 L% device [160:1] $end
+$var reg 1 M% is_cycloneiii $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIIILS $end
+$var reg 160 N% device [160:1] $end
+$var reg 1 O% is_cycloneiiils $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIVE $end
+$var reg 160 P% device [160:1] $end
+$var reg 1 Q% is_cycloneive $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIVGX $end
+$var reg 160 R% device [160:1] $end
+$var reg 1 S% is_cycloneivgx $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEV $end
+$var reg 160 T% device [160:1] $end
+$var reg 1 U% is_cyclonev $end
+$upscope $end
+$scope function IS_FAMILY_HARDCOPYII $end
+$var reg 160 V% device [160:1] $end
+$var reg 1 W% is_hardcopyii $end
+$upscope $end
+$scope function IS_FAMILY_HARDCOPYIII $end
+$var reg 160 X% device [160:1] $end
+$var reg 1 Y% is_hardcopyiii $end
+$upscope $end
+$scope function IS_FAMILY_HARDCOPYIV $end
+$var reg 160 Z% device [160:1] $end
+$var reg 1 [% is_hardcopyiv $end
+$upscope $end
+$scope function IS_FAMILY_MAX10 $end
+$var reg 160 \% device [160:1] $end
+$var reg 1 ]% is_max10 $end
+$upscope $end
+$scope function IS_FAMILY_MAXII $end
+$var reg 160 ^% device [160:1] $end
+$var reg 1 _% is_maxii $end
+$upscope $end
+$scope function IS_FAMILY_MAXV $end
+$var reg 160 `% device [160:1] $end
+$var reg 1 a% is_maxv $end
+$upscope $end
+$scope function IS_FAMILY_STRATIX $end
+$var reg 160 b% device [160:1] $end
+$var reg 1 c% is_stratix $end
+$upscope $end
+$scope function IS_FAMILY_STRATIX10 $end
+$var reg 160 d% device [160:1] $end
+$var reg 1 e% is_stratix10 $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXGX $end
+$var reg 160 f% device [160:1] $end
+$var reg 1 g% is_stratixgx $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXII $end
+$var reg 160 h% device [160:1] $end
+$var reg 1 i% is_stratixii $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXIIGX $end
+$var reg 160 j% device [160:1] $end
+$var reg 1 k% is_stratixiigx $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXIII $end
+$var reg 160 l% device [160:1] $end
+$var reg 1 m% is_stratixiii $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXIV $end
+$var reg 160 n% device [160:1] $end
+$var reg 1 o% is_stratixiv $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXV $end
+$var reg 160 p% device [160:1] $end
+$var reg 1 q% is_stratixv $end
+$upscope $end
+$scope function IS_VALID_FAMILY $end
+$var reg 160 r% device [160:1] $end
+$var reg 1 s% is_valid $end
+$upscope $end
+$upscope $end
+$scope module mem $end
+$scope function ecc_parity $end
+$var reg 8 t% i_eccencparity [7:0] $end
+$var integer 32 u% err [31:0] $end
+$var integer 32 v% flag [31:0] $end
+$var integer 32 w% flag_double [31:0] $end
+$var integer 32 x% flag_err [31:0] $end
+$var integer 32 y% flag_no_err [31:0] $end
+$var integer 32 z% flag_single [31:0] $end
+$var integer 32 {% flag_triple [31:0] $end
+$var integer 32 |% flag_uncorr [31:0] $end
+$var integer 32 }% found [31:0] $end
+$var integer 32 ~% found_2 [31:0] $end
+$var integer 32 !& n [31:0] $end
+$var integer 32 "& pointer [31:0] $end
+$var integer 32 #& pointer_max [31:0] $end
+$var integer 32 $& pointer_min [31:0] $end
+$upscope $end
+$scope function tolower $end
+$var reg 8 %& conv_char [8:1] $end
+$var reg 8 && given_character [8:1] $end
+$upscope $end
+$scope task convert_hex2ver $end
+$var reg 8 '& c [8:1] $end
+$var reg 1 (& done $end
+$var reg 1 )& error_status $end
+$var reg 1 *& first_normal_record $end
+$var reg 1 +& first_rec $end
+$var reg 4 ,& hex [3:0] $end
+$var reg 2048 -& in_file [2048:1] $end
+$var reg 1 .& is_word_address_format $end
+$var reg 1 /& last_rec $end
+$var reg 2048 0& out_file [2048:1] $end
+$var integer 32 1& aaaa [31:0] $end
+$var integer 32 2& aaaa_pre [31:0] $end
+$var integer 32 3& aah [31:0] $end
+$var integer 32 4& aal [31:0] $end
+$var integer 32 5& cc [31:0] $end
+$var integer 32 6& dd [31:0] $end
+$var integer 32 7& divide_factor [31:0] $end
+$var integer 32 8& i [31:0] $end
+$var integer 32 9& ifp [31:0] $end
+$var integer 32 :& j [31:0] $end
+$var integer 32 ;& k [31:0] $end
+$var integer 32 <& line_no [31:0] $end
+$var integer 32 =& m [31:0] $end
+$var integer 32 >& nn [31:0] $end
+$var integer 32 ?& off_addr [31:0] $end
+$var integer 32 @& ofp [31:0] $end
+$var integer 32 A& r [31:0] $end
+$var integer 32 B& sum [31:0] $end
+$var integer 32 C& tt [31:0] $end
+$var integer 32 D& width [31:0] $end
+$scope begin READER $end
+$upscope $end
+$upscope $end
+$scope task convert_mif2ver $end
+$var reg 24 E& address_radix [24:1] $end
+$var reg 1 F& address_radix_found $end
+$var reg 2048 G& buffer [2048:1] $end
+$var reg 8 H& c [8:1] $end
+$var reg 24 I& data_radix [24:1] $end
+$var reg 1 J& data_radix_found $end
+$var reg 1 K& depth_found $end
+$var reg 1 L& display_address $end
+$var reg 1 M& done $end
+$var reg 1 N& error_status $end
+$var reg 1 O& first_rec $end
+$var reg 1 P& get_address $end
+$var reg 1 Q& get_address_data_pairs $end
+$var reg 1 R& get_address_radix $end
+$var reg 1 S& get_data $end
+$var reg 1 T& get_data_radix $end
+$var reg 1 U& get_depth $end
+$var reg 1 V& get_end_address $end
+$var reg 1 W& get_start_address $end
+$var reg 1 X& get_width $end
+$var reg 4 Y& hex [3:0] $end
+$var reg 2048 Z& in_file [2048:1] $end
+$var reg 1 [& invalid_address $end
+$var reg 1 \& last_rec $end
+$var reg 1025 ]& memory_data1 [1024:0] $end
+$var reg 1025 ^& memory_data2 [1024:0] $end
+$var reg 2048 _& out_file [2048:1] $end
+$var reg 4 `& tmp_char [3:0] $end
+$var reg 1 a& width_found $end
+$var integer 32 b& aah [31:0] $end
+$var integer 32 c& aal [31:0] $end
+$var integer 32 d& address [31:0] $end
+$var integer 32 e& cc [31:0] $end
+$var integer 32 f& character_count [31:0] $end
+$var integer 32 g& comment_with_double_minus_found [31:0] $end
+$var integer 32 h& comment_with_percent_found [31:0] $end
+$var integer 32 i& dd [31:0] $end
+$var integer 32 j& end_address [31:0] $end
+$var integer 32 k& i [31:0] $end
+$var integer 32 l& ifp [31:0] $end
+$var integer 32 m& line_no [31:0] $end
+$var integer 32 n& memory_depth [31:0] $end
+$var integer 32 o& memory_width [31:0] $end
+$var integer 32 p& negative [31:0] $end
+$var integer 32 q& nn [31:0] $end
+$var integer 32 r& off_addr [31:0] $end
+$var integer 32 s& ofp [31:0] $end
+$var integer 32 t& r [31:0] $end
+$var integer 32 u& start_address [31:0] $end
+$var integer 32 v& sum [31:0] $end
+$var integer 32 w& tt [31:0] $end
+$var integer 32 x& value [31:0] $end
+$var integer 32 y& width [31:0] $end
+$scope begin READER $end
+$upscope $end
+$upscope $end
+$scope task convert_to_ver_file $end
+$var reg 2048 z& in_file [2048:1] $end
+$var reg 2048 {& out_file [2048:1] $end
+$var integer 32 |& width [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$scope module USER_MEM $end
+$var wire 16 }& address_a [15:0] $end
+$var wire 16 ~& address_b [15:0] $end
+$var wire 1 " clk $end
+$var wire 32 !' data_a [31:0] $end
+$var wire 32 "' data_b [31:0] $end
+$var wire 1 #' rden_a $end
+$var wire 1 ' rden_b $end
+$var wire 1 $' wren_a $end
+$var wire 1 ( wren_b $end
+$var wire 32 %' q_b [31:0] $end
+$var wire 32 &' q_a [31:0] $end
+$var parameter 56 '' initfile $end
+$var parameter 32 (' widthad $end
+$scope module ram $end
+$var wire 1 )' aclr0 $end
+$var wire 1 *' aclr1 $end
+$var wire 16 +' address_a [15:0] $end
+$var wire 16 ,' address_b [15:0] $end
+$var wire 1 -' addressstall_a $end
+$var wire 1 .' addressstall_b $end
+$var wire 1 /' byteena_a $end
+$var wire 1 0' byteena_b $end
+$var wire 1 " clock0 $end
+$var wire 1 1' clock1 $end
+$var wire 1 2' clocken0 $end
+$var wire 1 3' clocken1 $end
+$var wire 1 4' clocken2 $end
+$var wire 1 5' clocken3 $end
+$var wire 32 6' data_a [31:0] $end
+$var wire 32 7' data_b [31:0] $end
+$var wire 3 8' eccstatus [2:0] $end
+$var wire 1 #' rden_a $end
+$var wire 1 ' rden_b $end
+$var wire 1 $' wren_a $end
+$var wire 1 ( wren_b $end
+$var wire 32 9' q_b [31:0] $end
+$var wire 32 :' q_a [31:0] $end
+$var parameter 32 ;' address_aclr_a $end
+$var parameter 32 <' address_aclr_b $end
+$var parameter 48 =' address_reg_b $end
+$var parameter 32 >' byte_size $end
+$var parameter 32 ?' byteena_aclr_a $end
+$var parameter 32 @' byteena_aclr_b $end
+$var parameter 48 A' byteena_reg_b $end
+$var parameter 120 B' clock_enable_core_a $end
+$var parameter 120 C' clock_enable_core_b $end
+$var parameter 48 D' clock_enable_input_a $end
+$var parameter 48 E' clock_enable_input_b $end
+$var parameter 48 F' clock_enable_output_a $end
+$var parameter 48 G' clock_enable_output_b $end
+$var parameter 40 H' ecc_pipeline_stage_enabled $end
+$var parameter 40 I' enable_ecc $end
+$var parameter 32 J' family_arria10 $end
+$var parameter 24 K' implement_in_les $end
+$var parameter 32 L' indata_aclr_a $end
+$var parameter 32 M' indata_aclr_b $end
+$var parameter 48 N' indata_reg_b $end
+$var parameter 56 O' init_file $end
+$var parameter 48 P' init_file_layout $end
+$var parameter 72 Q' intended_device_family $end
+$var parameter 48 R' lpm_hint $end
+$var parameter 80 S' lpm_type $end
+$var parameter 32 T' maximum_depth $end
+$var parameter 48 U' numwords_a $end
+$var parameter 48 V' numwords_b $end
+$var parameter 120 W' operation_mode $end
+$var parameter 32 X' outdata_aclr_a $end
+$var parameter 32 Y' outdata_aclr_b $end
+$var parameter 96 Z' outdata_reg_a $end
+$var parameter 96 [' outdata_reg_b $end
+$var parameter 40 \' power_up_uninitialized $end
+$var parameter 32 ]' ram_block_type $end
+$var parameter 32 ^' rdcontrol_aclr_b $end
+$var parameter 48 _' rdcontrol_reg_b $end
+$var parameter 64 `' read_during_write_mode_mixed_ports $end
+$var parameter 160 a' read_during_write_mode_port_a $end
+$var parameter 160 b' read_during_write_mode_port_b $end
+$var parameter 32 c' width_a $end
+$var parameter 32 d' width_b $end
+$var parameter 32 e' width_byteena_a $end
+$var parameter 32 f' width_byteena_b $end
+$var parameter 32 g' width_eccstatus $end
+$var parameter 32 h' widthad_a $end
+$var parameter 32 i' widthad_b $end
+$var parameter 32 j' wrcontrol_aclr_a $end
+$var parameter 32 k' wrcontrol_aclr_b $end
+$var parameter 48 l' wrcontrol_wraddress_reg_b $end
+$scope begin m_default $end
+$scope module altsyncram_inst $end
+$var wire 1 )' aclr0 $end
+$var wire 1 *' aclr1 $end
+$var wire 16 m' address_a [15:0] $end
+$var wire 16 n' address_b [15:0] $end
+$var wire 1 -' addressstall_a $end
+$var wire 1 .' addressstall_b $end
+$var wire 1 /' byteena_a $end
+$var wire 1 0' byteena_b $end
+$var wire 1 " clock0 $end
+$var wire 1 1' clock1 $end
+$var wire 1 2' clocken0 $end
+$var wire 1 3' clocken1 $end
+$var wire 1 4' clocken2 $end
+$var wire 1 5' clocken3 $end
+$var wire 32 o' data_a [31:0] $end
+$var wire 32 p' data_b [31:0] $end
+$var wire 3 q' eccstatus [2:0] $end
+$var wire 1 r' i_address_aclr_a $end
+$var wire 1 s' i_address_aclr_b $end
+$var wire 1 t' i_byteena_a $end
+$var wire 1 u' i_byteena_aclr_a $end
+$var wire 1 v' i_byteena_aclr_b $end
+$var wire 1 w' i_byteena_b $end
+$var wire 1 x' i_clocken0 $end
+$var wire 1 y' i_clocken0_b $end
+$var wire 1 z' i_clocken1_b $end
+$var wire 1 {' i_core_clocken0_b $end
+$var wire 1 |' i_core_clocken1_b $end
+$var wire 1 }' i_core_clocken_a $end
+$var wire 1 ~' i_core_clocken_b $end
+$var wire 1 !( i_indata_aclr_a $end
+$var wire 1 "( i_indata_aclr_b $end
+$var wire 1 #( i_outdata_aclr_a $end
+$var wire 1 $( i_outdata_aclr_b $end
+$var wire 1 %( i_outdata_clken_a $end
+$var wire 1 &( i_outdata_clken_b $end
+$var wire 1 '( i_outlatch_clken_a $end
+$var wire 1 (( i_outlatch_clken_b $end
+$var wire 1 )( i_rdcontrol_aclr_b $end
+$var wire 1 *( i_wrcontrol_aclr_a $end
+$var wire 1 +( i_wrcontrol_aclr_b $end
+$var wire 32 ,( q_a [31:0] $end
+$var wire 32 -( q_b [31:0] $end
+$var wire 1 #' rden_a $end
+$var wire 1 ' rden_b $end
+$var wire 1 $' wren_a $end
+$var wire 1 ( wren_b $end
+$var wire 1 .( i_good_to_write_b $end
+$var wire 1 /( i_good_to_write_a $end
+$var parameter 32 0( address_aclr_a $end
+$var parameter 32 1( address_aclr_b $end
+$var parameter 48 2( address_reg_b $end
+$var parameter 32 3( byte_size $end
+$var parameter 32 4( byteena_aclr_a $end
+$var parameter 32 5( byteena_aclr_b $end
+$var parameter 48 6( byteena_reg_b $end
+$var parameter 32 7( check_simultaneous_read_write $end
+$var parameter 120 8( clock_enable_core_a $end
+$var parameter 120 9( clock_enable_core_b $end
+$var parameter 48 :( clock_enable_input_a $end
+$var parameter 48 ;( clock_enable_input_b $end
+$var parameter 48 <( clock_enable_output_a $end
+$var parameter 48 =( clock_enable_output_b $end
+$var parameter 32 >( dual_port_addreg_b_clk0 $end
+$var parameter 32 ?( dual_port_addreg_b_clk1 $end
+$var parameter 40 @( ecc_pipeline_stage_enabled $end
+$var parameter 40 A( enable_ecc $end
+$var parameter 32 B( enable_mem_data_b_reading $end
+$var parameter 32 C( family_arria10 $end
+$var parameter 32 D( family_arriaiigx $end
+$var parameter 32 E( family_arriaiigz $end
+$var parameter 32 F( family_arriav $end
+$var parameter 32 G( family_arriavgz $end
+$var parameter 32 H( family_arriavi $end
+$var parameter 32 I( family_base_arriav $end
+$var parameter 32 J( family_base_cycloneii $end
+$var parameter 32 K( family_base_stratix $end
+$var parameter 32 L( family_base_stratixii $end
+$var parameter 32 M( family_cyclone $end
+$var parameter 32 N( family_cycloneii $end
+$var parameter 32 O( family_cycloneiii $end
+$var parameter 32 P( family_cyclonev $end
+$var parameter 32 Q( family_hardcopyii $end
+$var parameter 32 R( family_hardcopyiii $end
+$var parameter 32 S( family_hardcopyiv $end
+$var parameter 32 T( family_has_lutram $end
+$var parameter 32 U( family_has_m512 $end
+$var parameter 32 V( family_has_megaram $end
+$var parameter 32 W( family_has_stratixi_style_ram $end
+$var parameter 32 X( family_has_stratixiii_style_ram $end
+$var parameter 32 Y( family_has_stratixv_style_ram $end
+$var parameter 32 Z( family_nightfury $end
+$var parameter 32 [( family_stratix10 $end
+$var parameter 32 \( family_stratixiii $end
+$var parameter 32 ]( family_stratixv $end
+$var parameter 32 ^( family_zippleback $end
+$var parameter 32 _( i_address_aclr_family_a $end
+$var parameter 32 `( i_address_aclr_family_b $end
+$var parameter 32 a( i_byte_size_tmp $end
+$var parameter 32 b( i_lutram_read $end
+$var parameter 24 c( implement_in_les $end
+$var parameter 32 d( indata_aclr_a $end
+$var parameter 32 e( indata_aclr_b $end
+$var parameter 48 f( indata_reg_b $end
+$var parameter 56 g( init_file $end
+$var parameter 48 h( init_file_layout $end
+$var parameter 72 i( intended_device_family $end
+$var parameter 32 j( is_bidir_and_wrcontrol_addb_clk0 $end
+$var parameter 32 k( is_bidir_and_wrcontrol_addb_clk1 $end
+$var parameter 32 l( is_lutram $end
+$var parameter 32 m( is_write_on_positive_edge $end
+$var parameter 48 n( lpm_hint $end
+$var parameter 80 o( lpm_type $end
+$var parameter 32 p( lutram_dual_port_fast_read $end
+$var parameter 32 q( lutram_single_port_fast_read $end
+$var parameter 32 r( maximum_depth $end
+$var parameter 48 s( numwords_a $end
+$var parameter 48 t( numwords_b $end
+$var parameter 120 u( operation_mode $end
+$var parameter 32 v( outdata_aclr_a $end
+$var parameter 32 w( outdata_aclr_b $end
+$var parameter 96 x( outdata_reg_a $end
+$var parameter 96 y( outdata_reg_b $end
+$var parameter 40 z( power_up_uninitialized $end
+$var parameter 32 {( ram_block_type $end
+$var parameter 32 |( rdcontrol_aclr_b $end
+$var parameter 48 }( rdcontrol_reg_b $end
+$var parameter 64 ~( read_during_write_mode_mixed_ports $end
+$var parameter 160 !) read_during_write_mode_port_a $end
+$var parameter 160 ") read_during_write_mode_port_b $end
+$var parameter 32 #) s3_address_aclr_a $end
+$var parameter 32 $) s3_address_aclr_b $end
+$var parameter 24 %) sim_show_memory_data_in_port_b_layout $end
+$var parameter 32 &) width_a $end
+$var parameter 32 ') width_b $end
+$var parameter 32 () width_byteena_a $end
+$var parameter 32 )) width_byteena_b $end
+$var parameter 32 *) width_eccstatus $end
+$var parameter 32 +) widthad_a $end
+$var parameter 32 ,) widthad_b $end
+$var parameter 32 -) wrcontrol_aclr_a $end
+$var parameter 32 .) wrcontrol_aclr_b $end
+$var parameter 48 /) wrcontrol_wraddress_reg_b $end
+$var reg 48 0) add_reg_a_mult_wa [47:0] $end
+$var reg 48 1) add_reg_a_mult_wa_pl_wa [47:0] $end
+$var reg 48 2) add_reg_b_mult_wb [47:0] $end
+$var reg 48 3) add_reg_b_mult_wb_pl_wb [47:0] $end
+$var reg 169 4) cread_during_write_mode_mixed_ports [168:0] $end
+$var reg 1 5) good_to_go_a $end
+$var reg 1 6) good_to_go_b $end
+$var reg 1 7) i_address_aclr_a_flag $end
+$var reg 1 8) i_address_aclr_a_prev $end
+$var reg 1 9) i_address_aclr_b_flag $end
+$var reg 1 :) i_address_aclr_b_prev $end
+$var reg 16 ;) i_address_reg_a [15:0] $end
+$var reg 16 <) i_address_reg_b [15:0] $end
+$var reg 32 =) i_byteena_mask_reg_a [31:0] $end
+$var reg 32 >) i_byteena_mask_reg_a_out [31:0] $end
+$var reg 32 ?) i_byteena_mask_reg_a_out_b [31:0] $end
+$var reg 32 @) i_byteena_mask_reg_a_x [31:0] $end
+$var reg 32 A) i_byteena_mask_reg_b [31:0] $end
+$var reg 32 B) i_byteena_mask_reg_b_out [31:0] $end
+$var reg 32 C) i_byteena_mask_reg_b_out_a [31:0] $end
+$var reg 32 D) i_byteena_mask_reg_b_x [31:0] $end
+$var reg 1 E) i_core_clocken0_b_reg $end
+$var reg 1 F) i_core_clocken1_b_reg $end
+$var reg 1 G) i_core_clocken_a_reg $end
+$var reg 32 H) i_data_reg_a [31:0] $end
+$var reg 32 I) i_data_reg_b [31:0] $end
+$var reg 64 J) i_data_write_time_a [63:0] $end
+$var reg 64 K) i_data_write_time_b [63:0] $end
+$var reg 1 L) i_force_reread_a $end
+$var reg 1 M) i_force_reread_a1 $end
+$var reg 1 N) i_force_reread_a_signal $end
+$var reg 1 O) i_force_reread_b $end
+$var reg 1 P) i_force_reread_b1 $end
+$var reg 1 Q) i_force_reread_b_signal $end
+$var reg 1 R) i_good_to_write_a2 $end
+$var reg 1 S) i_good_to_write_b2 $end
+$var reg 1 T) i_nmram_write_a $end
+$var reg 1 U) i_nmram_write_b $end
+$var reg 16 V) i_original_address_a [15:0] $end
+$var reg 32 W) i_original_data_a [31:0] $end
+$var reg 32 X) i_original_data_b [31:0] $end
+$var reg 1 Y) i_outdata_aclr_a_prev $end
+$var reg 1 Z) i_outdata_aclr_b_prev $end
+$var reg 32 [) i_q_reg_a [31:0] $end
+$var reg 32 \) i_q_reg_b [31:0] $end
+$var reg 32 ]) i_q_tmp2_a [31:0] $end
+$var reg 32 ^) i_q_tmp2_b [31:0] $end
+$var reg 32 _) i_q_tmp_a [31:0] $end
+$var reg 32 `) i_q_tmp_b [31:0] $end
+$var reg 57 a) i_ram_block_type [56:0] $end
+$var reg 1 b) i_rden_reg_a $end
+$var reg 1 c) i_rden_reg_b $end
+$var reg 1 d) i_read_flag_a $end
+$var reg 1 e) i_read_flag_b $end
+$var reg 1 f) i_wren_reg_a $end
+$var reg 1 g) i_wren_reg_b $end
+$var reg 1 h) i_write_flag_a $end
+$var reg 1 i) i_write_flag_b $end
+$var reg 1 j) init_file_b_port $end
+$var reg 2048 k) ram_initf [2048:1] $end
+$var reg 1 l) same_clock_pulse0 $end
+$var reg 1 m) same_clock_pulse1 $end
+$var reg 32 n) temp_wa [31:0] $end
+$var reg 32 o) temp_wb [31:0] $end
+$var reg 32 p) wa_mult_x [31:0] $end
+$var reg 32 q) wa_mult_x_ii [31:0] $end
+$var reg 32 r) wa_mult_x_iii [31:0] $end
+$var integer 32 s) i [31:0] $end
+$var integer 32 t) i2 [31:0] $end
+$var integer 32 u) i3 [31:0] $end
+$var integer 32 v) i4 [31:0] $end
+$var integer 32 w) i5 [31:0] $end
+$var integer 32 x) i_aclr_flag_a [31:0] $end
+$var integer 32 y) i_aclr_flag_b [31:0] $end
+$var integer 32 z) i_byte_size [31:0] $end
+$var integer 32 {) i_byteena_count [31:0] $end
+$var integer 32 |) i_div_wa [31:0] $end
+$var integer 32 }) i_numwords_a [31:0] $end
+$var integer 32 ~) i_numwords_b [31:0] $end
+$var integer 32 !* i_q_tmp2_a_idx [31:0] $end
+$var integer 32 "* port_a_bit_count_high [31:0] $end
+$var integer 32 #* port_a_bit_count_low [31:0] $end
+$var integer 32 $* port_b_bit_count_high [31:0] $end
+$var integer 32 %* port_b_bit_count_low [31:0] $end
+$scope module dev $end
+$scope function FEATURE_FAMILY_ARRIA10 $end
+$var reg 160 &* device [160:1] $end
+$var reg 1 '* var_family_arria10 $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAIIGX $end
+$var reg 160 (* device [160:1] $end
+$var reg 1 )* var_family_arriaiigx $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAIIGZ $end
+$var reg 160 ** device [160:1] $end
+$var reg 1 +* var_family_arriaiigz $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAV $end
+$var reg 160 ,* device [160:1] $end
+$var reg 1 -* var_family_arriav $end
+$upscope $end
+$scope function FEATURE_FAMILY_ARRIAVGZ $end
+$var reg 160 .* device [160:1] $end
+$var reg 1 /* var_family_arriavgz $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_CYCLONE $end
+$var reg 160 0* device [160:1] $end
+$var reg 1 1* var_family_base_cyclone $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_CYCLONEII $end
+$var reg 160 2* device [160:1] $end
+$var reg 1 3* var_family_base_cycloneii $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_STRATIX $end
+$var reg 160 4* device [160:1] $end
+$var reg 1 5* var_family_base_stratix $end
+$upscope $end
+$scope function FEATURE_FAMILY_BASE_STRATIXII $end
+$var reg 160 6* device [160:1] $end
+$var reg 1 7* var_family_base_stratixii $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONE $end
+$var reg 160 8* device [160:1] $end
+$var reg 1 9* var_family_cyclone $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONE10LP $end
+$var reg 160 :* device [160:1] $end
+$var reg 1 ;* var_family_cyclone10lp $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEII $end
+$var reg 160 <* device [160:1] $end
+$var reg 1 =* var_family_cycloneii $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEIII $end
+$var reg 160 >* device [160:1] $end
+$var reg 1 ?* var_family_cycloneiii $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEIVE $end
+$var reg 160 @* device [160:1] $end
+$var reg 1 A* var_family_cycloneive $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEIVGX $end
+$var reg 160 B* device [160:1] $end
+$var reg 1 C* var_family_cycloneivgx $end
+$upscope $end
+$scope function FEATURE_FAMILY_CYCLONEV $end
+$var reg 160 D* device [160:1] $end
+$var reg 1 E* var_family_cyclonev $end
+$upscope $end
+$scope function FEATURE_FAMILY_HARDCOPYIII $end
+$var reg 160 F* device [160:1] $end
+$var reg 1 G* var_family_hardcopyiii $end
+$upscope $end
+$scope function FEATURE_FAMILY_HARDCOPYIV $end
+$var reg 160 H* device [160:1] $end
+$var reg 1 I* var_family_hardcopyiv $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_ALTERA_MULT_ADD_FLOW $end
+$var reg 160 J* device [160:1] $end
+$var reg 1 K* var_family_has_altera_mult_add_flow $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_INVERTED_OUTPUT_DDIO $end
+$var reg 160 L* device [160:1] $end
+$var reg 1 M* var_family_has_inverted_output_ddio $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIXIII_STYLE_RAM $end
+$var reg 160 N* device [160:1] $end
+$var reg 1 O* var_family_has_stratixiii_style_ram $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIXII_STYLE_PLL $end
+$var reg 160 P* device [160:1] $end
+$var reg 1 Q* var_family_has_stratixii_style_pll $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIXII_STYLE_RAM $end
+$var reg 160 R* device [160:1] $end
+$var reg 1 S* var_family_has_stratixii_style_ram $end
+$upscope $end
+$scope function FEATURE_FAMILY_HAS_STRATIX_STYLE_PLL $end
+$var reg 160 T* device [160:1] $end
+$var reg 1 U* var_family_has_stratix_style_pll $end
+$upscope $end
+$scope function FEATURE_FAMILY_IS_ALTMULT_ADD_EOL $end
+$var reg 160 V* device [160:1] $end
+$var reg 1 W* var_family_is_altmult_add_eol $end
+$upscope $end
+$scope function FEATURE_FAMILY_MAX10 $end
+$var reg 160 X* device [160:1] $end
+$var reg 1 Y* var_family_max10 $end
+$upscope $end
+$scope function FEATURE_FAMILY_MAXII $end
+$var reg 160 Z* device [160:1] $end
+$var reg 1 [* var_family_maxii $end
+$upscope $end
+$scope function FEATURE_FAMILY_MAXV $end
+$var reg 160 \* device [160:1] $end
+$var reg 1 ]* var_family_maxv $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIX $end
+$var reg 160 ^* device [160:1] $end
+$var reg 1 _* var_family_stratix $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIX10 $end
+$var reg 160 `* device [160:1] $end
+$var reg 1 a* var_family_stratix10 $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXGX $end
+$var reg 160 b* device [160:1] $end
+$var reg 1 c* var_family_stratixgx $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXII $end
+$var reg 160 d* device [160:1] $end
+$var reg 1 e* var_family_stratixii $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXIIGX $end
+$var reg 160 f* device [160:1] $end
+$var reg 1 g* var_family_stratixiigx $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXIII $end
+$var reg 160 h* device [160:1] $end
+$var reg 1 i* var_family_stratixiii $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXIV $end
+$var reg 160 j* device [160:1] $end
+$var reg 1 k* var_family_stratixiv $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIXV $end
+$var reg 160 l* device [160:1] $end
+$var reg 1 m* var_family_stratixv $end
+$upscope $end
+$scope function FEATURE_FAMILY_STRATIX_HC $end
+$var reg 160 n* device [160:1] $end
+$var reg 1 o* var_family_stratix_hc $end
+$upscope $end
+$scope function IS_FAMILY_ARRIA10 $end
+$var reg 160 p* device [160:1] $end
+$var reg 1 q* is_arria10 $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAGX $end
+$var reg 160 r* device [160:1] $end
+$var reg 1 s* is_arriagx $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAIIGX $end
+$var reg 160 t* device [160:1] $end
+$var reg 1 u* is_arriaiigx $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAIIGZ $end
+$var reg 160 v* device [160:1] $end
+$var reg 1 w* is_arriaiigz $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAV $end
+$var reg 160 x* device [160:1] $end
+$var reg 1 y* is_arriav $end
+$upscope $end
+$scope function IS_FAMILY_ARRIAVGZ $end
+$var reg 160 z* device [160:1] $end
+$var reg 1 {* is_arriavgz $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONE $end
+$var reg 160 |* device [160:1] $end
+$var reg 1 }* is_cyclone $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONE10LP $end
+$var reg 160 ~* device [160:1] $end
+$var reg 1 !+ is_cyclone10lp $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEII $end
+$var reg 160 "+ device [160:1] $end
+$var reg 1 #+ is_cycloneii $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIII $end
+$var reg 160 $+ device [160:1] $end
+$var reg 1 %+ is_cycloneiii $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIIILS $end
+$var reg 160 &+ device [160:1] $end
+$var reg 1 '+ is_cycloneiiils $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIVE $end
+$var reg 160 (+ device [160:1] $end
+$var reg 1 )+ is_cycloneive $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEIVGX $end
+$var reg 160 *+ device [160:1] $end
+$var reg 1 ++ is_cycloneivgx $end
+$upscope $end
+$scope function IS_FAMILY_CYCLONEV $end
+$var reg 160 ,+ device [160:1] $end
+$var reg 1 -+ is_cyclonev $end
+$upscope $end
+$scope function IS_FAMILY_HARDCOPYII $end
+$var reg 160 .+ device [160:1] $end
+$var reg 1 /+ is_hardcopyii $end
+$upscope $end
+$scope function IS_FAMILY_HARDCOPYIII $end
+$var reg 160 0+ device [160:1] $end
+$var reg 1 1+ is_hardcopyiii $end
+$upscope $end
+$scope function IS_FAMILY_HARDCOPYIV $end
+$var reg 160 2+ device [160:1] $end
+$var reg 1 3+ is_hardcopyiv $end
+$upscope $end
+$scope function IS_FAMILY_MAX10 $end
+$var reg 160 4+ device [160:1] $end
+$var reg 1 5+ is_max10 $end
+$upscope $end
+$scope function IS_FAMILY_MAXII $end
+$var reg 160 6+ device [160:1] $end
+$var reg 1 7+ is_maxii $end
+$upscope $end
+$scope function IS_FAMILY_MAXV $end
+$var reg 160 8+ device [160:1] $end
+$var reg 1 9+ is_maxv $end
+$upscope $end
+$scope function IS_FAMILY_STRATIX $end
+$var reg 160 :+ device [160:1] $end
+$var reg 1 ;+ is_stratix $end
+$upscope $end
+$scope function IS_FAMILY_STRATIX10 $end
+$var reg 160 <+ device [160:1] $end
+$var reg 1 =+ is_stratix10 $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXGX $end
+$var reg 160 >+ device [160:1] $end
+$var reg 1 ?+ is_stratixgx $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXII $end
+$var reg 160 @+ device [160:1] $end
+$var reg 1 A+ is_stratixii $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXIIGX $end
+$var reg 160 B+ device [160:1] $end
+$var reg 1 C+ is_stratixiigx $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXIII $end
+$var reg 160 D+ device [160:1] $end
+$var reg 1 E+ is_stratixiii $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXIV $end
+$var reg 160 F+ device [160:1] $end
+$var reg 1 G+ is_stratixiv $end
+$upscope $end
+$scope function IS_FAMILY_STRATIXV $end
+$var reg 160 H+ device [160:1] $end
+$var reg 1 I+ is_stratixv $end
+$upscope $end
+$scope function IS_VALID_FAMILY $end
+$var reg 160 J+ device [160:1] $end
+$var reg 1 K+ is_valid $end
+$upscope $end
+$upscope $end
+$scope module mem $end
+$scope function ecc_parity $end
+$var reg 8 L+ i_eccencparity [7:0] $end
+$var integer 32 M+ err [31:0] $end
+$var integer 32 N+ flag [31:0] $end
+$var integer 32 O+ flag_double [31:0] $end
+$var integer 32 P+ flag_err [31:0] $end
+$var integer 32 Q+ flag_no_err [31:0] $end
+$var integer 32 R+ flag_single [31:0] $end
+$var integer 32 S+ flag_triple [31:0] $end
+$var integer 32 T+ flag_uncorr [31:0] $end
+$var integer 32 U+ found [31:0] $end
+$var integer 32 V+ found_2 [31:0] $end
+$var integer 32 W+ n [31:0] $end
+$var integer 32 X+ pointer [31:0] $end
+$var integer 32 Y+ pointer_max [31:0] $end
+$var integer 32 Z+ pointer_min [31:0] $end
+$upscope $end
+$scope function tolower $end
+$var reg 8 [+ conv_char [8:1] $end
+$var reg 8 \+ given_character [8:1] $end
+$upscope $end
+$scope task convert_hex2ver $end
+$var reg 8 ]+ c [8:1] $end
+$var reg 1 ^+ done $end
+$var reg 1 _+ error_status $end
+$var reg 1 `+ first_normal_record $end
+$var reg 1 a+ first_rec $end
+$var reg 4 b+ hex [3:0] $end
+$var reg 2048 c+ in_file [2048:1] $end
+$var reg 1 d+ is_word_address_format $end
+$var reg 1 e+ last_rec $end
+$var reg 2048 f+ out_file [2048:1] $end
+$var integer 32 g+ aaaa [31:0] $end
+$var integer 32 h+ aaaa_pre [31:0] $end
+$var integer 32 i+ aah [31:0] $end
+$var integer 32 j+ aal [31:0] $end
+$var integer 32 k+ cc [31:0] $end
+$var integer 32 l+ dd [31:0] $end
+$var integer 32 m+ divide_factor [31:0] $end
+$var integer 32 n+ i [31:0] $end
+$var integer 32 o+ ifp [31:0] $end
+$var integer 32 p+ j [31:0] $end
+$var integer 32 q+ k [31:0] $end
+$var integer 32 r+ line_no [31:0] $end
+$var integer 32 s+ m [31:0] $end
+$var integer 32 t+ nn [31:0] $end
+$var integer 32 u+ off_addr [31:0] $end
+$var integer 32 v+ ofp [31:0] $end
+$var integer 32 w+ r [31:0] $end
+$var integer 32 x+ sum [31:0] $end
+$var integer 32 y+ tt [31:0] $end
+$var integer 32 z+ width [31:0] $end
+$scope begin READER $end
+$upscope $end
+$upscope $end
+$scope task convert_mif2ver $end
+$var reg 24 {+ address_radix [24:1] $end
+$var reg 1 |+ address_radix_found $end
+$var reg 2048 }+ buffer [2048:1] $end
+$var reg 8 ~+ c [8:1] $end
+$var reg 24 !, data_radix [24:1] $end
+$var reg 1 ", data_radix_found $end
+$var reg 1 #, depth_found $end
+$var reg 1 $, display_address $end
+$var reg 1 %, done $end
+$var reg 1 &, error_status $end
+$var reg 1 ', first_rec $end
+$var reg 1 (, get_address $end
+$var reg 1 ), get_address_data_pairs $end
+$var reg 1 *, get_address_radix $end
+$var reg 1 +, get_data $end
+$var reg 1 ,, get_data_radix $end
+$var reg 1 -, get_depth $end
+$var reg 1 ., get_end_address $end
+$var reg 1 /, get_start_address $end
+$var reg 1 0, get_width $end
+$var reg 4 1, hex [3:0] $end
+$var reg 2048 2, in_file [2048:1] $end
+$var reg 1 3, invalid_address $end
+$var reg 1 4, last_rec $end
+$var reg 1025 5, memory_data1 [1024:0] $end
+$var reg 1025 6, memory_data2 [1024:0] $end
+$var reg 2048 7, out_file [2048:1] $end
+$var reg 4 8, tmp_char [3:0] $end
+$var reg 1 9, width_found $end
+$var integer 32 :, aah [31:0] $end
+$var integer 32 ;, aal [31:0] $end
+$var integer 32 <, address [31:0] $end
+$var integer 32 =, cc [31:0] $end
+$var integer 32 >, character_count [31:0] $end
+$var integer 32 ?, comment_with_double_minus_found [31:0] $end
+$var integer 32 @, comment_with_percent_found [31:0] $end
+$var integer 32 A, dd [31:0] $end
+$var integer 32 B, end_address [31:0] $end
+$var integer 32 C, i [31:0] $end
+$var integer 32 D, ifp [31:0] $end
+$var integer 32 E, line_no [31:0] $end
+$var integer 32 F, memory_depth [31:0] $end
+$var integer 32 G, memory_width [31:0] $end
+$var integer 32 H, negative [31:0] $end
+$var integer 32 I, nn [31:0] $end
+$var integer 32 J, off_addr [31:0] $end
+$var integer 32 K, ofp [31:0] $end
+$var integer 32 L, r [31:0] $end
+$var integer 32 M, start_address [31:0] $end
+$var integer 32 N, sum [31:0] $end
+$var integer 32 O, tt [31:0] $end
+$var integer 32 P, value [31:0] $end
+$var integer 32 Q, width [31:0] $end
+$scope begin READER $end
+$upscope $end
+$upscope $end
+$scope task convert_to_ver_file $end
+$var reg 2048 R, in_file [2048:1] $end
+$var reg 2048 S, out_file [2048:1] $end
+$var integer 32 T, width [31:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
+$upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 $comment Show the parameter values. $end
 $dumpall
+b10000110100110001001111010000110100101100110000 /)
+b1001110010011110100111001000101 .)
+b1001110010011110100111001000101 -)
+b10000 ,)
+b10000 +)
+b11 *)
+b1 ))
+b1 ()
+b100000 ')
+b100000 &)
+b10011110100011001000110 %)
+b1 $)
+b1 #)
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 ")
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 !)
+b100111101001100010001000101111101000100010000010101010001000001 ~(
+b10000110100110001001111010000110100101100110001 }(
+b1001110010011110100111001000101 |(
+b1001101001100010011000001001011 {(
+b100011001000001010011000101001101000101 z(
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 y(
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 x(
+b1001110010011110100111001000101 w(
+b1001110010011110100111001000101 v(
+b10000100100100101000100010010010101001001011111010001000101010101000001010011000101111101010000010011110101001001010100 u(
+b10000000000000000 t(
+b10000000000000000 s(
+b0 r(
+b0 q(
+b0 p(
+b1100001011011000111010001110011011110010110111001100011011100100110000101101101 o(
+b10101010100111001010101010100110100010101000100 n(
+b1 m(
+b0 l(
+b0 k(
+b1 j(
+b10000110111100101100011011011000110111101101110011001010010000001010110 i(
+b10101010100111001010101010100110100010101000100 h(
+b1010010010000010100110100101110011011010110100101100110 g(
+b10000110100110001001111010000110100101100110000 f(
+b1001110010011110100111001000101 e(
+b1001110010011110100111001000101 d(
+b10011110100011001000110 c(
+b0 b(
+b1000 a(
+b1 `(
+b1 _(
+b0 ^(
+b1 ](
+b1 \(
+b0 [(
+b0 Z(
+b1 Y(
+b1 X(
+b0 W(
+b0 V(
+b0 U(
+b1 T(
+b0 S(
+b0 R(
+b0 Q(
+b1 P(
+b0 O(
+b0 N(
+b0 M(
+b0 L(
+b0 K(
+b0 J(
+b1 I(
+b0 H(
+b0 G(
+b0 F(
+b0 E(
+b0 D(
+b0 C(
+b0 B(
+b100011001000001010011000101001101000101 A(
+b100011001000001010011000101001101000101 @(
+b0 ?(
+b0 >(
+b10000100101100101010000010000010101001101010011 =(
+b10000100101100101010000010000010101001101010011 <(
+b10000100101100101010000010000010101001101010011 ;(
+b10000100101100101010000010000010101001101010011 :(
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 9(
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 8(
+b0 7(
+b10000110100110001001111010000110100101100110001 6(
+b1001110010011110100111001000101 5(
+b1001110010011110100111001000101 4(
+b0 3(
+b10000110100110001001111010000110100101100110000 2(
+b1001110010011110100111001000101 1(
+b1001110010011110100111001000101 0(
+b10000110100110001001111010000110100101100110000 l'
+b1001110010011110100111001000101 k'
+b1001110010011110100111001000101 j'
+b10000 i'
+b10000 h'
+b11 g'
+b1 f'
+b1 e'
+b100000 d'
+b100000 c'
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 b'
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 a'
+b100111101001100010001000101111101000100010000010101010001000001 `'
+b10000110100110001001111010000110100101100110001 _'
+b1001110010011110100111001000101 ^'
+b1001101001100010011000001001011 ]'
+b100011001000001010011000101001101000101 \'
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 ['
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 Z'
+b1001110010011110100111001000101 Y'
+b1001110010011110100111001000101 X'
+b10000100100100101000100010010010101001001011111010001000101010101000001010011000101111101010000010011110101001001010100 W'
+b10000000000000000 V'
+b10000000000000000 U'
+b0 T'
+b1100001011011000111010001110011011110010110111001100011011100100110000101101101 S'
+b10101010100111001010101010100110100010101000100 R'
+b10000110111100101100011011011000110111101101110011001010010000001010110 Q'
+b10101010100111001010101010100110100010101000100 P'
+b1010010010000010100110100101110011011010110100101100110 O'
+b10000110100110001001111010000110100101100110000 N'
+b1001110010011110100111001000101 M'
+b1001110010011110100111001000101 L'
+b10011110100011001000110 K'
+b0 J'
+b100011001000001010011000101001101000101 I'
+b100011001000001010011000101001101000101 H'
+b10000100101100101010000010000010101001101010011 G'
+b10000100101100101010000010000010101001101010011 F'
+b10000100101100101010000010000010101001101010011 E'
+b10000100101100101010000010000010101001101010011 D'
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 C'
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 B'
+b10000110100110001001111010000110100101100110001 A'
+b1001110010011110100111001000101 @'
+b1001110010011110100111001000101 ?'
+b0 >'
+b10000110100110001001111010000110100101100110000 ='
+b1001110010011110100111001000101 <'
+b1001110010011110100111001000101 ;'
+b10000 ('
+b1010010010000010100110100101110011011010110100101100110 ''
+b10000110100110001001111010000110100101100110000 Z#
+b1001110010011110100111001000101 Y#
+b1001110010011110100111001000101 X#
+b1111 W#
+b1111 V#
+b11 U#
+b1 T#
+b1 S#
+b100000 R#
+b100000 Q#
+b10011110100011001000110 P#
+b1 O#
+b1 N#
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 M#
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 L#
+b100111101001100010001000101111101000100010000010101010001000001 K#
+b10000110100110001001111010000110100101100110001 J#
+b1001110010011110100111001000101 I#
+b1001101001100010011000001001011 H#
+b100011001000001010011000101001101000101 G#
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 F#
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 E#
+b1001110010011110100111001000101 D#
+b1001110010011110100111001000101 C#
+b10000100100100101000100010010010101001001011111010001000101010101000001010011000101111101010000010011110101001001010100 B#
+b1000000000000000 A#
+b1000000000000000 @#
+b0 ?#
+b0 >#
+b0 =#
+b1100001011011000111010001110011011110010110111001100011011100100110000101101101 <#
+b10101010100111001010101010100110100010101000100 ;#
+b1 :#
+b0 9#
+b0 8#
+b1 7#
+b10000110111100101100011011011000110111101101110011001010010000001010110 6#
+b10101010100111001010101010100110100010101000100 5#
+b10101010100111001010101010100110100010101000100 4#
+b10000110100110001001111010000110100101100110000 3#
+b1001110010011110100111001000101 2#
+b1001110010011110100111001000101 1#
+b10011110100011001000110 0#
+b0 /#
+b1000 .#
+b1 -#
+b1 ,#
+b0 +#
+b1 *#
+b1 )#
+b0 (#
+b0 '#
+b1 &#
+b1 %#
+b0 $#
+b0 ##
+b0 "#
+b1 !#
+b0 ~"
+b0 }"
+b0 |"
+b1 {"
+b0 z"
+b0 y"
+b0 x"
+b0 w"
+b0 v"
+b0 u"
+b1 t"
+b0 s"
+b0 r"
+b0 q"
+b0 p"
+b0 o"
+b0 n"
+b0 m"
+b100011001000001010011000101001101000101 l"
+b100011001000001010011000101001101000101 k"
+b0 j"
+b0 i"
+b10000100101100101010000010000010101001101010011 h"
+b10000100101100101010000010000010101001101010011 g"
+b10000100101100101010000010000010101001101010011 f"
+b10000100101100101010000010000010101001101010011 e"
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 d"
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 c"
+b0 b"
+b10000110100110001001111010000110100101100110001 a"
+b1001110010011110100111001000101 `"
+b1001110010011110100111001000101 _"
+b0 ^"
+b10000110100110001001111010000110100101100110000 ]"
+b1001110010011110100111001000101 \"
+b1001110010011110100111001000101 ["
+b10000110100110001001111010000110100101100110000 9"
+b1001110010011110100111001000101 8"
+b1001110010011110100111001000101 7"
+b1111 6"
+b1111 5"
+b11 4"
+b1 3"
+b1 2"
+b100000 1"
+b100000 0"
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 /"
+b100111001000101010101110101111101000100010000010101010001000001010111110100111001001111010111110100111001000010010001010101111101010010010001010100000101000100 ."
+b100111101001100010001000101111101000100010000010101010001000001 -"
+b10000110100110001001111010000110100101100110001 ,"
+b1001110010011110100111001000101 +"
+b1001101001100010011000001001011 *"
+b100011001000001010011000101001101000101 )"
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 ("
+b10101010100111001010010010001010100011101001001010100110101010001000101010100100100010101000100 '"
+b1001110010011110100111001000101 &"
+b1001110010011110100111001000101 %"
+b10000100100100101000100010010010101001001011111010001000101010101000001010011000101111101010000010011110101001001010100 $"
+b1000000000000000 #"
+b1000000000000000 ""
+b0 !"
+b1100001011011000111010001110011011110010110111001100011011100100110000101101101 ~
+b10101010100111001010101010100110100010101000100 }
+b10000110111100101100011011011000110111101101110011001010010000001010110 |
+b10101010100111001010101010100110100010101000100 {
+b10101010100111001010101010100110100010101000100 z
+b10000110100110001001111010000110100101100110000 y
+b1001110010011110100111001000101 x
+b1001110010011110100111001000101 w
+b10011110100011001000110 v
+b0 u
+b100011001000001010011000101001101000101 t
+b100011001000001010011000101001101000101 s
+b10000100101100101010000010000010101001101010011 r
+b10000100101100101010000010000010101001101010011 q
+b10000100101100101010000010000010101001101010011 p
+b10000100101100101010000010000010101001101010011 o
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 n
+b10101010101001101000101010111110100100101001110010100000101010101010100010111110100001101001100010010110100010101001110 m
+b10000110100110001001111010000110100101100110001 l
+b1001110010011110100111001000101 k
+b1001110010011110100111001000101 j
+b0 i
+b10000110100110001001111010000110100101100110000 h
+b1001110010011110100111001000101 g
+b1001110010011110100111001000101 f
+b1111 S
+b10101010100111001010101010100110100010101000100 R
 $end
 #0
 $dumpvars
+b100000 T,
+b1010010010000010100110100101110011101100110010101110010 S,
+b1010010010000010100110100101110011011010110100101100110 R,
+b100000 Q,
+b0 P,
+b0 O,
+b0 N,
+b0 M,
+b11111111111111111111111111111111 L,
+b10000000000000000000000000000100 K,
+b0 J,
+b0 I,
+b0 H,
+b10000 G,
+b10000000000000000 F,
+b10111 E,
+b10000000000000000000000000000011 D,
+b11111111111111111111111111111111 C,
+b0 B,
+b0 A,
+b0 @,
+b0 ?,
+b0 >,
+b0 =,
+b0 <,
+b0 ;,
+b0 :,
+19,
+b0 8,
+b1010010010000010100110100101110011101100110010101110010 7,
+b0 6,
+b0 5,
+14,
+13,
+b1010010010000010100110100101110011011010110100101100110 2,
+b0 1,
+00,
+0/,
+0.,
+0-,
+0,,
+0+,
+0*,
+1),
+1(,
+1',
+0&,
+1%,
+1$,
+1#,
+1",
+b11010000110010101111000 !,
+b1100100 ~+
+b0 }+
+1|+
+b11101010110111001110011 {+
+bx z+
+bx y+
+bx x+
+bx w+
+bx v+
+bx u+
+bx t+
+bx s+
+bx r+
+bx q+
+bx p+
+bx o+
+bx n+
+bx m+
+bx l+
+bx k+
+bx j+
+bx i+
+bx h+
+bx g+
+bx f+
+xe+
+xd+
+bx c+
+bx b+
+xa+
+x`+
+x_+
+x^+
+bx ]+
+b1000100 \+
+b1100100 [+
+bx Z+
+bx Y+
+bx X+
+bx W+
+bx V+
+bx U+
+bx T+
+bx S+
+bx R+
+bx Q+
+bx P+
+bx O+
+bx N+
+bx M+
+bx L+
+xK+
+bx J+
+xI+
+bx H+
+xG+
+bx F+
+xE+
+bx D+
+xC+
+bx B+
+xA+
+bx @+
+x?+
+bx >+
+x=+
+bx <+
+x;+
+bx :+
+x9+
+bx 8+
+x7+
+bx 6+
+x5+
+bx 4+
+x3+
+bx 2+
+x1+
+bx 0+
+x/+
+bx .+
+x-+
+bx ,+
+x++
+bx *+
+x)+
+bx (+
+x'+
+bx &+
+x%+
+bx $+
+x#+
+bx "+
+x!+
+bx ~*
+x}*
+bx |*
+x{*
+bx z*
+xy*
+bx x*
+xw*
+bx v*
+xu*
+bx t*
+xs*
+bx r*
+xq*
+bx p*
+xo*
+bx n*
+xm*
+bx l*
+xk*
+bx j*
+xi*
+bx h*
+xg*
+bx f*
+xe*
+bx d*
+xc*
+bx b*
+xa*
+bx `*
+x_*
+bx ^*
+x]*
+bx \*
+x[*
+bx Z*
+xY*
+bx X*
+xW*
+bx V*
+xU*
+bx T*
+xS*
+bx R*
+xQ*
+bx P*
+xO*
+bx N*
+xM*
+bx L*
+xK*
+bx J*
+xI*
+bx H*
+xG*
+bx F*
+xE*
+bx D*
+xC*
+bx B*
+xA*
+bx @*
+x?*
+bx >*
+x=*
+bx <*
+x;*
+bx :*
+x9*
+bx 8*
+x7*
+bx 6*
+x5*
+bx 4*
+x3*
+bx 2*
+x1*
+bx 0*
+x/*
+bx .*
+x-*
+bx ,*
+x+*
+bx **
+x)*
+bx (*
+x'*
+bx &*
+bx %*
+bx $*
+bx #*
+bx "*
+bx !*
+b10000000000000000 ~)
+b10000000000000000 })
+bx |)
+b0 {)
+b1000 z)
+b0 y)
+b0 x)
+bx w)
+bx v)
+bx u)
+bx t)
+b10000000000000000 s)
+bx r)
+bx q)
+b0 p)
+bx o)
+bx n)
+0m)
+0l)
+b1010010010000010100110100101110011101100110010101110010 k)
+0j)
+0i)
+0h)
+0g)
+0f)
+0e)
+0d)
+0c)
+0b)
+b1001101001100010011000001001011 a)
+b0 `)
+b0 _)
+b0 ^)
+b0 ])
+b0 \)
+b0 [)
+0Z)
+0Y)
+b0 X)
+b0 W)
+b0 V)
+0U)
+0T)
+1S)
+1R)
+0Q)
+0P)
+0O)
+0N)
+0M)
+0L)
+b0 K)
+b0 J)
+b0 I)
+b0 H)
+0G)
+0F)
+0E)
+b0 D)
+bx C)
+b0 B)
+b0 A)
+b0 @)
+bx ?)
+b0 >)
+b0 =)
+b0 <)
+b0 ;)
+0:)
+x9)
+08)
+x7)
+06)
+05)
+b100111101001100010001000101111101000100010000010101010001000001 4)
+bx 3)
+bx 2)
+bx 1)
+bx 0)
+1/(
+1.(
+b0 -(
+b0 ,(
+0+(
+0*(
+0)(
+1((
+1'(
+1&(
+1%(
+0$(
+0#(
+0"(
+0!(
+1~'
+1}'
+1|'
+1{'
+1z'
+1y'
+1x'
+1w'
+0v'
+0u'
+1t'
+0s'
+0r'
+b0 q'
+bz p'
+b0 o'
+bz n'
+b0 m'
+b0 :'
+b0 9'
+b0 8'
+bz 7'
+b0 6'
+15'
+14'
+13'
+12'
+11'
+10'
+1/'
+0.'
+0-'
+bz ,'
+b0 +'
+0*'
+0)'
+b0 &'
+b0 %'
+0$'
+1#'
+bz "'
+b0 !'
+bz ~&
+b0 }&
+bx |&
+bx {&
+bx z&
+bx y&
+bx x&
+bx w&
+bx v&
+bx u&
+bx t&
+bx s&
+bx r&
+bx q&
+bx p&
+bx o&
+bx n&
+bx m&
+bx l&
+bx k&
+bx j&
+bx i&
+bx h&
+bx g&
+bx f&
+bx e&
+bx d&
+bx c&
+bx b&
+xa&
+bx `&
+bx _&
+bx ^&
+bx ]&
+x\&
+x[&
+bx Z&
+bx Y&
+xX&
+xW&
+xV&
+xU&
+xT&
+xS&
+xR&
+xQ&
+xP&
+xO&
+xN&
+xM&
+xL&
+xK&
+xJ&
+bx I&
+bx H&
+bx G&
+xF&
+bx E&
+bx D&
+bx C&
+bx B&
+bx A&
+bx @&
+bx ?&
+bx >&
+bx =&
+bx <&
+bx ;&
+bx :&
+bx 9&
+bx 8&
+bx 7&
+bx 6&
+bx 5&
+bx 4&
+bx 3&
+bx 2&
+bx 1&
+bx 0&
+x/&
+x.&
+bx -&
+bx ,&
+x+&
+x*&
+x)&
+x(&
+bx '&
+bx &&
+bx %&
+bx $&
+bx #&
+bx "&
+bx !&
+bx ~%
+bx }%
+bx |%
+bx {%
+bx z%
+bx y%
+bx x%
+bx w%
+bx v%
+bx u%
+bx t%
+xs%
+bx r%
+xq%
+bx p%
+xo%
+bx n%
+xm%
+bx l%
+xk%
+bx j%
+xi%
+bx h%
+xg%
+bx f%
+xe%
+bx d%
+xc%
+bx b%
+xa%
+bx `%
+x_%
+bx ^%
+x]%
+bx \%
+x[%
+bx Z%
+xY%
+bx X%
+xW%
+bx V%
+xU%
+bx T%
+xS%
+bx R%
+xQ%
+bx P%
+xO%
+bx N%
+xM%
+bx L%
+xK%
+bx J%
+xI%
+bx H%
+xG%
+bx F%
+xE%
+bx D%
+xC%
+bx B%
+xA%
+bx @%
+x?%
+bx >%
+x=%
+bx <%
+x;%
+bx :%
+x9%
+bx 8%
+x7%
+bx 6%
+x5%
+bx 4%
+x3%
+bx 2%
+x1%
+bx 0%
+x/%
+bx .%
+x-%
+bx ,%
+x+%
+bx *%
+x)%
+bx (%
+x'%
+bx &%
+x%%
+bx $%
+x#%
+bx "%
+x!%
+bx ~$
+x}$
+bx |$
+x{$
+bx z$
+xy$
+bx x$
+xw$
+bx v$
+xu$
+bx t$
+xs$
+bx r$
+xq$
+bx p$
+xo$
+bx n$
+xm$
+bx l$
+xk$
+bx j$
+xi$
+bx h$
+xg$
+bx f$
+xe$
+bx d$
+xc$
+bx b$
+xa$
+bx `$
+x_$
+bx ^$
+x]$
+bx \$
+x[$
+bx Z$
+xY$
+bx X$
+xW$
+bx V$
+xU$
+bx T$
+xS$
+bx R$
+xQ$
+bx P$
+xO$
+bx N$
+bx M$
+bx L$
+bx K$
+bx J$
+bx I$
+b1000000000000000 H$
+b1000000000000000 G$
+b0 F$
+b1000 E$
+b0 D$
+b0 C$
+bx B$
+bx A$
+bx @$
+bx ?$
+b1000000000000000 >$
+bx =$
+bx <$
+b0 ;$
+bx :$
+bx 9$
+08$
+07$
+06$
+05$
+04$
+03$
+02$
+01$
+00$
+0/$
+b1001101001100010011000001001011 .$
+b0 -$
+b0 ,$
+b0 +$
+b0 *$
+b0 )$
+b0 ($
+0'$
+0&$
+b0 %$
+b0 $$
+b0 #$
+0"$
+0!$
+1~#
+1}#
+0|#
+0{#
+0z#
+0y#
+0x#
+0w#
+b0 v#
+b0 u#
+b0 t#
+b0 s#
+0r#
+0q#
+0p#
+b0 o#
+bx n#
+b0 m#
+b0 l#
+b0 k#
+bx j#
+b0 i#
+b0 h#
+b0 g#
+b0 f#
+0e#
+xd#
+0c#
+xb#
+0a#
+0`#
+b100111101001100010001000101111101000100010000010101010001000001 _#
+bx ^#
+bx ]#
+bx \#
+bx [#
+1Z"
+1Y"
+b0 X"
+b0 W"
+0V"
+0U"
+0T"
+1S"
+1R"
+1Q"
+1P"
+0O"
+0N"
+0M"
+0L"
+1K"
+1J"
+1I"
+1H"
+1G"
+1F"
+1E"
+1D"
+0C"
+0B"
+1A"
+0@"
+0?"
+b0 >"
+bz ="
+b0 <"
+bz ;"
+b0 :"
+b0 e
+b0 d
+b0 c
+bz b
+b0 a
+1`
+1_
+1^
+1]
+1\
+1[
+1Z
+0Y
+0X
+bz W
+b0 V
+0U
+0T
+b0 Q
+b0 P
+0O
+1N
+bz M
+b0 L
+bz K
+b0 J
+b0 I
+b0 H
+b0 G
+b0 F
+b0 E
+b0 D
+bz C
+bz B
+b0 A
+0@
+0?
+0>
+b0 =
+0<
+0;
+0:
+09
+08
+b0 7
+b0 6
+x5
+b1111111111111110 4
+03
+b0 2
+b0 1
+b0 0
+b0 /
+b0 .
+b0 -
+b0 ,
+b0 +
+0*
+b0 )
+0(
+1'
+bz &
+bz %
+b0 $
+z#
 0"
 0!
 $end
 #20000
-1!
+bx )
+bx F
+bx D
+bx %'
+bx 9'
+bx -(
+bx `)
+bx G
+bx P
+bx d
+bx X"
+bx -$
+bx ^)
+bx +$
+b1 J
+b1 V
+b1 :"
+b11111111111111111111111111111111 A)
+bz <)
+bz I)
+1e)
+1c)
+16)
+b11111111111111111111111111111111 =)
+09)
+1b)
+15)
+1d)
+1E)
+1G)
+1l)
+b11111111111111111111111111111111 l#
+bz g#
+bz t#
+12$
+10$
+1a#
+b11111111111111111111111111111111 h#
+0d#
+1/$
+1`#
+11$
+1p#
+1r#
+17$
+b1 $
+b1 ,
+b1 A
+b1 }&
+b1 +'
+b1 m'
 1"
+1!
 #40000
+07$
+0l)
 0"
+0!
 #60000
-0!
+x*
+b1 +
+b1 I
+b1 E
+b1 &'
+b1 :'
+b1 ,(
+b1 _)
+b10 J
+b10 V
+b10 :"
+b1 ])
+b10 $
+b10 ,
+b10 A
+b10 }&
+b10 +'
+b10 m'
+b1 .
+02$
+b1 f#
+01$
+17$
+0e)
+b1 ;)
+0d)
+1l)
 1"
+1!
 #80000
+0l)
+07$
 0"
+0!
 #100000
-1!
+0*
+b10 +
+b10 I
+b10 E
+b10 &'
+b10 :'
+b10 ,(
+b10 _)
+b10 ])
+b11 J
+b11 V
+b11 :"
+1e)
+b10 ;)
+1d)
+1l)
+12$
+b10 f#
+11$
+17$
+b11 $
+b11 ,
+b11 A
+b11 }&
+b11 +'
+b11 m'
+b10 .
 1"
+1!
 #120000
+07$
+0l)
 0"
+0!
 #140000
-0!
+x*
+b11 +
+b11 I
+b11 E
+b11 &'
+b11 :'
+b11 ,(
+b11 _)
+b100 J
+b100 V
+b100 :"
+b11 ])
+b100 $
+b100 ,
+b100 A
+b100 }&
+b100 +'
+b100 m'
+b11 .
+02$
+b11 f#
+01$
+17$
+0e)
+b11 ;)
+0d)
+1l)
 1"
+1!
 #160000
+0l)
+07$
 0"
+0!
 #180000
-1!
+0*
+b100 +
+b100 I
+b100 E
+b100 &'
+b100 :'
+b100 ,(
+b100 _)
+b100 ])
+b101 J
+b101 V
+b101 :"
+1e)
+b100 ;)
+1d)
+1l)
+12$
+b100 f#
+11$
+17$
+b101 $
+b101 ,
+b101 A
+b101 }&
+b101 +'
+b101 m'
+b100 .
 1"
+1!
 #200000
+07$
+0l)
 0"
+0!
 #220000
-0!
+x*
+b101 +
+b101 I
+b101 E
+b101 &'
+b101 :'
+b101 ,(
+b101 _)
+b110 J
+b110 V
+b110 :"
+b101 ])
+b110 $
+b110 ,
+b110 A
+b110 }&
+b110 +'
+b110 m'
+b101 .
+02$
+b101 f#
+01$
+17$
+0e)
+b101 ;)
+0d)
+1l)
 1"
+1!
 #240000
+0l)
+07$
 0"
+0!
 #260000
-1!
+0*
+b110 +
+b110 I
+b110 E
+b110 &'
+b110 :'
+b110 ,(
+b110 _)
+b110 ])
+b111 J
+b111 V
+b111 :"
+1e)
+b110 ;)
+1d)
+1l)
+12$
+b110 f#
+11$
+17$
+b111 $
+b111 ,
+b111 A
+b111 }&
+b111 +'
+b111 m'
+b110 .
 1"
+1!
 #280000
+07$
+0l)
 0"
+0!
 #300000
-0!
+x*
+b111 +
+b111 I
+b111 E
+b111 &'
+b111 :'
+b111 ,(
+b111 _)
+b1000 J
+b1000 V
+b1000 :"
+b111 ])
+b1000 $
+b1000 ,
+b1000 A
+b1000 }&
+b1000 +'
+b1000 m'
+b111 .
+02$
+b111 f#
+01$
+17$
+0e)
+b111 ;)
+0d)
+1l)
 1"
-#320000
-0"
-#340000
 1!
-1"
-#360000
+#320000
+0l)
+07$
 0"
-#380000
 0!
+#340000
+0*
+b1000 +
+b1000 I
+b1000 E
+b1000 &'
+b1000 :'
+b1000 ,(
+b1000 _)
+b1000 ])
+b1001 J
+b1001 V
+b1001 :"
+1e)
+b1000 ;)
+1d)
+1l)
+12$
+b1000 f#
+11$
+17$
+b1001 $
+b1001 ,
+b1001 A
+b1001 }&
+b1001 +'
+b1001 m'
+b1000 .
 1"
-#400000
+1!
+#360000
+07$
+0l)
 0"
+0!
+#380000
+x*
+b1001 +
+b1001 I
+b1001 E
+b1001 &'
+b1001 :'
+b1001 ,(
+b1001 _)
+b1010 J
+b1010 V
+b1010 :"
+b1001 ])
+b1010 $
+b1010 ,
+b1010 A
+b1010 }&
+b1010 +'
+b1010 m'
+b1001 .
+02$
+b1001 f#
+01$
+17$
+0e)
+b1001 ;)
+0d)
+1l)
+1"
+1!
+#400000
+0l)
+07$
+0"
+0!
