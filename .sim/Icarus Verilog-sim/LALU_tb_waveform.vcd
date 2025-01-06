@@ -1,0 +1,76 @@
+$date
+	Sun Jan  5 18:52:38 2025
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module LALU_tb $end
+$var wire 1 ! LED0 $end
+$var reg 1 " clk $end
+$scope module lalu $end
+$var wire 1 " CLOCK_50 $end
+$var reg 1 ! LED0 $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+0"
+0!
+$end
+#20000
+1!
+1"
+#40000
+0"
+#60000
+0!
+1"
+#80000
+0"
+#100000
+1!
+1"
+#120000
+0"
+#140000
+0!
+1"
+#160000
+0"
+#180000
+1!
+1"
+#200000
+0"
+#220000
+0!
+1"
+#240000
+0"
+#260000
+1!
+1"
+#280000
+0"
+#300000
+0!
+1"
+#320000
+0"
+#340000
+1!
+1"
+#360000
+0"
+#380000
+0!
+1"
+#400000
+0"

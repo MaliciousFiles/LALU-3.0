@@ -1,5 +1,13 @@
 ---
 name: LALU 3.0
+version: 0.1
 type: rtl
 source: src
 test: test
+targets:
+- name: Icarus Verilog
+  toolchain: iverilog
+  topModule: LALU_tb
+  tasks:
+  - name: sim
+    type: simulation
