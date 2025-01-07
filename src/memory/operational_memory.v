@@ -11,7 +11,7 @@ module operational_memory (
     input                   memAccessRden,
     output [31:0]           memAccessOutput);
         wire [31:0] userOut_fetch, userOut_memAccess;
-        RAM USER_MEM (
+        RAM #(16, "RAM.mif") USER_MEM (
             .clk(clk),
 
             .address_a(fetchAddress),
@@ -25,10 +25,9 @@ module operational_memory (
             .data_b(memAccessData),
             .rden_b(memAccessRden),
             .q_b(userOut_memAccess));
-        defparam USER_MEM.initfile = "RAM.mif";
 
         wire [31:0] kernOut_fetch, kernOut_memAccess;
-        RAM KERN_MEM (
+        RAM #(15) KERN_MEM (
             .clk(clk),
 
             .address_a(fetchAddress[14:0]),
@@ -42,7 +41,6 @@ module operational_memory (
             .data_b(memAccessData),
             .rden_b(memAccessRden),
             .q_b(kernOut_memAccess));
-        defparam KERN_MEM.widthad = 15;
 
     assign fetchOutput = operationMode ? kernOut_fetch : userOut_fetch;
     assign memAccessOutput = operationMode ? kernOut_memAccess : userOut_memAccess;
