@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `define PERIOD 20 // 50 MHz, in a 1ns timescale
 
-`define SIM_CYCLES 10 // how many clock cycles to simulate
+`define SIM_CYCLES 20 // how many clock cycles to simulate
 
 module LALU_tb();
     // simulate the desired number of cycles

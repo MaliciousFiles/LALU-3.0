@@ -1,3 +1,55 @@
+// Formats
+`define TRIP 2'b00
+`define WB_TRIP 3'b000
+`define NO_WB_TRIP 3'b100
+
+`define QUAD 2'b01
+`define WB_QUAD 3'b001
+`define NO_WB_QUAD 3'b101
+
+`define JMP  3'b110
+
+// Functions
+`define ADD 9'b0_0000_0001
+`define SUB 9'b0_0000_0010
+`define MUL 9'b0_0000_0011
+`define BSL 9'b0_0000_0100
+`define BSR 9'b0_0000_0101
+`define BRL 9'b0_0000_0110
+`define BRR 9'b0_0000_0111
+`define ANY 9'b0_0000_1000
+`define HSB 9'b0_0000_1001
+
+`define BIT 9'b0000
+
+`define LD  4'b0010
+`define ST  4'b0011
+`define BSF 4'b0100
+`define BST 4'b0101
+
+`define JUMP 2'b01
+
+`define UGT 9'b0_1000_0000
+`define UGE 9'b0_1000_0001
+`define ULT 9'b0_1000_0010
+`define ULE 9'b0_1000_0011
+`define SGT 9'b0_1000_0100
+`define SGE 9'b0_1000_0101
+`define SLT 9'b0_1000_0110
+`define SLE 9'b0_1000_0111
+`define EQ  9'b0_1000_1000
+`define NE  9'b0_1000_1001
+
+`define FLAG_GET_INSTR 6'b0_1001_0 // all flag get func IDs start with this, used to identify a need to stall later
+`define NF 9'b0_1001_0000
+`define ZF 9'b0_1001_0001
+`define CF 9'b0_1001_0010
+`define OF 9'b0_1001_0011
+`define NNF 9'b0_1001_0100
+`define NZF 9'b0_1001_0101
+`define NCF 9'b0_1001_0110
+`define NOF 9'b0_1001_0111
+
 module LALU(input CLOCK_50);
     /*********************
      *      Memory       *
@@ -15,6 +67,7 @@ module LALU(input CLOCK_50);
         .operationMode(operationMode),
 
         .fetchAddress(fetchAddress),
+        .fetchEnable(~stall_e),
         .fetchOutput(fetchOutput),
 
         .memAccessAddress(memAccessAddress),
@@ -30,82 +83,150 @@ module LALU(input CLOCK_50);
     reg [15:0] IP = 0; // instruction pointer
     reg operationMode = 0; // 0 = user mode, 1 = kernel mode
 
+    // TODO: for debug only
+    wire [31:0] reg0 = registers[0];
+    wire [31:0] reg1 = registers[1];
+    wire [31:0] reg2 = registers[2];
+    wire [31:0] reg3 = registers[3];
+    wire [31:0] reg4 = registers[4];
+    wire [31:0] reg5 = registers[5];
+    wire [31:0] reg6 = registers[6];
+    wire [31:0] reg7 = registers[7];
+    wire [31:0] reg8 = registers[8];
+    wire [31:0] reg9 = registers[9];
+    wire [31:0] reg10 = registers[10];
+    wire [31:0] reg11 = registers[11];
+    wire [31:0] reg12 = registers[12];
+    wire [31:0] reg13 = registers[13];
+    wire [31:0] reg14 = registers[14];
+    wire [31:0] reg15 = registers[15];
+    wire [31:0] reg16 = registers[16];
+    wire [31:0] reg17 = registers[17];
+    wire [31:0] reg18 = registers[18];
+    wire [31:0] reg19 = registers[19];
+    wire [31:0] reg20 = registers[20];
+    wire [31:0] reg21 = registers[21];
+    wire [31:0] reg22 = registers[22];
+    wire [31:0] reg23 = registers[23];
+    wire [31:0] reg24 = registers[24];
+    wire [31:0] reg25 = registers[25];
+    wire [31:0] reg26 = registers[26];
+    wire [31:0] reg27 = registers[27];
+    wire [31:0] reg28 = registers[28];
+    wire [31:0] reg29 = registers[29];
+    wire [31:0] reg30 = registers[30];
+    wire [31:0] reg31 = registers[31];
+
+    reg [31:0] registers[0:31]; // registers
+    integer init_i;
+    initial begin
+        for (init_i = 0; init_i < 32; init_i = init_i + 1) begin
+            registers[init_i] = 31'b0;
+        end
+    end
+
     reg generalFlag = 0;
     reg negativeFlag = 0;
     reg overflowFlag = 0;
     reg carryFlag = 0;
     reg zeroFlag = 0;
 
-
     // FETCH
     reg [15:0] IP_f = 0; // instruction pointer at fetch stage
-    reg nop_f = 0; // whether to nop the fetch stage; reg because it is used in the next cycle
-
+    reg isValid_f_reg = 0; // whether the fetched instruction is valid
 
     // DECODE
     reg [15:0] IP_d = 0; // instruction pointer at decode stage
-
-    reg extendedImmediate = 0; // whether the next instruction is an extended immediate
-
+    reg isValid_d = 0; // whether the decoded instruction is valid
+    reg [2:0] exImm = 0; // whether the next instruction is an extended immediate
+    reg wasExtendedImmediate = 0; // whether the current instruction was an extended immediate
     reg [4:0] Rd_d = 0; // destination register at decode stage
-
     reg [4:0] Rs0_d = 0; // source register at decode stage
     reg i0 = 0; // whether the source register is an immediate
-
     reg [4:0] Rs1_d = 0;
     reg i1 = 0;
-
     reg [4:0] Rs2_d = 0;
     reg i2 = 0;
-
     reg [20:0] jumpLoc = 0; // jump loc (doesn't nop if not jump, as execute only uses if jump)
     reg [2:0] jumpPageLoc = 0;
-
     reg sticky_d = 0; // sticky flag at decode stage
     reg conditional = 0; // conditional flag
     reg negate = 0; // conditional negation flag
-
     reg [2:0] format = 0; // which format the instruction is in
     reg [8:0] funcID = 0; // which operation within the format (variable number of bits; 9 max)
-    reg isMemRead_d = 0; // whether the instruction reads from memory
     reg isWriteback_d = 0; // whether the instruction writes back to a register
-
 
     // EXECUTE
     reg [15:0] IP_e = 0; // instruction pointer at execute stage
+    reg isValid_e_reg = 0; // whether the executed instruction is valid
+    reg invalidFunction = 0; // if the FMT/FuncID pairing wasn't recognized
+    reg [15:0] expectedIP = 0; // expected instruction pointer; if incorrect, is synced with IP
 
-    reg [15:0] expectedIP = -2; // expected instruction pointer; if incorrect, is synced with IP
+    reg [4:0] Rd_e = 0;
+    reg sticky_e = 0;
+    reg isWriteback_e = 0;
+    reg isMemRead_e = 0;
+    reg isMemWrite_e = 0;
 
+    reg [31:0] result_e = 0;
+    reg carryFlag_e = 0;
+    reg overflowFlag_e = 0;
+
+    reg [15:0] memAccessAddress_e = 0;
+    reg [4:0] memAccessNumBitsBefore_e = 0;
+    reg [4:0] memAccessNumBits_e = 0;
+    reg [4:0] memAccessNumBitsAfter_e = 0;
 
     // MEMORY READ
+    reg [15:0] IP_m = 0; // instruction pointer at memory read stage
+    reg isValid_m = 0; // whether the memory read instruction is valid
 
+    reg sticky_m = 0;
+    reg isWriteback_m = 0;
+    reg isMemRead_m = 0;
+    reg isMemWrite_m = 0;
 
+    reg [4:0] Rd_m = 0;
+    reg carryFlag_m = 0;
+    reg overflowFlag_m = 0;
+    reg [31:0] result_m = 0;
+
+    reg [15:0] memAccessAddress_m = 0;
+    reg [4:0] memAccessNumBitsBefore_m = 0;
+    reg [4:0] memAccessNumBits_m = 0;
+    reg [4:0] memAccessNumBitsAfter_m = 0;
 
     // WRITEBACK
-
+    reg memAccessWren_w = 0;
+    reg [15:0] memAccessAddress_w = 0;
+    reg [31:0] memAccessInput_w = 0;
 
     /*********************
      *       Fetch       *
      *********************/
     assign fetchAddress = IP; // fetch address is the current instruction pointer
-    wire [31:0] instruction = (nop_f || extendedImmediate) || nop_d ? 32'b0 : fetchOutput; // current fetched instruction
+    wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
+    wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
-    always @(posedge CLOCK_50) begin
+    always @(posedge CLOCK_50) begin if (~stall_e) begin
         IP_f <= IP; // save IP of fetched instruction
-        nop_f <= executiveOverride; // must nop if extended immediate
 
         IP <= executiveOverride
             ? expectedIP    // if execOverride, sync IP to EIP
             : IP + 1;       // else, increment IP
-    end
+
+        isValid_f_reg <= ~executiveOverride;
+    end end
 
     /*********************
      *       Decode      *
      *********************/
-    wire nop_d = executiveOverride; // whether to nop the decode stage; literally sets instruction to a nop
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
-    always @(posedge CLOCK_50) begin
+    wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
+    always @(posedge CLOCK_50) if (~stall_e) wasExtendedImmediate <= extendedImmediate;
+    always @(posedge CLOCK_50) begin if (~stall_e) begin if (isValid_f) begin
         IP_d <= IP_f; // save IP of decoded instruction
+        isValid_d <= 1'b1;
 
         // Universal
         format <= curFormat;
@@ -113,7 +234,7 @@ module LALU(input CLOCK_50);
         negate <= instruction[30];
         sticky_d <= instruction[29];
 
-        if (curFormat[1:0] == 2'b00) begin // triple
+        if (curFormat[1:0] == `TRIP) begin // triple
             Rd_d <= instruction[28:24];
 
             Rs0_d <= instruction[23:19];
@@ -124,17 +245,19 @@ module LALU(input CLOCK_50);
             i0 <= instruction[4];
             i1 <= instruction[3];
 
-            extendedImmediate <= instruction[4] && instruction[23:19] == 5'b11111 || instruction[3] && instruction[18:14] == 5'b11111;
+            exImm <= {
+                1'b0,
+                instruction[3] && instruction[18:14] == 5'b11111,
+                instruction[4] && instruction[23:19] == 5'b11111};
 
-            isWriteback_d <= curFormat[2];
-            isMemRead_d <= instruction[13:5] == 8'b0010_0010; // only pop
+            isWriteback_d <= ~curFormat[2];
 
             // unused by triple
             Rs2_d <= 5'b0;
             i2 <= 1'b0;
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
-        end if (curFormat[1:0] == 2'b01) begin // quad
+        end else if (curFormat[1:0] == `QUAD) begin // quad
             Rd_d <= instruction[28:24];
 
             Rs0_d <= instruction[23:19];
@@ -146,16 +269,18 @@ module LALU(input CLOCK_50);
             i1 <= instruction[4];
             i2 <= instruction[3];
 
-            extendedImmediate <= instruction[4] && instruction[18:14] == 5'b11111 || instruction[3] && instruction[13:9] == 5'b11111;
+            exImm <= {
+                instruction[3] && instruction[13:9] == 5'b11111,
+                instruction[4] && instruction[18:14] == 5'b11111,
+                1'b0};
 
-            isWriteback_d <= curFormat[2];
-            isMemRead_d <= instruction[8:5] == 8'b0010; // only ld
+            isWriteback_d <= ~curFormat[2];
 
             // unused by quad
             i0 <= 1'b0;
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
-        end if (curFormat == 3'b110) begin // jump
+        end else if (curFormat == `JMP) begin // jump
             jumpPageLoc <= instruction[28:26];
             jumpLoc <= instruction[25:5];
 
@@ -169,25 +294,280 @@ module LALU(input CLOCK_50);
             i0 <= 1'b0;
             i1 <= 1'b0;
             i2 <= 1'b0;
-            extendedImmediate <= 1'b0;
+            exImm <= 3'b0;
             isWriteback_d <= 1'b0;
-            isMemRead_d <= 1'b0;
         end
-    end
+    end else begin exImm <= 3'b0; isValid_d <= 1'b0; end end end
 
     /*********************
      *      Execute      *
      *********************/
-    wire nop_e = executiveOverride || (conditional && generalFlag == negate); // whether to nop the execute stage
-    wire executiveOverride = expectedIP != IP_d; // whether to override IP with EIP
-    always @(posedge CLOCK_50) begin
-        IP_e <= IP_d; // save IP of executed instruction
-        expectedIP <= format == 3'b110 ? jumpLoc : expectedIP + 1; // used for course correction
+    wire stall_e = (isWriteback_e && isMemRead_e && ((~i0 && Rs0_d == Rd_e) || (~i1 && Rs1_d == Rd_e) || (~i2 && Rs2_d == Rd_e && format[1:0] == `QUAD) || (Rd_d == Rd_e && format == `WB_QUAD && funcID == `BST)))
+                || (sticky_e && isWriteback_e && isMemRead_e && format == `NO_WB_TRIP && funcID[8:3] == `FLAG_GET_INSTR)
+                || stall_m;
+    wire isValid_e = isValid_e_reg && ~invalidFunction;
+    wire executiveOverride = isValid_d && expectedIP != IP_d; // whether to override IP with EIP
+    always @(posedge CLOCK_50) begin if (~stall_e && (isValid_d || wasExtendedImmediate)) begin
+        expectedIP <= isValid_d && format == `JMP ? jumpLoc : ~executiveOverride ? expectedIP + 1 : expectedIP; // used for course correction
+    end end
 
-        if (~nop_e) begin
-            // TODO: get working reg values
-            // TODO: execute
-            // TODO: passthru values
+    wire [31:0] Rs0 = i0
+        ? exImm[0] ? fetchOutput : Rs0_d
+        : isValid_e && isWriteback_e && Rs0_d == Rd_e ? result_e
+        : isValid_m && isWriteback_m && Rs0_d == Rd_m ? finalResult_m
+        : registers[Rs0_d];
+    wire [31:0] Rs1 = i1
+        ? exImm[1] ? fetchOutput : Rs1_d
+        : isValid_e && isWriteback_e && Rs1_d == Rd_e ? result_e
+        : isValid_m && isWriteback_m && Rs1_d == Rd_m ? finalResult_m
+        : registers[Rs1_d];
+    wire [31:0] Rs2 = i2
+        ? exImm[2] ? fetchOutput : Rs2_d
+        : isValid_e && isWriteback_e && Rs2_d == Rd_e ? result_e
+        : isValid_m && isWriteback_m && Rs2_d == Rd_m ? finalResult_m
+        : registers[Rs2_d];
+    wire [31:0] Rd = isValid_e && isWriteback_e && Rd == Rd_e ? result_e
+        : isValid_m && isWriteback_m && Rd == Rd_m ? finalResult_m
+        : registers[Rd_d];
+
+    // have to bring these out since the result is used for setting CF and OF
+    wire [32:0] sum = Rs0 + Rs1;
+    wire [32:0] diff = Rs0 - Rs1;
+
+    // bring out flags for diff calc, since all comparisons use them
+    wire diff_NF = diff[31];
+    wire diff_OF = Rs0[31] != Rs1[31] && Rs0[31] != diff[31];
+    wire diff_CF = diff[32];
+    wire diff_ZF = diff == 0;
+
+    // bring out flags for all flag get instructions, with passthru
+    wire NF = sticky_e && isWriteback_e ? result_e[31]
+        : sticky_m && isWriteback_m ? finalResult_m[31]
+        : negativeFlag;
+    wire OF = sticky_e && isWriteback_e ? overflowFlag_e
+        : sticky_m && isWriteback_m ? overflowFlag_m
+        : overflowFlag;
+    wire CF = sticky_e && isWriteback_e ? carryFlag_e
+          : sticky_m && isWriteback_m ? carryFlag_m
+          : carryFlag;
+    wire ZF = sticky_e && isWriteback_e ? result_e == 0
+        : sticky_m && isWriteback_m ? finalResult_m == 0
+        : zeroFlag;
+    always @(posedge CLOCK_50) begin if (~stall_m) begin if (~stall_e && ~executiveOverride && ~(conditional && generalFlag == negate) && isValid_d) begin
+        IP_e <= IP_d; // save IP of executed instruction
+        isValid_e_reg <= 1'b1;
+
+        Rd_e <= Rd_d;
+        sticky_e <= sticky_d;
+        isWriteback_e <= isWriteback_d;
+
+        // TODO: probably better to make these an or than driving them multiple times :|
+        isMemRead_e <= 1'b0;
+        isMemWrite_e <= 1'b0;
+        carryFlag_e <= 1'b0;
+        overflowFlag_e <= 1'b0;
+
+        if (format == `WB_TRIP) begin
+            case (funcID)
+                `ADD: begin
+                    result_e <= sum[31:0];
+                    carryFlag_e <= sum[32];
+                    overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum[31]);
+                end
+                `SUB: begin
+                    result_e <= diff[31:0];
+                    carryFlag_e <= diff_CF;
+                    overflowFlag_e <= diff_OF;
+                end
+                `MUL: begin
+                    result_e <= Rs0[15:0] * Rs1[15:0];
+                end
+                `BSL: begin
+                    result_e <= Rs0 << Rs1;
+                end
+                `BSR: begin
+                    result_e <= Rs0 >> Rs1;
+                end
+                `BRL: begin
+                    result_e <= Rs0 << Rs1 | Rs0 >> (32-Rs1);
+                end
+                `BRR: begin
+                    result_e <= Rs0 >> Rs1 | Rs0 << (32-Rs1);
+                end
+                `ANY: begin
+                    result_e <= Rs0 != 0;
+                end
+                `HSB: begin
+                    result_e <= Rs0[31] == 1'b1 ? 32'b10000000000000000000000000000000 : Rs0[30] == 1'b1 ? 32'b1000000000000000000000000000000 : Rs0[29] == 1'b1 ? 32'b100000000000000000000000000000 : Rs0[28] == 1'b1 ? 32'b10000000000000000000000000000 : Rs0[27] == 1'b1 ? 32'b1000000000000000000000000000 : Rs0[26] == 1'b1 ? 32'b100000000000000000000000000 : Rs0[25] == 1'b1 ? 32'b10000000000000000000000000 : Rs0[24] == 1'b1 ? 32'b1000000000000000000000000 : Rs0[23] == 1'b1 ? 32'b100000000000000000000000 : Rs0[22] == 1'b1 ? 32'b10000000000000000000000 : Rs0[21] == 1'b1 ? 32'b1000000000000000000000 : Rs0[20] == 1'b1 ? 32'b100000000000000000000 : Rs0[19] == 1'b1 ? 32'b10000000000000000000 : Rs0[18] == 1'b1 ? 32'b1000000000000000000 : Rs0[17] == 1'b1 ? 32'b100000000000000000 : Rs0[16] == 1'b1 ? 32'b10000000000000000 : Rs0[15] == 1'b1 ? 32'b1000000000000000 : Rs0[14] == 1'b1 ? 32'b100000000000000 : Rs0[13] == 1'b1 ? 32'b10000000000000 : Rs0[12] == 1'b1 ? 32'b1000000000000 : Rs0[11] == 1'b1 ? 32'b100000000000 : Rs0[10] == 1'b1 ? 32'b10000000000 : Rs0[9] == 1'b1 ? 32'b1000000000 : Rs0[8] == 1'b1 ? 32'b100000000 : Rs0[7] == 1'b1 ? 32'b10000000 : Rs0[6] == 1'b1 ? 32'b1000000 : Rs0[5] == 1'b1 ? 32'b100000 : Rs0[4] == 1'b1 ? 32'b10000 : Rs0[3] == 1'b1 ? 32'b1000 : Rs0[2] == 1'b1 ? 32'b100 : Rs0[1] == 1'b1 ? 32'b10 : Rs0[0] == 1'b1 ? 32'b1 : 32'b0;
+                end
+                default begin
+                    invalidFunction <= 1'b1;
+                end
+            endcase
+        end else if (format == `NO_WB_TRIP) begin
+            case (funcID)
+                `UGT: begin
+                    generalFlag <= diff_CF && !diff_ZF;
+                end
+                `UGE: begin
+                    generalFlag <= diff_CF;
+                end
+                `ULT: begin
+                    generalFlag <= ~diff_CF;
+                end
+                `ULE: begin
+                    generalFlag <= ~diff_CF || ~diff_ZF;
+                end
+                `SGT: begin
+                    generalFlag <= ~diff_ZF && diff_NF == diff_OF;
+                end
+                `SGE: begin
+                    generalFlag <= diff_NF == diff_OF;
+                end
+                `SLT: begin
+                    generalFlag <= diff_NF != diff_OF;
+                end
+                `SLE: begin
+                    generalFlag <= diff_ZF || diff_NF != diff_OF;
+                end
+                `EQ: begin
+                    generalFlag <= diff_ZF;
+                end
+                `NE: begin
+                    generalFlag <= ~diff_ZF;
+                end
+                `NF: begin
+                    generalFlag <= NF;
+                end
+                `ZF: begin
+                    generalFlag <= ZF;
+                end
+                `CF: begin
+                    generalFlag <= CF;
+                end
+                `OF: begin
+                    generalFlag <= OF;
+                end
+                `NNF: begin
+                    generalFlag <= ~NF;
+                end
+                `NZF: begin
+                    generalFlag <= ~ZF;
+                end
+                `NCF: begin
+                    generalFlag <= ~CF;
+                end
+                `NOF: begin
+                    generalFlag <= ~OF;
+                end
+                default begin
+                    invalidFunction <= 1'b1;
+                end
+            endcase
+        end else if (format == `WB_QUAD) begin
+            case (funcID)
+                `BIT: begin
+                    result_e <= {Rs2[{Rs1[31], Rs0[31]}], Rs2[{Rs1[30], Rs0[30]}], Rs2[{Rs1[29], Rs0[29]}], Rs2[{Rs1[28], Rs0[28]}], Rs2[{Rs1[27], Rs0[27]}], Rs2[{Rs1[26], Rs0[26]}], Rs2[{Rs1[25], Rs0[25]}], Rs2[{Rs1[24], Rs0[24]}], Rs2[{Rs1[23], Rs0[23]}], Rs2[{Rs1[22], Rs0[22]}], Rs2[{Rs1[21], Rs0[21]}], Rs2[{Rs1[20], Rs0[20]}], Rs2[{Rs1[19], Rs0[19]}], Rs2[{Rs1[18], Rs0[18]}], Rs2[{Rs1[17], Rs0[17]}], Rs2[{Rs1[16], Rs0[16]}], Rs2[{Rs1[15], Rs0[15]}], Rs2[{Rs1[14], Rs0[14]}], Rs2[{Rs1[13], Rs0[13]}], Rs2[{Rs1[12], Rs0[12]}], Rs2[{Rs1[11], Rs0[11]}], Rs2[{Rs1[10], Rs0[10]}], Rs2[{Rs1[9], Rs0[9]}], Rs2[{Rs1[8], Rs0[8]}], Rs2[{Rs1[7], Rs0[7]}], Rs2[{Rs1[6], Rs0[6]}], Rs2[{Rs1[5], Rs0[5]}], Rs2[{Rs1[4], Rs0[4]}], Rs2[{Rs1[3], Rs0[3]}], Rs2[{Rs1[2], Rs0[2]}], Rs2[{Rs1[1], Rs0[1]}], Rs2[{Rs1[0], Rs0[0]}]};
+                end
+                `LD: begin
+                    memAccessAddress_e <= Rs0 + Rs1[20:5];
+                    memAccessNumBitsBefore_e <= Rs1[4:0];
+                    memAccessNumBits_e <= Rs2;
+                    memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-Rs1[4:0];
+                    isMemRead_e <= 1'b1;
+                end
+                `BSF: begin
+                    result_e <= Rs2 == 0 ? Rs0 : (32'hFFFFFFFF & Rs0 >> Rs1 << 32 >> Rs2) << Rs2 >> 32;
+                end
+                `BST: begin
+                    result_e <= Rs2 == 0 ? Rs0 :
+                        Rd >> Rs2 >> Rs1 << Rs1 << Rs2
+                        | (32'hFFFFFFFF & Rs0 << 32 >> Rs2) << Rs2 >> 32
+                        | (32'hFFFFFFFF & Rd << 32 >> Rs1) << Rs1 >> 32;
+                end
+                default begin
+                    invalidFunction <= 1'b1;
+                end
+            endcase
+        end else if (format == `NO_WB_QUAD) begin
+            case (funcID)
+                `ST: begin
+                    memAccessAddress_e <= Rs0 + Rs1[20:5];
+                    memAccessNumBitsBefore_e <= Rs1[4:0];
+                    memAccessNumBits_e <= Rs2;
+                    memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-Rs1[4:0];
+                    isMemWrite_e <= 1'b1;
+                end
+                default begin
+                    invalidFunction <= 1'b1;
+                end
+            endcase
+        end else if (format == `JMP) begin // jump
+            case (funcID)
+                `JUMP: begin end
+                default begin
+                    invalidFunction <= 1'b1;
+                end
+            endcase
         end
-    end
+    end else isValid_e_reg <= 1'b0; end end
+
+    /*********************
+     *    Memory Read    *
+     *********************/
+    wire stall_m = isValid_m && isValid_e && isMemWrite_m && (isMemRead_e || isMemWrite_e);
+
+    wire fullByteWrite = isMemWrite_e && memAccessNumBits_e == 0; // 0 actually means 32 :P
+    assign memAccessWren = isMemWrite_m || fullByteWrite;
+    assign memAccessRden = (isMemRead_e || isMemWrite_e) && ~memAccessWren; // only read if we aren't writing
+    assign memAccessAddress = isMemWrite_m ? memAccessAddress_m : memAccessAddress_e; // either write address or read address
+    always @(posedge CLOCK_50) begin if (~stall_m && isValid_e) begin
+        IP_m <= IP_e; // save IP of memory access instruction
+        isValid_m <= 1'b1;
+
+        sticky_m <= sticky_e;
+        isWriteback_m <= isWriteback_e;
+        isMemRead_m <= isMemRead_e;
+        isMemWrite_m <= isMemWrite_e && ~fullByteWrite;
+        Rd_m <= Rd_e;
+        carryFlag_m <= carryFlag_e;
+        overflowFlag_m <= overflowFlag_e;
+        result_m <= result_e;
+
+        memAccessAddress_m <= memAccessAddress;
+        memAccessNumBitsBefore_m <= memAccessNumBitsBefore_e;
+        memAccessNumBits_m <= memAccessNumBits_e;
+        memAccessNumBitsAfter_m <= memAccessNumBitsAfter_e;
+        // doesn't do much; just exists to let the memory read/write
+    end else isValid_m <= 1'b0; end
+
+    /*********************
+     *     Writeback     *
+     *********************/
+    wire [31:0] memOutput = memAccessWren_w && memAccessAddress_m == memAccessAddress_w ? memAccessInput_w : memAccessOutput;
+    wire [31:0] finalResult_m = isMemRead_m
+        ? ((memOutput << memAccessNumBitsAfter_m) >> memAccessNumBitsAfter_m) >> memAccessNumBitsBefore_m
+        : result_m;
+
+    assign memAccessInput = fullByteWrite ? (isWriteback_m && Rd_e == Rd_m ? finalResult_m : registers[Rd_e]) :
+        memOutput >> memAccessNumBits_m >> memAccessNumBitsBefore_m << memAccessNumBits_m << memAccessNumBitsBefore_m
+        | (32'hFFFFFFFF & registers[Rd_m] << memAccessNumBitsAfter_m << memAccessNumBitsBefore_m) >> memAccessNumBitsAfter_m
+        | (32'hFFFFFFFF & memOutput << memAccessNumBitsAfter_m << memAccessNumBits_m) >> memAccessNumBitsAfter_m >> memAccessNumBits_m;
+    always @(posedge CLOCK_50) begin if (isValid_m) begin
+        if (isWriteback_m) begin
+            registers[Rd_m] <= finalResult_m;
+
+            if (sticky_m) begin
+                negativeFlag <= finalResult_m[31];
+                carryFlag <= carryFlag_m;
+                zeroFlag <= finalResult_m == 0;
+                overflowFlag <= overflowFlag_m;
+            end
+        end
+
+        memAccessWren_w <= memAccessWren;
+        memAccessAddress_w <= memAccessAddress;
+        memAccessInput_w <= memAccessInput;
+    end end
+    // TODO: hardware cache
 endmodule

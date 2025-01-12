@@ -3,6 +3,7 @@ module operational_memory (
     input                   operationMode,
 
     input [15:0]            fetchAddress,
+    input                   fetchEnable,
     output [31:0]           fetchOutput,
 
     input [15:0]            memAccessAddress,
@@ -17,7 +18,7 @@ module operational_memory (
             .address_a(fetchAddress),
             .wren_a(1'b0),
             .data_a(32'b0),
-            .rden_a(1'b1),
+            .rden_a(fetchEnable),
             .q_a(userOut_fetch),
 
             .address_b(memAccessAddress),
