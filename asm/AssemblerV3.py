@@ -346,7 +346,22 @@ def ParseFile(file):
         out.append(hx)
         if ex:
             out.append(ex)
-    return ' '.join(out)
+    return {i: x for i,x in enumerate(out)}
+
+def Mifify(mem):
+    header = "WIDTH=32;\nDEPTH=65536;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
+    tail = "END;"
+    out = header
+    maxaddr = 0
+    for key, data in mem.items():
+        addr = key
+        maxaddr = max(maxaddr, addr)
+        saddr = hex(addr)[2:].zfill(4).upper()
+        out += f"    {saddr} : {data.upper()};\n"
+    saddr = hex(maxaddr+1)[2:].zfill(4).upper()
+    out += f'    [{saddr}..FFFF] : 00000000;\n'
+    out += tail
+    return out
 
 inp = None
 
@@ -361,6 +376,7 @@ def monitor_input():
 if __name__ == "__main__":
     with open(fName) as f:
         verb = "--verb" in sys.argv[2:]
+        mif = "--mif" in sys.argv[2:]
         if "--monitor" in sys.argv[2:]:
             Thread(target=monitor_input).start()
             
@@ -382,8 +398,16 @@ if __name__ == "__main__":
                         exit('Unsupported Operating System `' + platform +'`')
                     try:
                         program  = ParseFile(contents)
-                        print(program)
-                        pyperclip.copy(program)
+##                        print(program)
+                        if mif:
+                            program = Mifify(program)
+                            with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
+                                f2.write(program)
+                                print('Wrote:\n\n')
+                                print(program)
+                        else:
+                            print(program)
+                            pyperclip.copy(program)
                     except Exception as e:
                         print(f'Unexpected assembler crash')
                         print(e)
