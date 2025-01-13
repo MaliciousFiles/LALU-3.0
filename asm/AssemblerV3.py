@@ -1,3 +1,19 @@
+import sys
+import pyperclip
+from time import sleep
+from threading import Thread
+import os
+import inspect
+import traceback
+
+#Thx Stack Exchange (https://stackoverflow.com/questions/3056048/filename-and-line-number-of-python-script)
+def __LINE__() -> int:
+    return inspect.currentframe().f_back.f_lineno
+def __CALL_LINE__() -> int:
+    return inspect.currentframe().f_back.f_back.f_lineno
+
+fName = sys.argv[1] if len(sys.argv) > 1 else input("Program File: ")
+
 formats = {
     'T': {
         'c':1,
@@ -321,7 +337,7 @@ def ParseFile(file):
                 addr += 64 if ret['eximm'] else 32
                 codes.append(ret)
         except Exception as e:
-            print(f'Error on line: `{oline}`')
+            print(f'Error on line: \n`{oline}`\n\n')
             raise e
 ##    print(codes, lbls)
     out = []
@@ -331,3 +347,46 @@ def ParseFile(file):
         if ex:
             out.append(ex)
     return ' '.join(out)
+
+inp = None
+
+def monitor_input():
+    global inp
+    
+    while True:
+        inp = input().strip()
+        if inp == "q":
+            os._exit(1)
+
+if __name__ == "__main__":
+    with open(fName) as f:
+        verb = "--verb" in sys.argv[2:]
+        if "--monitor" in sys.argv[2:]:
+            Thread(target=monitor_input).start()
+            
+            contents = None
+            while True:
+                sleep(.1)
+                f.seek(0)
+                newContents = f.read()
+                
+                if inp is not None or newContents != contents:
+                    inp = None
+                    contents = newContents
+
+                    if (platform := sys.platform) == 'win32':
+                        os.system("cls")
+                    elif platform == 'darwin':
+                        os.system("clear")
+                    else:
+                        exit('Unsupported Operating System `' + platform +'`')
+                    try:
+                        program  = ParseFile(contents)
+                        print(program)
+                        pyperclip.copy(program)
+                    except Exception as e:
+                        print(f'Unexpected assembler crash')
+                        print(e)
+                        print(traceback.format_exc())
+        else:
+            run(mx:=macroEXP(f.read(), verb=verb))
