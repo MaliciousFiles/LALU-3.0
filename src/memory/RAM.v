@@ -1,18 +1,18 @@
 // DON'T INIT WITH THE SAME FILE; FREEZES IVERILOG
-module RAM #(parameter widthad = 16, parameter initfile = "UNUSED") (
+module RAM #(parameter widthad = 16, parameter width = 32, parameter initfile = "UNUSED") (
     input                   clk,
 
     input [widthad-1:0]     address_a,
     input                   wren_a,
-    input [31:0]            data_a,
+    input [width-1:0]       data_a,
     input                   rden_a,
-    output [31:0]           q_a,
+    output [width-1:0]      q_a,
 
     input [widthad-1:0]     address_b,
     input                   wren_b,
-    input [31:0]            data_b,
+    input [width-1:0]       data_b,
     input                   rden_b,
-    output [31:0]           q_b);
+    output [width-1:0]      q_b);
 
     altsyncram ram (
         .clock0(clk),
@@ -67,8 +67,8 @@ module RAM #(parameter widthad = 16, parameter initfile = "UNUSED") (
         ram.read_during_write_mode_port_b = "NEW_DATA_NO_NBE_READ",
         ram.widthad_a = widthad,
         ram.widthad_b = widthad,
-        ram.width_a = 32,
-        ram.width_b = 32,
+        ram.width_a = width,
+        ram.width_b = width,
         ram.width_byteena_a = 1,
         ram.width_byteena_b = 1,
         ram.wrcontrol_wraddress_reg_b = "CLOCK0";

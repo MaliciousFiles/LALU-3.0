@@ -172,7 +172,7 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
 }
 
 def ParseValue(txt):
-    if txt.lower()[0]=='r':
+    if txt.lower()[0]=='r' and all(c in [hex(i)[2:] for i in range(16)] for c in txt.lower()[1:]):
         reg = int(txt[1:], 16)
         try:
             dreg = int(txt[1:])
@@ -317,9 +317,8 @@ def ParseFile(file):
     for line in lines:
         oline = line
         try:
-            if line == '':
-                continue
             line = line.split('//')[0]
+            if not line.strip(): continue
             tkn, line = (line.split(maxsplit=1)+[''])[:2]
             tkn = ParseValue(tkn)
             if tkn[0] == 'lbl':
@@ -334,7 +333,7 @@ def ParseFile(file):
                     tkn = (tkn[0], [tkn[1][0], mods])
                 args = [ParseValue(x.lstrip(' \t').rstrip(' \t')) for x in line.split(',')] if line != '' else []
                 ret = PrepInstr(tkn[1][0], args, tkn[1][1])
-                addr += 64 if ret['eximm'] else 32
+                addr += 2 if ret['eximm'] else 1
                 codes.append(ret)
         except Exception as e:
             print(f'Error on line: \n`{oline}`\n\n')
@@ -348,8 +347,8 @@ def ParseFile(file):
             out.append(ex)
     return {i: x for i,x in enumerate(out)}
 
-def Mifify(mem):
-    header = "WIDTH=32;\nDEPTH=65536;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
+def Mifify(mem, size):
+    header = f"WIDTH=32;\nDEPTH={2**size};\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
     tail = "END;"
     out = header
     maxaddr = 0
@@ -359,7 +358,7 @@ def Mifify(mem):
         saddr = hex(addr)[2:].zfill(4).upper()
         out += f"    {saddr} : {data.upper()};\n"
     saddr = hex(maxaddr+1)[2:].zfill(4).upper()
-    out += f'    [{saddr}..FFFF] : 00000000;\n'
+    out += f'    [{saddr}..{hex(2**size-1)[2:]}] : 00000000;\n'
     out += tail
     return out
 
@@ -376,7 +375,7 @@ def monitor_input():
 if __name__ == "__main__":
     with open(fName) as f:
         verb = "--verb" in sys.argv[2:]
-        mif = "--mif" in sys.argv[2:]
+        mif = int(sys.argv[sys.argv.index("--mif")+1]) if "--mif" in sys.argv[2:] else 0
         if "--monitor" in sys.argv[2:]:
             Thread(target=monitor_input).start()
             
@@ -400,7 +399,7 @@ if __name__ == "__main__":
                         program  = ParseFile(contents)
 ##                        print(program)
                         if mif:
-                            program = Mifify(program)
+                            program = Mifify(program, mif)
                             with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                 f2.write(program)
                                 print('Wrote:\n\n')
