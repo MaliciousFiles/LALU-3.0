@@ -144,8 +144,6 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'bst':  Q_CODE(Fmt_Code = '001', Func_ID = '0101'),
 
     'mov':  PSUEDO(2, 'add @0, @1, #0'),
-    'psh':  D_CODE(Fmt_Code = '100', Func_ID = '0_0010_0001'),
-    'pop':  D_CODE(Fmt_Code = '000', Func_ID = '0_0010_0010'),
     'ret':  N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
     'call': J_CODE(Fmt_Code = '110', Func_ID = '00'),
     'jmp':  J_CODE(Fmt_Code = '110', Func_ID = '01'),
