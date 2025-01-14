@@ -392,6 +392,7 @@ def ParseFile(file):
         mline = oline
         try:
             line = line.split('//')[0]
+            if not line.strip(): continue
             if line[0] == '.':
                 assert line[1:].upper() == line[1:], f'Segments should be in full caps'
                 segment = line
@@ -415,9 +416,6 @@ def ParseFile(file):
                     addr += 64 if ret['eximm'] else 32
                     codes.append(ret)
             elif segment == '.DATA':
-                if line == '':
-                    continue
-                line = line.split('//')[0]
                 tkn, line = (line.split(maxsplit=1)+[''])[:2]
                 tkn = ParseValue(tkn)
                 assert tkn[0] == 'lbl', f'Data segments require the first component be a lbl'
