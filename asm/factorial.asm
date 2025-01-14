@@ -1,5 +1,7 @@
+// data
     jmp begin:
     nop
+
 begin:
     mov R0, #1
     ldw R0, R0, #0

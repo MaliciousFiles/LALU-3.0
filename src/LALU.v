@@ -627,5 +627,4 @@ module LALU(input CLOCK_50);
         memAccessAddress_w <= memAccessAddress;
         memAccessInput_w <= memAccessInput;
     end end
-    // TODO: hardware cache
 endmodule
