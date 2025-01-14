@@ -88,6 +88,15 @@ def V_CODE(**kwargs):
     assert d['Fmt_Code'] in ['000', '100'], f'Fmt Code `{d["Fmt_Code"]}` is not valid for type Fmt {self}\n'
     assert len(d['Func_ID']) == formats[self]['Func_ID'], f'Func_ID `{d["Func_ID"]}` should have {formats[self]["Func_ID"]} bits\n'
     return d
+def S_CODE(**kwargs):
+    self = 'T'
+    d = kwargs
+    d['Args'] = ['Rd', 'Rs0']
+    d['fmtpnm'] = self
+    d['Func_ID'] = d['Func_ID'].replace('_', '')
+    assert d['Fmt_Code'] in ['000', '100'], f'Fmt Code `{d["Fmt_Code"]}` is not valid for type Fmt {self}\n'
+    assert len(d['Func_ID']) == formats[self]['Func_ID'], f'Func_ID `{d["Func_ID"]}` should have {formats[self]["Func_ID"]} bits\n'
+    return d
 def Q_CODE(**kwargs):
     self = 'Q'
     d = kwargs
@@ -118,16 +127,36 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
 
     'add':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0001'),
     'sub':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0010'),
+    'radd':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1101'),
+    'rsub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1110'),
+    'csub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0001'),
     'mul':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0011'),
     'uumul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1010'),
     'ulmul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1011'),
     'lumul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1100'),
+    'abs':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0000'),
     'bsl':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0100'),
     'bsr':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0101'),
     'brl':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0110'),
     'brr':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0111'),
+    'umax':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0001'),
+    'umin':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0010'),
+    'smax':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0011'),
+    'smin':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0100'),
     'any':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1000'),
-    'hsb':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
+    'log':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0101'),
+    'ctz':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0110'),
+    'pctn':  S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0111'),
+    'brvs':  S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1000'),
+    'srvs':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1111'),
+    'vany':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1001'),
+    'vadd':  Q_CODE(Fmt_Code = '000', Func_ID = '0_0001_1010'),
+    'vsub':  Q_CODE(Fmt_Code = '000', Func_ID = '0_0001_1011'),
+    'bext':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1100'),
+    'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1101'),
+    'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
+    'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
+    
 
     'and':   PSUEDO(3, 'bit @0, @1, @2, #0b0001'),
     'or':    PSUEDO(3, 'bit @0, @1, @2, #0b0111'),
@@ -146,10 +175,12 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'bsf':   Q_CODE(Fmt_Code = '001', Func_ID = '0100'),
     'bst':   Q_CODE(Fmt_Code = '001', Func_ID = '0101'),
 
-    'mov':  PSUEDO(2, 'add @0, @1, #0'),
-    'ret':  N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
-    'call': J_CODE(Fmt_Code = '110', Func_ID = '00'),
-    'jmp':  J_CODE(Fmt_Code = '110', Func_ID = '01'),
+    'mov':   PSUEDO(2, 'add @0, @1, #0'),
+    'psh':   D_CODE(Fmt_Code = '100', Func_ID = '0_0010_0001'),
+    'pop':   D_CODE(Fmt_Code = '000', Func_ID = '0_0010_0010'),
+    'ret':   N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
+    'call':  J_CODE(Fmt_Code = '110', Func_ID = '00'),
+    'jmp':   J_CODE(Fmt_Code = '110', Func_ID = '01'),
 
     'ugt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),
     'uge':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0001'),
@@ -170,10 +201,13 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'nzf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0101'),
     'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
     'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
+
+    'gcld':  N_CODE(Fmt_Code = '000', Func_ID = '1_1111_1110'),
+    'susp':  N_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
 }
 
 def ParseValue(txt):
-    if txt.lower()[0]=='r' and all(c in [hex(i)[2:] for i in range(16)] for c in txt.lower()[1:]):
+    if txt.lower()[0]=='r':
         reg = int(txt[1:], 16)
         try:
             dreg = int(txt[1:])
@@ -281,7 +315,7 @@ def ResolveInstr(form, lbls):
                 ex = arg[1]
             elif arg[0] == 'lbl':
                 if field == 'Addr':
-                    out += Binary(lbls[arg[1]] // 32, 24)
+                    out += Binary(lbls[arg[1]], 24)
                 else:
                     out += '11111'
                     ex = lbls[arg[1]]
@@ -391,8 +425,9 @@ def ParseFile(file):
         oline = line
         mline = oline
         try:
+            if line == '':
+                continue
             line = line.split('//')[0]
-            if not line.strip(): continue
             if line[0] == '.':
                 assert line[1:].upper() == line[1:], f'Segments should be in full caps'
                 segment = line
@@ -416,6 +451,9 @@ def ParseFile(file):
                     addr += 64 if ret['eximm'] else 32
                     codes.append(ret)
             elif segment == '.DATA':
+                if line == '':
+                    continue
+                line = line.split('//')[0]
                 tkn, line = (line.split(maxsplit=1)+[''])[:2]
                 tkn = ParseValue(tkn)
                 assert tkn[0] == 'lbl', f'Data segments require the first component be a lbl'
@@ -442,18 +480,18 @@ def ParseFile(file):
             mem[code['loc']+32] = ex
     return mem
 
-def Mifify(mem, size):
-    header = f"WIDTH=32;\nDEPTH={2**size};\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
+def Mifify(mem):
+    header = "WIDTH=32;\nDEPTH=65536;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
     tail = "END;"
     out = header
     maxaddr = 0
     for key, data in sorted(mem.items(), key = lambda x:x[0]):
-        addr = key // 32
+        addr = key
         maxaddr = max(maxaddr, addr)
         saddr = hex(addr)[2:].zfill(4).upper()
         out += f"    {saddr} : {data.upper()};\n"
     saddr = hex(maxaddr+1)[2:].zfill(4).upper()
-    out += f'    [{saddr}..{hex(2**size-1)[2:]}] : 00000000;\n'
+    out += f'    [{saddr}..FFFF] : 00000000;\n'
     out += tail
     return out
 
@@ -470,7 +508,7 @@ def monitor_input():
 if __name__ == "__main__":
     with open(fName) as f:
         verb = "--verb" in sys.argv[2:]
-        mif = int(sys.argv[sys.argv.index("--mif")+1]) if "--mif" in sys.argv[2:] else 0
+        mif = "--mif" in sys.argv[2:]
         if "--monitor" in sys.argv[2:]:
             Thread(target=monitor_input).start()
             
@@ -494,7 +532,7 @@ if __name__ == "__main__":
                         program  = ParseFile(contents)
 ##                        print(program)
                         if mif:
-                            program = Mifify(program, mif)
+                            program = Mifify(program)
                             with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                 f2.write(program)
                                 print('Wrote:\n\n')
