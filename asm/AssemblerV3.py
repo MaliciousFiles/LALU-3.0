@@ -281,7 +281,7 @@ def ResolveInstr(form, lbls):
                 ex = arg[1]
             elif arg[0] == 'lbl':
                 if field == 'Addr':
-                    out += Binary(lbls[arg[1]], 24)
+                    out += Binary(lbls[arg[1]] // 32, 24)
                 else:
                     out += '11111'
                     ex = lbls[arg[1]]
@@ -448,7 +448,7 @@ def Mifify(mem, size):
     out = header
     maxaddr = 0
     for key, data in sorted(mem.items(), key = lambda x:x[0]):
-        addr = key
+        addr = key // 32
         maxaddr = max(maxaddr, addr)
         saddr = hex(addr)[2:].zfill(4).upper()
         out += f"    {saddr} : {data.upper()};\n"

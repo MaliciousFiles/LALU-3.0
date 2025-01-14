@@ -517,10 +517,10 @@ module LALU(input CLOCK_50);
                         result_e <= {Rs2[~{Rs1[31], Rs0[31]}], Rs2[~{Rs1[30], Rs0[30]}], Rs2[~{Rs1[29], Rs0[29]}], Rs2[~{Rs1[28], Rs0[28]}], Rs2[~{Rs1[27], Rs0[27]}], Rs2[~{Rs1[26], Rs0[26]}], Rs2[~{Rs1[25], Rs0[25]}], Rs2[~{Rs1[24], Rs0[24]}], Rs2[~{Rs1[23], Rs0[23]}], Rs2[~{Rs1[22], Rs0[22]}], Rs2[~{Rs1[21], Rs0[21]}], Rs2[~{Rs1[20], Rs0[20]}], Rs2[~{Rs1[19], Rs0[19]}], Rs2[~{Rs1[18], Rs0[18]}], Rs2[~{Rs1[17], Rs0[17]}], Rs2[~{Rs1[16], Rs0[16]}], Rs2[~{Rs1[15], Rs0[15]}], Rs2[~{Rs1[14], Rs0[14]}], Rs2[~{Rs1[13], Rs0[13]}], Rs2[~{Rs1[12], Rs0[12]}], Rs2[~{Rs1[11], Rs0[11]}], Rs2[~{Rs1[10], Rs0[10]}], Rs2[~{Rs1[9], Rs0[9]}], Rs2[~{Rs1[8], Rs0[8]}], Rs2[~{Rs1[7], Rs0[7]}], Rs2[~{Rs1[6], Rs0[6]}], Rs2[~{Rs1[5], Rs0[5]}], Rs2[~{Rs1[4], Rs0[4]}], Rs2[~{Rs1[3], Rs0[3]}], Rs2[~{Rs1[2], Rs0[2]}], Rs2[~{Rs1[1], Rs0[1]}], Rs2[~{Rs1[0], Rs0[0]}]};
                     end
                     `LD: begin
-                        memAccessAddress_e <= Rs0 + Rs1[20:5];
-                        memAccessNumBitsBefore_e <= Rs1[4:0];
+                        memAccessAddress_e <= sum[20:5];
+                        memAccessNumBitsBefore_e <= sum[4:0];
                         memAccessNumBits_e <= Rs2;
-                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-Rs1[4:0];
+                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
                         isMemRead_e <= 1'b1;
                     end
                     `BSF: begin

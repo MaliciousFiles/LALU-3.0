@@ -1,9 +1,11 @@
-// data
-    jmp begin:
-    nop
+jmp main:
 
-begin:
-    mov R0, #1
+.DATA
+X: [32d'12]
+
+.CODE
+main:
+    mov.e R0, X:
     ldw R0, R0, #0
     call fac:
     jmp exit:
