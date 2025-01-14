@@ -146,12 +146,10 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'bsf':   Q_CODE(Fmt_Code = '001', Func_ID = '0100'),
     'bst':   Q_CODE(Fmt_Code = '001', Func_ID = '0101'),
 
-    'mov':   PSUEDO(2, 'add @0, @1, #0'),
-    'psh':   D_CODE(Fmt_Code = '100', Func_ID = '0_0010_0001'),
-    'pop':   D_CODE(Fmt_Code = '000', Func_ID = '0_0010_0010'),
-    'ret':   N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
-    'call':  J_CODE(Fmt_Code = '110', Func_ID = '00'),
-    'jmp':   J_CODE(Fmt_Code = '110', Func_ID = '01'),
+    'mov':  PSUEDO(2, 'add @0, @1, #0'),
+    'ret':  N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
+    'call': J_CODE(Fmt_Code = '110', Func_ID = '00'),
+    'jmp':  J_CODE(Fmt_Code = '110', Func_ID = '01'),
 
     'ugt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),
     'uge':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0001'),
@@ -175,7 +173,7 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
 }
 
 def ParseValue(txt):
-    if txt.lower()[0]=='r':
+    if txt.lower()[0]=='r' and all(c in [hex(i)[2:] for i in range(16)] for c in txt.lower()[1:]):
         reg = int(txt[1:], 16)
         try:
             dreg = int(txt[1:])
@@ -393,8 +391,6 @@ def ParseFile(file):
         oline = line
         mline = oline
         try:
-            if line == '':
-                continue
             line = line.split('//')[0]
             if line[0] == '.':
                 assert line[1:].upper() == line[1:], f'Segments should be in full caps'
@@ -448,8 +444,8 @@ def ParseFile(file):
             mem[code['loc']+32] = ex
     return mem
 
-def Mifify(mem):
-    header = "WIDTH=32;\nDEPTH=65536;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
+def Mifify(mem, size):
+    header = f"WIDTH=32;\nDEPTH={2**size};\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
     tail = "END;"
     out = header
     maxaddr = 0
@@ -459,7 +455,7 @@ def Mifify(mem):
         saddr = hex(addr)[2:].zfill(4).upper()
         out += f"    {saddr} : {data.upper()};\n"
     saddr = hex(maxaddr+1)[2:].zfill(4).upper()
-    out += f'    [{saddr}..FFFF] : 00000000;\n'
+    out += f'    [{saddr}..{hex(2**size-1)[2:]}] : 00000000;\n'
     out += tail
     return out
 
@@ -476,7 +472,7 @@ def monitor_input():
 if __name__ == "__main__":
     with open(fName) as f:
         verb = "--verb" in sys.argv[2:]
-        mif = "--mif" in sys.argv[2:]
+        mif = int(sys.argv[sys.argv.index("--mif")+1]) if "--mif" in sys.argv[2:] else 0
         if "--monitor" in sys.argv[2:]:
             Thread(target=monitor_input).start()
             
@@ -500,7 +496,7 @@ if __name__ == "__main__":
                         program  = ParseFile(contents)
 ##                        print(program)
                         if mif:
-                            program = Mifify(program)
+                            program = Mifify(program, mif)
                             with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                 f2.write(program)
                                 print('Wrote:\n\n')
