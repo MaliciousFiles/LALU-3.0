@@ -116,57 +116,60 @@ def PSUEDO(numargs, fmt):
 instrs = { #An instruction must have a format pnumonic called its fmtpnm, which is a valid key into the formats dict. All other params represent values in its encoding that are known for all instance of that instruction
     'nop':  N_CODE(Fmt_Code = '000', Func_ID = '0_0000_0000'),
 
-    'add':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0001'),
-    'sub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0010'),
-    'mul':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0011'),
-    'bsl':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0100'),
-    'bsr':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0101'),
-    'brl':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0110'),
-    'brr':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0111'),
-    'any':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1000'),
-    'hsb':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
+    'add':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0001'),
+    'sub':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0010'),
+    'mul':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0011'),
+    'uumul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1010'),
+    'ulmul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1011'),
+    'lumul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1100'),
+    'bsl':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0100'),
+    'bsr':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0101'),
+    'brl':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0110'),
+    'brr':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0111'),
+    'any':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1000'),
+    'hsb':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
 
-    'and':  PSUEDO(3, 'bit @0, @1, @2, #0b0001'),
-    'or':   PSUEDO(3, 'bit @0, @1, @2, #0b0111'),
-    'xor':  PSUEDO(3, 'bit @0, @1, @2, #0b0110'),
-    'andn': PSUEDO(3, 'bit @0, @1, @2, #0b0100'),
-    'orn':  PSUEDO(3, 'bit @0, @1, @2, #0b1101'),
-    'nxor': PSUEDO(3, 'bit @0, @1, @2, #0b1001'),
-    'bit':  Q_CODE(Fmt_Code = '001', Func_ID = '0000'),
+    'and':   PSUEDO(3, 'bit @0, @1, @2, #0b0001'),
+    'or':    PSUEDO(3, 'bit @0, @1, @2, #0b0111'),
+    'xor':   PSUEDO(3, 'bit @0, @1, @2, #0b0110'),
+    'andn':  PSUEDO(3, 'bit @0, @1, @2, #0b0100'),
+    'orn':   PSUEDO(3, 'bit @0, @1, @2, #0b1101'),
+    'nxor':  PSUEDO(3, 'bit @0, @1, @2, #0b1001'),
+    'bit':   Q_CODE(Fmt_Code = '001', Func_ID = '0000'),
 
-    'ld':   Q_CODE(Fmt_Code = '001', Func_ID = '0010'),
-    'st':   Q_CODE(Fmt_Code = '101', Func_ID = '0011'),
-    'ldw':  PSUEDO(3, 'ld @0, @1, @2, #0'),
-    'stw':  PSUEDO(3, 'ld @0, @1, @2, #0'),
-    'lda':  PSUEDO(3, 'ld @0, @1, #0, @2'),
-    'sta':  PSUEDO(3, 'ld @0, @1, #0, @2'),
-    'bsf':  Q_CODE(Fmt_Code = '001', Func_ID = '0100'),
-    'bst':  Q_CODE(Fmt_Code = '001', Func_ID = '0101'),
+    'ld':    Q_CODE(Fmt_Code = '001', Func_ID = '0010'),
+    'st':    Q_CODE(Fmt_Code = '101', Func_ID = '0011'),
+    'ldw':   PSUEDO(3, 'ld @0, @1, @2, #0'),
+    'stw':   PSUEDO(3, 'st @0, @1, @2, #0'),
+    'lda':   PSUEDO(3, 'ld @0, @1, #0, @2'),
+    'sta':   PSUEDO(3, 'st @0, @1, #0, @2'),
+    'bsf':   Q_CODE(Fmt_Code = '001', Func_ID = '0100'),
+    'bst':   Q_CODE(Fmt_Code = '001', Func_ID = '0101'),
 
     'mov':  PSUEDO(2, 'add @0, @1, #0'),
     'ret':  N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
     'call': J_CODE(Fmt_Code = '110', Func_ID = '00'),
     'jmp':  J_CODE(Fmt_Code = '110', Func_ID = '01'),
 
-    'ugt':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),
-    'uge':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0001'),
-    'ult':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0010'),
-    'ule':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0011'),
-    'sgt':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0100'),
-    'sge':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0101'),
-    'slt':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0110'),
-    'sle':  V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0111'),
-    'eq':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_1000'),
-    'ne':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_1001'),
+    'ugt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),
+    'uge':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0001'),
+    'ult':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0010'),
+    'ule':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0011'),
+    'sgt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0100'),
+    'sge':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0101'),
+    'slt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0110'),
+    'sle':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0111'),
+    'eq':    V_CODE(Fmt_Code = '100', Func_ID = '0_1000_1000'),
+    'ne':    V_CODE(Fmt_Code = '100', Func_ID = '0_1000_1001'),
 
-    'nf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0000'),
-    'zf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0001'),
-    'cf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0010'),
-    'of':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0011'),
-    'nnf':  N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0100'),
-    'nzf':  N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0101'),
-    'ncf':  N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
-    'nof':  N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
+    'nf':    N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0000'),
+    'zf':    N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0001'),
+    'cf':    N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0010'),
+    'of':    N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0011'),
+    'nnf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0100'),
+    'nzf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0101'),
+    'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
+    'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
 }
 
 def ParseValue(txt):
@@ -292,6 +295,22 @@ def ResolveInstr(form, lbls):
     assert len(out) == 32, f'Binary `{out}` does not have length 32'
     return (Bin2Hex(out, 8), Bin2Hex(bin(ex)[2:], 8) if ex else None)
 
+def ParseVeriNum(txt):
+    assert "'" in txt, f"Data segment numbers should follow the format (width)(base)'(value). Missing `'`"
+    left, value = txt.split("'")
+    width = int(left[:-1])
+    basec = left[-1]
+    assert basec in 'xdb', f'Expected base to be one of `x`, `d`, or `b`, got `{basec}`'
+    base = [16, 10, 2]['xdb'.index(basec)]
+    assert int(width)==float(width), f'Width must be an integer'
+    assert width > 0, f'Width must greater than 0'
+    digs = len(bin(1<<width - 1)[2:])
+    val = int(value, base)
+    assert 1<<width > val, f'Value `{val}` is greater than maximum representable value of `{1<<width}`'
+    raw = [hex, lambda x:'0d'+str(x), bin]['xdb'.index(basec)](val)[2:]
+    raw = bin(val)[2:]
+    return raw.zfill(digs)
+    
 def BuildPsuedo(name, numargs, fmt, subs):
     line = fmt
     assert numargs == len(subs), f'Instruction `{name}` expected {numargs} arguments, but got {len(subs)}'
@@ -307,50 +326,130 @@ def Binary(num, digs):
     assert len(t) == digs, f'`{num}` is `{t}` in binary, which is more than {digs} digits long'
     return t
 
+def ParseDataLine(line):
+    stk = []
+    s = False
+    buf = ''
+    mul = False
+    def FlushBuf():
+        nonlocal buf, mul
+        if buf != '':
+            if mul:
+                stk[-1] *= int(buf)
+                mul = False
+            else:
+                stk.append(ParseVeriNum(buf))
+        buf = ''
+    while line != '':
+        c = line[0]
+        line = line[1:]
+        if s:
+            if c == '"':
+                s = False
+                tc = stk[-2]
+                while tc != '"':
+##                    print(stk)
+                    stk[-2] += stk[-1]
+                    del stk[-1]
+                    tc = stk[-2]
+                del stk[-2]
+            else:
+                stk.append(Binary(ord(c), 8))
+        else:
+            if c == '"':
+                stk.append('"')
+                s = True
+            elif c == '[':
+                stk.append('[')
+            elif c == ']':
+                FlushBuf()
+                tc = stk[-2]
+                while tc != '[':
+                    stk[-2] += stk[-1]
+                    del stk[-1]
+                    tc = stk[-2]
+                del stk[-2]
+            elif c == ' ':
+                FlushBuf()
+            elif c == '*':
+                mul = True
+            else:
+                buf += c
+    FlushBuf()
+    return ''.join(stk)
+            
 def ParseFile(file):
+    segments = {}
+    segment = '.CODE'
     lines = file.split('\n')
     lbls = {}
     addr = 0
     codes = []
+    mem = {}
+    addr = 0
     for line in lines:
         oline = line
+        mline = oline
         try:
             line = line.split('//')[0]
-            if not line.strip(): continue
-            tkn, line = (line.split(maxsplit=1)+[''])[:2]
-            tkn = ParseValue(tkn)
-            if tkn[0] == 'lbl':
+            if line[0] == '.':
+                assert line[1:].upper() == line[1:], f'Segments should be in full caps'
+                segment = line
+                continue
+            if segment == '.CODE':
+                tkn, line = (line.split(maxsplit=1)+[''])[:2]
+                tkn = ParseValue(tkn)
+                if tkn[0] == 'lbl':
+                    lbls[tkn[1]] = addr
+                elif tkn[0] == 'instr':
+                    if 'ps' in instrs[tkn[1][0]]:
+                        mods = tkn[1][1]
+                        args = [x.lstrip(' \t').rstrip(' \t') for x in line.split(',')]
+                        mline = line = BuildPsuedo(tkn[1][0], instrs[tkn[1][0]]['numargs'], instrs[tkn[1][0]]['fmt'], args)
+                        tkn, line = line.split(maxsplit=1) if ' ' in line else (line, '')
+                        tkn = ParseValue(tkn)
+                        tkn = (tkn[0], [tkn[1][0], mods])
+                    args = [ParseValue(x.lstrip(' \t').rstrip(' \t')) for x in line.split(',')] if line != '' else []
+                    ret = PrepInstr(tkn[1][0], args, tkn[1][1])
+                    ret['loc'] = addr
+                    addr += 64 if ret['eximm'] else 32
+                    codes.append(ret)
+            elif segment == '.DATA':
+                if line == '':
+                    continue
+                line = line.split('//')[0]
+                tkn, line = (line.split(maxsplit=1)+[''])[:2]
+                tkn = ParseValue(tkn)
+                assert tkn[0] == 'lbl', f'Data segments require the first component be a lbl'
+                bits = ParseDataLine(line)
+                nb = len(bits)
                 lbls[tkn[1]] = addr
-            elif tkn[0] == 'instr':
-                if 'ps' in instrs[tkn[1][0]]:
-                    mods = tkn[1][1]
-                    args = [x.lstrip(' \t').rstrip(' \t') for x in line.split(',')]
-                    line = BuildPsuedo(tkn[1][0], instrs[tkn[1][0]]['numargs'], instrs[tkn[1][0]]['fmt'], args)
-                    tkn, line = line.split(maxsplit=1) if ' ' in line else (line, '')
-                    tkn = ParseValue(tkn)
-                    tkn = (tkn[0], [tkn[1][0], mods])
-                args = [ParseValue(x.lstrip(' \t').rstrip(' \t')) for x in line.split(',')] if line != '' else []
-                ret = PrepInstr(tkn[1][0], args, tkn[1][1])
-                addr += 2 if ret['eximm'] else 1
-                codes.append(ret)
+                while bits != '':
+                    mem[addr] = hex(int(bits[:32], 2))[2:].upper().zfill(8)
+                    bits = bits[min(len(bits), 32):]
+                    addr += 32
+##                addr += -(-nb//32)
+                        
+            else:
+                assert False, f'Unknown segment `{segment}`'
         except Exception as e:
-            print(f'Error on line: \n`{oline}`\n\n')
+            print(f'Error on line: \n`{oline}` -> `{mline}`\n\n')
             raise e
 ##    print(codes, lbls)
     out = []
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
-        out.append(hx)
+        mem[code['loc']] = hx
         if ex:
-            out.append(ex)
-    return {i: x for i,x in enumerate(out)}
+            mem[code['loc']+32] = ex
+    return mem
 
 def Mifify(mem, size):
     header = f"WIDTH=32;\nDEPTH={2**size};\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
     tail = "END;"
     out = header
     maxaddr = 0
-    for key, data in mem.items():
+    for key, data in sorted(mem.items(), key = lambda x:x[0]):
         addr = key
         maxaddr = max(maxaddr, addr)
         saddr = hex(addr)[2:].zfill(4).upper()
@@ -410,4 +509,6 @@ if __name__ == "__main__":
                         print(e)
                         print(traceback.format_exc())
         else:
-            run(mx:=macroEXP(f.read(), verb=verb))
+            program  = ParseFile(contents)
+            print(program)
+            pyperclip.copy(program)
