@@ -1,4 +1,3 @@
-.CODE
   jmp Main:
   nop
 
