@@ -13,35 +13,37 @@ exprstmt: [expr] SEMICOLON
 declstmt: VAR ident COLON type SEMICOLON
 declexpr: VAR ident [COLON type] EQUAL expr SEMICOLON
 expr: assgexpr
-assgexpr: lorexpr
-        | unaryexpr assgop assgexpr
-lorexpr: landexpr
+?assgexpr: lorexpr
+        | postexpr assgop assgexpr
+?lorexpr: landexpr
         | lorexpr OR landexpr
-landexpr: relexpr
+?landexpr: relexpr
         | landexpr AND relexpr
-relexpr: borexpr (relop borexpr)?
-borexpr: bxorexpr
+?relexpr: borexpr 
+	| borexpr relop borexpr
+?borexpr: bxorexpr
         | borexpr PIPE bxorexpr
-bxorexpr: bandexpr
+?bxorexpr: bandexpr
         | bxorexpr CARROT bandexpr
-bandexpr: addexpr
+?bandexpr: addexpr
         | bandexpr AMPERSAND addexpr
-addexpr: multexpr
+?addexpr: multexpr
         | addexpr addop multexpr
-multexpr: unaryexpr
-        | multexpr multop unaryexpr
-unaryexpr: postexpr
+?multexpr: castexpr
+        | multexpr multop castexpr
+?castexpr: unaryexpr
+	| type "from" castexpr
+        | "<" type ">" castexpr
+?unaryexpr: postexpr
         | unaryop castexpr
-castexpr: unaryexpr
-        | type LEFTARROW castexpr
-postexpr: primexpr
+?postexpr: primexpr
         | postexpr LBRACK expr RBRACK -> indexpr
         | postexpr LPAREN argexprs? RPAREN -> callexpr
         | postexpr DOT ASTERISK -> derefexpr
         | postexpr DOT AMPERSAND -> addrexpr
         | postexpr DOT QMARK -> denullexpr
         | postexpr DOT ident -> fieldexpr
-primexpr: ident
+?primexpr: ident
         | constant
         | string
         | LPAREN expr RPAREN
@@ -68,6 +70,7 @@ unaryop: PLUS | MINUS | TILDE | EMARK
 
 VOID: "void"
 EQUAL: "="
+LEFTARROW: "CAST"
 FN:  "fn"
 LPAREN: "("
 RPAREN: ")"
@@ -86,12 +89,11 @@ OR: "or"
 AND: "and"
 PIPE: "|"
 CARROT: "^"
-LEFTARROW: "<-"
 PLUS: "+"
 MINUS: "-"
 LANGLEEE: "<<<"
 LANGLEE: "<<"
-LANGLE: "<"
+LANGLE: /<(?![:=])/
 RANGLEEE: ">>"
 RANGLEE: ">>"
 RANGLE: ">"

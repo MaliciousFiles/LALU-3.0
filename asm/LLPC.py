@@ -50,14 +50,17 @@ def Gen(tree):
             WriteLine(f'{name} = {rhs}')
         elif data.type == 'RULE' and data.value == 'exprstmt':
             expr, _, = tree.children
-            Gen(expr)
+            _ = Rvalue(expr.children[0])
         elif data.type == 'RULE' and data.value == 'blockstmt':
             stmts = tree.children[1:-1]
             for stmt in stmts:
                 Gen(stmt)
+
         elif data.type == 'RULE' and data.value == 'stmt':
             Gen(tree.children[0])
-        
+        else:
+            print(tree)
+            assert False, f'Uh oh'
     else:
         assert False, f'Bad'
 
@@ -67,8 +70,8 @@ def Rvalue(expr):
 
         if data == 'indexpr':
             le, _, re, _, = expr.children
-            lhs, lk = Rvalue(le)
             rhs, rk = Rvalue(re)
+            lhs, lk = Rvalue(le)
             tmp = NewTemp(lk)
             WriteLine(f'{tmp} = {lhs}[{rhs}]')
             return tmp, lk
@@ -81,9 +84,10 @@ def Rvalue(expr):
             ident = expr.children[0].value
             kind = 'u32'
             return ident, kind
-##            err
-        elif len(expr.children) == 1:
-            return Rvalue(expr.children[0])
+        elif data.value == 'decint':
+            return int(''.join([x for x in expr.children]).replace('_', '')), 'u32'
+        elif data.value == 'hexint':
+            return int(''.join([x for x in expr.children]).replace('_', ''), 16), 'u32'
         elif data.value == 'addexpr':
             le, _, re = expr.children
             lhs, lk = Rvalue(le)
@@ -91,12 +95,73 @@ def Rvalue(expr):
             tmp = NewTemp(lk)
             WriteLine(f'{tmp} = {lhs} + {rhs}')
             return tmp, lk
+        elif data.value == 'assgexpr':
+            le, _, re = expr.children
+            lhs, lk = Lvalue(le)
+            rhs, rk = Rvalue(re)
+            WriteLine(f'{lhs} = {rhs}')
+            return lhs, lk
+        elif data.value == 'unaryexpr':
+            op, re = expr.children
+            rhs, rk = Rvalue(re)
+            if (op.children[0].value == '+'):
+                return rhs, rk
+            elif op.children[0].value == '-':
+                tmp = NewTemp(rk)
+                WriteLine(f'{tmp} = 0 - {rhs}')
+                return tmp, rk
+            elif op.children[0].value == '~':
+                tmp = NewTemp(rk)
+                WriteLine(f'{tmp} = @nxor(rhs, 0)')
+                return tmp, rk
+            elif op.children[0].value == '!':
+                assert False, f'Not yet implemented'
+            else:
+                assert False, f'Bad unary: `{op}`'
+        elif data.value == 'castexpr':
+            le, _, re, = expr.children
+            rhs, rk = Rvalue(re)
+            print(le)
+            err
         elif data.value == 'constant':
             print(expr)
             errexpr
             return expr.children[0].value, 'u32'
-        elif data.value == 'decint':
+        else:
+            print(data.value)
+            bad
+    else:
+        print(expr)
+        err
+
+def Lvalue(expr):
+    if type(expr) == Tree:
+        data = expr.data
+
+        if data == 'indexpr':
+##            print(f'LV of `{expr}`')
+            le, _, re, _, = expr.children
+            rhs, rk = Rvalue(re)
+            lhs, lk = Rvalue(le)
+            tmp = f'{lhs}[{rhs}]'
+            return tmp, lk
+        elif type(data) == str:
+            print(data)
             print(expr)
+            err
+        
+        if data.type == 'RULE' and data.value == 'ident':
+            ident = expr.children[0].value
+            kind = 'u32'
+            return ident, kind
+        elif data.value == 'addexpr':
+            assert False, f'Cannot take L-value of arithmetic'
+        elif data.value == 'assgexpr':
+            assert False, f'Cannot take L-value of assignment'
+        elif data.value == 'decint':
+            assert False, f'Cannot take L-value of constant'
+        elif data.value == 'hexint':
+            assert False, f'Cannot take L-value of constant'
         else:
             print(data.value)
             bad
