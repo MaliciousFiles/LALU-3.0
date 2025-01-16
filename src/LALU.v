@@ -1,57 +1,83 @@
 // Formats
-`define TRIP 2'b00
-`define WB_TRIP 3'b000
-`define NO_WB_TRIP 3'b100
+`define TRIP		        2'b00
+`define WB_TRIP		        3'b000
+`define NO_WB_TRIP		    3'b100
 
-`define QUAD 2'b01
-`define WB_QUAD 3'b001
-`define NO_WB_QUAD 3'b101
+`define QUAD		        2'b01
+`define WB_QUAD		        3'b001
+`define NO_WB_QUAD		    3'b101
 
-`define JMP  3'b110
+`define JMP		            3'b110
 
 // Functions
-`define ADD 9'b0_0000_0001
-`define SUB 9'b0_0000_0010
-`define MUL 9'b0_0000_0011
-`define BSL 9'b0_0000_0100
-`define BSR 9'b0_0000_0101
-`define BRL 9'b0_0000_0110
-`define BRR 9'b0_0000_0111
-`define ANY 9'b0_0000_1000
-`define HSB 9'b0_0000_1001
+`define ADD		            9'b0_0000_0001
+`define SUB		            9'b0_0000_0010
+`define RADD		        9'b0_0000_1101
+`define RSUB		        9'b0_0000_1110
+`define CSUB		        9'b0_0001_0001
+`define MUL		            9'b0_0000_0011
+`define UUMUL				9'b0_0000_1010
+`define ULMUL				9'b0_0000_1011
+`define LUMUL				9'b0_0000_1100
+`define ABS				    9'b0_0001_0000
+`define BSL		            9'b0_0000_0100
+`define BSR		            9'b0_0000_0101
+`define BRL		            9'b0_0000_0110
+`define BRR		            9'b0_0000_0111
+`define UMAX				9'b0_0001_0001
+`define UMIN				9'b0_0001_0010
+`define SMAX				9'b0_0001_0011
+`define SMIN				9'b0_0001_0100
+`define ANY		            9'b0_0000_1000
+`define LOG				    9'b0_0001_0101
+`define CTZ				    9'b0_0001_0110
+`define PCNT				9'b0_0001_0111
+`define BRVS				9'b0_0001_1000
+`define SRVS				9'b0_0001_1111
+`define VANY				9'b0_0001_1001
+`define VADD				4'b0110
+`define VSUB				4'b0111
+`define BEXT				9'b0_0001_1100
+`define BDEP				9'b0_0001_1101
+`define EXS				    9'b0_0001_1110
+`define LSB				    9'b0_0000_1111
+`define HSB		            9'b0_0000_1001
 
-`define BIT 9'b0000
+`define BIT		            9'b0000
 
-`define LD  4'b0010
-`define ST  4'b0011
-`define BSF 4'b0100
-`define BST 4'b0101
+`define LD		            4'b0010
+`define ST		            4'b0011
+`define BSF		            4'b0100
+`define BST		            4'b0101
 
-`define RET  9'b0_0010_0011
-`define CALL 2'b00
-`define JUMP 2'b01
+`define RET		            9'b0_0010_0011
+`define CALL		        2'b00
+`define JUMP		        2'b01
 
-`define UGT 9'b0_1000_0000
-`define UGE 9'b0_1000_0001
-`define ULT 9'b0_1000_0010
-`define ULE 9'b0_1000_0011
-`define SGT 9'b0_1000_0100
-`define SGE 9'b0_1000_0101
-`define SLT 9'b0_1000_0110
-`define SLE 9'b0_1000_0111
-`define EQ  9'b0_1000_1000
-`define NE  9'b0_1000_1001
+`define UGT		            9'b0_1000_0000
+`define UGE		            9'b0_1000_0001
+`define ULT		            9'b0_1000_0010
+`define ULE		            9'b0_1000_0011
+`define SGT		            9'b0_1000_0100
+`define SGE		            9'b0_1000_0101
+`define SLT		            9'b0_1000_0110
+`define SLE		            9'b0_1000_0111
+`define EQ		            9'b0_1000_1000
+`define NE		            9'b0_1000_1001
 
 // all flag get func IDs start with this, used to identify a need to stall later
-`define FLAG_GET_INSTR 6'b0_1001_0
-`define NF 9'b0_1001_0000
-`define ZF 9'b0_1001_0001
-`define CF 9'b0_1001_0010
-`define OF 9'b0_1001_0011
-`define NNF 9'b0_1001_0100
-`define NZF 9'b0_1001_0101
-`define NCF 9'b0_1001_0110
-`define NOF 9'b0_1001_0111
+`define FLAG_GET_INSTR		6'b0_1001_0
+`define NF		            9'b0_1001_0000
+`define ZF		            9'b0_1001_0001
+`define CF		            9'b0_1001_0010
+`define OF		            9'b0_1001_0011
+`define NNF		            9'b0_1001_0100
+`define NZF		            9'b0_1001_0101
+`define NCF		            9'b0_1001_0110
+`define NOF		            9'b0_1001_0111
+
+`define GCLD				9'b1_1111_1111
+`define SUSP				9'b1_1111_1111
 
 module LALU(input CLOCK_50);
     /*********************
@@ -102,8 +128,12 @@ module LALU(input CLOCK_50);
      *     Registers     *
      *********************/
     // GENERAL
+    integer globalCounter = 0; // how many cycles the processor has been running for
+    always @(posedge CLOCK_50) if (~suspend) globalCounter <= globalCounter + 1;
+
     reg [15:0] IP = 0; // instruction pointer
     reg operationMode = 1; // 0 = user mode, 1 = kernel mode
+    reg suspend = 0; // entirely stops the processor
 
     reg [11:0] stackPointer = 0;
 
@@ -142,12 +172,8 @@ module LALU(input CLOCK_50);
     wire [31:0] reg31 = registers[31];
 
     reg [31:0] registers[0:31]; // registers
-    integer init_i;
-    initial begin
-        for (init_i = 0; init_i < 32; init_i = init_i + 1) begin
-            registers[init_i] = 31'b0;
-        end
-    end
+    integer i, j;
+    initial for (i = 0; i < 32; i = i + 1) registers[i] = 31'b0;
 
     reg generalFlag = 0;
     reg negativeFlag = 0;
@@ -235,7 +261,7 @@ module LALU(input CLOCK_50);
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
-    always @(posedge CLOCK_50) begin if (~stall_e) begin
+    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_e) begin
         IP_f <= IP; // save IP of fetched instruction
 
         IP <= executiveOverride
@@ -250,8 +276,8 @@ module LALU(input CLOCK_50);
      *********************/
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
-    always @(posedge CLOCK_50) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
-    always @(posedge CLOCK_50) begin if (~stall_e) begin if (isValid_f) begin
+    always @(posedge CLOCK_50) if (~suspend) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
+    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_e) begin if (isValid_f) begin
         IP_d <= IP_f; // save IP of decoded instruction
         isValid_d <= 1'b1;
 
@@ -363,8 +389,8 @@ module LALU(input CLOCK_50);
         : registers[Rd_d];
 
     // have to bring these out since the result is used for setting CF and OF
-    wire [32:0] sum = Rs0 + Rs1;
-    wire [32:0] diff = Rs0 - Rs1;
+    wire [32:0] sum  = Rs0 + Rs1, sum_carry  = Rs0 + Rs1 + CF;
+    wire [32:0] diff = Rs0 - Rs1, diff_carry = Rs0 + Rs1 + CF;
 
     // bring out flags for diff calc, since all comparisons use them
     wire diff_NF = diff[31];
@@ -386,7 +412,19 @@ module LALU(input CLOCK_50);
         : sticky_m && isWriteback_m ? finalResult_w == 0
         : zeroFlag;
 
-    always @(posedge CLOCK_50) begin if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
+
+    // for vector functions, I need all the theoretically possible segments
+//    wire segSize = format[1:0] == `TRIP ? Rs1 : Rs2;
+//    wire [31:0] segMask = (32'hFFFFFFFF & 32'hFFFFFFFF << 32 >> segSize) << segSize >> 32;
+//
+//    wire [31:0] segments0 [0:31];
+//    assign segments0[0] = Rs0 && segMask, segments0[1] = Rs0 && segMask << segSize, segments0[2] = Rs0 && segMask << segSize << segSize, segments0[3] = Rs0 && segMask << segSize << segSize << segSize, segments0[4] = Rs0 && segMask << segSize << segSize << segSize << segSize, segments0[5] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize, segments0[6] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize, segments0[7] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[8] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[9] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[10] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[11] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[12] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[13] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[14] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[15] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[16] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[17] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[18] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[19] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[20] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[21] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[22] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[23] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[24] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[25] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[26] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[27] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[28] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[29] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[30] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[31] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize;
+//
+//    wire [31:0] segments1 [0:31];
+//    assign segments1[0] = Rs1 && segMask, segments1[1] = Rs1 && segMask << segSize, segments1[2] = Rs1 && segMask << segSize << segSize, segments1[3] = Rs1 && segMask << segSize << segSize << segSize, segments1[4] = Rs1 && segMask << segSize << segSize << segSize << segSize, segments1[5] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize, segments1[6] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize, segments1[7] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[8] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[9] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[10] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[11] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[12] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[13] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[14] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[15] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[16] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[17] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[18] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[19] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[20] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[21] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[22] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[23] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[24] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[25] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[26] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[27] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[28] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[29] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[30] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[31] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize;
+
+
+    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
             expectedIP <= expectedIP + 1;
         end
@@ -417,8 +455,34 @@ module LALU(input CLOCK_50);
                         carryFlag_e <= diff_CF;
                         overflowFlag_e <= diff_OF;
                     end
+                    `RADD: begin
+                        result_e <= sum_carry;
+                        carryFlag_e <= sum_carry[32];
+                        overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_carry[31]);
+                    end
+                    `RSUB: begin
+                        result_e <= diff_carry;
+                        carryFlag_e <= diff_carry[32];
+                        overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != diff_carry[31]);
+                    end
+                    `CSUB: begin
+                        result_e <= Rs1 <= Rs0 ? diff : Rs0;
+                        overflowFlag_e <= Rs1 > Rs0;
+                    end
                     `MUL: begin
                         result_e <= Rs0[15:0] * Rs1[15:0];
+                    end
+                    `UUMUL: begin
+                        result_e <= Rs0[32:16] * Rs1[32:16];
+                    end
+                    `ULMUL: begin
+                        result_e <= Rs0[32:16] * Rs1[15:0];
+                    end
+                    `LUMUL: begin
+                        result_e <= Rs0[15:0] * Rs1[32:16];
+                    end
+                    `ABS: begin
+                        result_e <= {~Rs0[31], Rs0[30:0]};
                     end
                     `BSL: begin
                         result_e <= Rs0 << Rs1;
@@ -434,11 +498,62 @@ module LALU(input CLOCK_50);
                     `BRR: begin
                         result_e <= Rs0 >> Rs1 | Rs0 << (32-Rs1);
                     end
+                    `UMAX: begin
+                        result_e <= Rs0 > Rs1 ? Rs0 : Rs1;
+                    end
+                    `UMIN: begin
+                        result_e <= Rs0 < Rs1 ? Rs0 : Rs1;
+                    end
+                    `SMAX: begin
+                        result_e <= Rs0[31] == Rs1[31] == (Rs0 > Rs1) ? Rs0 : Rs1;
+                    end
+                    `SMIN: begin
+                        result_e <= Rs0[31] == Rs1[31] == (Rs0 < Rs1) ? Rs0 : Rs1;
+                    end
                     `ANY: begin
                         result_e <= Rs0 != 0;
                     end
+                    `LOG: begin
+                        result_e <= Rs0[31] == 1'b1 ? 31 : Rs0[30] == 1'b1 ? 30 : Rs0[29] == 1'b1 ? 29 : Rs0[28] == 1'b1 ? 28 : Rs0[27] == 1'b1 ? 27 : Rs0[26] == 1'b1 ? 26 : Rs0[25] == 1'b1 ? 25 : Rs0[24] == 1'b1 ? 24 : Rs0[23] == 1'b1 ? 23 : Rs0[22] == 1'b1 ? 22 : Rs0[21] == 1'b1 ? 21 : Rs0[20] == 1'b1 ? 20 : Rs0[19] == 1'b1 ? 19 : Rs0[18] == 1'b1 ? 18 : Rs0[17] == 1'b1 ? 17 : Rs0[16] == 1'b1 ? 16 : Rs0[15] == 1'b1 ? 15 : Rs0[14] == 1'b1 ? 14 : Rs0[13] == 1'b1 ? 13 : Rs0[12] == 1'b1 ? 12 : Rs0[11] == 1'b1 ? 11 : Rs0[10] == 1'b1 ? 10 : Rs0[9] == 1'b1 ? 9 : Rs0[8] == 1'b1 ? 8 : Rs0[7] == 1'b1 ? 7 : Rs0[6] == 1'b1 ? 6 : Rs0[5] == 1'b1 ? 5 : Rs0[4] == 1'b1 ? 4 : Rs0[3] == 1'b1 ? 3 : Rs0[2] == 1'b1 ? 2 : Rs0[1] == 1'b1 ? 1 : Rs0[0] == 1'b1 ? 0 : 0;
+                    end
+                    `CTZ: begin
+                        result_e <= Rs0[0] == 1'b1 ? 0 : Rs0[1] == 1'b1 ? 1 : Rs0[2] == 1'b1 ? 2 : Rs0[3] == 1'b1 ? 3 : Rs0[4] == 1'b1 ? 4 : Rs0[5] == 1'b1 ? 5 : Rs0[6] == 1'b1 ? 6 : Rs0[7] == 1'b1 ? 7 : Rs0[8] == 1'b1 ? 8 : Rs0[9] == 1'b1 ? 9 : Rs0[10] == 1'b1 ? 10 : Rs0[11] == 1'b1 ? 11 : Rs0[12] == 1'b1 ? 12 : Rs0[13] == 1'b1 ? 13 : Rs0[14] == 1'b1 ? 14 : Rs0[15] == 1'b1 ? 15 : Rs0[16] == 1'b1 ? 16 : Rs0[17] == 1'b1 ? 17 : Rs0[18] == 1'b1 ? 18 : Rs0[19] == 1'b1 ? 19 : Rs0[20] == 1'b1 ? 20 : Rs0[21] == 1'b1 ? 21 : Rs0[22] == 1'b1 ? 22 : Rs0[23] == 1'b1 ? 23 : Rs0[24] == 1'b1 ? 24 : Rs0[25] == 1'b1 ? 25 : Rs0[26] == 1'b1 ? 26 : Rs0[27] == 1'b1 ? 27 : Rs0[28] == 1'b1 ? 28 : Rs0[29] == 1'b1 ? 29 : Rs0[30] == 1'b1 ? 30 : Rs0[31] == 1'b1 ? 31 : 0;
+                    end
+                    `PCNT: begin
+                        result_e <= Rs0[0] + Rs0[1] + Rs0[2] + Rs0[3] + Rs0[4] + Rs0[5] + Rs0[6] + Rs0[7] + Rs0[8] + Rs0[9] + Rs0[10] + Rs0[11] + Rs0[12] + Rs0[13] + Rs0[14] + Rs0[15] + Rs0[16] + Rs0[17] + Rs0[18] + Rs0[19] + Rs0[20] + Rs0[21] + Rs0[22] + Rs0[23] + Rs0[24] + Rs0[25] + Rs0[26] + Rs0[27] + Rs0[28] + Rs0[29] + Rs0[30] + Rs0[31];
+                    end
+                    `BRVS: begin
+                        for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
+                    end
+                    `SRVS: begin // TODO: is non static loop ok?
+                        for (i = 0; i < 32; i = i+Rs1) begin
+                            for (j = 0; j < Rs1; j = j+1) begin
+                                result_e[i+j] <= Rs0[i+Rs1-1-j];
+                            end
+                        end
+                    end
+                    `VANY: begin // TODO: is non static loop ok?
+                        for (i = 0; i < 32; i = i+Rs1) begin
+                            result_e[i] <= (32'hFFFFFFFF & Rs0 << 32 >> i >> Rs1) << i << Rs1 >> 32 >> i != 0;
+                        end
+                    end
+//                    `BEXT: begin
+//
+//                    end
+//                    `BDEP: begin
+//
+//                    end
+                    `EXS: begin
+                        result_e <= {Rs0[Rs1] ? 32'hFFFFFFFF : 32'b0, (32'hFFFFFFFF & Rs0 << 32 >> Rs1) << Rs1 >> 32};
+                    end
+                    `LSB: begin
+                        result_e <= Rs0 & ~Rs0;
+                    end
                     `HSB: begin
                         result_e <= Rs0[31] == 1'b1 ? 32'b10000000000000000000000000000000 : Rs0[30] == 1'b1 ? 32'b1000000000000000000000000000000 : Rs0[29] == 1'b1 ? 32'b100000000000000000000000000000 : Rs0[28] == 1'b1 ? 32'b10000000000000000000000000000 : Rs0[27] == 1'b1 ? 32'b1000000000000000000000000000 : Rs0[26] == 1'b1 ? 32'b100000000000000000000000000 : Rs0[25] == 1'b1 ? 32'b10000000000000000000000000 : Rs0[24] == 1'b1 ? 32'b1000000000000000000000000 : Rs0[23] == 1'b1 ? 32'b100000000000000000000000 : Rs0[22] == 1'b1 ? 32'b10000000000000000000000 : Rs0[21] == 1'b1 ? 32'b1000000000000000000000 : Rs0[20] == 1'b1 ? 32'b100000000000000000000 : Rs0[19] == 1'b1 ? 32'b10000000000000000000 : Rs0[18] == 1'b1 ? 32'b1000000000000000000 : Rs0[17] == 1'b1 ? 32'b100000000000000000 : Rs0[16] == 1'b1 ? 32'b10000000000000000 : Rs0[15] == 1'b1 ? 32'b1000000000000000 : Rs0[14] == 1'b1 ? 32'b100000000000000 : Rs0[13] == 1'b1 ? 32'b10000000000000 : Rs0[12] == 1'b1 ? 32'b1000000000000 : Rs0[11] == 1'b1 ? 32'b100000000000 : Rs0[10] == 1'b1 ? 32'b10000000000 : Rs0[9] == 1'b1 ? 32'b1000000000 : Rs0[8] == 1'b1 ? 32'b100000000 : Rs0[7] == 1'b1 ? 32'b10000000 : Rs0[6] == 1'b1 ? 32'b1000000 : Rs0[5] == 1'b1 ? 32'b100000 : Rs0[4] == 1'b1 ? 32'b10000 : Rs0[3] == 1'b1 ? 32'b1000 : Rs0[2] == 1'b1 ? 32'b100 : Rs0[1] == 1'b1 ? 32'b10 : Rs0[0] == 1'b1 ? 32'b1 : 32'b0;
+                    end
+                    `GCLD: begin
+                        result_e <= globalCounter;
                     end
                     default begin
                         invalidFunction <= 1'b1;
@@ -507,14 +622,25 @@ module LALU(input CLOCK_50);
                     `NOF: begin
                         generalFlag <= ~OF;
                     end
+                    `SUSP: begin
+                        suspend <= 1;
+                    end
                     default begin
                         invalidFunction <= 1'b1;
                     end
                 endcase
             end else if (format == `WB_QUAD) begin
                 case (funcID)
+//                    `VADD: begin // TODO: is non static loop ok?
+//                        for (i = 0; i < 32; i = i + Rs2) begin
+//
+//                        end
+//                    end
+//                    `VSUB: begin // TODO: is non static loop ok?
+//
+//                    end
                     `BIT: begin
-                        result_e <= {Rs2[~{Rs1[31], Rs0[31]}], Rs2[~{Rs1[30], Rs0[30]}], Rs2[~{Rs1[29], Rs0[29]}], Rs2[~{Rs1[28], Rs0[28]}], Rs2[~{Rs1[27], Rs0[27]}], Rs2[~{Rs1[26], Rs0[26]}], Rs2[~{Rs1[25], Rs0[25]}], Rs2[~{Rs1[24], Rs0[24]}], Rs2[~{Rs1[23], Rs0[23]}], Rs2[~{Rs1[22], Rs0[22]}], Rs2[~{Rs1[21], Rs0[21]}], Rs2[~{Rs1[20], Rs0[20]}], Rs2[~{Rs1[19], Rs0[19]}], Rs2[~{Rs1[18], Rs0[18]}], Rs2[~{Rs1[17], Rs0[17]}], Rs2[~{Rs1[16], Rs0[16]}], Rs2[~{Rs1[15], Rs0[15]}], Rs2[~{Rs1[14], Rs0[14]}], Rs2[~{Rs1[13], Rs0[13]}], Rs2[~{Rs1[12], Rs0[12]}], Rs2[~{Rs1[11], Rs0[11]}], Rs2[~{Rs1[10], Rs0[10]}], Rs2[~{Rs1[9], Rs0[9]}], Rs2[~{Rs1[8], Rs0[8]}], Rs2[~{Rs1[7], Rs0[7]}], Rs2[~{Rs1[6], Rs0[6]}], Rs2[~{Rs1[5], Rs0[5]}], Rs2[~{Rs1[4], Rs0[4]}], Rs2[~{Rs1[3], Rs0[3]}], Rs2[~{Rs1[2], Rs0[2]}], Rs2[~{Rs1[1], Rs0[1]}], Rs2[~{Rs1[0], Rs0[0]}]};
+                        for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[~{Rs1[i], Rs0[i]}];
                     end
                     `LD: begin
                         memAccessAddress_e <= sum[20:5];
@@ -577,7 +703,7 @@ module LALU(input CLOCK_50);
     assign memAccessWren = isMemWrite_m || fullByteWrite;
     assign memAccessRden = (isMemRead_e || isMemWrite_e) && ~memAccessWren; // only read if we aren't writing
     assign memAccessAddress = isMemWrite_m ? memAccessAddress_m : memAccessAddress_e; // either write address or read address
-    always @(posedge CLOCK_50) begin if (~stall_m && isValid_e) begin
+    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_m && isValid_e) begin
         IP_m <= IP_e; // save IP of memory access instruction
         isValid_m <= 1'b1;
 
@@ -611,7 +737,7 @@ module LALU(input CLOCK_50);
         memOutput >> memAccessNumBits_m >> memAccessNumBitsBefore_m << memAccessNumBits_m << memAccessNumBitsBefore_m
         | (32'hFFFFFFFF & registers[Rd_m] << memAccessNumBitsAfter_m << memAccessNumBitsBefore_m) >> memAccessNumBitsAfter_m
         | (32'hFFFFFFFF & memOutput << memAccessNumBitsAfter_m << memAccessNumBits_m) >> memAccessNumBitsAfter_m >> memAccessNumBits_m;
-    always @(posedge CLOCK_50) begin if (isValid_m) begin
+    always @(posedge CLOCK_50) begin if (~suspend) if (isValid_m) begin
         if (isWriteback_m) begin
             registers[Rd_m] <= finalResult_w;
 

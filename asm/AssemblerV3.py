@@ -202,12 +202,12 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
     'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
 
-    'gcld':  N_CODE(Fmt_Code = '000', Func_ID = '1_1111_1110'),
-    'susp':  N_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
+    'gcld':  N_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
+    'susp':  N_CODE(Fmt_Code = '100', Func_ID = '1_1111_1111'),
 }
 
 def ParseValue(txt):
-    if txt.lower()[0]=='r':
+    if txt.lower()[0]=='r' and all(c in [hex(i)[2:] for i in range(16)] for c in txt.lower()[1:]):
         reg = int(txt[1:], 16)
         try:
             dreg = int(txt[1:])
@@ -425,9 +425,9 @@ def ParseFile(file):
         oline = line
         mline = oline
         try:
-            if line == '':
-                continue
             line = line.split('//')[0]
+            if not line.strip(): continue
+
             if line[0] == '.':
                 assert line[1:].upper() == line[1:], f'Segments should be in full caps'
                 segment = line
@@ -451,9 +451,6 @@ def ParseFile(file):
                     addr += 64 if ret['eximm'] else 32
                     codes.append(ret)
             elif segment == '.DATA':
-                if line == '':
-                    continue
-                line = line.split('//')[0]
                 tkn, line = (line.split(maxsplit=1)+[''])[:2]
                 tkn = ParseValue(tkn)
                 assert tkn[0] == 'lbl', f'Data segments require the first component be a lbl'

@@ -8,7 +8,7 @@ main:
     mov.e R0, X:
     ldw R0, R0, #0
     call fac:
-    jmp exit:
+    susp
 
 fac:
     eq R1, #0
@@ -44,7 +44,3 @@ mul32:
     add R1, R1, R10
 
     ret
-
-
-exit:
-    jmp exit:
