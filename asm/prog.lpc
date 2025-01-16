@@ -1,0 +1,7 @@
+fn Main(_: u8, hello: u32) void {
+    va;
+    var z: u8;
+    var x: u32 = y + z[y] + 0d102;
+    var w: u8 = x;
+    Main(w, y);
+}
