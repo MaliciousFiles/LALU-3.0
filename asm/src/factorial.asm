@@ -8,6 +8,9 @@ main:
     mov.e R0, X:
     ldw R0, R0, #0
     call fac:
+    gcld R0
+    nop
+    nop
     susp
 
 fac:
@@ -25,22 +28,13 @@ fac:
 
 // R1 = R0 * R1
 mul32:
-    bsr R5, R0, #16     // R5 = R0.upper
-    bsr R6, R1, #16     // R6 = R1.upper
+    mul R5, R0, R1
+    uumul R6, R0, R1
+    ulmul R7, R0, R1
+    lumul R8, R0, R1
 
-    mul R7, R0, R1      // R7 = L1*L2
-
-    mul R8, R0, R6      // R8 = L1*U2
-    bsl R8, R8, #16
-
-    mul R9, R1, R5      // R9 = U1*L2
-    bsl R9, R9, #16
-
-    mul R10, R5, R6     // R10 = U1*U2
-    bsl R10, R10, #16
-
-    add R1, R7, R8
-    add R1, R1, R9
-    add R1, R1, R10
+    add R1, R5, R6
+    add R1, R1, R7
+    add R1, R1, R8
 
     ret
