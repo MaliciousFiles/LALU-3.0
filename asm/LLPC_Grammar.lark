@@ -1,0 +1,119 @@
+start: ex_decl+
+
+ex_decl: FN ident LPAREN [args] RPAREN type stmt
+
+stmt: blockstmt 
+    | declexpr
+    | declstmt
+    | exprstmt
+
+blockstmt: LCURLY stmt* RCURLY
+exprstmt: [expr] SEMICOLON
+
+declstmt: VAR ident COLON type SEMICOLON
+declexpr: VAR ident [COLON type] EQUAL expr SEMICOLON
+expr: assgexpr
+?assgexpr: lorexpr
+        | postexpr assgop assgexpr
+?lorexpr: landexpr
+        | lorexpr OR landexpr
+?landexpr: relexpr
+        | landexpr AND relexpr
+?relexpr: borexpr 
+	| borexpr relop borexpr
+?borexpr: bxorexpr
+        | borexpr PIPE bxorexpr
+?bxorexpr: bandexpr
+        | bxorexpr CARROT bandexpr
+?bandexpr: addexpr
+        | bandexpr AMPERSAND addexpr
+?addexpr: multexpr
+        | addexpr addop multexpr
+?multexpr: castexpr
+        | multexpr multop castexpr
+?castexpr: unaryexpr
+	| type "from" castexpr
+        | "<" type ">" castexpr
+?unaryexpr: postexpr
+        | unaryop castexpr
+?postexpr: primexpr
+        | postexpr LBRACK expr RBRACK -> indexpr
+        | postexpr LPAREN argexprs? RPAREN -> callexpr
+        | postexpr DOT ASTERISK -> derefexpr
+        | postexpr DOT AMPERSAND -> addrexpr
+        | postexpr DOT QMARK -> denullexpr
+        | postexpr DOT ident -> fieldexpr
+?primexpr: ident
+        | constant
+        | string
+        | LPAREN expr RPAREN
+
+argexprs: assgexpr (COMMA assgexpr)* COMMA?
+args: arg (COMMA arg)* COMMA?
+arg: ident COLON type
+
+ident: /[_a-zA-Z][_a-zA-Z0-9]*/
+type: INT | VOID
+string: "STRING"
+constant: hexint | decint
+
+decint: "0d" UD* | D UD*
+hexint: "0x" UH*
+
+INT: /u(32|8)/
+
+assgop: EQUAL
+relop: LANGLEQ | RANGLEQ | EQUALL | NEQUAL | LANGLE | RANGLE
+addop: PLUS | MINUS
+multop: LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK
+unaryop: PLUS | MINUS | TILDE | EMARK
+
+VOID: "void"
+EQUAL: "="
+LEFTARROW: "CAST"
+FN:  "fn"
+LPAREN: "("
+RPAREN: ")"
+LCURLY: "{"
+RCURLY: "}"
+COMMA: ","
+COLON: ":"
+SEMICOLON: ";"
+DOT: "."
+LBRACK: "["
+RBRACK: "]"
+ASTERISK: "*"
+AMPERSAND: "&"
+QMARK: "?"
+OR: "or"
+AND: "and"
+PIPE: "|"
+CARROT: "^"
+PLUS: "+"
+MINUS: "-"
+LANGLEEE: "<<<"
+LANGLEE: "<<"
+LANGLE: /<(?![:=])/
+RANGLEEE: ">>"
+RANGLEE: ">>"
+RANGLE: ">"
+PERCENT: "%"
+SLASH: "/"
+TILDE: "~"
+EMARK: "!"
+LANGLEQ: "<="
+RANGLEQ: ">="
+NEQUAL: "!="
+EQUALL: "=="
+VAR: "var"
+
+%ignore WS
+%ignore "\n"
+%ignore "\r"
+WS: (" " | /\t/ )+
+
+D: /[0-9]/
+UD: /[_0-9]/
+H: /[0-9a-fA-F]/
+UH: /[_0-9a-fA-F]/
+

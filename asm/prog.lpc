@@ -1,0 +1,5 @@
+fn Main() void {
+    x[0][0] = u8 from x + y;
+    x[0][0] = <u8> x + y
+}
+
