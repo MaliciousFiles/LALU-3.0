@@ -116,7 +116,7 @@ def J_CODE(**kwargs):
     assert len(d['Func_ID']) == formats[self]['Func_ID'], f'Func_ID `{d["Func_ID"]}` should have {formats[self]["Func_ID"]} bits\n'
     return d
 
-def PSUEDO(numargs, fmt):
+def PSEUDO(numargs, fmt):
     for i in range(numargs):
         assert f'@{i}' in fmt, f"{numargs} format expected usage of arg `{f'@{i}'}`\n"
     
@@ -158,24 +158,24 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
     
 
-    'and':   PSUEDO(3, 'bit @0, @1, @2, #0b0001'),
-    'or':    PSUEDO(3, 'bit @0, @1, @2, #0b0111'),
-    'xor':   PSUEDO(3, 'bit @0, @1, @2, #0b0110'),
-    'andn':  PSUEDO(3, 'bit @0, @1, @2, #0b0100'),
-    'orn':   PSUEDO(3, 'bit @0, @1, @2, #0b1101'),
-    'nxor':  PSUEDO(3, 'bit @0, @1, @2, #0b1001'),
+    'and':   PSEUDO(3, 'bit @0, @1, @2, #0b0001'),
+    'or':    PSEUDO(3, 'bit @0, @1, @2, #0b0111'),
+    'xor':   PSEUDO(3, 'bit @0, @1, @2, #0b0110'),
+    'andn':  PSEUDO(3, 'bit @0, @1, @2, #0b0100'),
+    'orn':   PSEUDO(3, 'bit @0, @1, @2, #0b1101'),
+    'nxor':  PSEUDO(3, 'bit @0, @1, @2, #0b1001'),
     'bit':   Q_CODE(Fmt_Code = '001', Func_ID = '0000'),
 
     'ld':    Q_CODE(Fmt_Code = '001', Func_ID = '0010'),
     'st':    Q_CODE(Fmt_Code = '101', Func_ID = '0011'),
-    'ldw':   PSUEDO(3, 'ld @0, @1, @2, #0'),
-    'stw':   PSUEDO(3, 'st @0, @1, @2, #0'),
-    'lda':   PSUEDO(3, 'ld @0, @1, #0, @2'),
-    'sta':   PSUEDO(3, 'st @0, @1, #0, @2'),
+    'ldw':   PSEUDO(3, 'ld @0, @1, @2, #0'),
+    'stw':   PSEUDO(3, 'st @0, @1, @2, #0'),
+    'lda':   PSEUDO(3, 'ld @0, @1, #0, @2'),
+    'sta':   PSEUDO(3, 'st @0, @1, #0, @2'),
     'bsf':   Q_CODE(Fmt_Code = '001', Func_ID = '0100'),
     'bst':   Q_CODE(Fmt_Code = '001', Func_ID = '0101'),
 
-    'mov':   PSUEDO(2, 'add @0, @1, #0'),
+    'mov':   PSEUDO(2, 'add @0, @1, #0'),
     'psh':   D_CODE(Fmt_Code = '100', Func_ID = '0_0010_0001'),
     'pop':   D_CODE(Fmt_Code = '000', Func_ID = '0_0010_0010'),
     'ret':   N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
@@ -202,23 +202,16 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
     'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
 
-    'gcld':  N_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
+    'gcld':  D_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
     'susp':  N_CODE(Fmt_Code = '100', Func_ID = '1_1111_1111'),
 }
 
-def ParseValue(txt):
-    if txt.lower()[0]=='r' and all(c in [hex(i)[2:] for i in range(16)] for c in txt.lower()[1:]):
-        reg = int(txt[1:], 16)
-        try:
-            dreg = int(txt[1:])
-            enc = f'R{hex(dreg)[2:]}'
-            if not (0 <= dreg < 32):
-                dreg = None
-        except:
-            dreg = None
-        assert 0 <= reg < 32, f'Register {reg} is not in valid range [0, 32)' + ('\n' if dreg==None else f'; registers are coded in hex, did you mean `{enc}`\n')
+def ParseValue(txt, foundInstruction=True):
+    if foundInstruction and txt.lower()[0]=='r' and txt[1:].isdigit():
+        reg = int(txt[1:])
+        assert 0 <= reg < 32, f'Register {reg} is not in valid range [0, 32)'
         return ('reg', reg)
-    elif txt[0] == '#':
+    elif foundInstruction and txt[0] == '#':
         if txt != '#0':
             if txt[1] == '0' and txt[2] in 'xdb':
                 base = [16, 10, 2]['xdb'.index(txt[2])]
@@ -315,7 +308,7 @@ def ResolveInstr(form, lbls):
                 ex = arg[1]
             elif arg[0] == 'lbl':
                 if field == 'Addr':
-                    out += Binary(lbls[arg[1]], 24)
+                    out += Binary(lbls[arg[1]] // 32, 24)
                 else:
                     out += '11111'
                     ex = lbls[arg[1]]
@@ -345,7 +338,7 @@ def ParseVeriNum(txt):
     raw = bin(val)[2:]
     return raw.zfill(digs)
     
-def BuildPsuedo(name, numargs, fmt, subs):
+def BuildPSEUDO(name, numargs, fmt, subs):
     line = fmt
     assert numargs == len(subs), f'Instruction `{name}` expected {numargs} arguments, but got {len(subs)}'
     for i in range(numargs):
@@ -434,14 +427,14 @@ def ParseFile(file):
                 continue
             if segment == '.CODE':
                 tkn, line = (line.split(maxsplit=1)+[''])[:2]
-                tkn = ParseValue(tkn)
+                tkn = ParseValue(tkn, False)
                 if tkn[0] == 'lbl':
                     lbls[tkn[1]] = addr
                 elif tkn[0] == 'instr':
                     if 'ps' in instrs[tkn[1][0]]:
                         mods = tkn[1][1]
                         args = [x.lstrip(' \t').rstrip(' \t') for x in line.split(',')]
-                        mline = line = BuildPsuedo(tkn[1][0], instrs[tkn[1][0]]['numargs'], instrs[tkn[1][0]]['fmt'], args)
+                        mline = line = BuildPSEUDO(tkn[1][0], instrs[tkn[1][0]]['numargs'], instrs[tkn[1][0]]['fmt'], args)
                         tkn, line = line.split(maxsplit=1) if ' ' in line else (line, '')
                         tkn = ParseValue(tkn)
                         tkn = (tkn[0], [tkn[1][0], mods])
@@ -477,18 +470,18 @@ def ParseFile(file):
             mem[code['loc']+32] = ex
     return mem
 
-def Mifify(mem):
-    header = "WIDTH=32;\nDEPTH=65536;\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
+def Mifify(mem, size):
+    header = f"WIDTH=32;\nDEPTH={2**size};\nADDRESS_RADIX=HEX;\nDATA_RADIX=HEX;\nCONTENT BEGIN\n"
     tail = "END;"
     out = header
     maxaddr = 0
     for key, data in sorted(mem.items(), key = lambda x:x[0]):
-        addr = key
+        addr = key // 32
         maxaddr = max(maxaddr, addr)
         saddr = hex(addr)[2:].zfill(4).upper()
         out += f"    {saddr} : {data.upper()};\n"
     saddr = hex(maxaddr+1)[2:].zfill(4).upper()
-    out += f'    [{saddr}..FFFF] : 00000000;\n'
+    out += f'    [{saddr}..{hex(2**size-1)[2:]}] : 00000000;\n'
     out += tail
     return out
 
@@ -505,7 +498,7 @@ def monitor_input():
 if __name__ == "__main__":
     with open(fName) as f:
         verb = "--verb" in sys.argv[2:]
-        mif = "--mif" in sys.argv[2:]
+        mif = int(sys.argv[sys.argv.index("--mif")+1]) if "--mif" in sys.argv[2:] else 0
         if "--monitor" in sys.argv[2:]:
             Thread(target=monitor_input).start()
             
@@ -529,7 +522,7 @@ if __name__ == "__main__":
                         program  = ParseFile(contents)
 ##                        print(program)
                         if mif:
-                            program = Mifify(program)
+                            program = Mifify(program, mif)
                             with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                 f2.write(program)
                                 print('Wrote:\n\n')
