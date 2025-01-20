@@ -129,6 +129,8 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'sub':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0010'),
     'radd':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1101'),
     'rsub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1110'),
+    'adds':  Q_CODE(Fmt_Code = '001', Func_ID = '1000'),
+    'addrs': Q_CODE(Fmt_Code = '001', Func_ID = '1001'),
     'csub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0001'),
     'mul':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0011'),
     'uumul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1010'),
