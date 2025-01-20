@@ -1,5 +1,7 @@
 fn Main() void {
-    x[0][0] = u8 from x + y;
-    x[0][0] = <u8> x + y
+  var x: u32;
+  var ptr: u32* = x.&;
+  ptr.* = 0;
+  x.&.* = 1;
+  x.&[1] = ~-2;
 }
-

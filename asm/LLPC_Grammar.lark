@@ -60,7 +60,7 @@ constant: hexint | decint
 decint: "0d" UD* | D UD*
 hexint: "0x" UH*
 
-INT: /u(32|8)/
+INT: /u[0-9]+\**/
 
 assgop: EQUAL
 relop: LANGLEQ | RANGLEQ | EQUALL | NEQUAL | LANGLE | RANGLE
