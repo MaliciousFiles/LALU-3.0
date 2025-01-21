@@ -5,8 +5,8 @@ module VGA (
     input [23:0] charWrFgColor,
     input [23:0] charWrBgColor,
     input [7:0] charWrCode,
-    input [4:0] charWrX,
-    input [5:0] charWrY,
+    input [5:0] charWrX,
+    input [4:0] charWrY,
 
     output [7:0] VGA_R, VGA_G, VGA_B,
     output VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS

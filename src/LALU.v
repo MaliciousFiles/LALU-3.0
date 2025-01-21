@@ -155,8 +155,8 @@ module LALU(input CLOCK_50,
     wire [23:0] charWrFgColor;
     wire [23:0] charWrBgColor;
     wire [7:0] charWrCode;
-    wire [4:0] charWrX;
-    wire [5:0] charWrY;
+    wire [5:0] charWrX;
+    wire [4:0] charWrY;
     VGA vga (
         .CLOCK_50(CLOCK_50),
 
@@ -477,8 +477,8 @@ module LALU(input CLOCK_50,
     assign charWrFgColor = Rs1;
     assign charWrBgColor = Rs2;
     assign charWrCode = Rd;
-    assign charWrX = Rs0[4:0];
-    assign charWrY = Rs0[9:5];
+    assign charWrX = Rs0[5:0];
+    assign charWrY = Rs0[9:6];
 
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
     always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
