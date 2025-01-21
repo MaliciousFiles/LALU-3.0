@@ -56,7 +56,9 @@
 `define CALL		        2'b00
 `define JUMP		        2'b01
 
+`define STCHR               4'b0000
 `define LDKEY               9'b0_0011_0001
+`define KEYPR               9'b0_0011_0010
 `define RSTKEY              9'b0_0011_0011
 
 `define UGT		            9'b0_1000_0000
@@ -84,7 +86,11 @@
 `define GCLD				9'b1_1111_1111
 `define SUSP				9'b1_1111_1111
 
-module LALU(input CLOCK_50, input PS2_CLK, input PS2_DAT, output wire suspended);
+module LALU(input CLOCK_50,
+    input PS2_CLK, input PS2_DAT,
+    output [7:0] VGA_R, VGA_G, VGA_B,
+    output VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS,
+    output wire suspended);
     /*********************
      *      Memory       *
      *********************/
@@ -136,7 +142,7 @@ module LALU(input CLOCK_50, input PS2_CLK, input PS2_DAT, output wire suspended)
     wire rstKeyboard;
     wire pollKeyboard;
     wire [17:0] keyboardOut;
-    Keyboard keyboard(
+    Keyboard keyboard (
         .CLOCK_50(CLOCK_50),
         .PS2_CLK(PS2_CLK),
         .PS2_DAT(PS2_DAT),
@@ -144,6 +150,31 @@ module LALU(input CLOCK_50, input PS2_CLK, input PS2_DAT, output wire suspended)
         .reset(rstKeyboard),
         .poll(pollKeyboard),
         .out(keyboardOut));
+
+    wire charWr;
+    wire [23:0] charWrFgColor;
+    wire [23:0] charWrBgColor;
+    wire [7:0] charWrCode;
+    wire [4:0] charWrX;
+    wire [5:0] charWrY;
+    VGA vga (
+        .CLOCK_50(CLOCK_50),
+
+        .charWr(charWr),
+        .charWrFgColor(charWrFgColor),
+        .charWrBgColor(charWrBgColor),
+        .charWrCode(charWrCode),
+        .charWrX(charWrX),
+        .charWrY(charWrY),
+
+        .VGA_CLK(VGA_CLK),
+        .VGA_SYNC_N(VGA_SYNC_N),
+        .VGA_BLANK_N(VGA_BLANK_N),
+        .VGA_HS(VGA_HS),
+        .VGA_VS(VGA_VS),
+        .VGA_R(VGA_R),
+        .VGA_G(VGA_G),
+        .VGA_B(VGA_B));
 
     /*********************
      *     Registers     *
@@ -442,6 +473,13 @@ module LALU(input CLOCK_50, input PS2_CLK, input PS2_DAT, output wire suspended)
     assign rstKeyboard = isValid_d && format == `NO_WB_TRIP && funcID == `RSTKEY;
     assign pollKeyboard = run && ~stall_m && ~stall_e && ~executiveOverride && executeInstr && format == `WB_TRIP && funcID == `LDKEY;
 
+    assign charWr = run && ~stall_m && ~stall_e && ~executiveOverride && executeInstr && format == `NO_WB_QUAD && funcID == `STCHR;
+    assign charWrFgColor = Rs1;
+    assign charWrBgColor = Rs2;
+    assign charWrCode = Rd;
+    assign charWrX = Rs0[4:0];
+    assign charWrY = Rs0[9:5];
+
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
     always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
@@ -710,6 +748,7 @@ module LALU(input CLOCK_50, input PS2_CLK, input PS2_DAT, output wire suspended)
                         memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-Rs1[4:0];
                         isMemWrite_e <= 1'b1;
                     end
+                    `STCHR: begin end
                     default begin
                         invalidFunction <= 1'b1;
                     end

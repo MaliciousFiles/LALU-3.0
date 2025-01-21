@@ -184,7 +184,9 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'call':  J_CODE(Fmt_Code = '110', Func_ID = '00'),
     'jmp':   J_CODE(Fmt_Code = '110', Func_ID = '01'),
 
+    'stchr': Q_CODE(Fmt_Code = '101', Func_ID = '0000'),
     'ldkey': T_CODE(Fmt_Code = '000', Func_ID = '0_0011_0001'),
+    'keypr': T_CODE(Fmt_Code = '000', Func_ID = '0_0011_0010'),
     'rstkey':T_CODE(Fmt_Code = '100', Func_ID = '0_0011_0011'),
 
     'ugt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),

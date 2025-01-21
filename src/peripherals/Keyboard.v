@@ -2,6 +2,9 @@ module Keyboard (
     input CLOCK_50,
     input PS2_CLK,
     input PS2_DAT,
+
+    input
+
     input reset,
     input poll,
 
@@ -130,7 +133,9 @@ module Keyboard (
         .received_data(data),
         .received_data_en(available),
         .PS2_CLK(PS2_CLK),
-        .PS2_DAT(PS2_DAT));
+        .PS2_DAT(PS2_DAT),
+        .the_command(3'b111), // TODO: this should turn on all the LEDs; check
+        .send_command(1'b1));
 
     // handler
     reg depressed [0 : 7'h68];
@@ -142,7 +147,6 @@ module Keyboard (
 
     always @(posedge CLOCK_50) begin
         if (reset) begin
-            for (i = 0; i < 7'h68; i = i + 1) depressed[i] <= 0;
             break_code <= 0;
             ex_code <= 0;
             writeIdx <= 0;
