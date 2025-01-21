@@ -1,0 +1,1 @@
+module PS2_test(PS2_CLK : inout std_logic, PS2_DAT : inout std_logic)

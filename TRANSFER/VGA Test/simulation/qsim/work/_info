@@ -1,0 +1,76 @@
+m255
+K4
+z2
+Z0 !s12c _opt
+Z1 !s99 nomlopt
+R0
+R1
+!s11f vlog 2023.3 2023.07, Jul 17 2023
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z2 dC:/Users/Malcolm/Documents/Logisim/LALU-2.0/VGA Test/simulation/qsim
+T_opt
+!s110 1720634862
+V_]6kl?]S]zlVg<jhhV@h?2
+04 20 4 work VGA_Test_vlg_vec_tst fast 0
+=1-ea1aa64b8dc3-668ecdee-f-83ac
+R1
+!s12b OEM100
+!s124 OEM10U2 
+o-quiet -auto_acc_if_foreign -work work -L cyclonev_ver -L altera_ver -L altera_mf_ver -L 220model_ver -L sgate_ver -L altera_lnsim_ver
+Z3 tCvgOpt 0
+n@_opt
+OL;O;2023.3;77
+R2
+vVGA_Test
+2VGA_Test.vo
+Z4 !s110 1720634905
+!i10b 1
+!s100 d<=manYkYAO=X^CE]2;]03
+Il^RYB8UnQeFX6R79o>09l1
+R2
+w1720634901
+8VGA_Test.vo
+FVGA_Test.vo
+!i122 10
+L0 32 5045
+Z5 VDg1SIo80bB@j0V0VzS_@n1
+Z6 OL;L;2023.3;77
+r1
+!s85 0
+31
+!s108 1720634904.000000
+!s107 VGA_Test.vo|
+!s90 -work|work|VGA_Test.vo|
+!i113 0
+Z7 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R3
+n@v@g@a_@test
+vVGA_Test_vlg_vec_tst
+2Waveform.vwf.vt
+R4
+!i10b 1
+!s100 adg_NjZ<Ln2O:=62[NfU_2
+I[2Q?EbSe=]aC4bLF3kMWC3
+R2
+w1720634900
+8Waveform.vwf.vt
+FWaveform.vwf.vt
+!i122 11
+L0 30 40
+R5
+R6
+r1
+!s85 0
+31
+!s108 1720634905.000000
+!s107 Waveform.vwf.vt|
+!s90 -work|work|Waveform.vwf.vt|
+!i113 0
+R7
+R3
+n@v@g@a_@test_vlg_vec_tst
