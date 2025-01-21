@@ -50,7 +50,7 @@ main:
     // test ABS                         [7]
     mov.e   R0, #0xFFFFFFFF
     abs     R30, R0
-    mov.e   R29, #1
+    mov     R29, #1
     call    assert:
 
     mov.e   R0, #0xFFFFFFFF // -1
