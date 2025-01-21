@@ -1,4 +1,5 @@
 from lark import Lark, Token, Tree
+import LowerHLIR as LHL
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 with open('prog.lpc', 'r') as f:
@@ -70,7 +71,7 @@ def Gen(tree):
             if rargs:
                 for arg in rargs.children:
                     aname, _, akind = arg.children
-                    args.append((aname.children[0].value, akind.children[0].value))
+                    args.append((aname.children[0].value, Type.FromStr(akind.children[0].value)))
             inter.NewFunc(name.children[0].value, args, ret.children[0].value)
             Gen(body)
             inter.PopEnv()
@@ -86,7 +87,8 @@ def Gen(tree):
             kind = Type.FromStr(kind.children[0].value)
             assert tkind.CanCoerceTo(kind), f'Type `{tkind}` cannot coerce into type `{kind}`'
             inter.Decl(name, kind)
-            inter.AddPent(op = '=', D = name, S0 = rhs, S1 = None, S2 = None)
+            assert tkind.CanCoerceTo(kind)
+            inter.CastAddPent(op = '=', D = name, S0 = rhs, S1 = None, S2 = None, desttype = kind, origtype = tkind)
         elif data.type == 'RULE' and data.value == 'exprstmt':
             expr, _, = tree.children
             if expr:
@@ -96,8 +98,10 @@ def Gen(tree):
                 _ = Rvalue(expr.children[0])
         elif data.type == 'RULE' and data.value == 'blockstmt':
             stmts = tree.children[1:-1]
+            inter.NewEnv()
             for stmt in stmts:
                 Gen(stmt)
+            inter.PopEnv()
         elif data.type == 'RULE' and data.value == 'dostmt':
             _, _, expr, _, stmt = tree.children
             pre = NewLabel()
@@ -296,14 +300,29 @@ def Rvalue(expr):
         elif data == 'addrexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
+            inter.Use(lhs)
             return f'{lhs}.&', lk.Addr()
         elif data == 'intrinsic':
             _, name, _, args, _, = expr.children
             name = name.children[0].value
-            args = [x.children[0].value for x in args.children if type(x)==Tree] if args else []
+            ct = False
+            if args.children:
+                ct=True
+                nargs = []
+                for arg in args.children:
+                    if type(arg)==Tree:
+                        v, k = Rvalue(arg)
+                        nargs.append(v)
+                        if not k.comptime:
+                            ct = False
+                args = nargs
+            else:
+                args = []
+##            args = [x.children[0].value for x in args.children if type(x)==Tree] if args else []
             assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguements'
             args += [None]*3
-            tmp = NewTemp(Type())
+##            if ct:
+            tmp = NewTemp(Type(comptime = ct))
             inter.AddPent(op = '@'+name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
             return tmp, Type()
         elif data == 'true':
@@ -350,7 +369,7 @@ def Rvalue(expr):
             op = op.children[0].value
             kind = lk.Common(rk)
             tmp = NewTemp(kind)
-            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, width = kind.OpWidth())
+            inter.CastAddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, desttype = kind, origtype = kind)
             return tmp, kind
         elif data.value == 'multexpr':
             le, op, re = expr.children
@@ -359,7 +378,7 @@ def Rvalue(expr):
             op = op.children[0].value
             kind = lk.Common(rk)
             tmp = NewTemp(kind)
-            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, width = kind.OpWidth())
+            inter.CastAddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, desttype = kind, origtype = kind)
             return tmp, kind
         elif data.value == 'bandexpr':
             le, _, re = expr.children
@@ -367,7 +386,7 @@ def Rvalue(expr):
             rhs, rk = Rvalue(re)
             kind = lk.Common(rk)
             tmp = NewTemp(kind)
-            inter.AddPent(op = '&', D = tmp, S0 = lhs, S1 = rhs, S2 = None, width = kind.OpWidth())
+            inter.CastAddPent(op = '&', D = tmp, S0 = lhs, S1 = rhs, S2 = None, desttype = kind, origtype = kind)
             return tmp, kind
         elif data.value == 'bxorexpr':
             le, _, re = expr.children
@@ -375,7 +394,7 @@ def Rvalue(expr):
             rhs, rk = Rvalue(re)
             kind = lk.Common(rk)
             tmp = NewTemp(kind)
-            inter.AddPent(op = '^', D = tmp, S0 = lhs, S1 = rhs, S2 = None, width = kind.OpWidth())
+            inter.CastAddPent(op = '^', D = tmp, S0 = lhs, S1 = rhs, S2 = None, desttype = kind, origtype = kind)
             return tmp, kind
         elif data.value == 'borexpr':
             le, _, re = expr.children
@@ -383,27 +402,32 @@ def Rvalue(expr):
             rhs, rk = Rvalue(re)
             kind = lk.Common(rk)
             tmp = NewTemp(kind)
-            inter.AddPent(op = '|', D = tmp, S0 = lhs, S1 = rhs, S2 = None, width = kind.OpWidth())
+            inter.CastAddPent(op = '|', D = tmp, S0 = lhs, S1 = rhs, S2 = None, desttype = kind, origtype = kind)
             return tmp, kind
         elif data.value == 'relexpr':
             le, op, re = expr.children
             lhs, lk = Rvalue(le)
             rhs, rk = Rvalue(re)
             op = op.children[0].value
-            inter.IfJump(lhs, op, rhs, inter.trues[-1])
+            assert lk.CanCoerceTo(rk) or rk.CanCoerceTo(lk), f'Cannot do comparison on uncoerceable types `{lk}` and `{rk}`'
+            if op in ['>', '>=', '<=', '<']:
+                inter.IfJump(lhs, '+-'[lk.signed]+op, rhs, inter.trues[-1])
+            else:
+                inter.IfJump(lhs, op, rhs, inter.trues[-1])
             inter.Jump(inter.falses[-1])
             return None, Type(isbool = True)
         elif data.value == 'assgexpr':
             le, op, re = expr.children
             lhs, lk = Lvalue(le)
             rhs, rk = Rvalue(re)
-            if len(op.children) == 2:
-                op = op.children[0].value
+##            print(op.children)
+            if len(op.children[0].value) == 2:
+                op = op.children[0].value[:-1]
                 assert rk.CanCoerceTo(lk)
-                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None, width = lk.OpWidth())
+                inter.CastAddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None, desttype = lk, origtype = rk)
             else:
-                assert rk.CanCoerceTo(lk)
-                inter.AddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None, width = lk.OpWidth())
+                assert rk.CanCoerceTo(lk), f'Cannot coerce `{lk}` into type `{rk}`'
+                inter.CastAddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None, desttype = lk, origtype = rk)
             return lhs, lk
         elif data.value == 'unaryexpr':
             op, re = expr.children
@@ -503,7 +527,6 @@ class HLIR:
         self.funcs = []
         self.envs = []
         self.loops = []
-        self.sels = []
         self.trues = []
         self.falses = []
 
@@ -549,18 +572,47 @@ class HLIR:
         assert False, f'Cannot find name: `{name}` in current scope'
     def Decl(self, name, kind):
         self.Register(name, kind)
-        self.body.Addline(('decl', name, kind))
+        self.body.Addline(('decl', name, kind, None))
+    def CastAddPent(self, op, D, S0, S1, S2, desttype, origtype):
+        if desttype.BitSameAs(origtype):
+            self.AddPent(op, D, S0, S1, S2, width = desttype.OpWidth())
+        else:
+            tmp = NewTemp(origtype)
+            self.AddPent(op, tmp, S0, S1, S2, width = origtype.OpWidth())
+            self.Cast(D, tmp, desttype, origtype)
+    def Cast(self, D, S, dk, sk):
+        self.Use(S)
+        self.AddPent('=<>', D, S, dk, sk)
     def AddPent(self, op, D, S0, S1, S2, width = 32):
+        global eid
+        eid += 1
         if type(D) == str and '[' in D:
+            if op == '=<>':
+                tmp = NewTemp(S1)
+                eid -= 1
+                self.AddPent('=<>', tmp, S0, S1, S2)
+                eid += 1
+                S0 = tmp
+                S2 = None
+                op = '='
             l, r = D[:-1].split('[')
             assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
-            self.body.Addline(('expr', ('[]=', l, r, S0, S2, width)))
+            self.Use(S0)
+            self.Use(r)
+            self.Use(S2)
+            self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
         elif type(S0) == str and '[' in S0:
             l, r = S0[:-1].split('[')
             assert op == '=', f'Expected operation to be `=` when rhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
-            self.body.Addline(('expr', ('[]=', D, l, r, S2, width)))
+            self.Use(l)
+            self.Use(r)
+            self.Use(S2)
+            self.body.Addline(('expr', ('[]=', D, l, r, S2, width), eid))
         else:
-            self.body.Addline(('expr', (op, D, S0, S1, S2, width)))
+            self.Use(S0)
+            self.Use(S1)
+            self.Use(S2)
+            self.body.Addline(('expr', (op, D, S0, S1, S2, width), eid))
     def AddLabel(self, lbl):
         self.body.fall = lbl
         self.body = Block(lbl)
@@ -569,13 +621,24 @@ class HLIR:
         self.body = Block(lbl)
         self.func['body'].append(self.body)
     def IfJump(self, lhs, op, rhs, lbl):
-        self.body.exit = ('if', (lhs, op, rhs, lbl))
+        global eid
+        eid += 1
+        self.Use(lhs)
+        self.Use(rhs)
+        self.body.exit = ('if', (lhs, op, rhs, lbl), eid)
         self.AddLabel('_'+NewLabel())
     def IfFalseJump(self, lhs, op, rhs, lbl):
-        self.body.exit = ('ifFalse', (lhs, op, rhs, lbl))
+        global eid
+        eid += 1
+        self.Use(lhs)
+        self.Use(rhs)
+        self.body.exit = ('ifFalse', (lhs, op, rhs, lbl), eid)
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
-        self.body.exit = ('if', (cond, '!=', 0, lbl))
+        global eid
+        eid += 1
+        self.Use(cond)
+        self.body.exit = ('if', (cond, '!=', 0, lbl), eid)
         self.AddLabel('_'+NewLabel())
     def Jump(self, lbl):
         self.body.exit = ('goto', (lbl))
@@ -586,26 +649,35 @@ class HLIR:
     def PopLoopLabels(self, pre, post):
         del self.loops[-1]
     def Return(self, *args):
-        self.body.exit = ('return', args)
+        global eid
+        eid += 1
+        for arg, kind in args:
+            self.Use(arg)
+        self.body.exit = ('return', args, eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
+    def Use(self, name):
+        for j, block in enumerate(self.func['body']):
+            for i, line in enumerate(block.body):
+                if line[0] == 'decl' and line[1] == name:
+                    self.func['body'][j].body[i] = line[:3] + (eid,)
 class Type:
-    def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False):
+    def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
         self.width = width
         self.signed = signed
         self.numPtrs = numPtrs
         self.comptime = comptime
         self.isbool = isbool
+        self.isvoid = isvoid
     def FromStr(txt):
         self = Type()
+        if txt == 'void':
+            return Type(isvoid = True)
         if txt == 'bool':
             return Type(isbool = True)
-        if '!' in txt:
-             self.comptime = True
-             txt = txt.replace('!', '')
-        else:
-            self.comptime = False
-        self.signed = txt[0]=='s'
+        if txt == 'comp':
+             return Type(comptime = True)
+        self.signed = txt[0]=='i'
         self.numPtrs = txt.count('*')
         self.width = int(txt[1:len(txt)-self.numPtrs])
         return self
@@ -614,13 +686,19 @@ class Type:
     def __repr__(self):
         return f'Type.FromStr("{self}")'
     def __str__(self):
+        if self.isvoid:
+            return 'void'
         if self.isbool:
             return 'bool'
+        if self.comptime:
+            return 'comp'
         else:
-            return f'{"!"*self.comptime}{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
+            return f'{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
         if self.isbool:
             return False
+        if self.comptime:
+            return True
         if other.comptime:
             return False
         if self.numPtrs > 0:
@@ -630,26 +708,26 @@ class Type:
                 return False == other.signed and other.width >= 24
         else:
             return self.signed == other.signed and other.width >= self.width
+    def BitSameAs(self, other):
+        return self.CanCoerceTo(other) and other.CanCoerceTo(self)
     def Common(self, other):
         assert not self.isbool, 'Cannot take a common type of boolean and `{other}`'
         
         bc = self.comptime and other.comptime
+        if self.comptime:
+            return other
+        elif not bc and other.comptime:
+            return self
         if self.numPtrs > 0:
             if other.numPtrs > 0:
                 assert False, f'Cannot do math on two pointer types `{self}` and `{other}`'
             else:
-                if not bc and self.comptime:
-                    return self.Runtime()
-                else:
-                    return self
+                return self
         else:
             if other.numPtrs > 0:
-                if not bc and other.comptime:
-                    return other.Runtime()
-                else:
-                    return other
+                return other
             assert self.signed == other.signed, f'Cannot do math on different signs `{self}` and `{other}`'
-            return Type(max(self.width, other.width), self.signed, 0, bc)
+            return Type(max(self.width, other.width), self.signed, 0)
     def Deref(self):
         assert self.numPtrs > 0, f'Cannot dereference type `{self}`'
         return Type(self.width, self.signed, self.numPtrs - 1)
@@ -672,6 +750,7 @@ syms = [{}]
 out = ''
 ind = 0
 tid = 0
+eid = 0
 
 inter = HLIR()
 try:
@@ -680,9 +759,12 @@ except Exception as e:
     print(e)
     raise e
 
-
-
 print('\nOUT:')
 print(out)
 print('\nREP:')
 print(repr(inter))
+
+llir = LHL.Lower(inter)
+
+print('\nLLIR:')
+print(repr(llir))

@@ -1,8 +1,6 @@
 fn Main() void {
-  var x: u32;
-  while (x > 0) {
-    x -= 1;
-  } 
-  return;
+  var x: u32 = 1 + 2 + 3 + 4 + 5;
+  var y: u32* = x.&;
+  y.* = 1;
 }
 
