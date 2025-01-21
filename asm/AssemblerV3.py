@@ -159,7 +159,6 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
     'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1111'),
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
-    
 
     'and':   PSEUDO(3, 'bit @0, @1, @2, #0b0001'),
     'or':    PSEUDO(3, 'bit @0, @1, @2, #0b0111'),
@@ -184,6 +183,9 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ret':   N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
     'call':  J_CODE(Fmt_Code = '110', Func_ID = '00'),
     'jmp':   J_CODE(Fmt_Code = '110', Func_ID = '01'),
+
+    'ldkey': T_CODE(Fmt_Code = '000', Func_ID = '0_0011_0001'),
+    'rstkey':T_CODE(Fmt_Code = '100', Func_ID = '0_0011_0011'),
 
     'ugt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),
     'uge':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0001'),

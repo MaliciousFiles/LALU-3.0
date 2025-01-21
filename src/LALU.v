@@ -56,6 +56,9 @@
 `define CALL		        2'b00
 `define JUMP		        2'b01
 
+`define LDKEY               9'b0_0011_0001
+`define RSTKEY              9'b0_0011_0011
+
 `define UGT		            9'b0_1000_0000
 `define UGE		            9'b0_1000_0001
 `define ULT		            9'b0_1000_0010
@@ -81,7 +84,7 @@
 `define GCLD				9'b1_1111_1111
 `define SUSP				9'b1_1111_1111
 
-module LALU(input CLOCK_50, output wire suspended);
+module LALU(input CLOCK_50, input PS2_CLK, input PS2_DAT, output wire suspended);
     /*********************
      *      Memory       *
      *********************/
@@ -125,6 +128,22 @@ module LALU(input CLOCK_50, output wire suspended);
         .data_b(stackWriteData),
         .rden_b(1'b0),
         .q_b());
+
+
+    /*********************
+     *    Peripherals    *
+     *********************/
+    wire rstKeyboard;
+    wire pollKeyboard;
+    wire [17:0] keyboardOut;
+    Keyboard keyboard(
+        .CLOCK_50(CLOCK_50),
+        .PS2_CLK(PS2_CLK),
+        .PS2_DAT(PS2_DAT),
+
+        .reset(rstKeyboard),
+        .poll(pollKeyboard),
+        .out(keyboardOut));
 
     /*********************
      *     Registers     *
@@ -419,23 +438,16 @@ module LALU(input CLOCK_50, output wire suspended);
         : sticky_m && isWriteback_m ? finalResult_w == 0
         : zeroFlag;
 
+    // peripherals
+    assign rstKeyboard = isValid_d && format == `NO_WB_TRIP && funcID == `RSTKEY;
+    assign pollKeyboard = run && ~stall_m && ~stall_e && ~executiveOverride && executeInstr && format == `WB_TRIP && funcID == `LDKEY;
 
-    // for vector functions, I need all the theoretically possible segments
-//    wire segSize = format[1:0] == `TRIP ? Rs1 : Rs2;
-//    wire [31:0] segMask = (32'hFFFFFFFF & 32'hFFFFFFFF << 32 >> segSize) << segSize >> 32;
-//
-//    wire [31:0] segments0 [0:31];
-//    assign segments0[0] = Rs0 && segMask, segments0[1] = Rs0 && segMask << segSize, segments0[2] = Rs0 && segMask << segSize << segSize, segments0[3] = Rs0 && segMask << segSize << segSize << segSize, segments0[4] = Rs0 && segMask << segSize << segSize << segSize << segSize, segments0[5] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize, segments0[6] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize, segments0[7] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[8] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[9] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[10] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[11] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[12] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[13] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[14] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[15] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[16] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[17] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[18] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[19] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[20] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[21] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[22] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[23] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[24] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[25] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[26] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[27] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[28] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[29] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[30] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments0[31] = Rs0 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize;
-//
-//    wire [31:0] segments1 [0:31];
-//    assign segments1[0] = Rs1 && segMask, segments1[1] = Rs1 && segMask << segSize, segments1[2] = Rs1 && segMask << segSize << segSize, segments1[3] = Rs1 && segMask << segSize << segSize << segSize, segments1[4] = Rs1 && segMask << segSize << segSize << segSize << segSize, segments1[5] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize, segments1[6] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize, segments1[7] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[8] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[9] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[10] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[11] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[12] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[13] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[14] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[15] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[16] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[17] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[18] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[19] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[20] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[21] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[22] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[23] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[24] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[25] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[26] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[27] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[28] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[29] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[30] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[31] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize;
-
-
+    wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
     always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
             expectedIP <= expectedIP + 1;
         end
-        if (isValid_d && ~(conditional && generalFlag == negate)) begin
+        if (executeInstr) begin
             IP_e <= IP_d; // save IP of executed instruction
             isValid_e_reg <= 1'b1;
 
@@ -444,6 +456,7 @@ module LALU(input CLOCK_50, output wire suspended);
             isWriteback_e <= isWriteback_d;
 
             // TODO: probably better to make these an OR than driving them multiple times :|
+            invalidFunction <= 1'b0;
             isMemRead_e <= 1'b0;
             isMemWrite_e <= 1'b0;
             carryFlag_e <= 1'b0;
@@ -564,6 +577,9 @@ module LALU(input CLOCK_50, output wire suspended);
                     `HSB: begin
                         result_e <= Rs0[31] == 1'b1 ? 32'b10000000000000000000000000000000 : Rs0[30] == 1'b1 ? 32'b1000000000000000000000000000000 : Rs0[29] == 1'b1 ? 32'b100000000000000000000000000000 : Rs0[28] == 1'b1 ? 32'b10000000000000000000000000000 : Rs0[27] == 1'b1 ? 32'b1000000000000000000000000000 : Rs0[26] == 1'b1 ? 32'b100000000000000000000000000 : Rs0[25] == 1'b1 ? 32'b10000000000000000000000000 : Rs0[24] == 1'b1 ? 32'b1000000000000000000000000 : Rs0[23] == 1'b1 ? 32'b100000000000000000000000 : Rs0[22] == 1'b1 ? 32'b10000000000000000000000 : Rs0[21] == 1'b1 ? 32'b1000000000000000000000 : Rs0[20] == 1'b1 ? 32'b100000000000000000000 : Rs0[19] == 1'b1 ? 32'b10000000000000000000 : Rs0[18] == 1'b1 ? 32'b1000000000000000000 : Rs0[17] == 1'b1 ? 32'b100000000000000000 : Rs0[16] == 1'b1 ? 32'b10000000000000000 : Rs0[15] == 1'b1 ? 32'b1000000000000000 : Rs0[14] == 1'b1 ? 32'b100000000000000 : Rs0[13] == 1'b1 ? 32'b10000000000000 : Rs0[12] == 1'b1 ? 32'b1000000000000 : Rs0[11] == 1'b1 ? 32'b100000000000 : Rs0[10] == 1'b1 ? 32'b10000000000 : Rs0[9] == 1'b1 ? 32'b1000000000 : Rs0[8] == 1'b1 ? 32'b100000000 : Rs0[7] == 1'b1 ? 32'b10000000 : Rs0[6] == 1'b1 ? 32'b1000000 : Rs0[5] == 1'b1 ? 32'b100000 : Rs0[4] == 1'b1 ? 32'b10000 : Rs0[3] == 1'b1 ? 32'b1000 : Rs0[2] == 1'b1 ? 32'b100 : Rs0[1] == 1'b1 ? 32'b10 : Rs0[0] == 1'b1 ? 32'b1 : 32'b0;
                     end
+                    `LDKEY: begin
+                        result_e <= keyboardOut;
+                    end
                     `GCLD: begin
                         result_e <= globalCounter;
                     end
@@ -580,6 +596,7 @@ module LALU(input CLOCK_50, output wire suspended);
                         operationMode <= returnAddress[16];
                         isRet_e <= 1'b1;
                     end
+                    `RSTKEY: begin end
                     `UGT: begin
                         generalFlag <= diff_CF && !diff_ZF;
                     end
