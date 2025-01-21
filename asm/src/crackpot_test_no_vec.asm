@@ -62,52 +62,109 @@ main:
     umax    R30, R0, R1
     mov     R29, R0
     call    assert:
-    // test UMAX pos/pos                [8] // TODO: update indices
+    // test UMAX pos/pos                [9] // TODO: update indices
     umax    R30, R2, R3
     mov     R29, R3
     call    assert:
-    // test UMAX pos/neg                [9]
+    // test UMAX pos/neg                [A]
     umax    R30, R2, R1
     mov     R29, R1
     call    assert:
 
-    // test UMIN neg/neg                [A]
+    // test UMIN neg/neg                [B]
     umin    R30, R1, R0
     mov     R29, R1
     call    assert:
-    // test UMIN pos/pos                [B]
+    // test UMIN pos/pos                [C]
     umin    R30, R3, R2
     mov     R29, R2
     call    assert:
-    // test UMIN pos/neg                [C]
+    // test UMIN pos/neg                [D]
     umin    R30, R1, R2
     mov     R29, R2
     call    assert:
 
-    // test SMAX neg/neg                [D]
+    // test SMAX neg/neg                [E]
     smax    R30, R1, R0
     mov     R29, R0
     call    assert:
-    // test SMAX pos/pos                [E]
+    // test SMAX pos/pos                [F]
     smax    R30, R3, R2
     mov     R29, R3
     call    assert:
-    // test SMAX pos/neg                [F]
+    // test SMAX pos/neg                [10]
     smax    R30, R1, R2
     mov     R29, R2
     call    assert:
 
-    // test SMIN neg/neg                [10]
+    // test SMIN neg/neg                [11]
     smin    R30, R0, R1
     mov     R29, R1
     call    assert:
-    // test SMIN pos/pos                [11]
+    // test SMIN pos/pos                [12]
     smin    R30, R2, R3
     mov     R29, R2
     call    assert:
-    // test SMIN pos/neg                [12]
+    // test SMIN pos/neg                [13]
     smin    R30, R2, R1
     mov     R29, R1
+    call    assert:
+
+    // test LOG (not zero)              [14]
+    log.e   R30, #0b1010111010101
+    mov     R29, #12
+    call    assert:
+    // test LOG (zero)                  [15]
+    log     R30, #0
+    mov     R29, #0
+    call    assert:
+
+    // test CTZ                         [16]
+    ctz.e   R30, #0b10110100000
+    mov     R29, #5
+    call    assert:
+    // test CTZ (full)                  [17]
+    ctz     R30, #0
+    mov.e   R29, #32
+    call    assert:
+    // test CTZ (none)                  [18]
+    ctz.e   R30, #0b101101000001
+    mov     R29, #0
+    call    assert:
+
+    // test PCNT                        [19]
+    pcnt.e  R30, #0b101101000001
+    mov     R29, #5
+    call    assert:
+
+    // test BRVS                        [1A]
+    brvs.e  R30, #0b00000001010001010111010111000101
+    mov.e   R29, #0b10100011101011101010001010000000
+    call    assert:
+
+    // test SRVS                        [1B]
+    srvs.e  R30, #0b10000001010001010111010111000101, #5
+    mov.e   R29, #0b00000000010101010101110111010100
+    call    assert:
+
+    // test VANY                        [1C]
+    vany.e  R30, #0b10000001010001010111010111000101, #5
+    mov.e   R29, #0b01000000000100001000010000100001
+    call    assert:
+
+    // test EXS                         [1D]
+    exs.e   R30, #0b00000001010001010111010101000101, #8
+    mov.e   R29, #0b11111111111111111111111101000101
+    call    assert:
+
+    // test LSB                         [1E]
+    lsb.e   R30, #0b00000001010001010111010101000000
+    mov.e   R29, #0b1000000
+    call    assert:
+
+    // test HSB                         [1F]
+    hsb.e   R30, #0b00000001010001010111010101000000
+    mov.e   R29, #0b1000000000000000000000000
     call    assert:
 
     mov     R31, #0
