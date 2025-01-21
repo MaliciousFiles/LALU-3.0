@@ -1,0 +1,13 @@
+fn Main() void {
+  var x: u32;
+  var y: u32;
+  var z: u32;
+  var w: u32;
+  while ((false or true) and x > y or z >= w) {
+    w = @ldchrr();
+  } else for (var i: u32 = 0; i < 10; i += 1) {
+    @stchr(i);
+  } else {
+    @susp();
+  }
+}

@@ -6,8 +6,12 @@ stmt: blockstmt
     | declexpr
     | declstmt
     | exprstmt
+    | jumpstmt
+    | iterstmt
+    | selstmt
 
 blockstmt: LCURLY stmt* RCURLY
+encexprsmt: [expr] [SEMICOLON]
 exprstmt: [expr] SEMICOLON
 
 declstmt: VAR ident COLON type SEMICOLON
@@ -22,6 +26,8 @@ expr: assgexpr
 ?relexpr: borexpr 
 	| borexpr relop borexpr
 ?borexpr: bxorexpr
+	| TRUE -> true
+	| FALSE -> false
         | borexpr PIPE bxorexpr
 ?bxorexpr: bandexpr
         | bxorexpr CARROT bandexpr
@@ -37,8 +43,10 @@ expr: assgexpr
 ?unaryexpr: postexpr
         | unaryop castexpr
 ?postexpr: primexpr
+	| AT ident LPAREN [argexprs] RPAREN -> intrinsic
+        | postexpr LBRACK expr COLON expr RBRACK -> sliceexpr
         | postexpr LBRACK expr RBRACK -> indexpr
-        | postexpr LPAREN argexprs? RPAREN -> callexpr
+        | postexpr LPAREN [argexprs] RPAREN -> callexpr
         | postexpr DOT ASTERISK -> derefexpr
         | postexpr DOT AMPERSAND -> addrexpr
         | postexpr DOT QMARK -> denullexpr
@@ -47,6 +55,28 @@ expr: assgexpr
         | constant
         | string
         | LPAREN expr RPAREN
+?jumpstmt: CONTINUE SEMICOLON -> continue
+	| BREAK SEMICOLON -> break
+	| RETURN SEMICOLON -> return
+	| RETURN expr SEMICOLON -> returnexpr
+?iterstmt: whileelsestmt
+	| whilestmt
+	| forelsestmt
+	| forstmt
+	| doelsestmt
+	| dostmt
+?selstmt: ifelsestmt
+	| ifstmt
+
+whileelsestmt: WHILE LPAREN expr RPAREN stmt ELSE stmt
+whilestmt: WHILE LPAREN expr RPAREN stmt
+forelsestmt: FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt ELSE stmt
+forstmt: FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt
+doelsestmt: DO LPAREN expr RPAREN stmt ELSE stmt
+dostmt: DO LPAREN expr RPAREN stmt
+
+ifelsestmt: IF LPAREN expr RPAREN stmt ELSE stmt
+ifstmt: IF LPAREN expr RPAREN stmt
 
 argexprs: assgexpr (COMMA assgexpr)* COMMA?
 args: arg (COMMA arg)* COMMA?
@@ -62,7 +92,7 @@ hexint: "0x" UH*
 
 INT: /u[0-9]+\**/
 
-assgop: EQUAL
+assgop: EQUAL | (PLUS | MINUS | LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK | TILDE | AMPERSAND | PIPE | CARROT) EQUAL
 relop: LANGLEQ | RANGLEQ | EQUALL | NEQUAL | LANGLE | RANGLE
 addop: PLUS | MINUS
 multop: LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK
@@ -106,6 +136,17 @@ RANGLEQ: ">="
 NEQUAL: "!="
 EQUALL: "=="
 VAR: "var"
+CONTINUE: "continue"
+BREAK: "break"
+RETURN: "return"
+WHILE: "while"
+DO: "do"
+IF: "if"
+ELSE: "else"
+FOR: "for"
+AT: "@"
+TRUE: "true"
+FALSE: "false"
 
 %ignore WS
 %ignore "\n"
