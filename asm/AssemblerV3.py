@@ -155,8 +155,9 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'vadd':  Q_CODE(Fmt_Code = '001', Func_ID = '0110'),
     'vsub':  Q_CODE(Fmt_Code = '001', Func_ID = '0111'),
     'bext':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1100'),
-    'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1101'),
-    'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
+    'bdep':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1101'),
+    'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
+    'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1111'),
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
     
 
@@ -287,7 +288,7 @@ def PrepInstr(name, args, mods):
 
     ret['args'] = args
     ret['eximm'] = eximm
-        
+
     return ret
 
 def ResolveInstr(form, lbls):

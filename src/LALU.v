@@ -14,7 +14,9 @@
 `define SUB		            9'b0_0000_0010
 `define RADD		        9'b0_0000_1101
 `define RSUB		        9'b0_0000_1110
-`define CSUB		        9'b0_0001_0001
+`define ADDS                4'b1000
+`define ADDRS               4'b1001
+`define CSUB		        9'b0_0010_0000
 `define MUL		            9'b0_0000_0011
 `define UUMUL				9'b0_0000_1010
 `define ULMUL				9'b0_0000_1011
@@ -79,7 +81,7 @@
 `define GCLD				9'b1_1111_1111
 `define SUSP				9'b1_1111_1111
 
-module LALU(input CLOCK_50);
+module LALU(input CLOCK_50, output wire suspended);
     /*********************
      *      Memory       *
      *********************/
@@ -129,11 +131,12 @@ module LALU(input CLOCK_50);
      *********************/
     // GENERAL
     integer globalCounter = 0; // how many cycles the processor has been running for
-    always @(posedge CLOCK_50) if (~suspend) globalCounter <= globalCounter + 1;
+    always @(posedge CLOCK_50) if (run) globalCounter <= globalCounter + 1;
 
     reg [15:0] IP = 0; // instruction pointer
     reg operationMode = 1; // 0 = user mode, 1 = kernel mode
-    reg suspend = 0; // entirely stops the processor
+    reg run = 1; // setting to 0 entirely stops the processor
+    assign suspended = ~run;
 
     reg [11:0] stackPointer = 0;
 
@@ -230,6 +233,8 @@ module LALU(input CLOCK_50);
     reg [16:0] returnAddress;
     reg isRet_e = 0;
 
+    reg halt_e = 0;
+
     // MEMORY READ
     reg [15:0] IP_m = 0; // instruction pointer at memory read stage
     reg isValid_m = 0; // whether the memory read instruction is valid
@@ -249,6 +254,8 @@ module LALU(input CLOCK_50);
     reg [4:0] memAccessNumBits_m = 0;
     reg [4:0] memAccessNumBitsAfter_m = 0;
 
+    reg halt_m = 0;
+
     // WRITEBACK
     reg memAccessWren_w = 0;
     reg [15:0] memAccessAddress_w = 0;
@@ -261,7 +268,7 @@ module LALU(input CLOCK_50);
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
-    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_e) begin
+    always @(posedge CLOCK_50) begin if (run) if (~stall_e) begin
         IP_f <= IP; // save IP of fetched instruction
 
         IP <= executiveOverride
@@ -276,8 +283,8 @@ module LALU(input CLOCK_50);
      *********************/
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
-    always @(posedge CLOCK_50) if (~suspend) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
-    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_e) begin if (isValid_f) begin
+    always @(posedge CLOCK_50) if (run) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
+    always @(posedge CLOCK_50) begin if (run) if (~stall_e) begin if (isValid_f) begin
         IP_d <= IP_f; // save IP of decoded instruction
         isValid_d <= 1'b1;
 
@@ -389,8 +396,8 @@ module LALU(input CLOCK_50);
         : registers[Rd_d];
 
     // have to bring these out since the result is used for setting CF and OF
-    wire [32:0] sum  = Rs0 + Rs1, sum_carry  = Rs0 + Rs1 + CF;
-    wire [32:0] diff = Rs0 - Rs1, diff_carry = Rs0 + Rs1 + CF;
+    wire [32:0] sum  = Rs0 + Rs1, sum_carry  = Rs0 + Rs1 + CF, sum_shift = Rs0 + (Rs1 << Rs2), sum_right_shift = Rs0 + (Rs1 >> Rs2);
+    wire [32:0] diff = Rs0 - Rs1, diff_carry = Rs0 - Rs1 + CF;
 
     // bring out flags for diff calc, since all comparisons use them
     wire diff_NF = diff[31];
@@ -424,7 +431,7 @@ module LALU(input CLOCK_50);
 //    assign segments1[0] = Rs1 && segMask, segments1[1] = Rs1 && segMask << segSize, segments1[2] = Rs1 && segMask << segSize << segSize, segments1[3] = Rs1 && segMask << segSize << segSize << segSize, segments1[4] = Rs1 && segMask << segSize << segSize << segSize << segSize, segments1[5] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize, segments1[6] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize, segments1[7] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[8] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[9] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[10] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[11] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[12] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[13] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[14] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[15] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[16] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[17] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[18] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[19] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[20] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[21] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[22] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[23] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[24] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[25] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[26] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[27] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[28] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[29] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[30] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize, segments1[31] = Rs1 && segMask << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize << segSize;
 
 
-    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
+    always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
             expectedIP <= expectedIP + 1;
         end
@@ -473,16 +480,16 @@ module LALU(input CLOCK_50);
                         result_e <= Rs0[15:0] * Rs1[15:0];
                     end
                     `UUMUL: begin
-                        result_e <= Rs0[32:16] * Rs1[32:16];
+                        result_e <= Rs0[31:16] * Rs1[31:16];
                     end
                     `ULMUL: begin
-                        result_e <= Rs0[32:16] * Rs1[15:0];
+                        result_e <= Rs0[31:16] * Rs1[15:0];
                     end
                     `LUMUL: begin
-                        result_e <= Rs0[15:0] * Rs1[32:16];
+                        result_e <= Rs0[15:0] * Rs1[31:16];
                     end
                     `ABS: begin
-                        result_e <= {~Rs0[31], Rs0[30:0]};
+                        result_e <= Rs0[31] ? -Rs0 : Rs0;
                     end
                     `BSL: begin
                         result_e <= Rs0 << Rs1;
@@ -517,7 +524,7 @@ module LALU(input CLOCK_50);
                         result_e <= Rs0[31] == 1'b1 ? 31 : Rs0[30] == 1'b1 ? 30 : Rs0[29] == 1'b1 ? 29 : Rs0[28] == 1'b1 ? 28 : Rs0[27] == 1'b1 ? 27 : Rs0[26] == 1'b1 ? 26 : Rs0[25] == 1'b1 ? 25 : Rs0[24] == 1'b1 ? 24 : Rs0[23] == 1'b1 ? 23 : Rs0[22] == 1'b1 ? 22 : Rs0[21] == 1'b1 ? 21 : Rs0[20] == 1'b1 ? 20 : Rs0[19] == 1'b1 ? 19 : Rs0[18] == 1'b1 ? 18 : Rs0[17] == 1'b1 ? 17 : Rs0[16] == 1'b1 ? 16 : Rs0[15] == 1'b1 ? 15 : Rs0[14] == 1'b1 ? 14 : Rs0[13] == 1'b1 ? 13 : Rs0[12] == 1'b1 ? 12 : Rs0[11] == 1'b1 ? 11 : Rs0[10] == 1'b1 ? 10 : Rs0[9] == 1'b1 ? 9 : Rs0[8] == 1'b1 ? 8 : Rs0[7] == 1'b1 ? 7 : Rs0[6] == 1'b1 ? 6 : Rs0[5] == 1'b1 ? 5 : Rs0[4] == 1'b1 ? 4 : Rs0[3] == 1'b1 ? 3 : Rs0[2] == 1'b1 ? 2 : Rs0[1] == 1'b1 ? 1 : Rs0[0] == 1'b1 ? 0 : 0;
                     end
                     `CTZ: begin
-                        result_e <= Rs0[0] == 1'b1 ? 0 : Rs0[1] == 1'b1 ? 1 : Rs0[2] == 1'b1 ? 2 : Rs0[3] == 1'b1 ? 3 : Rs0[4] == 1'b1 ? 4 : Rs0[5] == 1'b1 ? 5 : Rs0[6] == 1'b1 ? 6 : Rs0[7] == 1'b1 ? 7 : Rs0[8] == 1'b1 ? 8 : Rs0[9] == 1'b1 ? 9 : Rs0[10] == 1'b1 ? 10 : Rs0[11] == 1'b1 ? 11 : Rs0[12] == 1'b1 ? 12 : Rs0[13] == 1'b1 ? 13 : Rs0[14] == 1'b1 ? 14 : Rs0[15] == 1'b1 ? 15 : Rs0[16] == 1'b1 ? 16 : Rs0[17] == 1'b1 ? 17 : Rs0[18] == 1'b1 ? 18 : Rs0[19] == 1'b1 ? 19 : Rs0[20] == 1'b1 ? 20 : Rs0[21] == 1'b1 ? 21 : Rs0[22] == 1'b1 ? 22 : Rs0[23] == 1'b1 ? 23 : Rs0[24] == 1'b1 ? 24 : Rs0[25] == 1'b1 ? 25 : Rs0[26] == 1'b1 ? 26 : Rs0[27] == 1'b1 ? 27 : Rs0[28] == 1'b1 ? 28 : Rs0[29] == 1'b1 ? 29 : Rs0[30] == 1'b1 ? 30 : Rs0[31] == 1'b1 ? 31 : 0;
+                        result_e <= Rs0[0] == 1'b1 ? 0 : Rs0[1] == 1'b1 ? 1 : Rs0[2] == 1'b1 ? 2 : Rs0[3] == 1'b1 ? 3 : Rs0[4] == 1'b1 ? 4 : Rs0[5] == 1'b1 ? 5 : Rs0[6] == 1'b1 ? 6 : Rs0[7] == 1'b1 ? 7 : Rs0[8] == 1'b1 ? 8 : Rs0[9] == 1'b1 ? 9 : Rs0[10] == 1'b1 ? 10 : Rs0[11] == 1'b1 ? 11 : Rs0[12] == 1'b1 ? 12 : Rs0[13] == 1'b1 ? 13 : Rs0[14] == 1'b1 ? 14 : Rs0[15] == 1'b1 ? 15 : Rs0[16] == 1'b1 ? 16 : Rs0[17] == 1'b1 ? 17 : Rs0[18] == 1'b1 ? 18 : Rs0[19] == 1'b1 ? 19 : Rs0[20] == 1'b1 ? 20 : Rs0[21] == 1'b1 ? 21 : Rs0[22] == 1'b1 ? 22 : Rs0[23] == 1'b1 ? 23 : Rs0[24] == 1'b1 ? 24 : Rs0[25] == 1'b1 ? 25 : Rs0[26] == 1'b1 ? 26 : Rs0[27] == 1'b1 ? 27 : Rs0[28] == 1'b1 ? 28 : Rs0[29] == 1'b1 ? 29 : Rs0[30] == 1'b1 ? 30 : Rs0[31] == 1'b1 ? 31 : 32;
                     end
                     `PCNT: begin
                         result_e <= Rs0[0] + Rs0[1] + Rs0[2] + Rs0[3] + Rs0[4] + Rs0[5] + Rs0[6] + Rs0[7] + Rs0[8] + Rs0[9] + Rs0[10] + Rs0[11] + Rs0[12] + Rs0[13] + Rs0[14] + Rs0[15] + Rs0[16] + Rs0[17] + Rs0[18] + Rs0[19] + Rs0[20] + Rs0[21] + Rs0[22] + Rs0[23] + Rs0[24] + Rs0[25] + Rs0[26] + Rs0[27] + Rs0[28] + Rs0[29] + Rs0[30] + Rs0[31];
@@ -526,15 +533,18 @@ module LALU(input CLOCK_50);
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
                     end
                     `SRVS: begin // TODO: is non static loop ok?
-                        for (i = 0; i < 32; i = i+Rs1) begin
+                        if (Rs1 == 0) result_e <= 32'b0;
+                        else for (i = 0; i < 32; i = i+Rs1) begin
                             for (j = 0; j < Rs1; j = j+1) begin
-                                result_e[i+j] <= Rs0[i+Rs1-1-j];
+                                result_e[i+j] <= i+Rs1-1-j < 32 ? Rs0[i+Rs1-1-j] : 1'b0;
                             end
                         end
                     end
                     `VANY: begin // TODO: is non static loop ok?
-                        for (i = 0; i < 32; i = i+Rs1) begin
-                            result_e[i] <= (32'hFFFFFFFF & Rs0 << 32 >> i >> Rs1) << i << Rs1 >> 32 >> i != 0;
+                        if (Rs1 == 0) result_e <= 32'b0;
+                        else for (i = 0; i < 32; i = i+Rs1) begin
+                            result_e[i] <= ((64'hFFFFFFFF << Rs1 >> 32) & Rs0 >> i) != 0;
+                            for (j = 1; j < Rs1; j = j+1) result_e[i+j] <= 1'b0;
                         end
                     end
 //                    `BEXT: begin
@@ -544,10 +554,12 @@ module LALU(input CLOCK_50);
 //
 //                    end
                     `EXS: begin
-                        result_e <= {Rs0[Rs1] ? 32'hFFFFFFFF : 32'b0, (32'hFFFFFFFF & Rs0 << 32 >> Rs1) << Rs1 >> 32};
+                        result_e <= Rs1 < 32
+                            ? (Rs0[Rs1] ? 32'hFFFFFFFF << Rs1 : 32'b0) | ((64'hFFFFFFFF << Rs1 >> 31) & Rs0)
+                        : Rs0;
                     end
                     `LSB: begin
-                        result_e <= Rs0 & ~Rs0;
+                        result_e <= Rs0 & -Rs0;
                     end
                     `HSB: begin
                         result_e <= Rs0[31] == 1'b1 ? 32'b10000000000000000000000000000000 : Rs0[30] == 1'b1 ? 32'b1000000000000000000000000000000 : Rs0[29] == 1'b1 ? 32'b100000000000000000000000000000 : Rs0[28] == 1'b1 ? 32'b10000000000000000000000000000 : Rs0[27] == 1'b1 ? 32'b1000000000000000000000000000 : Rs0[26] == 1'b1 ? 32'b100000000000000000000000000 : Rs0[25] == 1'b1 ? 32'b10000000000000000000000000 : Rs0[24] == 1'b1 ? 32'b1000000000000000000000000 : Rs0[23] == 1'b1 ? 32'b100000000000000000000000 : Rs0[22] == 1'b1 ? 32'b10000000000000000000000 : Rs0[21] == 1'b1 ? 32'b1000000000000000000000 : Rs0[20] == 1'b1 ? 32'b100000000000000000000 : Rs0[19] == 1'b1 ? 32'b10000000000000000000 : Rs0[18] == 1'b1 ? 32'b1000000000000000000 : Rs0[17] == 1'b1 ? 32'b100000000000000000 : Rs0[16] == 1'b1 ? 32'b10000000000000000 : Rs0[15] == 1'b1 ? 32'b1000000000000000 : Rs0[14] == 1'b1 ? 32'b100000000000000 : Rs0[13] == 1'b1 ? 32'b10000000000000 : Rs0[12] == 1'b1 ? 32'b1000000000000 : Rs0[11] == 1'b1 ? 32'b100000000000 : Rs0[10] == 1'b1 ? 32'b10000000000 : Rs0[9] == 1'b1 ? 32'b1000000000 : Rs0[8] == 1'b1 ? 32'b100000000 : Rs0[7] == 1'b1 ? 32'b10000000 : Rs0[6] == 1'b1 ? 32'b1000000 : Rs0[5] == 1'b1 ? 32'b100000 : Rs0[4] == 1'b1 ? 32'b10000 : Rs0[3] == 1'b1 ? 32'b1000 : Rs0[2] == 1'b1 ? 32'b100 : Rs0[1] == 1'b1 ? 32'b10 : Rs0[0] == 1'b1 ? 32'b1 : 32'b0;
@@ -623,7 +635,7 @@ module LALU(input CLOCK_50);
                         generalFlag <= ~OF;
                     end
                     `SUSP: begin
-                        suspend <= 1;
+                        halt_e <= 1'b1;
                     end
                     default begin
                         invalidFunction <= 1'b1;
@@ -639,6 +651,16 @@ module LALU(input CLOCK_50);
 //                    `VSUB: begin // TODO: is non static loop ok?
 //
 //                    end
+                    `ADDS: begin
+                        result_e <= sum_shift;
+                        carryFlag_e <= sum_shift[32];
+                        overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_shift[31]);
+                    end
+                    `ADDRS: begin
+                        result_e <= sum_right_shift;
+                        carryFlag_e <= sum_right_shift[32];
+                        overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_right_shift[31]);
+                    end
                     `BIT: begin
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[~{Rs1[i], Rs0[i]}];
                     end
@@ -703,7 +725,7 @@ module LALU(input CLOCK_50);
     assign memAccessWren = isMemWrite_m || fullByteWrite;
     assign memAccessRden = (isMemRead_e || isMemWrite_e) && ~memAccessWren; // only read if we aren't writing
     assign memAccessAddress = isMemWrite_m ? memAccessAddress_m : memAccessAddress_e; // either write address or read address
-    always @(posedge CLOCK_50) begin if (~suspend) if (~stall_m && isValid_e) begin
+    always @(posedge CLOCK_50) begin if (run) if (~stall_m && isValid_e) begin
         IP_m <= IP_e; // save IP of memory access instruction
         isValid_m <= 1'b1;
 
@@ -723,6 +745,8 @@ module LALU(input CLOCK_50);
 
         // if we just returned, we need to update the current return address from the stack
         if (isRet_e) returnAddress <= stackReadOut;
+
+        halt_m <= halt_e;
     end else isValid_m <= 1'b0; end
 
     /*********************
@@ -737,7 +761,9 @@ module LALU(input CLOCK_50);
         memOutput >> memAccessNumBits_m >> memAccessNumBitsBefore_m << memAccessNumBits_m << memAccessNumBitsBefore_m
         | (32'hFFFFFFFF & registers[Rd_m] << memAccessNumBitsAfter_m << memAccessNumBitsBefore_m) >> memAccessNumBitsAfter_m
         | (32'hFFFFFFFF & memOutput << memAccessNumBitsAfter_m << memAccessNumBits_m) >> memAccessNumBitsAfter_m >> memAccessNumBits_m;
-    always @(posedge CLOCK_50) begin if (~suspend) if (isValid_m) begin
+    always @(posedge CLOCK_50) begin if (run) if (isValid_m) begin
+        if (halt_m) run <= 1'b0;
+
         if (isWriteback_m) begin
             registers[Rd_m] <= finalResult_w;
 

@@ -50,7 +50,7 @@ main:
     // test ABS                         [7]
     mov.e   R0, #0xFFFFFFFF
     abs     R30, R0
-    mov.e   R29, #0x7FFFFFFF
+    mov.e   R29, #1
     call    assert:
 
     mov.e   R0, #0xFFFFFFFF // -1
@@ -153,8 +153,8 @@ main:
     call    assert:
 
     // test EXS                         [1D]
-    exs.e   R30, #0b00000001010001010111010101000101, #8
-    mov.e   R29, #0b11111111111111111111111101000101
+    exs.e   R30, #0b01010001010001010111010101000101, #10
+    mov.e   R29, #0b11111111111111111111110101000101
     call    assert:
 
     // test LSB                         [1E]
