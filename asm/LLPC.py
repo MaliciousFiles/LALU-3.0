@@ -1,6 +1,6 @@
 from lark import Lark, Token, Tree
 
-parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr")
+parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 with open('prog.lpc', 'r') as f:
     tree = parser.parse(txt := f.read())
 
@@ -20,44 +20,49 @@ def Dendent():
 
 def logerror(func):
     def inner(*args, **kwargs):
-        global FAILED
+        global FAILEDLINE
         try:
             return func(*args, **kwargs)
         except Exception as e:
             tree = args[0]
-            if type(tree) == Tree:
-                if type(tree.data) == str:
-                    print(f'In `{tree.data}`')
-                    start = tree.children[0].data.start_pos
-                    end = tree.children[0].data.end_pos
-                else:
-                    start = tree.data.start_pos
-                    end = tree.data.end_pos
-                line = txt[:start].count('\n')
-                if len(txt[start:].split('\n')) > 1:
-                    body = txt[start:].split('\n')[1]
-                else:
-                    body = txt[start:].split('\n')[0]
-                if body:
-                    print(f'Error on line {line+1}:\n' + body)
-            elif type(tree) == Token:
-                start = tree.start_pos
-                end = tree.end_pos
-                line = txt[:start].count('\n')
-                body = txt[start:].split('\n')[0]
-                if body:
-                    print(f'Error on line {line+1}:\n' + body)
+            start = tree.meta.start_pos
+            end = tree.meta.end_pos
+            line = txt[:start].count('\n')
+            pline = txt[:start].split('\n')[-1]
+            body = txt[start:].split('\n')[0]
+            body = pline + body
+            if FAILEDLINE != body:
+                FAILEDLINE = body
+                print(f'Error on line {line+1}:\n  ' + body.lstrip(' ').lstrip('\t'))
             raise e
     return inner
 
-##FAILED = False
+FAILEDLINE = None
 
 @logerror
 def Gen(tree):
     global out, ind, inter
     if type(tree) == Tree:
         data = tree.data
-        if data.type == 'RULE' and data.value == 'start':
+        if data == 'break':
+            assert len(inter.loops) > 0, f'Cannot break out of no loop'
+            top, bot = inter.loops[-1]
+            inter.Jump(bot)
+        elif data == 'continue':
+            assert len(inter.loops) > 0, f'Cannot continue from no loop'
+            top, bot = inter.loops[-1]
+            inter.Jump(top)
+        elif data == 'return':
+            inter.Return()
+        elif data == 'returnexpr':
+            _, expr, _, = tree.children
+            inter.Return(Rvalue(expr.children[0]))
+        elif type(data) == str:
+            print(data)
+            print(expr)
+            err
+        
+        elif data.type == 'RULE' and data.value == 'start':
             Gen(tree.children[0])
         elif data.type == 'RULE' and data.value == 'ex_decl':
             _, name, _, rargs, _, ret, body = tree.children
@@ -84,12 +89,183 @@ def Gen(tree):
             inter.AddPent(op = '=', D = name, S0 = rhs, S1 = None, S2 = None)
         elif data.type == 'RULE' and data.value == 'exprstmt':
             expr, _, = tree.children
-            _ = Rvalue(expr.children[0])
+            if expr:
+                _ = Rvalue(expr.children[0])
+        elif data.type == 'RULE' and data.value == 'encexprstmt':
+            if type(tree.children[0]) == Tree:
+                _ = Rvalue(expr.children[0])
         elif data.type == 'RULE' and data.value == 'blockstmt':
             stmts = tree.children[1:-1]
             for stmt in stmts:
                 Gen(stmt)
-
+        elif data.type == 'RULE' and data.value == 'dostmt':
+            _, _, expr, _, stmt = tree.children
+            pre = NewLabel()
+            inner = NewLabel()
+            post = NewLabel()
+            inter.PushLoopLabels(pre, post)
+            inter.AddLabel(inner)
+            Gen(stmt.children[0])
+            inter.AddLabel(pre)
+            inter.trues.append(inner)
+            inter.falses.append(post)
+            cond, _ = Rvalue(expr.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, post)
+            inter.PopLoopLabels(pre, post)
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'doelsestmt':
+            _, _, expr, _, stmt0, _, stmt1 = tree.children
+            pre = NewLabel()
+            inner = NewLabel()
+            post = NewLabel()
+            _else = NewLabel()
+            inter.PushLoopLabels(pre, post)
+            inter.AddLabel(inner)
+            Gen(stmt0.children[0])
+            inter.trues.append(inner)
+            inter.falses.append(_else)
+            inter.AddLabel(pre)
+            cond, _ = Rvalue(expr.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, _else)
+            inter.PopLoopLabels(pre, post)
+            inter.AddLabel(_else)
+            Gen(stmt1.children[0])
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'whilestmt':
+            _, _, expr, _, stmt = tree.children
+            pre = NewLabel()
+            inner = NewLabel()
+            post = NewLabel()
+            inter.trues.append(inner)
+            inter.falses.append(post)
+            inter.PushLoopLabels(pre, post)
+            inter.AddLabel(pre)
+            cond, _ = Rvalue(expr.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, post)
+            inter.AddLabel(inner)
+            Gen(stmt.children[0])
+            inter.Jump(pre)
+            inter.PopLoopLabels(pre, post)
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'whileelsestmt':
+            _, _, expr, _, stmt0, _, stmt1 = tree.children
+            pre = NewLabel()
+            inner = NewLabel()
+            post = NewLabel()
+            _else = NewLabel()
+            inter.trues.append(inner)
+            inter.falses.append(_else)
+            inter.PushLoopLabels(pre, post)
+            inter.AddLabel(pre)
+            cond, _ = Rvalue(expr.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, _else)
+            inter.AddLabel(inner)
+            Gen(stmt0.children[0])
+            inter.Jump(pre)
+            inter.PopLoopLabels(pre, post)
+            inter.AddLabel(_else)
+            Gen(stmt1.children[0])
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'forelsestmt':
+            _, _, preexpr, cond, postexpr, _, body, _, elseexpr = tree.children
+            pre = NewLabel()
+            inner = NewLabel()
+            post = NewLabel()
+            _else = NewLabel()
+            inter.trues.append(inner)
+            inter.falses.append(_else)
+            inter.PushLoopLabels(pre, post)
+            Gen(preexpr.children[0])
+            inter.AddLabel(pre)
+            cond, _ = Rvalue(cond.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, _else)
+            inter.AddLabel(inner)
+            Gen(body.children[0])
+            if type(postexpr.children[0]) == Tree:
+                _ = Rvalue(postexpr.children[0])
+            inter.Jump(pre)
+            inter.PopLoopLabels(pre, post)
+            inter.AddLabel(_else)
+            Gen(elseexpr.children[0])
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'forstmt':
+            _, _, preexpr, cond, postexpr, _, body, = tree.children
+            pre = NewLabel()
+            inner = NewLabel()
+            post = NewLabel()
+            inter.trues.append(inner)
+            inter.falses.append(post)
+            inter.PushLoopLabels(pre, post)
+            Gen(preexpr.children[0])
+            inter.AddLabel(pre)
+            cond, _ = Rvalue(cond.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, post)
+            inter.AddLabel(inner)
+            Gen(body.children[0])
+            if type(postexpr.children[0]) == Tree:
+                _ = Rvalue(postexpr.children[0])
+            inter.Jump(pre)
+            inter.PopLoopLabels(pre, post)
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'ifstmt':
+            _, _, cond, _, body, = tree.children
+            inner = NewLabel()
+            post = NewLabel()
+            inter.trues.append(inner)
+            inter.falses.append(post)
+            cond, _ = Rvalue(cond.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, post)
+            inter.AddLabel(inner)
+            Gen(body.children[0])
+            inter.AddLabel(post)
+        elif data.type == 'RULE' and data.value == 'ifelsestmt':
+            _, _, cond, _, body, _, _else = tree.children
+            inner = NewLabel()
+            einner = NewLabel()
+            post = NewLabel()
+            inter.trues.append(inner)
+            inter.falses.append(einner)
+            cond, _ = Rvalue(cond.children[0])
+            assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+            assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+            inter.trues = []; inter.falses = []
+            if cond:
+                inter.CJump(cond, einner)
+            inter.AddLabel(inner)
+            Gen(body.children[0])
+            inter.Jump(post)
+            inter.AddLabel(einner)
+            Gen(_else.children[0])
+            inter.AddLabel(post)
+        
         elif data.type == 'RULE' and data.value == 'stmt':
             Gen(tree.children[0])
         else:
@@ -121,6 +297,21 @@ def Rvalue(expr):
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
             return f'{lhs}.&', lk.Addr()
+        elif data == 'intrinsic':
+            _, name, _, args, _, = expr.children
+            name = name.children[0].value
+            args = [x.children[0].value for x in args.children if type(x)==Tree] if args else []
+            assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguements'
+            args += [None]*3
+            tmp = NewTemp(Type())
+            inter.AddPent(op = '@'+name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
+            return tmp, Type()
+        elif data == 'true':
+            inter.Jump(inter.trues[-1])
+            return None, Type(isbool = True)
+        elif data == 'false':
+            inter.Jump(inter.falses[-1])
+            return None, Type(isbool = True)
         elif type(data) == str:
             print(data)
             print(expr)
@@ -134,6 +325,24 @@ def Rvalue(expr):
             return int(''.join([x for x in expr.children]).replace('_', '')), Type(comptime = True)
         elif data.value == 'hexint':
             return int(''.join([x for x in expr.children]).replace('_', ''), 16), Type(comptime = True)
+        elif data.value == 'landexpr':
+            lhs, _, rhs = expr.children
+            lbl = NewLabel()
+            inter.trues.append(lbl)
+            Rvalue(lhs)
+            inter.AddLabel(lbl)
+            del inter.trues[-1]
+            Rvalue(rhs)
+            return None, Type(isbool = True)
+        elif data.value == 'lorexpr':
+            lhs, _, rhs = expr.children
+            lbl = NewLabel()
+            inter.falses.append(lbl)
+            Rvalue(lhs)
+            inter.AddLabel(lbl)
+            del inter.falses[-1]
+            Rvalue(rhs)
+            return None, Type(isbool = True)
         elif data.value == 'addexpr':
             le, op, re = expr.children
             lhs, lk = Rvalue(le)
@@ -181,16 +390,20 @@ def Rvalue(expr):
             lhs, lk = Rvalue(le)
             rhs, rk = Rvalue(re)
             op = op.children[0].value
-            kind = lk.Common(rk)
-            tmp = NewTemp(kind)
-            inter.AddPent(op = op, D = lhs, S0 = rhs, S1 = None, S2 = None, width = kind.OpWidth())
-            return tmp, kind
+            inter.IfJump(lhs, op, rhs, inter.trues[-1])
+            inter.Jump(inter.falses[-1])
+            return None, Type(isbool = True)
         elif data.value == 'assgexpr':
-            le, _, re = expr.children
+            le, op, re = expr.children
             lhs, lk = Lvalue(le)
             rhs, rk = Rvalue(re)
-            assert rk.CanCoerceTo(lk)
-            inter.AddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None, width = lk.OpWidth())
+            if len(op.children) == 2:
+                op = op.children[0].value
+                assert rk.CanCoerceTo(lk)
+                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None, width = lk.OpWidth())
+            else:
+                assert rk.CanCoerceTo(lk)
+                inter.AddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None, width = lk.OpWidth())
             return lhs, lk
         elif data.value == 'unaryexpr':
             op, re = expr.children
@@ -267,6 +480,7 @@ def Lvalue(expr):
         elif data.value == 'hexint':
             assert False, f'Cannot take L-value of constant'
         else:
+            print(expr)
             print(data.value)
             bad
     else:
@@ -277,13 +491,21 @@ def NewTemp(kind):
     global tid
     tid += 1; ID = f't{tid}'
     inter.Decl(ID, kind)
-##    WriteLine(f'decl {ID}: {kind}')
     return ID
 
-class LLIR:
+def NewLabel():
+    global tid
+    tid += 1; ID = f'L{tid}'
+    return ID
+
+class HLIR:
     def __init__(self):
         self.funcs = []
         self.envs = []
+        self.loops = []
+        self.sels = []
+        self.trues = []
+        self.falses = []
 
     def __repr__(self):
         o = ''
@@ -294,7 +516,7 @@ class LLIR:
                 o += '  '+(f'{block.entry}:') + '\n'
                 for line in block.body:
                     o += '    '+repr(line) + '\n'
-                o += '  '+(f'{block.exit}') + '\n'
+                o += '  '+(f'{block.exit} \n    FALL: {block.fall}') + '\n\n'
             o += ('}') + '\n'
         return o
 
@@ -339,14 +561,45 @@ class LLIR:
             self.body.Addline(('expr', ('[]=', D, l, r, S2, width)))
         else:
             self.body.Addline(('expr', (op, D, S0, S1, S2, width)))
+    def AddLabel(self, lbl):
+        self.body.fall = lbl
+        self.body = Block(lbl)
+        self.func['body'].append(self.body)
+    def NoFallLabel(self, lbl):
+        self.body = Block(lbl)
+        self.func['body'].append(self.body)
+    def IfJump(self, lhs, op, rhs, lbl):
+        self.body.exit = ('if', (lhs, op, rhs, lbl))
+        self.AddLabel('_'+NewLabel())
+    def IfFalseJump(self, lhs, op, rhs, lbl):
+        self.body.exit = ('ifFalse', (lhs, op, rhs, lbl))
+        self.AddLabel('_'+NewLabel())
+    def CJump(self, cond, lbl):
+        self.body.exit = ('if', (cond, '!=', 0, lbl))
+        self.AddLabel('_'+NewLabel())
+    def Jump(self, lbl):
+        self.body.exit = ('goto', (lbl))
+        self.body.fall = None
+        self.NoFallLabel('_'+NewLabel())
+    def PushLoopLabels(self, pre, post):
+        self.loops.append([pre, post])
+    def PopLoopLabels(self, pre, post):
+        del self.loops[-1]
+    def Return(self, *args):
+        self.body.exit = ('return', args)
+        self.body.fall = None
+        self.NoFallLabel('_'+NewLabel())
 class Type:
-    def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False):
+    def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False):
         self.width = width
         self.signed = signed
         self.numPtrs = numPtrs
         self.comptime = comptime
+        self.isbool = isbool
     def FromStr(txt):
         self = Type()
+        if txt == 'bool':
+            return Type(isbool = True)
         if '!' in txt:
              self.comptime = True
              txt = txt.replace('!', '')
@@ -361,8 +614,13 @@ class Type:
     def __repr__(self):
         return f'Type.FromStr("{self}")'
     def __str__(self):
-        return f'{"!"*self.comptime}{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
+        if self.isbool:
+            return 'bool'
+        else:
+            return f'{"!"*self.comptime}{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
+        if self.isbool:
+            return False
         if other.comptime:
             return False
         if self.numPtrs > 0:
@@ -373,6 +631,8 @@ class Type:
         else:
             return self.signed == other.signed and other.width >= self.width
     def Common(self, other):
+        assert not self.isbool, 'Cannot take a common type of boolean and `{other}`'
+        
         bc = self.comptime and other.comptime
         if self.numPtrs > 0:
             if other.numPtrs > 0:
@@ -403,19 +663,24 @@ class Block:
     def __init__(self, entry):
         self.entry = entry
         self.body = []
-        self.exit = 'EOF'
+        self.exit = None
+        self.fall = 'EOF'
     def Addline(self, line):
         self.body.append(line)
-    def End(self, jmp):
-        self.exit = jmp
    
 syms = [{}]
 out = ''
 ind = 0
 tid = 0
 
-inter = LLIR()
-Gen(tree)
+inter = HLIR()
+try:
+    Gen(tree)
+except Exception as e:
+    print(e)
+    raise e
+
+
 
 print('\nOUT:')
 print(out)

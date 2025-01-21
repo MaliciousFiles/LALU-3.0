@@ -1,7 +1,8 @@
 fn Main() void {
   var x: u32;
-  var ptr: u32* = x.&;
-  ptr.* = 0;
-  x.&.* = 1;
-  x.&[1] = ~-2;
+  while (x > 0) {
+    x -= 1;
+  } 
+  return;
 }
+
