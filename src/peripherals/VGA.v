@@ -139,8 +139,8 @@ module VGA (
         .q_b(vramOut)
     );
 
-    wire character = characters[vramOut[7:0]];
-    wire color = character[charU + charV*10] ? vramOut[31:8] : vramOut[55:32];
+    wire [199:0] character = characters[vramOut[7:0]];
+    wire [23:0] color = character[charU + charV*10] ? vramOut[31:8] : vramOut[55:32];
 
     assign VGA_CLK = vga_clk;
     assign VGA_HS = ~(656 <= hCount && hCount < 752);
