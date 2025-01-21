@@ -3,11 +3,11 @@ module Keyboard (
     input PS2_CLK,
     input PS2_DAT,
 
-    input
+    input [7:0] query,
+    output isPressed,
 
     input reset,
     input poll,
-
     output [17:0] out);
     integer i;
 
@@ -139,6 +139,8 @@ module Keyboard (
 
     // handler
     reg depressed [0 : 7'h68];
+    assign isPressed = depressed[query];
+
     reg break_code = 0;
     reg ex_code = 0;
 

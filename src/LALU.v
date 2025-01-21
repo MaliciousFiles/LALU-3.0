@@ -139,6 +139,8 @@ module LALU(input CLOCK_50,
     /*********************
      *    Peripherals    *
      *********************/
+    wire isKeyPressed;
+    wire [7:0] keyQuery;
     wire rstKeyboard;
     wire pollKeyboard;
     wire [17:0] keyboardOut;
@@ -146,6 +148,9 @@ module LALU(input CLOCK_50,
         .CLOCK_50(CLOCK_50),
         .PS2_CLK(PS2_CLK),
         .PS2_DAT(PS2_DAT),
+
+        .query(keyQuery),
+        .isPressed(isKeyPressed),
 
         .reset(rstKeyboard),
         .poll(pollKeyboard),
@@ -470,6 +475,7 @@ module LALU(input CLOCK_50,
         : zeroFlag;
 
     // peripherals
+    assign keyQuery = Rs0;
     assign rstKeyboard = isValid_d && format == `NO_WB_TRIP && funcID == `RSTKEY;
     assign pollKeyboard = run && ~stall_m && ~stall_e && ~executiveOverride && executeInstr && format == `WB_TRIP && funcID == `LDKEY;
 
@@ -617,6 +623,9 @@ module LALU(input CLOCK_50,
                     end
                     `LDKEY: begin
                         result_e <= keyboardOut;
+                    end
+                    `KEYPR: begin
+                        result_e <= isKeyPressed;
                     end
                     `GCLD: begin
                         result_e <= globalCounter;
