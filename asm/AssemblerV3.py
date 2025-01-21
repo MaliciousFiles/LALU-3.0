@@ -131,7 +131,7 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'rsub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1110'),
     'adds':  Q_CODE(Fmt_Code = '001', Func_ID = '1000'),
     'addrs': Q_CODE(Fmt_Code = '001', Func_ID = '1001'),
-    'csub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0001'),
+    'csub':  T_CODE(Fmt_Code = '000', Func_ID = '0_0010_0000'),
     'mul':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_0011'),
     'uumul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1010'),
     'ulmul': T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1011'),
@@ -148,15 +148,16 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'any':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1000'),
     'log':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0101'),
     'ctz':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0110'),
-    'pctn':  S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0111'),
+    'pcnt':  S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0111'),
     'brvs':  S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1000'),
     'srvs':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1111'),
     'vany':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1001'),
     'vadd':  Q_CODE(Fmt_Code = '001', Func_ID = '0110'),
     'vsub':  Q_CODE(Fmt_Code = '001', Func_ID = '0111'),
     'bext':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1100'),
-    'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1101'),
-    'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
+    'bdep':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1101'),
+    'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
+    'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1111'),
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
     
 
@@ -287,7 +288,7 @@ def PrepInstr(name, args, mods):
 
     ret['args'] = args
     ret['eximm'] = eximm
-        
+
     return ret
 
 def ResolveInstr(form, lbls):
