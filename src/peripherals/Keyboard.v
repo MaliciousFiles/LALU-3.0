@@ -183,7 +183,7 @@ module Keyboard (
 
     reg [11:0] writeIdx = 0, readIdx = 0;
     wire [17:0] bufOut;
-    RAM #(12, 18) buffer (
+    RAM #(12, 18, "MLAB") buffer (
         .clk(CLOCK_50),
 
         .address_a(writeIdx),

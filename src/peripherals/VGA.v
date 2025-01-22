@@ -123,7 +123,7 @@ module VGA (
 
 
     wire [55:0] vramOut;
-    RAM #(11, 56) vram (
+    RAM #(11, 56, "MLAB") vram (
         .clk(CLOCK_50),
 
         .address_a(charWrX + charWrY * 64),

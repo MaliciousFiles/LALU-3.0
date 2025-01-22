@@ -1,5 +1,5 @@
 // DON'T INIT WITH THE SAME FILE; FREEZES IVERILOG
-module RAM #(parameter widthad = 16, parameter width = 32, parameter initfile = "UNUSED") (
+module RAM #(parameter widthad = 16, parameter width = 32, parameter memtype = "M10K", parameter initfile = "UNUSED") (
     input                   clk,
 
     input [widthad-1:0]     address_a,
@@ -61,7 +61,7 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter initfile = 
         ram.outdata_reg_a = "UNREGISTERED",
         ram.outdata_reg_b = "UNREGISTERED",
         ram.power_up_uninitialized = "FALSE",
-        ram.ram_block_type = "AUTO",
+        ram.ram_block_type = memtype,
         ram.read_during_write_mode_mixed_ports = "OLD_DATA",
         ram.read_during_write_mode_port_a = "NEW_DATA_NO_NBE_READ",
         ram.read_during_write_mode_port_b = "NEW_DATA_NO_NBE_READ",
