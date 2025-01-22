@@ -1,6 +1,7 @@
-fn Main() void {
-  var x: u32 = 1 + 2 + 3 + 4 + 5;
-  var y: u32* = x.&;
-  y.* = 1;
+fn Main() u32 {
+  var tot: u1024 = 323327862783478234687723476234;
+  var x: u32 = @gcld();
+  var a: u32 = <u32>tot;
+  return a;
 }
 

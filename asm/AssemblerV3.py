@@ -12,8 +12,6 @@ def __LINE__() -> int:
 def __CALL_LINE__() -> int:
     return inspect.currentframe().f_back.f_back.f_lineno
 
-fName = sys.argv[1] if len(sys.argv) > 1 else input("Program File: ")
-
 formats = {
     'T': {
         'c':1,
@@ -466,6 +464,7 @@ def ParseFile(file):
             raise e
 ##    print(codes, lbls)
     out = []
+    print(codes)
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
         mem[code['loc']] = hx
@@ -499,6 +498,7 @@ def monitor_input():
             os._exit(1)
 
 if __name__ == "__main__":
+    fName = sys.argv[1] if len(sys.argv) > 1 else input("Program File: ")
     with open(fName) as f:
         verb = "--verb" in sys.argv[2:]
         mif = int(sys.argv[sys.argv.index("--mif")+1]) if "--mif" in sys.argv[2:] else 0

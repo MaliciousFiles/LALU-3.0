@@ -1,5 +1,6 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
+import LowerLLIR as LLL
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 with open('prog.lpc', 'r') as f:
@@ -18,6 +19,24 @@ def Indent():
 def Dendent():
     global ind
     ind -= 1
+
+def TrackLine(func):
+    global inter, srcs
+    def inner(*args, **kwargs):
+        ret = func(*args, **kwargs)
+        for i, block in enumerate(inter.func['body']):
+            for j, line in enumerate(block.body):
+                nsrc = func.__name__
+                if type(args[0]) == Tree:
+                    nsrc = nsrc + f'({args[0].meta.start_pos}, {args[0].meta.end_pos})'
+                if line[-2] != 'src':
+                    srcs.append([nsrc])
+                    inter.func['body'][i].body[j] = line + ('src', len(srcs)-1,)
+                else:
+                    src = line[-1]
+                    srcs[src].append(nsrc)
+        return ret
+    return inner
 
 def logerror(func):
     def inner(*args, **kwargs):
@@ -41,6 +60,7 @@ def logerror(func):
 FAILEDLINE = None
 
 @logerror
+@TrackLine
 def Gen(tree):
     global out, ind, inter
     if type(tree) == Tree:
@@ -72,7 +92,8 @@ def Gen(tree):
                 for arg in rargs.children:
                     aname, _, akind = arg.children
                     args.append((aname.children[0].value, Type.FromStr(akind.children[0].value)))
-            inter.NewFunc(name.children[0].value, args, ret.children[0].value)
+            ret = Type.FromStr(ret.children[0].value)
+            inter.NewFunc(name.children[0].value, args, ret)
             Gen(body)
             inter.PopEnv()
         elif data.type == 'RULE' and data.value == 'declstmt':
@@ -220,6 +241,7 @@ def Gen(tree):
             inter.trues.append(inner)
             inter.falses.append(post)
             inter.PushLoopLabels(pre, post)
+            inter.NewEnv()
             Gen(preexpr.children[0])
             inter.AddLabel(pre)
             cond, _ = Rvalue(cond.children[0])
@@ -229,10 +251,13 @@ def Gen(tree):
             if cond:
                 inter.CJump(cond, post)
             inter.AddLabel(inner)
+            inter.NewEnv()
             Gen(body.children[0])
             if type(postexpr.children[0]) == Tree:
                 _ = Rvalue(postexpr.children[0])
             inter.Jump(pre)
+            inter.PopEnv()
+            inter.PopEnv()
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(post)
         elif data.type == 'RULE' and data.value == 'ifstmt':
@@ -279,6 +304,7 @@ def Gen(tree):
         assert False, f'Bad'
 
 @logerror
+@TrackLine
 def Rvalue(expr):
     global inter
     if type(expr) == Tree:
@@ -300,13 +326,13 @@ def Rvalue(expr):
         elif data == 'addrexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
-            inter.Use(lhs)
+            inter.PreUse(lhs)
             return f'{lhs}.&', lk.Addr()
         elif data == 'intrinsic':
             _, name, _, args, _, = expr.children
             name = name.children[0].value
             ct = False
-            if args.children:
+            if args:
                 ct=True
                 nargs = []
                 for arg in args.children:
@@ -424,7 +450,8 @@ def Rvalue(expr):
             if len(op.children[0].value) == 2:
                 op = op.children[0].value[:-1]
                 assert rk.CanCoerceTo(lk)
-                inter.CastAddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None, desttype = lk, origtype = rk)
+                kind = lk.Common(rk)
+                inter.CastAddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None, desttype = lk, origtype = kind)
             else:
                 assert rk.CanCoerceTo(lk), f'Cannot coerce `{lk}` into type `{rk}`'
                 inter.CastAddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None, desttype = lk, origtype = rk)
@@ -442,16 +469,23 @@ def Rvalue(expr):
                 tmp = NewTemp(rk)
                 inter.AddPent(op = 'bit', D = tmp, S0 = rhs, S1 = 0, S2 = 0b1001, width = rk.OpWidth())
                 return tmp, rk
-            elif op.children[0].value == '!':
-                assert False, f'Not yet implemented'
+##                assert False, f'Not yet implemented'
             else:
                 assert False, f'Bad unary: `{op}`'
+        elif data.value == 'lunaryexpr':
+            _, re = expr.children
+            print(inter.trues)
+            inter.trues[-1], inter.falses[-1] = inter.falses[-1], inter.trues[-1]
+            print(inter.trues)
+            rhs, rk = Rvalue(re)
+            return None, Type(isbool = True)
         elif data.value == 'castexpr':
             le, re, = expr.children
             lk = Type.FromStr(le.children[0].value)
             rhs, rk = Rvalue(re)
             tmp = NewTemp(lk)
-            inter.AddPent(op = '=', D = tmp, S0 = rhs, S1 = None, S2 = None, width = lk.OpWidth())
+            inter.Cast(tmp, rhs, lk, rk)
+##            inter.AddPent(op = '=', D = tmp, S0 = rhs, S1 = None, S2 = None, width = lk.OpWidth())
             return tmp, lk
         elif data.value == 'constant':
             return Rvalue(expr.children[0])
@@ -469,6 +503,7 @@ def Rvalue(expr):
         err
 
 @logerror
+@TrackLine
 def Lvalue(expr):
     global inter
     if type(expr) == Tree:
@@ -479,12 +514,14 @@ def Lvalue(expr):
             rhs, rk = Rvalue(re)
             lhs, lk = Rvalue(le)
             tmp = f'{lhs}[{rhs}]'
+##            inter.PreUse(lhs)
             return tmp, lk.Deref()
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
-            tmp = NewTemp(lk.Deref())
+##            tmp = NewTemp(lk.Deref())
             tmp = f'{lhs}[0]'
+##            inter.PreUse(lhs)
             return tmp, lk.Deref()
         elif type(data) == str:
             print(data)
@@ -560,6 +597,12 @@ class HLIR:
         self.envs.append({})
     
     def PopEnv(self):
+        for env in self.envs[:-1]:
+            for var in env:
+                print(f'Extend variable `{var}`')
+                self.PreUse(var)
+        for var in self.envs[-1]:
+            print(f'End of var `{var}`')
         del self.envs[-1]
 
     def Register(self, name, kind):
@@ -600,6 +643,7 @@ class HLIR:
             self.Use(S0)
             self.Use(r)
             self.Use(S2)
+            self.Use(l)
             self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
         elif type(S0) == str and '[' in S0:
             l, r = S0[:-1].split('[')
@@ -607,11 +651,13 @@ class HLIR:
             self.Use(l)
             self.Use(r)
             self.Use(S2)
-            self.body.Addline(('expr', ('[]=', D, l, r, S2, width), eid))
+            self.body.Addline(('expr', ('=[]', D, l, r, S2, width), eid))
         else:
             self.Use(S0)
             self.Use(S1)
             self.Use(S2)
+            if op[0] == '@':
+                self.Use(D)
             self.body.Addline(('expr', (op, D, S0, S1, S2, width), eid))
     def AddLabel(self, lbl):
         self.body.fall = lbl
@@ -641,7 +687,9 @@ class HLIR:
         self.body.exit = ('if', (cond, '!=', 0, lbl), eid)
         self.AddLabel('_'+NewLabel())
     def Jump(self, lbl):
-        self.body.exit = ('goto', (lbl))
+        global eid
+        eid += 1
+        self.body.exit = ('goto', (lbl), eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
     def PushLoopLabels(self, pre, post):
@@ -656,6 +704,11 @@ class HLIR:
         self.body.exit = ('return', args, eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
+    def PreUse(self, name):
+        global eid
+        eid += 1
+        self.Use(name)
+        eid -= 1
     def Use(self, name):
         for j, block in enumerate(self.func['body']):
             for i, line in enumerate(block.body):
@@ -751,6 +804,7 @@ out = ''
 ind = 0
 tid = 0
 eid = 0
+srcs=[]
 
 inter = HLIR()
 try:
@@ -761,10 +815,18 @@ except Exception as e:
 
 print('\nOUT:')
 print(out)
-print('\nREP:')
+print('\nHLIR:')
 print(repr(inter))
 
 llir = LHL.Lower(inter)
 
 print('\nLLIR:')
 print(repr(llir))
+
+asm, bn = LLL.Lower(llir)
+
+print('\nASM:')
+print(repr(asm))
+
+print('\nBIN:')
+print(repr(bn))

@@ -21,8 +21,10 @@ expr: assgexpr
         | postexpr assgop assgexpr
 ?lorexpr: landexpr
         | lorexpr OR landexpr
-?landexpr: relexpr
-        | landexpr AND relexpr
+?landexpr: lunaryexpr
+        | landexpr AND lunaryexpr
+?lunaryexpr: relexpr
+	| EMARK lunaryexpr
 ?relexpr: borexpr 
 	| borexpr relop borexpr
 ?borexpr: bxorexpr
@@ -96,7 +98,7 @@ assgop: EQUAL | PLUSEQUAL | MINUSEQUAL | LANGLEEEEQUAL | RANGLEEEEQUAL | LANGLEE
 relop: LANGLEQ | RANGLEQ | EQUALL | NEQUAL | LANGLE | RANGLE
 addop: PLUS | MINUS
 multop: LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK
-unaryop: PLUS | MINUS | TILDE | EMARK
+unaryop: PLUS | MINUS | TILDE
 
 VOID: "void"
 EQUAL: "="

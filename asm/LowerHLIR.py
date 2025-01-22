@@ -36,8 +36,8 @@ def WidthOf(kind):
     else:
         return -(-kind.width//32)
 
-def AddPent(block, op, D, S0, S1, S2):
-    block.Addline(('expr', (op, D, S0, S1, S2)))
+def AddPent(block, op, D, S0, S1, S2, mods = []):
+    block.Addline(('expr', (op, D, S0, S1, S2), mods))
 
 def Lower(hlir):
     llir = LLIR()
@@ -56,6 +56,7 @@ def Lower(hlir):
                 else:
                     nblock.Addline(('final', name))
             else:
+                assert loc > eid, f'Bad final loc `{loc}` when on line `{eid}`'
                 i -= 1
                 break
         del finals[:i+1]
@@ -142,9 +143,9 @@ def Lower(hlir):
                         elif op == '=':
                             AddPent(nblock, 'mov', D, S0, S1, S2)
                         elif op == '[]=':
-                            AddPent(nblock, 'st', D, S0, S1, S2)
+                            AddPent(nblock, 'stw', D, S0, S1, S2)
                         elif op == '=[]':
-                            AddPent(nblock, 'ld', D, S0, S1, S2)
+                            AddPent(nblock, 'ldw', D, S0, S1, S2)
                         elif op == '=<>':
                             D, S, dk, sk = D, S0, S1, S2
                             if sk.comptime:
@@ -153,6 +154,13 @@ def Lower(hlir):
                                     ename = D + '_' + str(i).zfill(p) if WidthOf(dk) > 1 else D
                                     AddPent(nblock, 'mov', ename, S % (1<<32), None, None)
                                     S >>= 32
+                            elif dk.OpWidth() // 32 == dk.OpWidth() / 32:
+                                for i in range(WidthOf(dk)):
+                                    pD = len(str(WidthOf(dk)-1))
+                                    pS = len(str(WidthOf(sk)-1))
+                                    eD = D + '_' + str(i).zfill(pD) if WidthOf(dk) > 1 else D
+                                    eS = S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S
+                                    AddPent(nblock, 'mov', eD, eS, None, None)
                             else:
                                 assert False, f'(Comptime) Cannot cast from type `{sk}` to `{dk}`'
                         else:
@@ -183,7 +191,9 @@ def Lower(hlir):
                 mode = block.exit[0]
                 if mode == 'goto':
                     lbl = block.exit[1]
-                    AddPent(nblock, 'jmp', lbl, None, None, None)
+                    eid = block.exit[2]
+                    HandleFinals(eid)
+                    AddPent(nblock, 'jmp', lbl+':', None, None, None)
                 elif mode == 'if':
                     lhs, cmp, rhs, lbl = block.exit[1]
                     eid = block.exit[2]
@@ -193,7 +203,7 @@ def Lower(hlir):
                     else:
                         cmp = 'us'['+-'.index(cmp[0])] + {'>': 'gt', '>=': 'ge', '<=': 'le', '<': 'lt'}[cmp[1:]]
                     AddPent(nblock, cmp, lhs, rhs, None, None)
-                    AddPent(nblock, 'c.jmp', lbl, None, None, None)
+                    AddPent(nblock, 'jmp', lbl+':', None, None, None, ['c.'])
                 elif mode == 'return':
                     args = block.exit[1]
                     eid = block.exit[2]
@@ -202,7 +212,7 @@ def Lower(hlir):
                     for name, kind in args:
                         for j in range(WidthOf(kind)):
                             p = len(str(WidthOf(kind)-1))
-                            ename = name + '_' + str(i).zfill(p)
+                            ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
                             nblock.Addline(('argret', ename, i))
                             i += 1
                     AddPent(nblock, 'ret', None, None, None, None)
