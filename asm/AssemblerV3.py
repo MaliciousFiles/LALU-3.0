@@ -3,6 +3,7 @@ import pyperclip
 from time import sleep
 from threading import Thread
 import os
+import os.path
 import inspect
 import traceback
 
@@ -530,10 +531,14 @@ if __name__ == "__main__":
 ##                        print(program)
                         if mif:
                             program = Mifify(program, mif)
-                            with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
-                                f2.write(program)
-                                print('Wrote:\n\n')
+                            if os.path.exists("../.sim/Icarus Verilog-sim"):
+                                with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
+                                    f2.write(program)
+                                    print('Wrote:\n\n')
+                                    print(program)
+                            else:
                                 print(program)
+                                pyperclip.copy(program)
                         else:
                             print(program)
                             pyperclip.copy(program)
