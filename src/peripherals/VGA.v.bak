@@ -122,8 +122,8 @@ module VGA (
     end
 
 
-    wire [55:0] vramOut;
-    RAM #(11, 56) vram (
+    wire [31:0] vramOut;
+    RAM #(11) vram (
         .clk(CLOCK_50),
 
         .address_a(charWrX + charWrY * 64),

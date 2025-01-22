@@ -1,0 +1,20 @@
+Fitter Status : Failed - Tue Jan 21 19:10:12 2025
+Quartus Prime Version : 23.1std.1 Build 993 05/14/2024 SC Lite Edition
+Revision Name : LALU
+Top-level Entity Name : LALU
+Family : Cyclone V
+Device : 5CSEMA5F31C6
+Timing Models : Final
+Logic utilization (in ALMs) : 4,270 / 32,070 ( 13 % )
+Total registers : 1704
+Total pins : 33 / 457 ( 7 % )
+Total virtual pins : 0
+Total block memory bits : 3,403,776 / 4,065,280 ( 84 % )
+Total RAM Blocks : 0 / 397 ( 0 % )
+Total DSP Blocks : 4 / 87 ( 5 % )
+Total HSSI RX PCSs : 0
+Total HSSI PMA RX Deserializers : 0
+Total HSSI TX PCSs : 0
+Total HSSI PMA TX Serializers : 0
+Total PLLs : 0 / 6 ( 0 % )
+Total DLLs : 0 / 4 ( 0 % )

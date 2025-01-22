@@ -87,10 +87,10 @@
 `define SUSP				9'b1_1111_1111
 
 module LALU(input CLOCK_50,
-    inout PS2_CLK, inout PS2_DAT,
-    output [7:0] VGA_R, output [7:0] VGA_G, output [7:0] VGA_B,
-    output VGA_CLK, output VGA_SYNC_N, output VGA_BLANK_N, output VGA_HS, output VGA_VS,
-    output suspended);
+    input PS2_CLK, input PS2_DAT,
+    output [7:0] VGA_R, VGA_G, VGA_B,
+    output VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS,
+    output wire suspended);
     /*********************
      *      Memory       *
      *********************/
@@ -477,9 +477,9 @@ module LALU(input CLOCK_50,
     // peripherals
     assign keyQuery = Rs0;
     assign rstKeyboard = isValid_d && format == `NO_WB_TRIP && funcID == `RSTKEY;
-    assign pollKeyboard = run && ~stall_e && ~executiveOverride && executeInstr && format == `WB_TRIP && funcID == `LDKEY;
+    assign pollKeyboard = run && ~stall_m && ~stall_e && ~executiveOverride && executeInstr && format == `WB_TRIP && funcID == `LDKEY;
 
-    assign charWr = run && ~stall_e && ~executiveOverride && executeInstr && format == `NO_WB_QUAD && funcID == `STCHR;
+    assign charWr = run && ~stall_m && ~stall_e && ~executiveOverride && executeInstr && format == `NO_WB_QUAD && funcID == `STCHR;
     assign charWrFgColor = Rs1;
     assign charWrBgColor = Rs2;
     assign charWrCode = Rd;
@@ -589,23 +589,21 @@ module LALU(input CLOCK_50,
                     `BRVS: begin
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
                     end
-//                    `SRVS: begin // TODO: is non static loop ok?
-//                        if (Rs1 == 0) result_e <= 32'b0;
-//                        else begin
-//									for (i = 0; i < 32; i = i+Rs1) begin
-//										for (j = 0; j < 32; j = j+1) if (j < Rs1 && i+j < 32) begin
-//											result_e[i+j] <= i+Rs1-1-j < 32 ? Rs0[i+Rs1-1-j] : 1'b0;
-//										end
-//									end
-//                        end
-//                    end
-//                    `VANY: begin // TODO: is non static loop ok?
-//                        if (Rs1 == 0) result_e <= 32'b0;
-//                        else for (i = 0; i < 32; i = i+Rs1) begin
-//                            result_e[i] <= ((64'hFFFFFFFF << Rs1 >> 32) & Rs0 >> i) != 0;
-//                            for (j = 1; j < 32; j = j+1) if (j < Rs1 && i+j < 32) result_e[i+j] <= 1'b0;
-//                        end
-//                    end
+                    `SRVS: begin // TODO: is non static loop ok?
+                        if (Rs1 == 0) result_e <= 32'b0;
+                        else for (i = 0; i < 32; i = i+Rs1) begin
+                            for (j = 0; j < Rs1; j = j+1) begin
+                                result_e[i+j] <= i+Rs1-1-j < 32 ? Rs0[i+Rs1-1-j] : 1'b0;
+                            end
+                        end
+                    end
+                    `VANY: begin // TODO: is non static loop ok?
+                        if (Rs1 == 0) result_e <= 32'b0;
+                        else for (i = 0; i < 32; i = i+Rs1) begin
+                            result_e[i] <= ((64'hFFFFFFFF << Rs1 >> 32) & Rs0 >> i) != 0;
+                            for (j = 1; j < Rs1; j = j+1) result_e[i+j] <= 1'b0;
+                        end
+                    end
 //                    `BEXT: begin
 //
 //                    end
@@ -770,6 +768,7 @@ module LALU(input CLOCK_50,
                         expectedIP <= jumpLoc;
 
                         stackPointer <= stackPointer + 1;
+                        returnAddress <= stackWriteData; // IP_d + 1
                     end
                     `JUMP: begin
                         expectedIP <= jumpLoc;
@@ -810,9 +809,7 @@ module LALU(input CLOCK_50,
         memAccessNumBitsAfter_m <= memAccessNumBitsAfter_e;
 
         // if we just returned, we need to update the current return address from the stack
-		  // we have to put some Execute stuff here so that returnAddress is only being driven once
-		  if (run && ~stall_e && ~executiveOverride && executeInstr && format == `JMP && funcID == `CALL) returnAddress <= stackWriteData;
-        else if (isRet_e) returnAddress <= stackReadOut;
+        if (isRet_e) returnAddress <= stackReadOut;
 
         halt_m <= halt_e;
     end else isValid_m <= 1'b0; end

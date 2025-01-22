@@ -1,7 +1,7 @@
 module Keyboard (
     input CLOCK_50,
-    inout PS2_CLK,
-    inout PS2_DAT,
+    input PS2_CLK,
+    input PS2_DAT,
 
     input [7:0] query,
     output isPressed,
@@ -198,5 +198,5 @@ module Keyboard (
         .rden_b(1'b1),
         .q_b(bufOut));
 
-    assign out = validPoll ? bufOut : 18'b0;
+    assign bufOut = validPoll ? bufOut : 18'b0;
 endmodule
