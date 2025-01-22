@@ -3,6 +3,7 @@ import pyperclip
 from time import sleep
 from threading import Thread
 import os
+import os.path
 import inspect
 import traceback
 
@@ -157,7 +158,6 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
     'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1111'),
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
-    
 
     'and':   PSEUDO(3, 'bit @0, @1, @2, #0b0001'),
     'or':    PSEUDO(3, 'bit @0, @1, @2, #0b0111'),
@@ -182,6 +182,11 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ret':   N_CODE(Fmt_Code = '100', Func_ID = '0_0010_0011'),
     'call':  J_CODE(Fmt_Code = '110', Func_ID = '00'),
     'jmp':   J_CODE(Fmt_Code = '110', Func_ID = '01'),
+
+    'stchr': Q_CODE(Fmt_Code = '101', Func_ID = '0000'),
+    'ldkey': D_CODE(Fmt_Code = '000', Func_ID = '0_0011_0001'),
+    'keypr': S_CODE(Fmt_Code = '000', Func_ID = '0_0011_0010'),
+    'rstkey':N_CODE(Fmt_Code = '100', Func_ID = '0_0011_0011'),
 
     'ugt':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0000'),
     'uge':   V_CODE(Fmt_Code = '100', Func_ID = '0_1000_0001'),
@@ -526,10 +531,14 @@ if __name__ == "__main__":
 ##                        print(program)
                         if mif:
                             program = Mifify(program, mif)
-                            with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
-                                f2.write(program)
-                                print('Wrote:\n\n')
+                            if os.path.exists("../.sim/Icarus Verilog-sim"):
+                                with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
+                                    f2.write(program)
+                                    print('Wrote:\n\n')
+                                    print(program)
+                            else:
                                 print(program)
+                                pyperclip.copy(program)
                         else:
                             print(program)
                             pyperclip.copy(program)
