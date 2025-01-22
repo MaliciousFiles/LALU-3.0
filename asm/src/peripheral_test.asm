@@ -92,7 +92,8 @@ begin:
     eq.e    R0, #0x5A
     c.mov.e R1, #90
 
-    call    stchr:
+    ne      R1, #0
+    c.call  stchr:
     jmp begin:
 
 
