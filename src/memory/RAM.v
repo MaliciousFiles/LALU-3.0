@@ -1,5 +1,5 @@
 // DON'T INIT WITH THE SAME FILE; FREEZES IVERILOG
-module RAM #(parameter widthad = 16, parameter width = 32, parameter memtype = "M10K", parameter initfile = "UNUSED") (
+module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, parameter initfile = "UNUSED") (
     input                   clk,
 
     input [widthad-1:0]     address_a,
@@ -55,13 +55,13 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter memtype = "
         ram.lpm_type = "altsyncram",
         ram.numwords_a = 1<<widthad,
         ram.numwords_b = 1<<widthad,
-        ram.operation_mode = "BIDIR_DUAL_PORT",
+        ram.operation_mode = MLAB ? "DUAL_PORT" : "BIDIR_DUAL_PORT",
         ram.outdata_aclr_a = "NONE",
         ram.outdata_aclr_b = "NONE",
         ram.outdata_reg_a = "UNREGISTERED",
         ram.outdata_reg_b = "UNREGISTERED",
         ram.power_up_uninitialized = "FALSE",
-        ram.ram_block_type = memtype,
+        ram.ram_block_type = MLAB ? "MLAB" : "M10K",
         ram.read_during_write_mode_mixed_ports = "OLD_DATA",
         ram.read_during_write_mode_port_a = "NEW_DATA_NO_NBE_READ",
         ram.read_during_write_mode_port_b = "NEW_DATA_NO_NBE_READ",

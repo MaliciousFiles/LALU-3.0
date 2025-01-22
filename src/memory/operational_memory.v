@@ -28,7 +28,7 @@ module operational_memory (
             .q_b(userOut_memAccess));
 
         wire [31:0] kernOut_fetch, kernOut_memAccess;
-        RAM #(15, 32, "RAM.mif") KERN_MEM (
+        RAM #(15, 32, 0, "RAM.mif") KERN_MEM (
             .clk(clk),
 
             .address_a(fetchAddress[14:0]),
