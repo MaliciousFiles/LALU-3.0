@@ -88,6 +88,7 @@
 
 module LALU(input CLOCK_50,
     inout PS2_CLK, inout PS2_DAT,
+    input CLOCK_25,
     output [7:0] VGA_R, output [7:0] VGA_G, output [7:0] VGA_B,
     output VGA_CLK, output VGA_SYNC_N, output VGA_BLANK_N, output VGA_HS, output VGA_VS,
     output suspended);
@@ -164,6 +165,7 @@ module LALU(input CLOCK_50,
     wire [4:0] charWrY;
     VGA vga (
         .CLOCK_50(CLOCK_50),
+        .CLOCK_25(CLOCK_25),
 
         .charWr(charWr),
         .charWrFgColor(charWrFgColor),
@@ -180,6 +182,13 @@ module LALU(input CLOCK_50,
         .VGA_R(VGA_R),
         .VGA_G(VGA_G),
         .VGA_B(VGA_B));
+
+    /*********************
+     *     Constants     *
+     *********************/
+    wire [31:0] FULL = 32'hFFFFFFFF;
+    reg [31:0] VADD_MASKS [0:31];
+    initial for (i = 1; i < 32; i = i + 1) for (j = i; j < 32; j = j + i) VADD_MASKS[i][j] = 1'b1;
 
     /*********************
      *     Registers     *
@@ -554,7 +563,7 @@ module LALU(input CLOCK_50,
                     end
                     `BSR: begin
                         result_e <= Rs0 >> Rs1;
-                        carryFlag_e <= Rs1 == 0 ? 0 : Rs0[Rs1-1];
+                        carryFlag_e <= Rs1 == 0 ? 0 : Rs0[Rs1 -: 2];
                     end
                     `BRL: begin
                         result_e <= Rs0 << Rs1 | Rs0 >> (32-Rs1);
@@ -589,23 +598,79 @@ module LALU(input CLOCK_50,
                     `BRVS: begin
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
                     end
-//                    `SRVS: begin // TODO: is non static loop ok?
-//                        if (Rs1 == 0) result_e <= 32'b0;
-//                        else begin
-//									for (i = 0; i < 32; i = i+Rs1) begin
-//										for (j = 0; j < 32; j = j+1) if (j < Rs1 && i+j < 32) begin
-//											result_e[i+j] <= i+Rs1-1-j < 32 ? Rs0[i+Rs1-1-j] : 1'b0;
-//										end
-//									end
-//                        end
-//                    end
-//                    `VANY: begin // TODO: is non static loop ok?
-//                        if (Rs1 == 0) result_e <= 32'b0;
-//                        else for (i = 0; i < 32; i = i+Rs1) begin
-//                            result_e[i] <= ((64'hFFFFFFFF << Rs1 >> 32) & Rs0 >> i) != 0;
-//                            for (j = 1; j < 32; j = j+1) if (j < Rs1 && i+j < 32) result_e[i+j] <= 1'b0;
-//                        end
-//                    end
+                    `SRVS: begin
+                        case (Rs1)
+                            0: for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
+                            1: result_e <= Rs0;
+                            2: for (i = 0; i < 32; i = i+2) for (j = 0; j < 2; j = j+1) if (i+j < 32) result_e[i+j] <= i+1-j < 32 ? Rs0[i+1-j] : 1'b0;
+                            3: for (i = 0; i < 32; i = i+3) for (j = 0; j < 3; j = j+1) if (i+j < 32) result_e[i+j] <= i+2-j < 32 ? Rs0[i+2-j] : 1'b0;
+                            4: for (i = 0; i < 32; i = i+4) for (j = 0; j < 4; j = j+1) if (i+j < 32) result_e[i+j] <= i+3-j < 32 ? Rs0[i+3-j] : 1'b0;
+                            5: for (i = 0; i < 32; i = i+5) for (j = 0; j < 5; j = j+1) if (i+j < 32) result_e[i+j] <= i+4-j < 32 ? Rs0[i+4-j] : 1'b0;
+                            6: for (i = 0; i < 32; i = i+6) for (j = 0; j < 6; j = j+1) if (i+j < 32) result_e[i+j] <= i+5-j < 32 ? Rs0[i+5-j] : 1'b0;
+                            7: for (i = 0; i < 32; i = i+7) for (j = 0; j < 7; j = j+1) if (i+j < 32) result_e[i+j] <= i+6-j < 32 ? Rs0[i+6-j] : 1'b0;
+                            8: for (i = 0; i < 32; i = i+8) for (j = 0; j < 8; j = j+1) if (i+j < 32) result_e[i+j] <= i+7-j < 32 ? Rs0[i+7-j] : 1'b0;
+                            9: for (i = 0; i < 32; i = i+9) for (j = 0; j < 9; j = j+1) if (i+j < 32) result_e[i+j] <= i+8-j < 32 ? Rs0[i+8-j] : 1'b0;
+                            10: for (i = 0; i < 32; i = i+10) for (j = 0; j < 10; j = j+1) if (i+j < 32) result_e[i+j] <= i+9-j < 32 ? Rs0[i+9-j] : 1'b0;
+                            11: for (i = 0; i < 32; i = i+11) for (j = 0; j < 11; j = j+1) if (i+j < 32) result_e[i+j] <= i+10-j < 32 ? Rs0[i+10-j] : 1'b0;
+                            12: for (i = 0; i < 32; i = i+12) for (j = 0; j < 12; j = j+1) if (i+j < 32) result_e[i+j] <= i+11-j < 32 ? Rs0[i+11-j] : 1'b0;
+                            13: for (i = 0; i < 32; i = i+13) for (j = 0; j < 13; j = j+1) if (i+j < 32) result_e[i+j] <= i+12-j < 32 ? Rs0[i+12-j] : 1'b0;
+                            14: for (i = 0; i < 32; i = i+14) for (j = 0; j < 14; j = j+1) if (i+j < 32) result_e[i+j] <= i+13-j < 32 ? Rs0[i+13-j] : 1'b0;
+                            15: for (i = 0; i < 32; i = i+15) for (j = 0; j < 15; j = j+1) if (i+j < 32) result_e[i+j] <= i+14-j < 32 ? Rs0[i+14-j] : 1'b0;
+                            16: for (i = 0; i < 32; i = i+16) for (j = 0; j < 16; j = j+1) if (i+j < 32) result_e[i+j] <= i+15-j < 32 ? Rs0[i+15-j] : 1'b0;
+                            17: for (i = 0; i < 32; i = i+17) for (j = 0; j < 17; j = j+1) if (i+j < 32) result_e[i+j] <= i+16-j < 32 ? Rs0[i+16-j] : 1'b0;
+                            18: for (i = 0; i < 32; i = i+18) for (j = 0; j < 18; j = j+1) if (i+j < 32) result_e[i+j] <= i+17-j < 32 ? Rs0[i+17-j] : 1'b0;
+                            19: for (i = 0; i < 32; i = i+19) for (j = 0; j < 19; j = j+1) if (i+j < 32) result_e[i+j] <= i+18-j < 32 ? Rs0[i+18-j] : 1'b0;
+                            20: for (i = 0; i < 32; i = i+20) for (j = 0; j < 20; j = j+1) if (i+j < 32) result_e[i+j] <= i+19-j < 32 ? Rs0[i+19-j] : 1'b0;
+                            21: for (i = 0; i < 32; i = i+21) for (j = 0; j < 21; j = j+1) if (i+j < 32) result_e[i+j] <= i+20-j < 32 ? Rs0[i+20-j] : 1'b0;
+                            22: for (i = 0; i < 32; i = i+22) for (j = 0; j < 22; j = j+1) if (i+j < 32) result_e[i+j] <= i+21-j < 32 ? Rs0[i+21-j] : 1'b0;
+                            23: for (i = 0; i < 32; i = i+23) for (j = 0; j < 23; j = j+1) if (i+j < 32) result_e[i+j] <= i+22-j < 32 ? Rs0[i+22-j] : 1'b0;
+                            24: for (i = 0; i < 32; i = i+24) for (j = 0; j < 24; j = j+1) if (i+j < 32) result_e[i+j] <= i+23-j < 32 ? Rs0[i+23-j] : 1'b0;
+                            25: for (i = 0; i < 32; i = i+25) for (j = 0; j < 25; j = j+1) if (i+j < 32) result_e[i+j] <= i+24-j < 32 ? Rs0[i+24-j] : 1'b0;
+                            26: for (i = 0; i < 32; i = i+26) for (j = 0; j < 26; j = j+1) if (i+j < 32) result_e[i+j] <= i+25-j < 32 ? Rs0[i+25-j] : 1'b0;
+                            27: for (i = 0; i < 32; i = i+27) for (j = 0; j < 27; j = j+1) if (i+j < 32) result_e[i+j] <= i+26-j < 32 ? Rs0[i+26-j] : 1'b0;
+                            28: for (i = 0; i < 32; i = i+28) for (j = 0; j < 28; j = j+1) if (i+j < 32) result_e[i+j] <= i+27-j < 32 ? Rs0[i+27-j] : 1'b0;
+                            29: for (i = 0; i < 32; i = i+29) for (j = 0; j < 29; j = j+1) if (i+j < 32) result_e[i+j] <= i+28-j < 32 ? Rs0[i+28-j] : 1'b0;
+                            30: for (i = 0; i < 32; i = i+30) for (j = 0; j < 30; j = j+1) if (i+j < 32) result_e[i+j] <= i+29-j < 32 ? Rs0[i+29-j] : 1'b0;
+                            31: for (i = 0; i < 32; i = i+31) for (j = 0; j < 31; j = j+1) if (i+j < 32) result_e[i+j] <= i+30-j < 32 ? Rs0[i+30-j] : 1'b0;
+                            default: result_e <= 32'b0;
+                        endcase
+                    end
+                    `VANY: begin
+                        result_e <= 32'b0;
+                        case (Rs1)
+                            1: result_e <= Rs0;
+                            2: for (i = 0; i < 32; i = i+2) result_e[i] <= Rs0[i +: 2] != 0;
+                            3: for (i = 0; i < 32; i = i+3) result_e[i] <= Rs0[i +: 3] != 0;
+                            4: for (i = 0; i < 32; i = i+4) result_e[i] <= Rs0[i +: 4] != 0;
+                            5: for (i = 0; i < 32; i = i+5) result_e[i] <= Rs0[i +: 5] != 0;
+                            6: for (i = 0; i < 32; i = i+6) result_e[i] <= Rs0[i +: 6] != 0;
+                            7: for (i = 0; i < 32; i = i+7) result_e[i] <= Rs0[i +: 7] != 0;
+                            8: for (i = 0; i < 32; i = i+8) result_e[i] <= Rs0[i +: 8] != 0;
+                            9: for (i = 0; i < 32; i = i+9) result_e[i] <= Rs0[i +: 9] != 0;
+                            10: for (i = 0; i < 32; i = i+10) result_e[i] <= Rs0[i +: 10] != 0;
+                            11: for (i = 0; i < 32; i = i+11) result_e[i] <= Rs0[i +: 11] != 0;
+                            12: for (i = 0; i < 32; i = i+12) result_e[i] <= Rs0[i +: 12] != 0;
+                            13: for (i = 0; i < 32; i = i+13) result_e[i] <= Rs0[i +: 13] != 0;
+                            14: for (i = 0; i < 32; i = i+14) result_e[i] <= Rs0[i +: 14] != 0;
+                            15: for (i = 0; i < 32; i = i+15) result_e[i] <= Rs0[i +: 15] != 0;
+                            16: for (i = 0; i < 32; i = i+16) result_e[i] <= Rs0[i +: 16] != 0;
+                            17: for (i = 0; i < 32; i = i+17) result_e[i] <= Rs0[i +: 17] != 0;
+                            18: for (i = 0; i < 32; i = i+18) result_e[i] <= Rs0[i +: 18] != 0;
+                            19: for (i = 0; i < 32; i = i+19) result_e[i] <= Rs0[i +: 19] != 0;
+                            20: for (i = 0; i < 32; i = i+20) result_e[i] <= Rs0[i +: 20] != 0;
+                            21: for (i = 0; i < 32; i = i+21) result_e[i] <= Rs0[i +: 21] != 0;
+                            22: for (i = 0; i < 32; i = i+22) result_e[i] <= Rs0[i +: 22] != 0;
+                            23: for (i = 0; i < 32; i = i+23) result_e[i] <= Rs0[i +: 23] != 0;
+                            24: for (i = 0; i < 32; i = i+24) result_e[i] <= Rs0[i +: 24] != 0;
+                            25: for (i = 0; i < 32; i = i+25) result_e[i] <= Rs0[i +: 25] != 0;
+                            26: for (i = 0; i < 32; i = i+26) result_e[i] <= Rs0[i +: 26] != 0;
+                            27: for (i = 0; i < 32; i = i+27) result_e[i] <= Rs0[i +: 27] != 0;
+                            28: for (i = 0; i < 32; i = i+28) result_e[i] <= Rs0[i +: 28] != 0;
+                            29: for (i = 0; i < 32; i = i+29) result_e[i] <= Rs0[i +: 29] != 0;
+                            30: for (i = 0; i < 32; i = i+30) result_e[i] <= Rs0[i +: 30] != 0;
+                            31: for (i = 0; i < 32; i = i+31) result_e[i] <= Rs0[i +: 31] != 0;
+                        endcase
+                    end
 //                    `BEXT: begin
 //
 //                    end
@@ -709,12 +774,10 @@ module LALU(input CLOCK_50,
                 endcase
             end else if (format == `WB_QUAD) begin
                 case (funcID)
-//                    `VADD: begin // TODO: is non static loop ok?
-//                        for (i = 0; i < 32; i = i + Rs2) begin
-//
-//                        end
-//                    end
-//                    `VSUB: begin // TODO: is non static loop ok?
+                    `VADD: begin
+                        result_e <= ((Rs0 & ~VADD_MASKS[Rs2]) + (Rs1 & ~VADD_MASKS[Rs2])) ^ ((Rs0 & VADD_MASKS[Rs2]) ^ (Rs1 & VADD_MASKS[Rs2]));
+                    end
+//                    `VSUB: begin // TODO: ask grant lol
 //
 //                    end
                     `ADDS: begin
@@ -738,13 +801,13 @@ module LALU(input CLOCK_50,
                         isMemRead_e <= 1'b1;
                     end
                     `BSF: begin
-                        result_e <= Rs2 == 0 ? Rs0 : (32'hFFFFFFFF & Rs0 >> Rs1 << 32 >> Rs2) << Rs2 >> 32;
+                        result_e <= Rs2 == 0 ? Rs0 : (32'hFFFFFFFF & (64'b0 | Rs0) >> Rs1 << 32 >> Rs2) << Rs2 >> 32;
                     end
                     `BST: begin
                         result_e <= Rs2 == 0 ? Rs0 :
                             Rd >> Rs2 >> Rs1 << Rs1 << Rs2
-                            | (32'hFFFFFFFF & Rs0 << 32 >> Rs2) << Rs2 >> 32
-                            | (32'hFFFFFFFF & Rd << 32 >> Rs1) << Rs1 >> 32;
+                            | (32'hFFFFFFFF & (64'b0 | Rs0) << 32 >> Rs2) << Rs2 >> 32 << Rs1
+                            | (32'hFFFFFFFF & (64'b0 | Rd) << 32 >> Rs1) << Rs1 >> 32;
                     end
                     default begin
                         invalidFunction <= 1'b1;
@@ -753,10 +816,10 @@ module LALU(input CLOCK_50,
             end else if (format == `NO_WB_QUAD) begin
                 case (funcID)
                     `ST: begin
-                        memAccessAddress_e <= Rs0 + Rs1[20:5];
-                        memAccessNumBitsBefore_e <= Rs1[4:0];
+                        memAccessAddress_e <= sum[20:5];
+                        memAccessNumBitsBefore_e <= sum[4:0];
                         memAccessNumBits_e <= Rs2;
-                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-Rs1[4:0];
+                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
                         isMemWrite_e <= 1'b1;
                     end
                     `STCHR: begin end
@@ -785,6 +848,13 @@ module LALU(input CLOCK_50,
     /*********************
      *    Memory Read    *
      *********************/
+    always @(posedge CLOCK_50) if (run) begin
+        // if we just returned, we need to update the current return address from the stack
+        // we have to put some Execute stuff here so that returnAddress is only being driven once
+        if (run && ~stall_e && ~executiveOverride && executeInstr && format == `JMP && funcID == `CALL) returnAddress <= stackWriteData;
+        else if (~stall_m && isValid_e && isRet_e) returnAddress <= stackReadOut;
+    end
+
     wire stall_m = isValid_m && isValid_e && isMemWrite_m && (isMemRead_e || isMemWrite_e);
 
     wire fullByteWrite = isMemWrite_e && memAccessNumBits_e == 0; // 0 actually means 32 :P
@@ -809,11 +879,6 @@ module LALU(input CLOCK_50,
         memAccessNumBits_m <= memAccessNumBits_e;
         memAccessNumBitsAfter_m <= memAccessNumBitsAfter_e;
 
-        // if we just returned, we need to update the current return address from the stack
-		  // we have to put some Execute stuff here so that returnAddress is only being driven once
-		  if (run && ~stall_e && ~executiveOverride && executeInstr && format == `JMP && funcID == `CALL) returnAddress <= stackWriteData;
-        else if (isRet_e) returnAddress <= stackReadOut;
-
         halt_m <= halt_e;
     end else isValid_m <= 1'b0; end
 
@@ -822,7 +887,7 @@ module LALU(input CLOCK_50,
      *********************/
     wire [31:0] memOutput = memAccessWren_w && memAccessAddress_m == memAccessAddress_w ? memAccessInput_w : memAccessOutput;
     wire [31:0] finalResult_w = isMemRead_m
-        ? ((memOutput << memAccessNumBitsAfter_m) >> memAccessNumBitsAfter_m) >> memAccessNumBitsBefore_m
+        ? ((FULL & memOutput << memAccessNumBitsAfter_m) >> memAccessNumBitsAfter_m) >> memAccessNumBitsBefore_m
         : result_m;
 
     assign memAccessInput = fullByteWrite ? (isWriteback_m && Rd_e == Rd_m ? finalResult_w : registers[Rd_e]) :

@@ -7,8 +7,8 @@ begin:
     bsf     R1, R0, #0, #7          // Rs1 = key code
 
     // if it's a release, ignore
-    bsf.s   R2, R0, #17, #1
-    nzf
+    bsf     R2, R0, #17, #1
+    eq      R2, #1
     c.jmp   begin:
 
     mov     R1, #0
@@ -93,14 +93,8 @@ begin:
     c.mov.e R1, #90
 
     ne      R1, #0
-    c.call  stchr:
+    c.stchr.e R1, R31, #0xFFFFFF, #0
+    c.add   R31, R31, #1        // since width is precisely 2^6, automatically handles overflow :D
+
+
     jmp begin:
-
-
-// R0 = char code
-// R31 = address
-stchr:
-    stchr.e R0, R31, #0xFFFFFF, #0
-    add     R31, R31, #1        // since width is precisely 2^6, automatically handles overflow :D
-
-    ret

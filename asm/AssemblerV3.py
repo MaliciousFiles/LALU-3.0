@@ -469,7 +469,6 @@ def ParseFile(file):
             raise e
 ##    print(codes, lbls)
     out = []
-    print(codes)
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
         mem[code['loc']] = hx

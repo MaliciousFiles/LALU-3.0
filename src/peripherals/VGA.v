@@ -1,5 +1,6 @@
 module VGA (
     input CLOCK_50,
+    input CLOCK_25,
 
     input charWr,
     input [23:0] charWrFgColor,
@@ -49,11 +50,6 @@ module VGA (
     	characters[90] = 200'b01111111100000000010000000010000000010000000001000000001000000000100000000100000000010000000010000000001000000001000000000100000000100000000010000000001111111100000000000000000000000000000000000000000;
     end
 
-    reg vga_clk;                    // VGA runs at 25MHz
-    always @(posedge CLOCK_50) begin
-        vga_clk <= ~vga_clk;
-    end
-
     /*********************
      **     COUNTER     **
      *********************/
@@ -68,7 +64,7 @@ module VGA (
     reg [3:0] charU = 0;
     reg [4:0] charV = 0;
 
-    always @(posedge vga_clk)
+    always @(posedge VGA_CLK)
     begin
     	// NEW LINE
     	if (hCount == 799)
@@ -142,13 +138,13 @@ module VGA (
     wire [199:0] character = characters[vramOut[7:0]];
     wire [23:0] color = character[charU + charV*10] ? vramOut[55:32] : vramOut[31:8];
 
-    assign VGA_CLK = vga_clk;
+    assign VGA_CLK = CLOCK_25;
     assign VGA_HS = ~(656 <= hCount && hCount < 752);
     assign VGA_VS = ~(490 <= vCount && vCount < 492);
-    assign VGA_R = color[23:16];
-    assign VGA_B = color[15:8];
-    assign VGA_G = color[7:0];
+    assign VGA_R = VGA_BLANK_N ? 0 : color[23:16];
+    assign VGA_G = VGA_BLANK_N ? 0 : color[15:8];
+    assign VGA_B = VGA_BLANK_N ? 0 : color[7:0];
     assign VGA_BLANK_N = ~(~hDisp || ~vDisp);
-    assign VGA_SYNC_N = 1'b1;
+    assign VGA_SYNC_N = VGA_HS ^ VGA_VS;
 
 endmodule
