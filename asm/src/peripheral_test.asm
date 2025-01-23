@@ -93,8 +93,8 @@ begin:
     c.mov.e R1, #90
 
     ne      R1, #0
-    c.stchr.e R1, R31, #0xFFFFFF, #0
-    c.add   R31, R31, #1        // since width is precisely 2^6, automatically handles overflow :D
+    c.stchr.e R1, R31, #0x0, #0xFFFFFF
+    c.add   R31, R31, #1        // since width is precisely 2^6, automatically handles wrapping :D
 
 
     jmp begin:

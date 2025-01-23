@@ -88,7 +88,6 @@
 
 module LALU(input CLOCK_50,
     inout PS2_CLK, inout PS2_DAT,
-    input CLOCK_25,
     output [7:0] VGA_R, output [7:0] VGA_G, output [7:0] VGA_B,
     output VGA_CLK, output VGA_SYNC_N, output VGA_BLANK_N, output VGA_HS, output VGA_VS,
     output suspended);
@@ -165,7 +164,6 @@ module LALU(input CLOCK_50,
     wire [4:0] charWrY;
     VGA vga (
         .CLOCK_50(CLOCK_50),
-        .CLOCK_25(CLOCK_25),
 
         .charWr(charWr),
         .charWrFgColor(charWrFgColor),
