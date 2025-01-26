@@ -215,9 +215,9 @@ module VGA (
 
     assign VGA_HS = ~(656 <= hCount && hCount < 752);
     assign VGA_VS = ~(490 <= vCount && vCount < 492);
-    assign VGA_R = VGA_BLANK_N ? 0 : color[23:16];
-    assign VGA_G = VGA_BLANK_N ? 0 : color[15:8];
-    assign VGA_B = VGA_BLANK_N ? 0 : color[7:0];
+    assign VGA_R = ~VGA_BLANK_N ? 0 : color[23:16];
+    assign VGA_G = ~VGA_BLANK_N ? 0 : color[15:8];
+    assign VGA_B = ~VGA_BLANK_N ? 0 : color[7:0];
     assign VGA_BLANK_N = ~(~hDisp || ~vDisp);
     assign VGA_SYNC_N = 1'b1;
 
