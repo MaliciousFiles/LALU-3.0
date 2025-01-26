@@ -11,6 +11,7 @@ module VGA (
     output [7:0] VGA_R, VGA_G, VGA_B,
     output VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS
 );
+`ifndef __ICARUS__
 	altera_pll #(
 		.fractional_vco_multiplier("false"),
 		.reference_clock_frequency("50.0 MHz"),
@@ -80,8 +81,11 @@ module VGA (
 		.fbclk	(1'b0),
 		.refclk	(CLOCK_50)
 	 );
-	 reg CLOCK_25;
-	 always @(posedge CLOCK_50) CLOCK_25 <= ~CLOCK_25;
+`else
+    reg CLK_25 = 0;
+    assign VGA_CLK = CLK_25;
+    always @(posedge CLOCK_50) CLK_25 <= ~CLK_25;
+`endif
 
     integer i;
     /*********************
