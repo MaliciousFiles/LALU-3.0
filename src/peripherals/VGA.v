@@ -11,81 +11,21 @@ module VGA (
     output [7:0] VGA_R, VGA_G, VGA_B,
     output VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS
 );
-`ifndef __ICARUS__
-	altera_pll #(
-		.fractional_vco_multiplier("false"),
-		.reference_clock_frequency("50.0 MHz"),
-		.operation_mode("direct"),
-		.number_of_clocks(1),
-		.output_clock_frequency0("25.175644 MHz"),
-		.phase_shift0("0 ps"),
-		.duty_cycle0(50),
-		.output_clock_frequency1("0 MHz"),
-		.phase_shift1("0 ps"),
-		.duty_cycle1(50),
-		.output_clock_frequency2("0 MHz"),
-		.phase_shift2("0 ps"),
-		.duty_cycle2(50),
-		.output_clock_frequency3("0 MHz"),
-		.phase_shift3("0 ps"),
-		.duty_cycle3(50),
-		.output_clock_frequency4("0 MHz"),
-		.phase_shift4("0 ps"),
-		.duty_cycle4(50),
-		.output_clock_frequency5("0 MHz"),
-		.phase_shift5("0 ps"),
-		.duty_cycle5(50),
-		.output_clock_frequency6("0 MHz"),
-		.phase_shift6("0 ps"),
-		.duty_cycle6(50),
-		.output_clock_frequency7("0 MHz"),
-		.phase_shift7("0 ps"),
-		.duty_cycle7(50),
-		.output_clock_frequency8("0 MHz"),
-		.phase_shift8("0 ps"),
-		.duty_cycle8(50),
-		.output_clock_frequency9("0 MHz"),
-		.phase_shift9("0 ps"),
-		.duty_cycle9(50),
-		.output_clock_frequency10("0 MHz"),
-		.phase_shift10("0 ps"),
-		.duty_cycle10(50),
-		.output_clock_frequency11("0 MHz"),
-		.phase_shift11("0 ps"),
-		.duty_cycle11(50),
-		.output_clock_frequency12("0 MHz"),
-		.phase_shift12("0 ps"),
-		.duty_cycle12(50),
-		.output_clock_frequency13("0 MHz"),
-		.phase_shift13("0 ps"),
-		.duty_cycle13(50),
-		.output_clock_frequency14("0 MHz"),
-		.phase_shift14("0 ps"),
-		.duty_cycle14(50),
-		.output_clock_frequency15("0 MHz"),
-		.phase_shift15("0 ps"),
-		.duty_cycle15(50),
-		.output_clock_frequency16("0 MHz"),
-		.phase_shift16("0 ps"),
-		.duty_cycle16(50),
-		.output_clock_frequency17("0 MHz"),
-		.phase_shift17("0 ps"),
-		.duty_cycle17(50),
-		.pll_type("General"),
-		.pll_subtype("General")
-	 ) altera_pll_i (
-		.rst	(1'b0),
-		.outclk	(VGA_CLK),
-		.locked	(),
-		.fboutclk	( ),
-		.fbclk	(1'b0),
-		.refclk	(CLOCK_50)
-	 );
-`else
-    reg CLK_25 = 0;
-    assign VGA_CLK = CLK_25;
-    always @(posedge CLOCK_50) CLK_25 <= ~CLK_25;
-`endif
+    parameter H_VISIBLE = 640;
+    parameter H_FPORCH = 16;
+    parameter H_SYNC = 96;
+    parameter H_BPORCH = 48;
+    parameter H_BP_END = H_BPORCH - 1;
+    parameter H_END = H_VISIBLE + H_FPORCH + H_SYNC + H_BPORCH - 1;
+
+    parameter V_VISIBLE = 480;
+    parameter V_FPORCH = 10;
+    parameter V_SYNC = 2;
+    parameter V_BPORCH = 33;
+    parameter V_BP_END = V_BPORCH - 1;
+    parameter V_END = V_VISIBLE + V_FPORCH + V_SYNC + V_BPORCH - 1;
+
+	clock25 gen(.CLOCK_50(CLOCK_50), .CLOCK_25(VGA_CLK));
 
     integer i;
     /*********************
@@ -131,8 +71,10 @@ module VGA (
     reg [9:0] hCount = 0;
     reg [9:0] vCount = 0;
 
-    wire hDisp = hCount < 640;
-    wire vDisp = vCount < 480;
+    wire hDisp = H_BPORCH <= hCount && hCount < H_BPORCH + H_VISIBLE;
+    wire vDisp = V_BPORCH <= vCount && vCount < V_BPORCH + V_VISIBLE;
+    wire hSync = H_BPORCH + H_VISIBLE + H_FPORCH <= hCount && hCount <= H_END;
+    wire vSync = V_BPORCH + V_VISIBLE + V_FPORCH <= vCount && vCount <= V_END;
 
     reg [5:0] charX = 0;
     reg [4:0] charY = 0;
@@ -142,14 +84,14 @@ module VGA (
     always @(posedge VGA_CLK)
     begin
     	// NEW LINE
-    	if (hCount == 799)
+    	if (hCount == H_END)
     	begin
     		hCount <= 0;
     		charX <= 0;
     		charU <= 0;
 
     		// NEW FRAME
-    		if (vCount == 524)
+    		if (vCount == V_END)
     		begin
     			vCount <= 0;
     			charY <= 0;
@@ -160,17 +102,24 @@ module VGA (
     		begin
     			vCount <= vCount + 1;
 
-    			// END CHAR
-    			if (charV == 19)
-    			begin
-    				charV <= 0;
-    				charY <= charY + 1;
-    			end
-    			// MID CHAR
-    			else
-    			begin
-    				charV <= charV + 1;
-    			end
+                // end of BP; align charV and charY to 0
+                if (vCount == V_BP_END) begin
+                    charV <= 0;
+                    charY <= 0;
+                end
+                else begin
+                    // END CHAR
+                    if (charV == 19)
+                    begin
+                        charV <= 0;
+                        charY <= charY + 1;
+                    end
+                    // MID CHAR
+                    else
+                    begin
+                        charV <= charV + 1;
+                    end
+                end
     		end
     	end
     	// MID LINE
@@ -178,17 +127,24 @@ module VGA (
     	begin
     		hCount <= hCount + 1;
 
-    		// END CHAR
-    		if (charU == 9)
-    		begin
-    			charU <= 0;
-    			charX <= charX + 1;
-    		end
-    		// MID CHAR
-    		else
-    		begin
-    			charU <= charU + 1;
-    		end
+            // end of BP; align charU and charX to 0
+            if (hCount == H_BP_END) begin
+                charU <= 0;
+                charX <= 0;
+            end
+            else begin
+                // END CHAR
+                if (charU == 9)
+                begin
+                    charU <= 0;
+                    charX <= charX + 1;
+                end
+                // MID CHAR
+                else
+                begin
+                    charU <= charU + 1;
+                end
+            end
     	end
     end
 
@@ -197,28 +153,27 @@ module VGA (
     RAM #(11, 56, 1) vram (
         .clk(CLOCK_50),
 
-        .address_a(charWrX + charWrY * 64),
+        .address_a(charWrX | charWrY << 6),
         .wren_a(charWr),
         .data_a({charWrFgColor, charWrBgColor, charWrCode}),
         .rden_a(1'b0),
         .q_a(),
 
-        .address_b(charX + charY * 64),
+        .address_b(charX | charY << 6),
         .wren_b(1'b0),
         .data_b(32'b0),
         .rden_b(1'b1),
         .q_b(vramOut)
     );
 
-    wire [199:0] character = characters[vramOut[7:0]];
+    wire [0:199] character = characters[vramOut[7:0]];
     wire [23:0] color = character[charU + charV*10] ? vramOut[55:32] : vramOut[31:8];
 
-    assign VGA_HS = ~(656 <= hCount && hCount < 752);
-    assign VGA_VS = ~(490 <= vCount && vCount < 492);
+    assign VGA_HS = ~hSync;
+    assign VGA_VS = ~vSync;
     assign VGA_R = ~VGA_BLANK_N ? 0 : color[23:16];
     assign VGA_G = ~VGA_BLANK_N ? 0 : color[15:8];
     assign VGA_B = ~VGA_BLANK_N ? 0 : color[7:0];
     assign VGA_BLANK_N = ~(~hDisp || ~vDisp);
-    assign VGA_SYNC_N = 1'b1;
-
+    assign VGA_SYNC_N = ~(hSync ^ vSync);
 endmodule
