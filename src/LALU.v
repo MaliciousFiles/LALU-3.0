@@ -160,6 +160,7 @@ module LALU(input CLOCK_50,
     wire [23:0] charWrFgColor;
     wire [23:0] charWrBgColor;
     wire [7:0] charWrCode;
+    wire [7:0] charWrFlags;
     wire [5:0] charWrX;
     wire [4:0] charWrY;
     VGA vga (
@@ -169,6 +170,7 @@ module LALU(input CLOCK_50,
         .charWrFgColor(charWrFgColor),
         .charWrBgColor(charWrBgColor),
         .charWrCode(charWrCode),
+        .charWrFlags(charWrFlags),
         .charWrX(charWrX),
         .charWrY(charWrY),
 
@@ -490,6 +492,7 @@ module LALU(input CLOCK_50,
     assign charWrFgColor = Rs1;
     assign charWrBgColor = Rs2;
     assign charWrCode = Rd;
+    assign charWrFlags = Rd[15:7];
     assign charWrX = Rs0[5:0];
     assign charWrY = Rs0[10:6];
 
