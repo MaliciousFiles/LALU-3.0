@@ -491,8 +491,8 @@ module LALU(input CLOCK_50,
     assign charWr = run && ~stall_e && ~executiveOverride && executeInstr && format == NO_WB_QUAD && funcID == STCHR;
     assign charWrFgColor = Rs1;
     assign charWrBgColor = Rs2;
-    assign charWrCode = Rd;
-    assign charWrFlags = Rd[15:7];
+    assign charWrCode = Rd[7:0];
+    assign charWrFlags = Rd[15:8];
     assign charWrX = Rs0[5:0];
     assign charWrY = Rs0[10:6];
 
