@@ -254,7 +254,11 @@ module VGA (
         .q_b(vramOut)
     );
 
-    wire [0:159] character = bold ? boldCharacters[vramOut[7:0]] : characters[vramOut[7:0]];
+    wire [0:159] character = bold && italic
+        ? boldItalicCharacters[vramOut[7:0]]
+        : bold ? boldCharacters[vramOut[7:0]]
+        : italic ? italicCharacters[vramOut[7:0]]
+        : characters[vramOut[7:0]];
     wire [159:0] rvsCharacter = character;
 
     wire [0:10] line = charV < 16
