@@ -263,7 +263,7 @@ Altera_UP_PS2_Command_Out PS2_Command_Out (
 	
 	// Outputs
 	.command_was_sent				(command_was_sent_w),
-	.error_communication_timed_out	(error_communication_timed_out_w),
+	.error_communication_timed_out	(error_communication_timed_out_w)
 );
 
 endmodule

@@ -1,96 +1,96 @@
-// Formats
-`define TRIP		        2'b00
-`define WB_TRIP		        3'b000
-`define NO_WB_TRIP		    3'b100
-
-`define QUAD		        2'b01
-`define WB_QUAD		        3'b001
-`define NO_WB_QUAD		    3'b101
-
-`define JMP		            3'b110
-
-// Functions
-`define ADD		            9'b0_0000_0001
-`define SUB		            9'b0_0000_0010
-`define RADD		        9'b0_0000_1101
-`define RSUB		        9'b0_0000_1110
-`define ADDS                4'b1000
-`define ADDRS               4'b1001
-`define CSUB		        9'b0_0010_0000
-`define MUL		            9'b0_0000_0011
-`define UUMUL				9'b0_0000_1010
-`define ULMUL				9'b0_0000_1011
-`define LUMUL				9'b0_0000_1100
-`define ABS				    9'b0_0001_0000
-`define BSL		            9'b0_0000_0100
-`define BSR		            9'b0_0000_0101
-`define BRL		            9'b0_0000_0110
-`define BRR		            9'b0_0000_0111
-`define UMAX				9'b0_0001_0001
-`define UMIN				9'b0_0001_0010
-`define SMAX				9'b0_0001_0011
-`define SMIN				9'b0_0001_0100
-`define ANY		            9'b0_0000_1000
-`define LOG				    9'b0_0001_0101
-`define CTZ				    9'b0_0001_0110
-`define PCNT				9'b0_0001_0111
-`define BRVS				9'b0_0001_1000
-`define SRVS				9'b0_0001_1111
-`define VANY				9'b0_0001_1001
-`define VADD				4'b0110
-`define VSUB				4'b0111
-`define BEXT				9'b0_0001_1100
-`define BDEP				9'b0_0001_1101
-`define EXS				    9'b0_0001_1110
-`define LSB				    9'b0_0000_1111
-`define HSB		            9'b0_0000_1001
-
-`define BIT		            9'b0000
-
-`define LD		            4'b0010
-`define ST		            4'b0011
-`define BSF		            4'b0100
-`define BST		            4'b0101
-
-`define RET		            9'b0_0010_0011
-`define CALL		        2'b00
-`define JUMP		        2'b01
-
-`define STCHR               4'b0000
-`define LDKEY               9'b0_0011_0001
-`define KEYPR               9'b0_0011_0010
-`define RSTKEY              9'b0_0011_0011
-
-`define UGT		            9'b0_1000_0000
-`define UGE		            9'b0_1000_0001
-`define ULT		            9'b0_1000_0010
-`define ULE		            9'b0_1000_0011
-`define SGT		            9'b0_1000_0100
-`define SGE		            9'b0_1000_0101
-`define SLT		            9'b0_1000_0110
-`define SLE		            9'b0_1000_0111
-`define EQ		            9'b0_1000_1000
-`define NE		            9'b0_1000_1001
-
-// all flag get func IDs start with this, used to identify a need to stall later
-`define FLAG_GET_INSTR		6'b0_1001_0
-`define NF		            9'b0_1001_0000
-`define ZF		            9'b0_1001_0001
-`define CF		            9'b0_1001_0010
-`define OF		            9'b0_1001_0011
-`define NNF		            9'b0_1001_0100
-`define NZF		            9'b0_1001_0101
-`define NCF		            9'b0_1001_0110
-`define NOF		            9'b0_1001_0111
-
-`define GCLD				9'b1_1111_1111
-`define SUSP				9'b1_1111_1111
-
 module LALU(input CLOCK_50,
     inout PS2_CLK, inout PS2_DAT,
     output [7:0] VGA_R, output [7:0] VGA_G, output [7:0] VGA_B,
     output VGA_CLK, output VGA_SYNC_N, output VGA_BLANK_N, output VGA_HS, output VGA_VS,
     output suspended);
+    // Formats
+    parameter TRIP	            = 2'b00;
+    parameter WB_TRIP			= 3'b000;
+    parameter NO_WB_TRIP		= 3'b100;
+    
+    parameter QUAD		        = 2'b01;
+    parameter WB_QUAD	        = 3'b001;
+    parameter NO_WB_QUAD        = 3'b101;
+    
+    parameter JMP		        = 3'b110;
+    
+    // Functions
+    parameter ADD		        = 9'b0_0000_0001;
+    parameter SUB		        = 9'b0_0000_0010;
+    parameter RADD		        = 9'b0_0000_1101;
+    parameter RSUB		        = 9'b0_0000_1110;
+    parameter ADDS              = 4'b1000;
+    parameter ADDRS             = 4'b1001;
+    parameter CSUB		        = 9'b0_0010_0000;
+    parameter MUL		        = 9'b0_0000_0011;
+    parameter UUMUL		        = 9'b0_0000_1010;
+    parameter ULMUL		        = 9'b0_0000_1011;
+    parameter LUMUL		        = 9'b0_0000_1100;
+    parameter ABS		        = 9'b0_0001_0000;
+    parameter BSL	            = 9'b0_0000_0100;
+    parameter BSR	            = 9'b0_0000_0101;
+    parameter BRL	            = 9'b0_0000_0110;
+    parameter BRR	            = 9'b0_0000_0111;
+    parameter UMAX				= 9'b0_0001_0001;
+    parameter UMIN				= 9'b0_0001_0010;
+    parameter SMAX				= 9'b0_0001_0011;
+    parameter SMIN				= 9'b0_0001_0100;
+    parameter ANY	            = 9'b0_0000_1000;
+    parameter LOG				= 9'b0_0001_0101;
+    parameter CTZ				= 9'b0_0001_0110;
+    parameter PCNT				= 9'b0_0001_0111;
+    parameter BRVS				= 9'b0_0001_1000;
+    parameter SRVS				= 9'b0_0001_1111;
+    parameter VANY				= 9'b0_0001_1001;
+    parameter VADD				= 4'b0110;
+    parameter VSUB				= 4'b0111;
+    parameter BEXT				= 9'b0_0001_1100;
+    parameter BDEP				= 9'b0_0001_1101;
+    parameter EXS				= 9'b0_0001_1110;
+    parameter LSB				= 9'b0_0000_1111;
+    parameter HSB	            = 9'b0_0000_1001;
+    
+    parameter BIT	            = 9'b0000;
+    
+    parameter LD	            = 4'b0010;
+    parameter ST	            = 4'b0011;
+    parameter BSF	            = 4'b0100;
+    parameter BST	            = 4'b0101;
+    
+    parameter RET	            = 9'b0_0010_0011;
+    parameter CALL		        = 2'b00;
+    parameter JUMP		        = 2'b01;
+    
+    parameter STCHR             = 4'b0000;
+    parameter LDKEY             = 9'b0_0011_0001;
+    parameter KEYPR             = 9'b0_0011_0010;
+    parameter RSTKEY            = 9'b0_0011_0011;
+    
+    parameter UGT		        = 9'b0_1000_0000;
+    parameter UGE	            = 9'b0_1000_0001;
+    parameter ULT	            = 9'b0_1000_0010;
+    parameter ULE	            = 9'b0_1000_0011;
+    parameter SGT	            = 9'b0_1000_0100;
+    parameter SGE	            = 9'b0_1000_0101;
+    parameter SLT	            = 9'b0_1000_0110;
+    parameter SLE	            = 9'b0_1000_0111;
+    parameter EQ	            = 9'b0_1000_1000;
+    parameter NE	            = 9'b0_1000_1001;
+    
+    // all flag get func IDs start with this, used to identify a need to stall later
+    parameter FLAG_GET_INSTR    = 6'b0_1001_0;
+    parameter NF	            = 9'b0_1001_0000;
+    parameter ZF	            = 9'b0_1001_0001;
+    parameter CF	            = 9'b0_1001_0010;
+    parameter OF	            = 9'b0_1001_0011;
+    parameter NNF	            = 9'b0_1001_0100;
+    parameter NZF	            = 9'b0_1001_0101;
+    parameter NCF	            = 9'b0_1001_0110;
+    parameter NOF	            = 9'b0_1001_0111;
+    
+    parameter GCLD				= 9'b1_1111_1111;
+    parameter SUSP				= 9'b1_1111_1111;
+    
     /*********************
      *      Memory       *
      *********************/
@@ -160,6 +160,7 @@ module LALU(input CLOCK_50,
     wire [23:0] charWrFgColor;
     wire [23:0] charWrBgColor;
     wire [7:0] charWrCode;
+    wire [7:0] charWrFlags;
     wire [5:0] charWrX;
     wire [4:0] charWrY;
     VGA vga (
@@ -169,6 +170,7 @@ module LALU(input CLOCK_50,
         .charWrFgColor(charWrFgColor),
         .charWrBgColor(charWrBgColor),
         .charWrCode(charWrCode),
+        .charWrFlags(charWrFlags),
         .charWrX(charWrX),
         .charWrY(charWrY),
 
@@ -180,6 +182,13 @@ module LALU(input CLOCK_50,
         .VGA_R(VGA_R),
         .VGA_G(VGA_G),
         .VGA_B(VGA_B));
+
+    /*********************
+     *     Constants     *
+     *********************/
+    wire [31:0] FULL = 32'hFFFFFFFF;
+    reg [31:0] VADD_MASKS [0:31];
+    initial for (i = 1; i < 32; i = i + 1) for (j = i; j < 32; j = j + i) VADD_MASKS[i][j] = 1'b1;
 
     /*********************
      *     Registers     *
@@ -349,7 +358,7 @@ module LALU(input CLOCK_50,
         negate <= instruction[30];
         sticky_d <= instruction[29];
 
-        if (curFormat[1:0] == `TRIP) begin // triple
+        if (curFormat[1:0] == TRIP) begin // triple
             Rd_d <= instruction[28:24];
 
             Rs0_d <= instruction[23:19];
@@ -372,7 +381,7 @@ module LALU(input CLOCK_50,
             i2 <= 1'b0;
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
-        end else if (curFormat[1:0] == `QUAD) begin // quad
+        end else if (curFormat[1:0] == QUAD) begin // quad
             Rd_d <= instruction[28:24];
 
             Rs0_d <= instruction[23:19];
@@ -395,7 +404,7 @@ module LALU(input CLOCK_50,
             i0 <= 1'b0;
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
-        end else if (curFormat == `JMP) begin // jump
+        end else if (curFormat == JMP) begin // jump
             jumpPageLoc <= instruction[28:26];
             jumpLoc <= instruction[25:5];
 
@@ -421,12 +430,12 @@ module LALU(input CLOCK_50,
     assign stackReadAddr = stackPointer - 2;
 
     assign stackWriteAddr = stackPointer;
-    assign stackWren = isValid_d && format == `JMP && funcID == `CALL;
+    assign stackWren = isValid_d && format == JMP && funcID == CALL;
     assign stackWriteData = {operationMode, IP_d + 16'b1};
 
 
-    wire stall_e = (isValid_d && isWriteback_e && isMemRead_e && ((~i0 && Rs0_d == Rd_e && format != `JMP) || (~i1 && Rs1_d == Rd_e && format != `JMP) || (~i2 && Rs2_d == Rd_e && format[1:0] == `QUAD) || (Rd_d == Rd_e && (format == `WB_QUAD && funcID == `BST))))
-                || (isValid_d && sticky_e && isWriteback_e && isMemRead_e && format == `NO_WB_TRIP && funcID[8:3] == `FLAG_GET_INSTR)
+    wire stall_e = (isValid_d && isWriteback_e && isMemRead_e && ((~i0 && Rs0_d == Rd_e && format != JMP) || (~i1 && Rs1_d == Rd_e && format != JMP) || (~i2 && Rs2_d == Rd_e && format[1:0] == QUAD) || (Rd_d == Rd_e && (format == WB_QUAD && funcID == BST))))
+                || (isValid_d && sticky_e && isWriteback_e && isMemRead_e && format == NO_WB_TRIP && funcID[8:3] == FLAG_GET_INSTR)
                 || stall_m;
     wire isValid_e = isValid_e_reg && ~invalidFunction;
     wire executiveOverride = isValid_d && expectedIP != IP_d; // whether to override IP with EIP
@@ -461,30 +470,31 @@ module LALU(input CLOCK_50,
     wire diff_ZF = diff == 0;
 
     // bring out flags for all flag get instructions, with passthru
-    wire NF = sticky_e && isWriteback_e ? result_e[31]
+    wire exec_NF = sticky_e && isWriteback_e ? result_e[31]
         : sticky_m && isWriteback_m ? finalResult_w[31]
         : negativeFlag;
-    wire OF = sticky_e && isWriteback_e ? overflowFlag_e
+    wire exec_OF = sticky_e && isWriteback_e ? overflowFlag_e
         : sticky_m && isWriteback_m ? overflowFlag_m
         : overflowFlag;
-    wire CF = sticky_e && isWriteback_e ? carryFlag_e
+    wire exec_CF = sticky_e && isWriteback_e ? carryFlag_e
           : sticky_m && isWriteback_m ? carryFlag_m
           : carryFlag;
-    wire ZF = sticky_e && isWriteback_e ? result_e == 0
+    wire exec_ZF = sticky_e && isWriteback_e ? result_e == 0
         : sticky_m && isWriteback_m ? finalResult_w == 0
         : zeroFlag;
 
     // peripherals
     assign keyQuery = Rs0;
-    assign rstKeyboard = isValid_d && format == `NO_WB_TRIP && funcID == `RSTKEY;
-    assign pollKeyboard = run && ~stall_e && ~executiveOverride && executeInstr && format == `WB_TRIP && funcID == `LDKEY;
+    assign rstKeyboard = isValid_d && format == NO_WB_TRIP && funcID == RSTKEY;
+    assign pollKeyboard = run && ~stall_e && ~executiveOverride && executeInstr && format == WB_TRIP && funcID == LDKEY;
 
-    assign charWr = run && ~stall_e && ~executiveOverride && executeInstr && format == `NO_WB_QUAD && funcID == `STCHR;
+    assign charWr = run && ~stall_e && ~executiveOverride && executeInstr && format == NO_WB_QUAD && funcID == STCHR;
     assign charWrFgColor = Rs1;
     assign charWrBgColor = Rs2;
-    assign charWrCode = Rd;
+    assign charWrCode = Rd[7:0];
+    assign charWrFlags = Rd[15:8];
     assign charWrX = Rs0[5:0];
-    assign charWrY = Rs0[9:6];
+    assign charWrY = Rs0[10:6];
 
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
     always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
@@ -507,271 +517,325 @@ module LALU(input CLOCK_50,
             overflowFlag_e <= 1'b0;
             isRet_e <= 1'b0;
 
-            if (format == `WB_TRIP) begin
+            if (format == WB_TRIP) begin
                 case (funcID)
-                    `ADD: begin
+                    ADD: begin
                         result_e <= sum[31:0];
                         carryFlag_e <= sum[32];
                         overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum[31]);
                     end
-                    `SUB: begin
+                    SUB: begin
                         result_e <= diff[31:0];
                         carryFlag_e <= diff_CF;
                         overflowFlag_e <= diff_OF;
                     end
-                    `RADD: begin
+                    RADD: begin
                         result_e <= sum_carry;
                         carryFlag_e <= sum_carry[32];
                         overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_carry[31]);
                     end
-                    `RSUB: begin
+                    RSUB: begin
                         result_e <= diff_carry;
                         carryFlag_e <= diff_carry[32];
                         overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != diff_carry[31]);
                     end
-                    `CSUB: begin
+                    CSUB: begin
                         result_e <= Rs1 <= Rs0 ? diff : Rs0;
                         overflowFlag_e <= Rs1 > Rs0;
                     end
-                    `MUL: begin
+                    MUL: begin
                         result_e <= Rs0[15:0] * Rs1[15:0];
                     end
-                    `UUMUL: begin
+                    UUMUL: begin
                         result_e <= Rs0[31:16] * Rs1[31:16];
                     end
-                    `ULMUL: begin
+                    ULMUL: begin
                         result_e <= Rs0[31:16] * Rs1[15:0];
                     end
-                    `LUMUL: begin
+                    LUMUL: begin
                         result_e <= Rs0[15:0] * Rs1[31:16];
                     end
-                    `ABS: begin
+                    ABS: begin
                         result_e <= Rs0[31] ? -Rs0 : Rs0;
                     end
-                    `BSL: begin
+                    BSL: begin
                         result_e <= Rs0 << Rs1;
                         carryFlag_e <= Rs1 == 0 ? 0 : Rs0[32-Rs1];
                     end
-                    `BSR: begin
+                    BSR: begin
                         result_e <= Rs0 >> Rs1;
-                        carryFlag_e <= Rs1 == 0 ? 0 : Rs0[Rs1-1];
+                        carryFlag_e <= Rs1 == 0 ? 0 : Rs0[Rs1 -: 2];
                     end
-                    `BRL: begin
+                    BRL: begin
                         result_e <= Rs0 << Rs1 | Rs0 >> (32-Rs1);
                     end
-                    `BRR: begin
+                    BRR: begin
                         result_e <= Rs0 >> Rs1 | Rs0 << (32-Rs1);
                     end
-                    `UMAX: begin
+                    UMAX: begin
                         result_e <= Rs0 > Rs1 ? Rs0 : Rs1;
                     end
-                    `UMIN: begin
+                    UMIN: begin
                         result_e <= Rs0 < Rs1 ? Rs0 : Rs1;
                     end
-                    `SMAX: begin
+                    SMAX: begin
                         result_e <= Rs0[31] == Rs1[31] == (Rs0 > Rs1) ? Rs0 : Rs1;
                     end
-                    `SMIN: begin
+                    SMIN: begin
                         result_e <= Rs0[31] == Rs1[31] == (Rs0 < Rs1) ? Rs0 : Rs1;
                     end
-                    `ANY: begin
+                    ANY: begin
                         result_e <= Rs0 != 0;
                     end
-                    `LOG: begin
+                    LOG: begin
                         result_e <= Rs0[31] == 1'b1 ? 31 : Rs0[30] == 1'b1 ? 30 : Rs0[29] == 1'b1 ? 29 : Rs0[28] == 1'b1 ? 28 : Rs0[27] == 1'b1 ? 27 : Rs0[26] == 1'b1 ? 26 : Rs0[25] == 1'b1 ? 25 : Rs0[24] == 1'b1 ? 24 : Rs0[23] == 1'b1 ? 23 : Rs0[22] == 1'b1 ? 22 : Rs0[21] == 1'b1 ? 21 : Rs0[20] == 1'b1 ? 20 : Rs0[19] == 1'b1 ? 19 : Rs0[18] == 1'b1 ? 18 : Rs0[17] == 1'b1 ? 17 : Rs0[16] == 1'b1 ? 16 : Rs0[15] == 1'b1 ? 15 : Rs0[14] == 1'b1 ? 14 : Rs0[13] == 1'b1 ? 13 : Rs0[12] == 1'b1 ? 12 : Rs0[11] == 1'b1 ? 11 : Rs0[10] == 1'b1 ? 10 : Rs0[9] == 1'b1 ? 9 : Rs0[8] == 1'b1 ? 8 : Rs0[7] == 1'b1 ? 7 : Rs0[6] == 1'b1 ? 6 : Rs0[5] == 1'b1 ? 5 : Rs0[4] == 1'b1 ? 4 : Rs0[3] == 1'b1 ? 3 : Rs0[2] == 1'b1 ? 2 : Rs0[1] == 1'b1 ? 1 : Rs0[0] == 1'b1 ? 0 : 0;
                     end
-                    `CTZ: begin
+                    CTZ: begin
                         result_e <= Rs0[0] == 1'b1 ? 0 : Rs0[1] == 1'b1 ? 1 : Rs0[2] == 1'b1 ? 2 : Rs0[3] == 1'b1 ? 3 : Rs0[4] == 1'b1 ? 4 : Rs0[5] == 1'b1 ? 5 : Rs0[6] == 1'b1 ? 6 : Rs0[7] == 1'b1 ? 7 : Rs0[8] == 1'b1 ? 8 : Rs0[9] == 1'b1 ? 9 : Rs0[10] == 1'b1 ? 10 : Rs0[11] == 1'b1 ? 11 : Rs0[12] == 1'b1 ? 12 : Rs0[13] == 1'b1 ? 13 : Rs0[14] == 1'b1 ? 14 : Rs0[15] == 1'b1 ? 15 : Rs0[16] == 1'b1 ? 16 : Rs0[17] == 1'b1 ? 17 : Rs0[18] == 1'b1 ? 18 : Rs0[19] == 1'b1 ? 19 : Rs0[20] == 1'b1 ? 20 : Rs0[21] == 1'b1 ? 21 : Rs0[22] == 1'b1 ? 22 : Rs0[23] == 1'b1 ? 23 : Rs0[24] == 1'b1 ? 24 : Rs0[25] == 1'b1 ? 25 : Rs0[26] == 1'b1 ? 26 : Rs0[27] == 1'b1 ? 27 : Rs0[28] == 1'b1 ? 28 : Rs0[29] == 1'b1 ? 29 : Rs0[30] == 1'b1 ? 30 : Rs0[31] == 1'b1 ? 31 : 32;
                     end
-                    `PCNT: begin
+                    PCNT: begin
                         result_e <= Rs0[0] + Rs0[1] + Rs0[2] + Rs0[3] + Rs0[4] + Rs0[5] + Rs0[6] + Rs0[7] + Rs0[8] + Rs0[9] + Rs0[10] + Rs0[11] + Rs0[12] + Rs0[13] + Rs0[14] + Rs0[15] + Rs0[16] + Rs0[17] + Rs0[18] + Rs0[19] + Rs0[20] + Rs0[21] + Rs0[22] + Rs0[23] + Rs0[24] + Rs0[25] + Rs0[26] + Rs0[27] + Rs0[28] + Rs0[29] + Rs0[30] + Rs0[31];
                     end
-                    `BRVS: begin
+                    BRVS: begin
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
                     end
-//                    `SRVS: begin // TODO: is non static loop ok?
-//                        if (Rs1 == 0) result_e <= 32'b0;
-//                        else begin
-//									for (i = 0; i < 32; i = i+Rs1) begin
-//										for (j = 0; j < 32; j = j+1) if (j < Rs1 && i+j < 32) begin
-//											result_e[i+j] <= i+Rs1-1-j < 32 ? Rs0[i+Rs1-1-j] : 1'b0;
-//										end
-//									end
-//                        end
-//                    end
-//                    `VANY: begin // TODO: is non static loop ok?
-//                        if (Rs1 == 0) result_e <= 32'b0;
-//                        else for (i = 0; i < 32; i = i+Rs1) begin
-//                            result_e[i] <= ((64'hFFFFFFFF << Rs1 >> 32) & Rs0 >> i) != 0;
-//                            for (j = 1; j < 32; j = j+1) if (j < Rs1 && i+j < 32) result_e[i+j] <= 1'b0;
-//                        end
-//                    end
-//                    `BEXT: begin
+                    SRVS: begin
+                        case (Rs1)
+                            0: for (i = 0; i < 32; i = i+1) result_e[i] <= Rs0[31-i];
+                            1: result_e <= Rs0;
+                            2: for (i = 0; i < 32; i = i+2) for (j = 0; j < 2; j = j+1) if (i+j < 32) result_e[i+j] <= i+1-j < 32 ? Rs0[i+1-j] : 1'b0;
+                            3: for (i = 0; i < 32; i = i+3) for (j = 0; j < 3; j = j+1) if (i+j < 32) result_e[i+j] <= i+2-j < 32 ? Rs0[i+2-j] : 1'b0;
+                            4: for (i = 0; i < 32; i = i+4) for (j = 0; j < 4; j = j+1) if (i+j < 32) result_e[i+j] <= i+3-j < 32 ? Rs0[i+3-j] : 1'b0;
+                            5: for (i = 0; i < 32; i = i+5) for (j = 0; j < 5; j = j+1) if (i+j < 32) result_e[i+j] <= i+4-j < 32 ? Rs0[i+4-j] : 1'b0;
+                            6: for (i = 0; i < 32; i = i+6) for (j = 0; j < 6; j = j+1) if (i+j < 32) result_e[i+j] <= i+5-j < 32 ? Rs0[i+5-j] : 1'b0;
+                            7: for (i = 0; i < 32; i = i+7) for (j = 0; j < 7; j = j+1) if (i+j < 32) result_e[i+j] <= i+6-j < 32 ? Rs0[i+6-j] : 1'b0;
+                            8: for (i = 0; i < 32; i = i+8) for (j = 0; j < 8; j = j+1) if (i+j < 32) result_e[i+j] <= i+7-j < 32 ? Rs0[i+7-j] : 1'b0;
+                            9: for (i = 0; i < 32; i = i+9) for (j = 0; j < 9; j = j+1) if (i+j < 32) result_e[i+j] <= i+8-j < 32 ? Rs0[i+8-j] : 1'b0;
+                            10: for (i = 0; i < 32; i = i+10) for (j = 0; j < 10; j = j+1) if (i+j < 32) result_e[i+j] <= i+9-j < 32 ? Rs0[i+9-j] : 1'b0;
+                            11: for (i = 0; i < 32; i = i+11) for (j = 0; j < 11; j = j+1) if (i+j < 32) result_e[i+j] <= i+10-j < 32 ? Rs0[i+10-j] : 1'b0;
+                            12: for (i = 0; i < 32; i = i+12) for (j = 0; j < 12; j = j+1) if (i+j < 32) result_e[i+j] <= i+11-j < 32 ? Rs0[i+11-j] : 1'b0;
+                            13: for (i = 0; i < 32; i = i+13) for (j = 0; j < 13; j = j+1) if (i+j < 32) result_e[i+j] <= i+12-j < 32 ? Rs0[i+12-j] : 1'b0;
+                            14: for (i = 0; i < 32; i = i+14) for (j = 0; j < 14; j = j+1) if (i+j < 32) result_e[i+j] <= i+13-j < 32 ? Rs0[i+13-j] : 1'b0;
+                            15: for (i = 0; i < 32; i = i+15) for (j = 0; j < 15; j = j+1) if (i+j < 32) result_e[i+j] <= i+14-j < 32 ? Rs0[i+14-j] : 1'b0;
+                            16: for (i = 0; i < 32; i = i+16) for (j = 0; j < 16; j = j+1) if (i+j < 32) result_e[i+j] <= i+15-j < 32 ? Rs0[i+15-j] : 1'b0;
+                            17: for (i = 0; i < 32; i = i+17) for (j = 0; j < 17; j = j+1) if (i+j < 32) result_e[i+j] <= i+16-j < 32 ? Rs0[i+16-j] : 1'b0;
+                            18: for (i = 0; i < 32; i = i+18) for (j = 0; j < 18; j = j+1) if (i+j < 32) result_e[i+j] <= i+17-j < 32 ? Rs0[i+17-j] : 1'b0;
+                            19: for (i = 0; i < 32; i = i+19) for (j = 0; j < 19; j = j+1) if (i+j < 32) result_e[i+j] <= i+18-j < 32 ? Rs0[i+18-j] : 1'b0;
+                            20: for (i = 0; i < 32; i = i+20) for (j = 0; j < 20; j = j+1) if (i+j < 32) result_e[i+j] <= i+19-j < 32 ? Rs0[i+19-j] : 1'b0;
+                            21: for (i = 0; i < 32; i = i+21) for (j = 0; j < 21; j = j+1) if (i+j < 32) result_e[i+j] <= i+20-j < 32 ? Rs0[i+20-j] : 1'b0;
+                            22: for (i = 0; i < 32; i = i+22) for (j = 0; j < 22; j = j+1) if (i+j < 32) result_e[i+j] <= i+21-j < 32 ? Rs0[i+21-j] : 1'b0;
+                            23: for (i = 0; i < 32; i = i+23) for (j = 0; j < 23; j = j+1) if (i+j < 32) result_e[i+j] <= i+22-j < 32 ? Rs0[i+22-j] : 1'b0;
+                            24: for (i = 0; i < 32; i = i+24) for (j = 0; j < 24; j = j+1) if (i+j < 32) result_e[i+j] <= i+23-j < 32 ? Rs0[i+23-j] : 1'b0;
+                            25: for (i = 0; i < 32; i = i+25) for (j = 0; j < 25; j = j+1) if (i+j < 32) result_e[i+j] <= i+24-j < 32 ? Rs0[i+24-j] : 1'b0;
+                            26: for (i = 0; i < 32; i = i+26) for (j = 0; j < 26; j = j+1) if (i+j < 32) result_e[i+j] <= i+25-j < 32 ? Rs0[i+25-j] : 1'b0;
+                            27: for (i = 0; i < 32; i = i+27) for (j = 0; j < 27; j = j+1) if (i+j < 32) result_e[i+j] <= i+26-j < 32 ? Rs0[i+26-j] : 1'b0;
+                            28: for (i = 0; i < 32; i = i+28) for (j = 0; j < 28; j = j+1) if (i+j < 32) result_e[i+j] <= i+27-j < 32 ? Rs0[i+27-j] : 1'b0;
+                            29: for (i = 0; i < 32; i = i+29) for (j = 0; j < 29; j = j+1) if (i+j < 32) result_e[i+j] <= i+28-j < 32 ? Rs0[i+28-j] : 1'b0;
+                            30: for (i = 0; i < 32; i = i+30) for (j = 0; j < 30; j = j+1) if (i+j < 32) result_e[i+j] <= i+29-j < 32 ? Rs0[i+29-j] : 1'b0;
+                            31: for (i = 0; i < 32; i = i+31) for (j = 0; j < 31; j = j+1) if (i+j < 32) result_e[i+j] <= i+30-j < 32 ? Rs0[i+30-j] : 1'b0;
+                            default: result_e <= 32'b0;
+                        endcase
+                    end
+                    VANY: begin
+                        result_e <= 32'b0;
+                        case (Rs1)
+                            1: result_e <= Rs0;
+                            2: for (i = 0; i < 32; i = i+2) result_e[i] <= Rs0[i +: 2] != 0;
+                            3: for (i = 0; i < 30; i = i+3) result_e[i] <= Rs0[i +: 3] != 0;
+                            4: for (i = 0; i < 32; i = i+4) result_e[i] <= Rs0[i +: 4] != 0;
+                            5: for (i = 0; i < 30; i = i+5) result_e[i] <= Rs0[i +: 5] != 0;
+                            6: for (i = 0; i < 30; i = i+6) result_e[i] <= Rs0[i +: 6] != 0;
+                            7: for (i = 0; i < 28; i = i+7) result_e[i] <= Rs0[i +: 7] != 0;
+                            8: for (i = 0; i < 32; i = i+8) result_e[i] <= Rs0[i +: 8] != 0;
+                            9: for (i = 0; i < 27; i = i+9) result_e[i] <= Rs0[i +: 9] != 0;
+                            10: for (i = 0; i < 30; i = i+10) result_e[i] <= Rs0[i +: 10] != 0;
+                            11: for (i = 0; i < 22; i = i+11) result_e[i] <= Rs0[i +: 11] != 0;
+                            12: for (i = 0; i < 24; i = i+12) result_e[i] <= Rs0[i +: 12] != 0;
+                            13: for (i = 0; i < 26; i = i+13) result_e[i] <= Rs0[i +: 13] != 0;
+                            14: for (i = 0; i < 28; i = i+14) result_e[i] <= Rs0[i +: 14] != 0;
+                            15: for (i = 0; i < 30; i = i+15) result_e[i] <= Rs0[i +: 15] != 0;
+                            16: for (i = 0; i < 32; i = i+16) result_e[i] <= Rs0[i +: 16] != 0;
+                            17: for (i = 0; i < 17; i = i+17) result_e[i] <= Rs0[i +: 17] != 0;
+                            18: for (i = 0; i < 18; i = i+18) result_e[i] <= Rs0[i +: 18] != 0;
+                            19: for (i = 0; i < 19; i = i+19) result_e[i] <= Rs0[i +: 19] != 0;
+                            20: for (i = 0; i < 20; i = i+20) result_e[i] <= Rs0[i +: 20] != 0;
+                            21: for (i = 0; i < 21; i = i+21) result_e[i] <= Rs0[i +: 21] != 0;
+                            22: for (i = 0; i < 22; i = i+22) result_e[i] <= Rs0[i +: 22] != 0;
+                            23: for (i = 0; i < 23; i = i+23) result_e[i] <= Rs0[i +: 23] != 0;
+                            24: for (i = 0; i < 24; i = i+24) result_e[i] <= Rs0[i +: 24] != 0;
+                            25: for (i = 0; i < 25; i = i+25) result_e[i] <= Rs0[i +: 25] != 0;
+                            26: for (i = 0; i < 26; i = i+26) result_e[i] <= Rs0[i +: 26] != 0;
+                            27: for (i = 0; i < 27; i = i+27) result_e[i] <= Rs0[i +: 27] != 0;
+                            28: for (i = 0; i < 28; i = i+28) result_e[i] <= Rs0[i +: 28] != 0;
+                            29: for (i = 0; i < 29; i = i+29) result_e[i] <= Rs0[i +: 29] != 0;
+                            30: for (i = 0; i < 30; i = i+30) result_e[i] <= Rs0[i +: 30] != 0;
+                            31: for (i = 0; i < 31; i = i+31) result_e[i] <= Rs0[i +: 31] != 0;
+                        endcase
+                    end
+//                    BEXT: begin
 //
 //                    end
-//                    `BDEP: begin
+//                    BDEP: begin
 //
 //                    end
-                    `EXS: begin
+                    EXS: begin
                         result_e <= Rs1 < 32
                             ? (Rs0[Rs1] ? 32'hFFFFFFFF << Rs1 : 32'b0) | ((64'hFFFFFFFF << Rs1 >> 31) & Rs0)
                         : Rs0;
                     end
-                    `LSB: begin
+                    LSB: begin
                         result_e <= Rs0 & -Rs0;
                     end
-                    `HSB: begin
+                    HSB: begin
                         result_e <= Rs0[31] == 1'b1 ? 32'b10000000000000000000000000000000 : Rs0[30] == 1'b1 ? 32'b1000000000000000000000000000000 : Rs0[29] == 1'b1 ? 32'b100000000000000000000000000000 : Rs0[28] == 1'b1 ? 32'b10000000000000000000000000000 : Rs0[27] == 1'b1 ? 32'b1000000000000000000000000000 : Rs0[26] == 1'b1 ? 32'b100000000000000000000000000 : Rs0[25] == 1'b1 ? 32'b10000000000000000000000000 : Rs0[24] == 1'b1 ? 32'b1000000000000000000000000 : Rs0[23] == 1'b1 ? 32'b100000000000000000000000 : Rs0[22] == 1'b1 ? 32'b10000000000000000000000 : Rs0[21] == 1'b1 ? 32'b1000000000000000000000 : Rs0[20] == 1'b1 ? 32'b100000000000000000000 : Rs0[19] == 1'b1 ? 32'b10000000000000000000 : Rs0[18] == 1'b1 ? 32'b1000000000000000000 : Rs0[17] == 1'b1 ? 32'b100000000000000000 : Rs0[16] == 1'b1 ? 32'b10000000000000000 : Rs0[15] == 1'b1 ? 32'b1000000000000000 : Rs0[14] == 1'b1 ? 32'b100000000000000 : Rs0[13] == 1'b1 ? 32'b10000000000000 : Rs0[12] == 1'b1 ? 32'b1000000000000 : Rs0[11] == 1'b1 ? 32'b100000000000 : Rs0[10] == 1'b1 ? 32'b10000000000 : Rs0[9] == 1'b1 ? 32'b1000000000 : Rs0[8] == 1'b1 ? 32'b100000000 : Rs0[7] == 1'b1 ? 32'b10000000 : Rs0[6] == 1'b1 ? 32'b1000000 : Rs0[5] == 1'b1 ? 32'b100000 : Rs0[4] == 1'b1 ? 32'b10000 : Rs0[3] == 1'b1 ? 32'b1000 : Rs0[2] == 1'b1 ? 32'b100 : Rs0[1] == 1'b1 ? 32'b10 : Rs0[0] == 1'b1 ? 32'b1 : 32'b0;
                     end
-                    `LDKEY: begin
+                    LDKEY: begin
                         result_e <= keyboardOut;
                     end
-                    `KEYPR: begin
+                    KEYPR: begin
                         result_e <= isKeyPressed;
                     end
-                    `GCLD: begin
+                    GCLD: begin
                         result_e <= globalCounter;
                     end
                     default begin
                         invalidFunction <= 1'b1;
                     end
                 endcase
-            end else if (format == `NO_WB_TRIP) begin
+            end else if (format == NO_WB_TRIP) begin
                 case (funcID)
-                    `RET: begin
+                    RET: begin
                         expectedIP <= isRet_e ? stackReadOut : returnAddress[15:0];
 
                         stackPointer <= stackPointer - 1;
                         operationMode <= returnAddress[16];
                         isRet_e <= 1'b1;
                     end
-                    `RSTKEY: begin end
-                    `UGT: begin
+                    RSTKEY: begin end
+                    UGT: begin
                         generalFlag <= diff_CF && !diff_ZF;
                     end
-                    `UGE: begin
+                    UGE: begin
                         generalFlag <= diff_CF;
                     end
-                    `ULT: begin
+                    ULT: begin
                         generalFlag <= ~diff_CF;
                     end
-                    `ULE: begin
+                    ULE: begin
                         generalFlag <= ~diff_CF || ~diff_ZF;
                     end
-                    `SGT: begin
+                    SGT: begin
                         generalFlag <= ~diff_ZF && diff_NF == diff_OF;
                     end
-                    `SGE: begin
+                    SGE: begin
                         generalFlag <= diff_NF == diff_OF;
                     end
-                    `SLT: begin
+                    SLT: begin
                         generalFlag <= diff_NF != diff_OF;
                     end
-                    `SLE: begin
+                    SLE: begin
                         generalFlag <= diff_ZF || diff_NF != diff_OF;
                     end
-                    `EQ: begin
+                    EQ: begin
                         generalFlag <= diff_ZF;
                     end
-                    `NE: begin
+                    NE: begin
                         generalFlag <= ~diff_ZF;
                     end
-                    `NF: begin
-                        generalFlag <= NF;
+                    NF: begin
+                        generalFlag <= exec_NF;
                     end
-                    `ZF: begin
-                        generalFlag <= ZF;
+                    ZF: begin
+                        generalFlag <= exec_ZF;
                     end
-                    `CF: begin
-                        generalFlag <= CF;
+                    CF: begin
+                        generalFlag <= exec_CF;
                     end
-                    `OF: begin
-                        generalFlag <= OF;
+                    OF: begin
+                        generalFlag <= exec_OF;
                     end
-                    `NNF: begin
-                        generalFlag <= ~NF;
+                    NNF: begin
+                        generalFlag <= ~exec_NF;
                     end
-                    `NZF: begin
-                        generalFlag <= ~ZF;
+                    NZF: begin
+                        generalFlag <= ~exec_ZF;
                     end
-                    `NCF: begin
-                        generalFlag <= ~CF;
+                    NCF: begin
+                        generalFlag <= ~exec_CF;
                     end
-                    `NOF: begin
-                        generalFlag <= ~OF;
+                    NOF: begin
+                        generalFlag <= ~exec_OF;
                     end
-                    `SUSP: begin
+                    SUSP: begin
                         halt_e <= 1'b1;
                     end
                     default begin
                         invalidFunction <= 1'b1;
                     end
                 endcase
-            end else if (format == `WB_QUAD) begin
+            end else if (format == WB_QUAD) begin
                 case (funcID)
-//                    `VADD: begin // TODO: is non static loop ok?
-//                        for (i = 0; i < 32; i = i + Rs2) begin
-//
-//                        end
-//                    end
-//                    `VSUB: begin // TODO: is non static loop ok?
+                    VADD: begin
+                        result_e <= ((Rs0 & ~VADD_MASKS[Rs2]) + (Rs1 & ~VADD_MASKS[Rs2])) ^ ((Rs0 & VADD_MASKS[Rs2]) ^ (Rs1 & VADD_MASKS[Rs2]));
+                    end
+//                    VSUB: begin // TODO: ask grant lol
 //
 //                    end
-                    `ADDS: begin
+                    ADDS: begin
                         result_e <= sum_shift;
                         carryFlag_e <= sum_shift[32];
                         overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_shift[31]);
                     end
-                    `ADDRS: begin
+                    ADDRS: begin
                         result_e <= sum_right_shift;
                         carryFlag_e <= sum_right_shift[32];
                         overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_right_shift[31]);
                     end
-                    `BIT: begin
+                    BIT: begin
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[~{Rs1[i], Rs0[i]}];
                     end
-                    `LD: begin
+                    LD: begin
                         memAccessAddress_e <= sum[20:5];
                         memAccessNumBitsBefore_e <= sum[4:0];
                         memAccessNumBits_e <= Rs2;
                         memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
                         isMemRead_e <= 1'b1;
                     end
-                    `BSF: begin
-                        result_e <= Rs2 == 0 ? Rs0 : (32'hFFFFFFFF & Rs0 >> Rs1 << 32 >> Rs2) << Rs2 >> 32;
+                    BSF: begin
+                        result_e <= Rs2 == 0 ? Rs0 : (32'hFFFFFFFF & (64'b0 | Rs0) >> Rs1 << 32 >> Rs2) << Rs2 >> 32;
                     end
-                    `BST: begin
+                    BST: begin
                         result_e <= Rs2 == 0 ? Rs0 :
                             Rd >> Rs2 >> Rs1 << Rs1 << Rs2
-                            | (32'hFFFFFFFF & Rs0 << 32 >> Rs2) << Rs2 >> 32
-                            | (32'hFFFFFFFF & Rd << 32 >> Rs1) << Rs1 >> 32;
+                            | (32'hFFFFFFFF & (64'b0 | Rs0) << 32 >> Rs2) << Rs2 >> 32 << Rs1
+                            | (32'hFFFFFFFF & (64'b0 | Rd) << 32 >> Rs1) << Rs1 >> 32;
                     end
                     default begin
                         invalidFunction <= 1'b1;
                     end
                 endcase
-            end else if (format == `NO_WB_QUAD) begin
+            end else if (format == NO_WB_QUAD) begin
                 case (funcID)
-                    `ST: begin
-                        memAccessAddress_e <= Rs0 + Rs1[20:5];
-                        memAccessNumBitsBefore_e <= Rs1[4:0];
+                    ST: begin
+                        memAccessAddress_e <= sum[20:5];
+                        memAccessNumBitsBefore_e <= sum[4:0];
                         memAccessNumBits_e <= Rs2;
-                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-Rs1[4:0];
+                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
                         isMemWrite_e <= 1'b1;
                     end
-                    `STCHR: begin end
+                    STCHR: begin end
                     default begin
                         invalidFunction <= 1'b1;
                     end
                 endcase
-            end else if (format == `JMP) begin // jump
+            end else if (format == JMP) begin // jump
                 case (funcID)
-                    `CALL: begin
+                    CALL: begin
                         expectedIP <= jumpLoc;
 
                         stackPointer <= stackPointer + 1;
                     end
-                    `JUMP: begin
+                    JUMP: begin
                         expectedIP <= jumpLoc;
                     end
                     default begin
@@ -785,6 +849,13 @@ module LALU(input CLOCK_50,
     /*********************
      *    Memory Read    *
      *********************/
+    always @(posedge CLOCK_50) if (run) begin
+        // if we just returned, we need to update the current return address from the stack
+        // we have to put some Execute stuff here so that returnAddress is only being driven once
+        if (run && ~stall_e && ~executiveOverride && executeInstr && format == JMP && funcID == CALL) returnAddress <= stackWriteData;
+        else if (~stall_m && isValid_e && isRet_e) returnAddress <= stackReadOut;
+    end
+
     wire stall_m = isValid_m && isValid_e && isMemWrite_m && (isMemRead_e || isMemWrite_e);
 
     wire fullByteWrite = isMemWrite_e && memAccessNumBits_e == 0; // 0 actually means 32 :P
@@ -809,11 +880,6 @@ module LALU(input CLOCK_50,
         memAccessNumBits_m <= memAccessNumBits_e;
         memAccessNumBitsAfter_m <= memAccessNumBitsAfter_e;
 
-        // if we just returned, we need to update the current return address from the stack
-		  // we have to put some Execute stuff here so that returnAddress is only being driven once
-		  if (run && ~stall_e && ~executiveOverride && executeInstr && format == `JMP && funcID == `CALL) returnAddress <= stackWriteData;
-        else if (isRet_e) returnAddress <= stackReadOut;
-
         halt_m <= halt_e;
     end else isValid_m <= 1'b0; end
 
@@ -822,7 +888,7 @@ module LALU(input CLOCK_50,
      *********************/
     wire [31:0] memOutput = memAccessWren_w && memAccessAddress_m == memAccessAddress_w ? memAccessInput_w : memAccessOutput;
     wire [31:0] finalResult_w = isMemRead_m
-        ? ((memOutput << memAccessNumBitsAfter_m) >> memAccessNumBitsAfter_m) >> memAccessNumBitsBefore_m
+        ? ((FULL & memOutput << memAccessNumBitsAfter_m) >> memAccessNumBitsAfter_m) >> memAccessNumBitsBefore_m
         : result_m;
 
     assign memAccessInput = fullByteWrite ? (isWriteback_m && Rd_e == Rd_m ? finalResult_w : registers[Rd_e]) :
