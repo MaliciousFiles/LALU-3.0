@@ -3,18 +3,19 @@
 `define SIM_CYCLES 1000000 // how many clock cycles to simulate
 
 module LALU_tb();
-    initial $timeformat(-9, 0, "ns", 5);
-    integer fd;
-    initial fd = $fopen("output.txt","w");
-    initial $fwrite(fd, "0 ns: 0 0 00000000 00000000 00000000\n");
-    always @(posedge VGA_CLK) begin
-        $fwrite(fd, "%0d ns: %b %b %b %b %b\n", $time*10, VGA_HS, VGA_VS, VGA_R, VGA_G, VGA_B);
-    end
+    // VGA sim stuff
+//    initial $timeformat(-9, 0, "ns", 5);
+//    integer fd;
+//    initial fd = $fopen("output.txt","w");
+//    initial $fwrite(fd, "0 ns: 0 0 00000000 00000000 00000000\n");
+//    always @(posedge VGA_CLK) begin
+//        $fwrite(fd, "%0d ns: %b %b %b %b %b\n", $time*10, VGA_HS, VGA_VS, VGA_R, VGA_G, VGA_B);
+//    end
 
     // simulate the desired number of cycles
     initial #(`SIM_CYCLES*2) begin
         $finish;
-        $fclose(fd);
+//        $fclose(fd);
     end
 
     // setup the clock

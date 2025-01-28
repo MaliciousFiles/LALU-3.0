@@ -8,7 +8,7 @@ module Keyboard (
 
     input reset,
     input poll,
-    output [17:0] out);
+    output [18:0] out);
     integer i;
 
     // KEYCODE LUT
@@ -167,7 +167,7 @@ module Keyboard (
     end
 
     // buffer
-    wire [17:0] packet = {
+    wire [18:0] packet = {
         break_code,         // release flag
         depressed[7'h29],   // LSHFT
         depressed[7'h2A],   // LCTRL
@@ -181,9 +181,9 @@ module Keyboard (
         depressed[7'h17],   // NUM LCK
         keycode};
 
-    reg [11:0] writeIdx = 0, readIdx = 0;
-    wire [17:0] bufOut;
-    RAM #(12, 18, 1) buffer (
+    reg [11:0] writeIdx = 6/*0*/, readIdx = 0;
+    wire [18:0] bufOut;
+    RAM #(12, 19, 1) buffer (
         .clk(CLOCK_50),
 
         .address_a(writeIdx),
@@ -198,5 +198,5 @@ module Keyboard (
         .rden_b(1'b1),
         .q_b(bufOut));
 
-    assign out = validPoll ? bufOut : 18'b0;
+    assign out = validPoll ? bufOut : 19'b0;
 endmodule

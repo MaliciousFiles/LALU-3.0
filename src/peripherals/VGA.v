@@ -283,5 +283,5 @@ module VGA (
     assign VGA_G = ~VGA_BLANK_N ? 0 : color[15:8];
     assign VGA_B = ~VGA_BLANK_N ? 0 : color[7:0];
     assign VGA_BLANK_N = ~(~hDisp || ~vDisp);
-    assign VGA_SYNC_N = ~(hSync ^ vSync);
+    assign VGA_SYNC_N = 1'b0;
 endmodule
