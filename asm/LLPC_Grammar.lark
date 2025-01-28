@@ -40,7 +40,6 @@ expr: assgexpr
 ?multexpr: castexpr
         | multexpr multop castexpr
 ?castexpr: unaryexpr
-	| type "from" castexpr
         | "<" type ">" castexpr
 ?unaryexpr: postexpr
         | unaryop castexpr

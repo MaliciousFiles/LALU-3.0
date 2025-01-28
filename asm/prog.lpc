@@ -1,7 +1,8 @@
-fn Main() u32 {
-  var tot: u1024 = 323327862783478234687723476234;
-  var x: u32 = @gcld();
-  var a: u32 = <u32>tot;
-  return a;
+fn Main() u32* {
+  var ary: u32*;
+  for (var i: u32 = 0; i < 8; i += 1) {
+    ary[i] = i;
+  }
+  return ary;
 }
 

@@ -1,6 +1,8 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
-import LowerLLIR as LLL
+import LowerLLIR2 as LLL
+
+PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 with open('prog.lpc', 'r') as f:
@@ -700,7 +702,11 @@ class HLIR:
         global eid
         eid += 1
         for arg, kind in args:
+            print(kind, self.func['ret'])
+            assert kind.CanCoerceTo(self.func['ret']), f'Cannot coerce type `{kind}` to `{self.func["ret"]}`'
             self.Use(arg)
+        if len(args) == 0:
+            assert Type.FromStr('void').CanCoerceTo(self.func['ret']), f'Cannot return without value for function with return type `{self.func["ret"]}`'
         self.body.exit = ('return', args, eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
@@ -735,7 +741,7 @@ class Type:
         self.width = int(txt[1:len(txt)-self.numPtrs])
         return self
     def OpWidth(self):
-        return 24 if self.numPtrs else self.width
+        return PTRWIDTH if self.numPtrs else self.width
     def __repr__(self):
         return f'Type.FromStr("{self}")'
     def __str__(self):
@@ -748,7 +754,7 @@ class Type:
         else:
             return f'{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
-        if self.isbool:
+        if self.isbool or other.isvoid:
             return False
         if self.comptime:
             return True
@@ -758,7 +764,7 @@ class Type:
             if other.numPtrs > 0:
                 return other.numPtrs == self.numPtrs
             else:
-                return False == other.signed and other.width >= 24
+                return False == other.signed and other.width >= PTRWIDTH
         else:
             return self.signed == other.signed and other.width >= self.width
     def BitSameAs(self, other):
@@ -823,7 +829,7 @@ llir = LHL.Lower(inter)
 print('\nLLIR:')
 print(repr(llir))
 
-asm, bn = LLL.Lower(llir)
+asm, bn, fstate = LLL.Lower(llir)
 
 print('\nASM:')
 print(repr(asm))
