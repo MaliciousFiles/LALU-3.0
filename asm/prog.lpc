@@ -1,7 +1,9 @@
 fn Main() u32* {
   var ary: u32*;
   for (var i: u32 = 0; i < 8; i += 1) {
-    ary[i] = i;
+    var z: u256 = 1;
+    z = z;
+    ary[i] = <u32>z;
   }
   return ary;
 }

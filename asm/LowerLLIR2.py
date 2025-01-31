@@ -4,6 +4,9 @@ import inspect
 
 countup = range(0, 1<<24, 32)
 
+trueprint = print
+def print(*args):
+    assert False, f'Please do not call print, use `Debug(lbl = msg)` instead'
 
 #Of form "FUNCNAME": [ALWAYS, ENABLE, DISABLE, NEVER]
 #        "KIND": [ALWAYS, ENABLE, DISABLE, NEVER]
@@ -12,8 +15,9 @@ countup = range(0, 1<<24, 32)
 # Enable and disable set the mode, but if a lower priority one is set (kind), then it takes precedent
 # If a double is specified, it doesnt affect other modes or names
 diagnostics = {
-    '*': 'ENABLE',
-    'M_Use::misc': 'DISABLE',
+    '*': 'DISABLE',
+    'step': 'ENABLE',
+    #'M_Use::misc': 'DISABLE',
 }
 
 
@@ -33,14 +37,18 @@ def Debug(**kwargs):
     mode = 'UNSPEC'
     for key, effect in diagnostics.items():
         assert effect in valids, f'Invalid mode `{effect}`, must be one of `{valids}`'
-        if name == key or key == '*':
+        if key == '*':
             mode = effect
     for key, effect in diagnostics.items():
-        if kind == key or key == '*':
+        if name == key:
             if mode not in perm:
                 mode = effect
     for key, effect in diagnostics.items():
-        if f'{name}::{kind}' == key or key == '*':
+        if kind == key:
+            if mode not in perm:
+                mode = effect
+    for key, effect in diagnostics.items():
+        if f'{name}::{kind}' == key:
             if mode not in perm:
                 mode = effect
     assert mode != 'UNSPEC', f'{name}::{kind} has unspecified debug mode behavior'
@@ -49,7 +57,7 @@ def Debug(**kwargs):
         msg = "\n".join(['\n'.join([x[200*i:200*i+200] for i in range(-(-len(x)//200))]) for x in ('\n'+str(msg)).split('\n')])
         cmsg = str(msg).replace("\n", "\n    ")
         line = __CALL_LINE__()
-        print(f'{name}::{kind}::{line}{cmsg}\n')
+        trueprint(f'{name}::{kind}::{line}{cmsg}\n')
         
                 
 
@@ -61,14 +69,15 @@ def TrackLine(func):
         prehash = hash(state)
 
         if func.__name__[:2] == 'M_':
-            buf = args[1]
-            oldlen = len(buf)
+            lbuf = args[1]
+            oldlen = len(lbuf)
 
         ret = func(*args, **kwargs)
         posthash = hash(state)
+##        Debug(_ = f'Hashes: {prehash} : {posthash}')
 
         if func.__name__[:2] == 'M_':
-            for i, line in enumerate(buf[oldlen:]):
+            for i, line in enumerate(lbuf[oldlen:]):
                 nsrc = func.__name__
                 nsrc += '('
                 nsrc += ', '.join([repr(x) for x in args])
@@ -78,7 +87,7 @@ def TrackLine(func):
                     srcs.append([])
                     line['src'] = len(srcs)-1
                 srcs[line['src']].append(nsrc)
-        assert prehash == posthash or func.__name__[:2] in ['M_', 'I_'], f'Mutation of state for function `{func.__name__} which is not annotated to mutate`'
+        assert prehash == posthash or func.__name__[:2] in ['M_', 'I_'], f'Mutation of state for function `{func.__name__}` which is not annotated to mutate'
         return ret
     return inner
 
@@ -102,8 +111,9 @@ class State:
 
     def __hash__(self):
         h = 0
-        for field in self.__dict__:
-            h += hash(field)
+##        Debug(_ = self.__dict__)
+        for field, val in self.__dict__.items():
+            h += hash(repr(val))
         return hash(h)
 
     @TrackLine
@@ -121,13 +131,15 @@ class State:
         Debug(misc = f'Use {name}')
         if name in self.finals:
             if self.finals[name] == None:
-                reg = self.M_ReplaceAny(buf, name)
-                self.I_RegUse(reg)
+                reg = self.regs.index(name)
+                self.M_EvictReplace(buf, reg, None)
+##                self.I_RegUse(reg)
                 self.finals[name] = reg
-                Debug(misc = f'Delete {name}')
+                Debug(misc = f'Final Delete {name}')
                 del self.stk[name]
                 return f'r{reg}'
             else:
+                Debug(misc = f'Final Fetch {name}')
                 return f'r{finals[name]}'
         if name in self.regs:
             reg = self.regs.index(name)
@@ -170,10 +182,10 @@ class State:
         self.regs[reg] = name
 
     @TrackLine
-    def M_ExChangeState(self, buf, tar):
+    def M_ExChangeState(self, buf, tar, oldn, tarn):
         
         for v in tar.stk:
-            assert v in self.stk, f'Expected to find variable `{v}` from dest segment `{tar}`, local state is `{self}`, but did not'
+            assert v in self.stk, f'Expected to find variable `{v}` from dest segment `{tarn}`, local state is `{oldn}`'
             if v in tar.regs:
                 if v in self.regs and tar.regs.index(v) == self.regs.index(v):
                     continue
@@ -191,7 +203,7 @@ class State:
     def M_AddPent(self, buf, op, args, mods = []):
         if op == 'jmp':
             jp=args[0]
-            self.M_ChangeState(buf, jp)
+##            self.M_ChangeState(buf, jp)
         width = 24 if op == 'jmp' else 5
         eximm = False
         tps = 0
@@ -229,7 +241,7 @@ class State:
             if x != None:
                 if self.IsVar(x):
                     if kind == 'Rd' and (x in self.finals or x in self.expvars) and not hassideeffects:
-                        del stk[x]
+                        del self.stk[x]
                         Debug(optimization = f'Skipping line due to expired destination {(op, c, mods)}')
                         return
                     x = self.M_Use(buf, x)
@@ -248,6 +260,9 @@ class State:
             else:
                 break
         C = 'c.' in mods or 'cn.' in mods
+        if op == 'jmp':
+##            jp=args[0]
+            self.M_ChangeState(buf, jp)
         buf.append({'name': op, 'c': C, 'n': 'cn.' in mods, 's': '.s' in mods, 'args': args, 'eximm': eximm})
         if op == 'jmp' and C:
             self.M_RevChangeState(buf, jp)
@@ -298,52 +313,45 @@ class Asm:
     def __init__(self):
         self.body = []
         self.lbls = {}
-        self.vlbls = {}
         self.sts = {}
         self.nextvloc = 0
         self.nextline = 0
+        self.stitched = False
     def Copy(self):
         nasm = Asm()
         nasm.body = self.body[:]
         nasm.lbls = dict(self.lbls)
-        nasm.vlbls = dict(self.vlbls)
         nasm.sts = dict(self.sts)
         nasm.nextline = self.nextline
+        nasm.stitched = self.stitched
         return nasm
     def __repr__(self):
         o=''
         if len(self.body) > 0:
             lbls = sorted(self.lbls.items(), key = lambda x: x[1])
-            vlbls = sorted(self.vlbls.items(), key = lambda x: x[1])
-            s = (lambda x: x['loc']) if 'loc' in self.body[0] else (lambda x: x['vloc'])
-            for line in sorted(self.body, key = s):
+            sortkey = (lambda x: x['loc']) if self.stitched else (lambda x: x['vloc'])
+            for line in sorted(self.body, key = sortkey):
                 if 'eximm' not in line:
                     o += repr(line)+'\n'
-                else:
-                    addr = hex(line['loc'])[2:].zfill(6).upper() if 'loc' in line else hex(line['vloc'])[2:].zfill(6).upper()
-                    try:
-                        args = ','.join(''.join([RoundStr((('r'*(l=='reg'))+('#'*(l[-3:]=='lit'))+FormInt(x)+(':'*(l=='lbl'))+', '), 8) for l, x in line['args']]).split(',')[:-1])
-                    except Exception as e:
-                        print(repr(line))
-                        raise e
-                    op = 'c.'*(line['c'] and not line['n']) + 'cn.'*line['n'] + line['name'] + '.s'*line['s'] + '.e'*line['eximm']
-                    for lbl, loc in lbls[:]:
-                        if 'loc' in line:
-                            if loc == line['loc']:
-                                o += f'{lbl}:\n'
-                                del lbls[0]
-                            else:
-                                break
-                for lbl, loc in vlbls[:]:
-                    if 'vloc' in line:
-                        if loc == line['vloc']:
+                    continue
+                addrkey = 'loc' if self.stitched else 'vloc'
+                addr = hex(line[addrkey])[2:].zfill(6).upper()
+                try:
+                    args = ','.join(''.join([RoundStr((('r'*(l=='reg'))+('#'*(l[-3:]=='lit'))+FormInt(x)+(':'*(l=='lbl'))+', '), 8) for l, x in line['args']]).split(',')[:-1])
+                except Exception as e:
+                    print(repr(line))
+                    raise e
+                op = 'c.'*(line['c'] and not line['n']) + 'cn.'*line['n'] + line['name'] + '.s'*line['s'] + '.e'*line['eximm']
+                for lbl, loc in lbls[:]:
+                    if addrkey in line:
+                        if loc <= line[addrkey]:
                             o += f'{lbl}:\n'
-                            del vlbls[0]
+                            del lbls[0]
                         else:
                             break
-                o += f'{str(line.get("src", "????")).zfill(4)} {addr[:2]} {addr[2:]}:  {op.ljust(12)}{args}\n'
-        o += f'`{self.lbls}` `{self.vlbls}`\n'
-        o += f'`{self.sts}`\n'
+                o += f'{str(line.get("src", "????")).zfill(4)} {"v"*(not self.stitched)}{addr[:2]} {addr[2:]}:  {op.ljust(12)}{args}\n'
+        o += f'`{self.lbls}`\n'
+##        o += f'`{self.sts}`\n'
         return o
 
     def Addline(self, line):
@@ -363,6 +371,7 @@ class Asm:
             self.Insert(index, line)
 
     def LocLines(self):
+        error_loc_lines
         svlbls = sorted(self.vlbls.items(), key = lambda x: x[1])
         for line in self.body:
             vloc = line['vloc']
@@ -377,7 +386,7 @@ class Asm:
             
 
     def AddLabel(self, lbl):
-        self.vlbls[lbl] = len(self.body)
+        self.lbls[lbl] = len(self.body)
 
 numRegs = 32 - 3 #1 for stk ptr, 2 for scratch regs
 numRegs = 4 #### Just for testing swapping and stuff
@@ -417,14 +426,16 @@ def Lower(llir):
     asm = Asm()
     state = State()
 
-    buf = []
     for func in llir.funcs:
         if func['name'] == 'Main':
+            buf = []
             state.M_AddPent(buf, 'mov', ['r31', 1], [])
+            asm.Addlines(buf)
         for block in func['body']:
             asm.sts[block.entry] = state.Copy()
             asm.AddLabel(block.entry)
             for line in block.body:
+                buf = []
                 cmd = line[0]
                 if cmd == 'decl':
                     state.I_Decl(line[1])
@@ -445,19 +456,28 @@ def Lower(llir):
                 else:
                     print('??? '+cmd)
 ##                  assert False, f'Unknown command `{cmd}`'
-    asm.Addlines(buf)
+                asm.Addlines(buf)
+                Debug(buf = buf)
+##    Debug(body = '\n'.join([repr(x) for x in asm.body]))
     Debug(step = asm)
+    nbd = []
     for i, line in list(enumerate(asm.body)):
         if line['name'] == 'CHANGE':
             buf = []
-            old = line['old']
-            tar = line['tar']
+            oldn = old = line['old']
+            tarn = tar = line['tar']
             if type(old) == str:
+                oldn = old
                 old = asm.sts[old]
             if type(tar) == str:
+                tarn = tar
                 tar = asm.sts[tar]
-            old.M_ExChangeState(buf, tar)
-            asm.Inserts(i, buf)
+            old.M_ExChangeState(buf, tar, oldn, tarn)
+            Debug(buf = buf)
+            nbd.extend(buf)
+        else:
+            nbd.append(line)
+    asm.body = nbd
     Debug(misc = 'bod')
     Debug(misc = asm.body)
     asm.LocLines()

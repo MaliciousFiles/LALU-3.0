@@ -85,7 +85,12 @@ def Lower(hlir):
                             finals.append((ename, final))
                             nblock.Addline(('decl', ename))
                     else:
-                        nblock.Addline(('nodecl', name))
+                        for i in range(WidthOf(kind)):
+                            p = len(str(WidthOf(kind)-1))
+                            ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
+##                            finals.append((ename, final))
+                            nblock.Addline(('nodecl', ename))
+##                        nblock.Addline(('nodecl', name))
                         print(f'Unused variable `{name}`')
                     finals = sorted(finals, key = lambda x:x[1])
                 elif cmd == 'expr':

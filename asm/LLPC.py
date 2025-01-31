@@ -98,6 +98,7 @@ def Gen(tree):
             inter.NewFunc(name.children[0].value, args, ret)
             Gen(body)
             inter.PopEnv()
+            inter.EndFunc()
         elif data.type == 'RULE' and data.value == 'declstmt':
             _, name, _, kind, _, = tree.children
             kind = kind.children[0].value
@@ -674,6 +675,7 @@ class HLIR:
         self.Use(lhs)
         self.Use(rhs)
         self.body.exit = ('if', (lhs, op, rhs, lbl), eid)
+        self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def IfFalseJump(self, lhs, op, rhs, lbl):
         global eid
@@ -681,17 +683,20 @@ class HLIR:
         self.Use(lhs)
         self.Use(rhs)
         self.body.exit = ('ifFalse', (lhs, op, rhs, lbl), eid)
+        self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
         global eid
         eid += 1
         self.Use(cond)
         self.body.exit = ('if', (cond, '!=', 0, lbl), eid)
+        self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def Jump(self, lbl):
         global eid
         eid += 1
         self.body.exit = ('goto', (lbl), eid)
+        self.body.exloc = lbl
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
     def PushLoopLabels(self, pre, post):
@@ -719,7 +724,72 @@ class HLIR:
         for j, block in enumerate(self.func['body']):
             for i, line in enumerate(block.body):
                 if line[0] == 'decl' and line[1] == name:
-                    self.func['body'][j].body[i] = line[:3] + (eid,)
+                    self.func['body'][j].body[i] = line[:3] + (-1,)
+##                    self.func['body'][j].body[i] = line[:3] + (eid,)
+    def EndFunc(self):
+        print('END OF FUNCTION BEGIN')
+        body = self.func['body']
+        lvars = {}
+        ito = {}
+        to = {}
+        for block in body:
+            ldict = lvars[block.entry] = {}
+            if block.exloc != None:
+                ito[block.exloc] = ito.get(block.exloc, []) + [block.entry]
+                to[block.entry] = to.get(block.entry, []) + [block.exloc]
+            if block.fall != 'EOF' and block.fall != None:
+                ito[block.fall] = ito.get(block.fall, []) + [block.entry]
+                to[block.entry] = to.get(block.entry, []) + [block.fall]
+            for i,line in enumerate(block.body):
+                if line[0] == 'decl':
+                    ldict[line[1]] = [i, None]
+                elif line[0] == 'expr':
+                    args = line[1][1:][:4]
+                    for arg in args:
+                        if type(arg) == str:
+                            if arg not in ldict:
+                                ldict[arg] = ['pre', line[2]]
+                            elif type(ldict[arg][1]) != str:
+                                ldict[arg][1] = line[2]
+                else:
+                    print(line)
+                    err
+        print(lvars)
+        print('BEGIN ITERATION')
+        print(to, ito)
+##        err
+        run = True
+        while run:
+            print(lvars)
+            run = False
+            for block in body:
+                ldict = lvars[block.entry]
+                for var, life in ldict.items():
+                    if life[0] == 'pre':
+                        for precur in ito.get(block.entry, []):
+                            if var not in lvars[precur]:
+                                lvars[precur][var] = ['pre', 'post']
+                                run = True
+                                continue
+                            if lvars[precur][var][1] != 'post':
+                                lvars[precur][var][1] = 'post'
+                                run = True
+        print(lvars)
+        for block in body:
+            ldict = lvars[block.entry]
+            for var, life in ldict.items():
+                if life[1] == 'post':
+                    for succ in to.get(block.entry, []):
+                        if var not in lvars[succ]:
+                            for i,b in enumerate(body):
+                                if b.entry == succ:
+                                    body[i].body.insert(0, ('undecl', var))
+                                    break
+                            else:
+                                bad
+        
+##        err
+            
 class Type:
     def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
         self.width = width
@@ -801,6 +871,7 @@ class Block:
         self.entry = entry
         self.body = []
         self.exit = None
+        self.exloc = None
         self.fall = 'EOF'
     def Addline(self, line):
         self.body.append(line)
