@@ -143,7 +143,7 @@ module LALU(input CLOCK_50,
     wire [7:0] keyQuery;
     wire rstKeyboard;
     wire pollKeyboard;
-    wire [17:0] keyboardOut;
+    wire [18:0] keyboardOut;
     Keyboard keyboard (
         .CLOCK_50(CLOCK_50),
         .PS2_CLK(PS2_CLK),

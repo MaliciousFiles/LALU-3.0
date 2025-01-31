@@ -1,8 +1,9 @@
 `timescale 10ns / 1ns // 50 MHz, in a 1ns timescale
 
-`define SIM_CYCLES 1000000 // how many clock cycles to simulate
+`define SIM_CYCLES 1000000 // how many clock cycles to simulate (1000000 for ~1 VGA frame)
 
 module LALU_tb();
+    // VGA sim stuff
     initial $timeformat(-9, 0, "ns", 5);
     integer fd;
     initial fd = $fopen("output.txt","w");
