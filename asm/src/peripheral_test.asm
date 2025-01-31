@@ -1,16 +1,36 @@
+// R0 = scan code
+// R1 = ascii
+// R2 = break code
+// R3 = lshft (bold)
+// R4 = lctrl (italic)
+// R5 = lalt (underline)
+// R6 = lwin (strike)
+// R7 = rshft (flip H)
+// R8 = ralt (flip V)
 // R31 = address
 
     rstkey
 
 begin:
     ldkey   R0
-    bsf     R1, R0, #0, #7          // Rs1 = key code
+
+    // if we got nothing, ignore
+    eq      R0, #0
+    c.jmp   begin:
 
     // if it's a release, ignore
     bsf     R2, R0, #17, #1
     eq      R2, #1
     c.jmp   begin:
 
+    bsf     R3, R0, #15, #1
+    bsf     R4, R0, #16, #1
+    bsf     R5, R0, #14, #1
+    bsf     R6, R0, #13, #1
+    bsf     R7, R0, #11, #1
+    bsf     R8, R0, #10, #1
+
+    bsf     R0, R0, #0, #7          // R0 = key code
     mov     R1, #0
 
     // A
@@ -93,8 +113,13 @@ begin:
     c.mov.e R1, #90
 
     ne      R1, #0
+    c.bst   R1, R3, #8, #1
+    c.bst   R1, R4, #9, #1
+    c.bst   R1, R5, #10, #1
+    c.bst   R1, R6, #11, #1
+    c.bst   R1, R7, #12, #1
+    c.bst   R1, R8, #13, #1
     c.stchr.e R1, R31, #0xFFFFFF, #0x0
     c.add   R31, R31, #1        // since width is precisely 2^6, automatically handles wrapping :D
-
 
     jmp begin:
