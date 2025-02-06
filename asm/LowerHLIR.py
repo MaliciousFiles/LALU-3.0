@@ -1,7 +1,8 @@
 class Block:
-    def __init__(self, entry):
+    def __init__(self, entry, From):
         self.entry = entry
         self.body = []
+        self.From = From
     def Addline(self, line):
         self.body.append(line)
 
@@ -14,7 +15,11 @@ class LLIR:
             oa = ", ".join([f'{name}' for name in func['args']])
             o += (f'fn {func["name"]} ({oa}) {func["ret"]} '+'{') + '\n'
             for block in func['body']:
-                o += '  '+(f'{block.entry}:') + '\n'
+                o += '  '
+                o += f'{block.entry}'
+                if block.From != None:
+                    o += f' <- {block.From}'
+                o += ':\n'
                 for line in block.body:
                     o += '    '+repr(line) + '\n'
             o += ('}') + '\n'
@@ -45,6 +50,7 @@ def Lower(hlir):
     comp = {}
     finex = []
     def HandleFinals(eid):
+        return
         nonlocal finals, nblock
 ##        print(eid, finals)
         i = 0
@@ -68,7 +74,7 @@ def Lower(hlir):
                 args.append(name + '_' + str(i).zfill(p))
         llir.NewFunc(func['name'], args, WidthOf(func['ret']))
         for block in func['body']:
-            nblock = Block(block.entry)
+            nblock = Block(block.entry, block.From)
             for line in block.body:
                 cmd = line[0]
                 if cmd == 'decl':
@@ -93,6 +99,13 @@ def Lower(hlir):
 ##                        nblock.Addline(('nodecl', name))
                         print(f'Unused variable `{name}`')
                     finals = sorted(finals, key = lambda x:x[1])
+                elif cmd == 'undecl':
+                    name, kind = line[1], line[2]
+                    if not kind.comptime:
+                        for i in range(WidthOf(kind)):
+                            p = len(str(WidthOf(kind)-1))
+                            ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
+                            nblock.Addline(('undecl', ename))
                 elif cmd == 'expr':
                     op, D, S0, S1, S2, width = line[1]
 ##                    print(comp)
@@ -151,6 +164,25 @@ def Lower(hlir):
                             AddPent(nblock, 'stw', D, S0, S1, S2)
                         elif op == '=[]':
                             AddPent(nblock, 'ldw', D, S0, S1, S2)
+                        elif op == 'argpsh':
+                            AddPent(nblock, 'argpsh', D, S0, S1, S2)
+                        elif op == 'retpop':
+                            AddPent(nblock, 'retpop', D, S0, S1, S2)
+                        elif op == 'argpop':
+                            AddPent(nblock, 'argpop', D, S0, None, S2)
+                        elif op == 'retpsh':
+                            AddPent(nblock, 'retpsh', D, S0, S1, S2)
+                        elif op == 'call':
+                            AddPent(nblock, 'call', D, S0, S1, S2)
+                        elif op in ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']:
+                            cmp = op
+                            lhs = D
+                            rhs = S0
+                            if cmp in ['==', '!=']:
+                                cmp = {'==': 'eq', '!=': 'ne'}[cmp]
+                            else:
+                                cmp = 'us'['+-'.index(cmp[0])] + {'>': 'gt', '>=': 'ge', '<=': 'le', '<': 'lt'}[cmp[1:]]
+                            AddPent(nblock, cmp, lhs, rhs, None, None)
                         elif op == '=<>':
                             D, S, dk, sk = D, S0, S1, S2
                             if sk.comptime:
@@ -164,7 +196,7 @@ def Lower(hlir):
                                     pD = len(str(WidthOf(dk)-1))
                                     pS = len(str(WidthOf(sk)-1))
                                     eD = D + '_' + str(i).zfill(pD) if WidthOf(dk) > 1 else D
-                                    eS = S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S
+                                    eS = (S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S) if i < WidthOf(sk) else 0
                                     AddPent(nblock, 'mov', eD, eS, None, None)
                             else:
                                 assert False, f'(Comptime) Cannot cast from type `{sk}` to `{dk}`'
@@ -186,11 +218,18 @@ def Lower(hlir):
                                     eS = S0
 ##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS
                                 AddPent(nblock, 'mov', eD, eS, None, None)
+                        elif op == 'argpsh':
+                            rwidth = -(-width//32)
+                            for i in range(rwidth):
+                                p = len(str(rwidth-1))
+                                eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
+##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS
+                                AddPent(nblock, 'argpsh', eD, S0+i, None, None)
                         else:
                             assert False, f'HLIR -> LLIR does not currently support non-primative width `{width}` on operation `{op}`'
                     finex = []
                 else:
-                    print(cmd)
+                    assert False, f'Bad Command `{cmd}`'
                     err
             if block.exit:
                 mode = block.exit[0]
@@ -199,6 +238,9 @@ def Lower(hlir):
                     eid = block.exit[2]
                     HandleFinals(eid)
                     AddPent(nblock, 'jmp', lbl+':', None, None, None)
+                elif mode == 'c.jmp':
+                    lbl = block.exit[1]
+                    AddPent(nblock, 'c.jmp', lbl+':', None, None, None)
                 elif mode == 'if':
                     lhs, cmp, rhs, lbl = block.exit[1]
                     eid = block.exit[2]
@@ -210,16 +252,15 @@ def Lower(hlir):
                     AddPent(nblock, cmp, lhs, rhs, None, None)
                     AddPent(nblock, 'jmp', lbl+':', None, None, None, ['c.'])
                 elif mode == 'return':
-                    args = block.exit[1]
-                    eid = block.exit[2]
+                    eid = block.exit[1]
                     HandleFinals(eid)
                     i = 0
-                    for name, kind in args:
-                        for j in range(WidthOf(kind)):
-                            p = len(str(WidthOf(kind)-1))
-                            ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
-                            nblock.Addline(('argret', ename, i))
-                            i += 1
+##                    for name, kind in args:
+##                        for j in range(WidthOf(kind)):
+##                            p = len(str(WidthOf(kind)-1))
+##                            ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
+##                            nblock.Addline(('argret', ename, i))
+##                            i += 1
                     AddPent(nblock, 'ret', None, None, None, None)
                 else:
                     assert False, f'HLIR -> LLIR does not support block exit `{mode}`'

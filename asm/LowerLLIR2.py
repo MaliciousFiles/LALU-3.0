@@ -17,6 +17,9 @@ def print(*args):
 diagnostics = {
     '*': 'DISABLE',
     'step': 'ENABLE',
+    'Ex': 'ENABLE',
+    'From': 'ENABLE',
+    'Body': 'ENABLE'
     #'M_Use::misc': 'DISABLE',
 }
 
@@ -122,6 +125,15 @@ class State:
         self.finals[name] = None
 
     @TrackLine
+    def I_Undecl(self, name):
+##        Debug(misc = f'Mark delete {name}')
+        if name in self.regs:
+            reg = self.regs.index(name)
+            self.regs[reg] = None
+        self.expvars.append(name)
+        del self.stk[name]
+
+    @TrackLine
     def I_RegUse(self, reg):
         self.lru.remove(reg)
         self.lru.append(reg)
@@ -177,30 +189,34 @@ class State:
         if name in self.fresh:
             self.fresh.remove(name)
         else:
+            Debug(step = self.stk)
             addr = self.AddrOf(name)
             self.M_AddPent(buf, 'ldw', (f'r{reg}', f'r{STKPTR}', addr))
         self.regs[reg] = name
 
     @TrackLine
     def M_ExChangeState(self, buf, tar, oldn, tarn):
-        
+        Debug(Ex = f'Going from:\n\t{self}\nto:\n\t{tar}')
         for v in tar.stk:
-            assert v in self.stk, f'Expected to find variable `{v}` from dest segment `{tarn}`, local state is `{oldn}`'
+            assert v in self.stk, f'Expected to find variable `{v}` from dest segment `{tarn}`, local state is `{oldn}`:`{self}'
             if v in tar.regs:
                 if v in self.regs and tar.regs.index(v) == self.regs.index(v):
                     continue
                 self.M_EvictReplace(buf, v, tar.regs.index(v))
 
     @TrackLine
-    def M_ChangeState(self, buf, lbl):
-        buf.append({'name':'CHANGE', 'tar': lbl[:-1], 'old': self.Copy()})
+    def M_ChangeState(self, buf, lbl, cond):
+        buf.append({'name':'CHANGE', 'tar': lbl[:-1], 'old': self.Copy(), 'cond': cond})
 
-    @TrackLine
-    def M_RevChangeState(self, buf, lbl):
-        buf.append({'name':'CHANGE', 'old': lbl[:-1], 'tar': self.Copy()})
+##    @TrackLine
+##    def M_RevChangeState(self, buf, lbl):
+##        buf.append({'name':'CHANGE', 'old': lbl[:-1], 'tar': self.Copy()})
 
     @TrackLine
     def M_AddPent(self, buf, op, args, mods = []):
+        if op[:2] == 'c.':
+            mods.append('c.')
+            op = op[2:]
         if op == 'jmp':
             jp=args[0]
 ##            self.M_ChangeState(buf, jp)
@@ -262,10 +278,10 @@ class State:
         C = 'c.' in mods or 'cn.' in mods
         if op == 'jmp':
 ##            jp=args[0]
-            self.M_ChangeState(buf, jp)
+            self.M_ChangeState(buf, jp, cond=C)
         buf.append({'name': op, 'c': C, 'n': 'cn.' in mods, 's': '.s' in mods, 'args': args, 'eximm': eximm})
-        if op == 'jmp' and C:
-            self.M_RevChangeState(buf, jp)
+##        if op == 'jmp' and C:
+##            self.M_RevChangeState(buf, jp)
         for name in self.finals:
             if name in self.regs:
                 self.regs[self.regs.index(name)] = None
@@ -285,6 +301,8 @@ class State:
                 self.stk[name] = loc
                 self.fresh.append(name)
                 return
+
+    
 
     @TrackLine
     def IsVar(self, name):
@@ -314,16 +332,20 @@ class Asm:
         self.body = []
         self.lbls = {}
         self.sts = {}
+        self.stsf = {}
         self.nextvloc = 0
         self.nextline = 0
         self.stitched = False
+        self.froms = {}
     def Copy(self):
         nasm = Asm()
         nasm.body = self.body[:]
         nasm.lbls = dict(self.lbls)
         nasm.sts = dict(self.sts)
+        nasm.stsf = dict(self.stsf)
         nasm.nextline = self.nextline
         nasm.stitched = self.stitched
+        nasm.froms = self.froms
         return nasm
     def __repr__(self):
         o=''
@@ -345,14 +367,22 @@ class Asm:
                 for lbl, loc in lbls[:]:
                     if addrkey in line:
                         if loc <= line[addrkey]:
-                            o += f'{lbl}:\n'
+                            o += f'{lbl}'
+                            if lbl in self.froms and not self.stitched:
+                                o += f' <- {self.froms[lbl]}'
+                            o += ':\n'
                             del lbls[0]
                         else:
                             break
                 o += f'{str(line.get("src", "????")).zfill(4)} {"v"*(not self.stitched)}{addr[:2]} {addr[2:]}:  {op.ljust(12)}{args}\n'
         o += f'`{self.lbls}`\n'
+        o += f'`{self.froms}`\n'
+        
 ##        o += f'`{self.sts}`\n'
         return o
+
+    def ClearBody(self):
+        self.body = []
 
     def Addline(self, line):
         line['vloc'] = len(self.body)
@@ -371,25 +401,30 @@ class Asm:
             self.Insert(index, line)
 
     def LocLines(self):
-        error_loc_lines
-        svlbls = sorted(self.vlbls.items(), key = lambda x: x[1])
+        #error_loc_lines
+        nxl = 0
+        svlbls = sorted(self.lbls.items(), key = lambda x: x[1])
         for line in self.body:
+            assert 'vloc' in line, f'Could not fine `vloc` in {line}'
             vloc = line['vloc']
-            line['loc'] = self.nextline
+            line['loc'] = nxl
             for key, tvloc in svlbls[:]:
                 if tvloc <= vloc:
                     self.lbls[key] = line['loc']
                     del svlbls[0]
                 else:
                     break
-            self.nextline += 64 if line['eximm'] else 32
+            assert 'eximm' in line, f'Could not fine `eximm` in {line}'
+            nxl += 64 if line['eximm'] else 32
+        assert len(svlbls) == 0, f'Svlbls != [], {svlbls}'
+        self.stitched = True
             
 
     def AddLabel(self, lbl):
         self.lbls[lbl] = len(self.body)
 
 numRegs = 32 - 3 #1 for stk ptr, 2 for scratch regs
-numRegs = 4 #### Just for testing swapping and stuff
+##numRegs = 1 #### Just for testing swapping and stuff
 STKPTR = 31
 TEMP_0 = 30
 TEMP_1 = 29
@@ -432,6 +467,13 @@ def Lower(llir):
             state.M_AddPent(buf, 'mov', ['r31', 1], [])
             asm.Addlines(buf)
         for block in func['body']:
+            if len(asm.sts.keys()) > 0:
+                pk = list(asm.sts.keys())[-1]
+                asm.stsf[pk] = state.Copy()
+            if block.From != None:
+                asm.froms[block.entry] = block.From
+                state = asm.stsf[block.From].Copy()
+                Debug(From = f'{block.entry} has from {block.From} and now has state:\n\t{state}')
             asm.sts[block.entry] = state.Copy()
             asm.AddLabel(block.entry)
             for line in block.body:
@@ -441,27 +483,57 @@ def Lower(llir):
                     state.I_Decl(line[1])
                 elif cmd == 'final':
                     state.I_Final(line[1])
+                elif cmd == 'undecl':
+                    state.I_Undecl(line[1])
                 elif cmd == 'nodecl':
                     state.I_Decl(line[1])
                     state.I_Final(line[1])
                 elif cmd == 'expr':
                     op = line[1][0]
-                    args = line[1][1:]
-                    mods = line[2]
-                    state.M_AddPent(buf, op, args, mods if mods else [])
-                elif cmd == 'argret':
-                    name = line[1]
-                    loc = line[2]
-                    state.M_EvictReplace(buf, name, loc)
+                    if op == 'retpsh':
+                        name = line[1][1]
+                        loc = line[1][2]
+                        Debug(step = f'name is {name=}, loc is {loc=}')
+                        state.M_EvictReplace(buf, name, loc)
+                    elif op == 'argpop':
+                        name = line[1][1]
+                        loc = line[1][2]
+                        state.I_Decl(name)
+                        state.M_EvictReplace(buf, name, loc)
+                    elif op == 'argpsh':
+                        err
+                    elif op == 'retpop':
+                        err
+                    else:
+                        args = line[1][1:]
+                        mods = line[2]
+                        state.M_AddPent(buf, op, args, mods if mods else [])
+##                elif cmd == 'expr':
+##                    
+                elif cmd == 'from':
+                    tar = line[1]
+                    state = asm.stsf[tar].Copy()
                 else:
-                    print('??? '+cmd)
-##                  assert False, f'Unknown command `{cmd}`'
+                    Debug(_ = '??? '+cmd)
+                    assert False, f'Unknown command `{cmd}`'
                 asm.Addlines(buf)
                 Debug(buf = buf)
+        if len(asm.sts.keys()) > 0:
+            pk = list(asm.sts.keys())[-1]
+            asm.stsf[pk] = state.Copy()
 ##    Debug(body = '\n'.join([repr(x) for x in asm.body]))
+    Debug(step = f'{asm.sts=}')
+    Debug(step = f'{asm.stsf=}')
     Debug(step = asm)
-    nbd = []
+    nasm = asm.Copy()
+    nasm.ClearBody()
+    lbls = dict(asm.lbls)
+    nlbls = {}
     for i, line in list(enumerate(asm.body)):
+        if i in lbls.values():
+            for k,v in lbls.items():
+                if v == i:
+                    nlbls[k] = len(nasm.body)
         if line['name'] == 'CHANGE':
             buf = []
             oldn = old = line['old']
@@ -472,16 +544,25 @@ def Lower(llir):
             if type(tar) == str:
                 tarn = tar
                 tar = asm.sts[tar]
+            Debug(Ex = f'Move {oldn} -> {tarn}')
             old.M_ExChangeState(buf, tar, oldn, tarn)
+            if line['cond']:
+                for i in range(len(buf)):
+                    buf[i]['c'] = True
             Debug(buf = buf)
-            nbd.extend(buf)
+            nasm.Addlines(buf)
+##            nbd.extend(buf)
         else:
-            nbd.append(line)
-    asm.body = nbd
+            nasm.Addline(line)
+##            nbd.append(line)
+##    asm.body = nbd
+    Debug(step = nlbls)
+    asm = nasm.Copy()
+    asm.lbls = nlbls
     Debug(misc = 'bod')
-    Debug(misc = asm.body)
+    Debug(Body = asm)
     asm.LocLines()
-    Debug(misc = (asm.lbls, asm.vlbls))
+    Debug(misc = (asm.lbls))
     mem = {}
     for code in asm.body:
         Debug(misc = code)
@@ -489,4 +570,7 @@ def Lower(llir):
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
+##    Debug(step = f'{asm.sts.keys()=}')
+    for st,v in asm.sts.items():
+        Debug(step = f'State `{st}`:\n\t{v}\n\tEnds with:\n\t{asm.stsf[st]}')
     return asm, mem, state.Copy()

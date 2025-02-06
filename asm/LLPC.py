@@ -26,6 +26,8 @@ def TrackLine(func):
     global inter, srcs
     def inner(*args, **kwargs):
         ret = func(*args, **kwargs)
+        if inter.func == {}:
+            return ret
         for i, block in enumerate(inter.func['body']):
             for j, line in enumerate(block.body):
                 nsrc = func.__name__
@@ -63,8 +65,8 @@ FAILEDLINE = None
 
 @logerror
 @TrackLine
-def Gen(tree):
-    global out, ind, inter
+def Gen(tree, pre = True):
+    global out, ind, inter, funcs
     if type(tree) == Tree:
         data = tree.data
         if data == 'break':
@@ -86,19 +88,30 @@ def Gen(tree):
             err
         
         elif data.type == 'RULE' and data.value == 'start':
-            Gen(tree.children[0])
+            bds = []
+            for child in tree.children:
+                Gen(child)
+            for child in tree.children:
+                Gen(child, pre = False)
         elif data.type == 'RULE' and data.value == 'ex_decl':
             _, name, _, rargs, _, ret, body = tree.children
+            name = name.children[0].value
             args = []
             if rargs:
                 for arg in rargs.children:
                     aname, _, akind = arg.children
                     args.append((aname.children[0].value, Type.FromStr(akind.children[0].value)))
             ret = Type.FromStr(ret.children[0].value)
-            inter.NewFunc(name.children[0].value, args, ret)
-            Gen(body)
-            inter.PopEnv()
-            inter.EndFunc()
+            funcs[name] = (args, ret)
+            if not pre:
+                inter.NewFunc(name, args, ret)
+                for i, (arg, kind) in enumerate(args):
+                    inter.AddPent('argpop', arg, i, kind, None, width = kind.OpWidth())
+                Gen(body)
+                inter.PopEnv()
+                inter.EndFunc()
+            else:
+                return
         elif data.type == 'RULE' and data.value == 'declstmt':
             _, name, _, kind, _, = tree.children
             kind = kind.children[0].value
@@ -331,6 +344,28 @@ def Rvalue(expr):
             lhs, lk = Rvalue(le)
             inter.PreUse(lhs)
             return f'{lhs}.&', lk.Addr()
+        elif data == 'callexpr':
+            func, _, args, _ = expr.children
+            func = func.children[0].value
+            if args:
+                nargs = []
+                for arg in args.children:
+                    if type(arg)==Tree:
+                        v, k = Rvalue(arg)
+                        nargs.append((v, k))
+                args = nargs
+            else:
+                args = []
+            assert func in funcs, f'Cannot find function name `{func}`'
+            funargs, funret = funcs[func]
+            assert len(funargs) == len(args), f'Function `{func}` has arity `{len(funargs)}`, but was given `{len(args)}` args'
+            for i, (arg, kind) in enumerate(args):
+                inter.AddPent('argpsh', i, arg, None, None, width=kind.OpWidth())
+            inter.AddPent('call', func, None, None, None)
+            tmp = NewTemp(funret)
+            inter.AddPent('retpop', tmp, 0, None, None, width=funret.OpWidth())
+            return tmp, funret
+            
         elif data == 'intrinsic':
             _, name, _, args, _, = expr.children
             name = name.children[0].value
@@ -569,6 +604,7 @@ class HLIR:
         self.loops = []
         self.trues = []
         self.falses = []
+        self.func = {}
 
     def __repr__(self):
         o = ''
@@ -674,7 +710,9 @@ class HLIR:
         eid += 1
         self.Use(lhs)
         self.Use(rhs)
-        self.body.exit = ('if', (lhs, op, rhs, lbl), eid)
+        self.AddPent(op, lhs, rhs, None, None)
+        self.body.exit = ('c.jmp', (lbl))
+##        self.body.exit = ('if', (lhs, op, rhs, lbl), eid)
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def IfFalseJump(self, lhs, op, rhs, lbl):
@@ -712,7 +750,9 @@ class HLIR:
             self.Use(arg)
         if len(args) == 0:
             assert Type.FromStr('void').CanCoerceTo(self.func['ret']), f'Cannot return without value for function with return type `{self.func["ret"]}`'
-        self.body.exit = ('return', args, eid)
+        for i, (arg, kind) in enumerate(args):
+            self.AddPent('retpsh', i, arg, None, None, width = kind.OpWidth())
+        self.body.exit = ('return', eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
     def PreUse(self, name):
@@ -732,6 +772,10 @@ class HLIR:
         lvars = {}
         ito = {}
         to = {}
+        fto = {}
+        k = {}
+        fto['_'] = ['Entry']
+        print(self)
         for block in body:
             ldict = lvars[block.entry] = {}
             if block.exloc != None:
@@ -739,11 +783,19 @@ class HLIR:
                 to[block.entry] = to.get(block.entry, []) + [block.exloc]
             if block.fall != 'EOF' and block.fall != None:
                 ito[block.fall] = ito.get(block.fall, []) + [block.entry]
+                fto[block.fall] = fto.get(block.fall, []) + [block.entry]
                 to[block.entry] = to.get(block.entry, []) + [block.fall]
+            
             for i,line in enumerate(block.body):
                 if line[0] == 'decl':
                     ldict[line[1]] = [i, None]
+                    k[line[1]] = line[2]
                 elif line[0] == 'expr':
+                    if line[1][0] in ['call']:
+                        continue
+                    if line[1][0] == 'argpop':
+                        ldict[line[1][1]] = [i, None]
+                        k[line[1][1]] = line[1][3]
                     args = line[1][1:][:4]
                     for arg in args:
                         if type(arg) == str:
@@ -751,9 +803,34 @@ class HLIR:
                                 ldict[arg] = ['pre', line[2]]
                             elif type(ldict[arg][1]) != str:
                                 ldict[arg][1] = line[2]
+                elif line[0] == 'argret':
+                    print(f'Arg ret: {line}')
+                    arg = line[1]
+                    if type(arg) == str:
+                        if arg not in ldict:
+                            ldict[arg] = ['pre', line[2]]
+                        elif type(ldict[arg][1]) != str:
+                            ldict[arg][1] = line[2]
                 else:
                     print(line)
                     err
+
+        From = False
+        for block in body[:]:
+            if block.entry not in fto or fto[block.entry] == []:
+                if block.entry not in ito or ito[block.entry] == []:
+                    print(f'{block.entry=} is unreachable')
+                    self.func['body'].remove(block)
+                    if block.fall != 'EOF' and block.fall != None:
+                        print(f'Revoke fall {block.fall=}')
+                        ito[block.fall].remove(block.entry)
+                        fto[block.fall].remove(block.entry)
+##                        print(f'{ito=}, {fto=}')
+                else:
+                    block.From = ito[block.entry][0]
+##                    block.body.insert(0, ('from', ))
+                    print(f'{block.entry=} is start of spine')
+                    
         print(lvars)
         print('BEGIN ITERATION')
         print(to, ito)
@@ -783,10 +860,21 @@ class HLIR:
                         if var not in lvars[succ]:
                             for i,b in enumerate(body):
                                 if b.entry == succ:
-                                    body[i].body.insert(0, ('undecl', var))
+                                    
+                                    body[i].body.insert(0, ('undecl', var, k[var]))
                                     break
                             else:
                                 bad
+                else:
+##                    print(f'Looking for {life[1]=} in {block.body=} ({block.entry=})')
+                    for i,b in enumerate(block.body):
+                        if b[0] == 'expr' and b[2] == life[1]:
+                            block.body.insert(i+1, ('undecl', var, k[var]))
+                            break
+                    else:
+                        print(f'Failed to undeclare {var=}')
+                        print(f'Last used at {life[1]} from {life}')
+                        bad
         
 ##        err
             
@@ -873,6 +961,7 @@ class Block:
         self.exit = None
         self.exloc = None
         self.fall = 'EOF'
+        self.From = None
     def Addline(self, line):
         self.body.append(line)
    
@@ -883,6 +972,7 @@ tid = 0
 eid = 0
 srcs=[]
 
+funcs = {}
 inter = HLIR()
 try:
     Gen(tree)
