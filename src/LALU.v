@@ -90,7 +90,22 @@ module LALU(input CLOCK_50,
     
     parameter GCLD				= 9'b1_1111_1111;
     parameter SUSP				= 9'b1_1111_1111;
-    
+
+    /*********************
+     * Branch Predictor  *
+     *********************/
+    wire prediction;
+    predictor PREDICTOR(
+        .CLOCK_50(CLOCK_50),
+        .IP_f(IP_f),
+        .wouldExecute(run && ~stall_e && ~executiveOverride && isValid_d),
+        .expectedIP(expectedIP),
+        .willJump(format == JMP),
+        .didJump(format == JMP && ~(conditional && generalFlag == negate));
+        .prediction(prediction);
+    )
+
+
     /*********************
      *      Memory       *
      *********************/
@@ -328,16 +343,16 @@ module LALU(input CLOCK_50,
     /*********************
      *       Fetch       *
      *********************/
-    assign fetchAddress = IP; // fetch address is the current instruction pointer
+    assign fetchAddress = curFormat == JMP && (~conditional || prediction) ? jumpTo : IP; // fetch address is the current instruction pointer
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
     always @(posedge CLOCK_50) begin if (run) if (~stall_e) begin
-        IP_f <= IP; // save IP of fetched instruction
+        IP_f <= fetchAddress; // save IP of fetched instruction
 
         IP <= executiveOverride
             ? expectedIP    // if execOverride, sync IP to EIP
-            : IP + 1;       // else, increment IP
+            : fetchAddress + 1;       // else, increment IP
 
         isValid_f_reg <= ~executiveOverride;
     end end
@@ -345,6 +360,8 @@ module LALU(input CLOCK_50,
     /*********************
      *       Decode      *
      *********************/
+    wire jumpTo = instruction[25:5];
+    wire conditional = instruction[31];
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
     always @(posedge CLOCK_50) if (run) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
@@ -354,7 +371,7 @@ module LALU(input CLOCK_50,
 
         // Universal
         format <= curFormat;
-        conditional <= instruction[31];
+        conditional <= conditional;
         negate <= instruction[30];
         sticky_d <= instruction[29];
 
@@ -406,7 +423,7 @@ module LALU(input CLOCK_50,
             jumpPageLoc <= 3'b0;
         end else if (curFormat == JMP) begin // jump
             jumpPageLoc <= instruction[28:26];
-            jumpLoc <= instruction[25:5];
+            jumpLoc <= jumpTo;
 
             funcID <= {7'b0, instruction[4:3]};
 
@@ -464,10 +481,11 @@ module LALU(input CLOCK_50,
     wire [32:0] diff = Rs0 - Rs1, diff_carry = Rs0 - Rs1 + CF;
 
     // bring out flags for diff calc, since all comparisons use them
-    wire diff_NF = diff[31];
-    wire diff_OF = Rs0[31] != Rs1[31] && Rs0[31] != diff[31];
-    wire diff_CF = diff[32];
-    wire diff_ZF = diff == 0;
+    wire [32:0] cmp = Rs1 - Rs0;
+    wire cmp_NF = cmp[31];
+    wire cmp_OF = Rs0[31] != Rs1[31] && Rs1[31] != cmp[31];
+    wire cmp_CF = cmp[32];
+    wire cmp_ZF = cmp == 0;
 
     // bring out flags for all flag get instructions, with passthru
     wire exec_NF = sticky_e && isWriteback_e ? result_e[31]
@@ -486,9 +504,9 @@ module LALU(input CLOCK_50,
     // peripherals
     assign keyQuery = Rs0;
     assign rstKeyboard = isValid_d && format == NO_WB_TRIP && funcID == RSTKEY;
-    assign pollKeyboard = run && ~stall_e && ~executiveOverride && executeInstr && format == WB_TRIP && funcID == LDKEY;
+    assign pollKeyboard = isExecuting && format == WB_TRIP && funcID == LDKEY;
 
-    assign charWr = run && ~stall_e && ~executiveOverride && executeInstr && format == NO_WB_QUAD && funcID == STCHR;
+    assign charWr = isExecuting && format == NO_WB_QUAD && funcID == STCHR;
     assign charWrFgColor = Rs1;
     assign charWrBgColor = Rs2;
     assign charWrCode = Rd[7:0];
@@ -496,6 +514,7 @@ module LALU(input CLOCK_50,
     assign charWrX = Rs0[5:0];
     assign charWrY = Rs0[10:6];
 
+    wire isExecuting = run && ~stall_e && ~executiveOverride && executeInstr;
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
     always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
@@ -526,8 +545,8 @@ module LALU(input CLOCK_50,
                     end
                     SUB: begin
                         result_e <= diff[31:0];
-                        carryFlag_e <= diff_CF;
-                        overflowFlag_e <= diff_OF;
+                        carryFlag_e <= diff[32];
+                        overflowFlag_e <= (Rs0[31] != Rs1[31] && Rs0[31] != diff[31]);
                     end
                     RADD: begin
                         result_e <= sum_carry;
@@ -537,7 +556,7 @@ module LALU(input CLOCK_50,
                     RSUB: begin
                         result_e <= diff_carry;
                         carryFlag_e <= diff_carry[32];
-                        overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != diff_carry[31]);
+                        overflowFlag_e <= (Rs0[31] != Rs1[31] && Rs0[31] != diff_carry[31]);
                     end
                     CSUB: begin
                         result_e <= Rs1 <= Rs0 ? diff : Rs0;
@@ -713,34 +732,34 @@ module LALU(input CLOCK_50,
                     end
                     RSTKEY: begin end
                     UGT: begin
-                        generalFlag <= diff_CF && !diff_ZF;
+                        generalFlag <= cmp_CF && !cmp_ZF;
                     end
                     UGE: begin
-                        generalFlag <= diff_CF;
+                        generalFlag <= cmp_CF;
                     end
                     ULT: begin
-                        generalFlag <= ~diff_CF;
+                        generalFlag <= ~cmp_CF;
                     end
                     ULE: begin
-                        generalFlag <= ~diff_CF || ~diff_ZF;
+                        generalFlag <= ~cmp_CF || ~cmp_ZF;
                     end
                     SGT: begin
-                        generalFlag <= ~diff_ZF && diff_NF == diff_OF;
+                        generalFlag <= ~cmp_ZF && cmp_NF == cmp_OF;
                     end
                     SGE: begin
-                        generalFlag <= diff_NF == diff_OF;
+                        generalFlag <= cmp_NF == cmp_OF;
                     end
                     SLT: begin
-                        generalFlag <= diff_NF != diff_OF;
+                        generalFlag <= cmp_NF != cmp_OF;
                     end
                     SLE: begin
-                        generalFlag <= diff_ZF || diff_NF != diff_OF;
+                        generalFlag <= cmp_ZF || cmp_NF != cmp_OF;
                     end
                     EQ: begin
-                        generalFlag <= diff_ZF;
+                        generalFlag <= cmp_ZF;
                     end
                     NE: begin
-                        generalFlag <= ~diff_ZF;
+                        generalFlag <= ~cmp_ZF;
                     end
                     NF: begin
                         generalFlag <= exec_NF;
@@ -852,7 +871,7 @@ module LALU(input CLOCK_50,
     always @(posedge CLOCK_50) if (run) begin
         // if we just returned, we need to update the current return address from the stack
         // we have to put some Execute stuff here so that returnAddress is only being driven once
-        if (run && ~stall_e && ~executiveOverride && executeInstr && format == JMP && funcID == CALL) returnAddress <= stackWriteData;
+        if (isExecuting && format == JMP && funcID == CALL) returnAddress <= stackWriteData;
         else if (~stall_m && isValid_e && isRet_e) returnAddress <= stackReadOut;
     end
 

@@ -1,6 +1,13 @@
 // R31 = failed assertion idx (0 for success)
 // R30 = calculated value
 // R29 = expected value
+// R28 = VGA write sector
+// R27 = VGA write index
+
+.DATA
+    I_MSG: "I"
+    V_MSG: "V"
+    E_MSG: "E"
 
 .CODE
 main:
@@ -62,7 +69,7 @@ main:
     umax    R30, R0, R1
     mov     R29, R0
     call    assert:
-    // test UMAX pos/pos                [9] // TODO: update indices
+    // test UMAX pos/pos                [9]
     umax    R30, R2, R3
     mov     R29, R3
     call    assert:
@@ -195,11 +202,111 @@ main:
     mov.e   R29, #0b10101101010010011010101101110000
     call    assert:
 
-    mov     R31, #0
-    susp
+    mov.e   R30, #0x61460
+    mov.e   R29, #0x4D6
+    call    assert:
+
+ex:
+    jmp ex:
 
 assert:
     add     R31, R31, #1
     ne      R30, R29
-    c.susp
+    c.call  print_debug:
+    ret
+
+print_debug:
+    bsl     R27, R28, #5
+    add     R28, R28, #1
+
+    mov.e   R15, I_MSG:
+    mov     R16, #0b00000001
+    mov.e   R17, #0xf58484
+    mov.e   R18, #0xf24141
+    call    print_str:
+    add     R27, R27, #1
+
+    mov     R15, R31
+    mov     R16, #0b00000000
+    mov.e   R17, #0xed1818
+    mov     R18, #0
+    mov     R19, #0
+    call    print_reg:
+    add     R27, R27, #2
+
+    mov.e   R15, V_MSG:
+    mov     R16, #0b00000001
+    mov.e   R17, #0xf58484
+    mov.e   R18, #0xf24141
+    call    print_str:
+    add     R27, R27, #1
+
+    mov     R15, R30
+    mov     R16, #0b00000000
+    mov.e   R17, #0xed1818
+    mov     R18, #0
+    mov     R19, #1
+    call    print_reg:
+    add     R27, R27, #2
+
+    mov.e   R15, E_MSG:
+    mov     R16, #0b00000001
+    mov.e   R17, #0xbfbfbf
+    mov.e   R18, #0xf0f0f0
+    call    print_str:
+    add     R27, R27, #1
+
+    mov     R15, R29
+    mov     R16, #0b00000000
+    mov.e   R17, #0xe6e6e6
+    mov     R18, #0
+    mov     R19, #1
+    call    print_reg:
+
+    ret
+
+// put str addr in R15
+// put flags in R16
+// put FG in R17
+// put BG in R18
+print_str:
+    lda     R13, R15, #8
+    add     R15, R15, #8
+
+    ne      R13, #0
+    c.adds  R13, R13, R16, #8
+
+    c.stchr R13, R27, R17, R18
+    c.add   R27, R27, #1
+
+    c.jmp   print_str:
+
+    ret
+
+// put number in R15
+// put flags in R16
+// put FG in R17
+// put BG in R18
+// R19 = whether to print leading 0s
+print_reg:
+    eq      R19, #0
+    c.log   R14, R15
+    c.andn  R14, R14, #0b11
+    cn.mov  R14, #28
+loop:
+    bsf     R13, R15, R14, #4
+    sub     R14, R14, #4
+
+    csub.s  R13, R13, #10
+    of
+    c.add.e R13, R13, #48
+    cn.add.e R13, R13, #65
+
+    adds    R13, R13, R16, #8
+    stchr   R13, R27, R17, R18
+    add     R27, R27, #1
+
+    sge     R14, #0
+    c.jmp   loop:
+
     ret

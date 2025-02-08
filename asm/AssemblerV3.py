@@ -382,10 +382,11 @@ def ParseDataLine(line):
                 tc = stk[-2]
                 while tc != '"':
 ##                    print(stk)
-                    stk[-2] += stk[-1]
+                    stk[-2] = stk[-1] + stk[-2]
                     del stk[-1]
                     tc = stk[-2]
                 del stk[-2]
+                stk[-1] = Binary(0, 8) + stk[-1]
             else:
                 stk.append(Binary(ord(c), 8))
         else:
@@ -447,6 +448,7 @@ def ParseFile(file):
                     args = [ParseValue(x.lstrip(' \t').rstrip(' \t')) for x in line.split(',')] if line != '' else []
                     ret = PrepInstr(tkn[1][0], args, tkn[1][1])
                     ret['loc'] = addr
+                    ret['line'] = oline
                     addr += 64 if ret['eximm'] else 32
                     codes.append(ret)
             elif segment == '.DATA':
@@ -457,8 +459,8 @@ def ParseFile(file):
                 nb = len(bits)
                 lbls[tkn[1]] = addr
                 while bits != '':
-                    mem[addr] = hex(int(bits[:32], 2))[2:].upper().zfill(8)
-                    bits = bits[min(len(bits), 32):]
+                    mem[addr] = hex(int(bits[-32:], 2))[2:].upper().zfill(8)
+                    bits = bits[:-32]
                     addr += 32
 ##                addr += -(-nb//32)
                         
@@ -469,8 +471,12 @@ def ParseFile(file):
             raise e
 ##    print(codes, lbls)
     out = []
+    lblsinv = {v:k for k,v in lbls.items()}
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
+        if code['loc'] in lblsinv:
+            print(f"\t{lblsinv[code['loc']]}:")
+        print(f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}")
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
@@ -533,8 +539,6 @@ if __name__ == "__main__":
                             if os.path.exists("../.sim/Icarus Verilog-sim"):
                                 with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                     f2.write(program)
-                                    print('Wrote:\n\n')
-                                    print(program)
                             else:
                                 print(program)
                                 pyperclip.copy(program)
