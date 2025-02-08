@@ -312,7 +312,7 @@ def ResolveInstr(form, lbls):
             elif arg[0] == 'exlit':
                 out += '11111'
                 ex = arg[1]
-            elif arg[0] == 'lbl':
+            elif arg[0] == 'lbl' or arg[0] == 'exlbl':
                 if field == 'Addr':
                     out += Binary(lbls[arg[1]] // 32, 24)
                 else:
@@ -490,6 +490,20 @@ def Mifify(mem, size):
     out += f'    [{saddr}..{hex(2**size-1)[2:]}] : 00000000;\n'
     out += tail
     return out
+
+def UnpackHex(instr):
+    b = bin(instr)[2:].zfill(32)
+    F = {'000':'T', '100':'T',
+         '001':'Q', '101':'Q',
+         '110':'J'}[b[-3:]]
+    tab = []
+    for field,width in formats[F].items():
+        tab.append((field, b[:width]))
+        b = b[width:]
+    l = [max(len(x), len(y)) for x,y in tab]
+    y=' '.join([y.center(l[i]) for i,(x,y) in enumerate(tab)])
+    x=' '.join([x.center(l[i]) for i,(x,y) in enumerate(tab)])
+    print(x+'\n'+y)
 
 inp = None
 

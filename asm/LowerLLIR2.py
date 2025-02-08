@@ -19,7 +19,8 @@ diagnostics = {
     'step': 'ENABLE',
     'Ex': 'ENABLE',
     'From': 'ENABLE',
-    'Body': 'ENABLE'
+    'Body': 'ENABLE',
+    'Lower': 'ENABLE',
     #'M_Use::misc': 'DISABLE',
 }
 
@@ -106,6 +107,7 @@ class State:
             regs = [None] * numRegs
         self.regs = regs[:]
         self.fresh = fresh[:]
+        self.topofstk = 0
     def __repr__(self):
         return f'State({self.expvars}, {self.finals}, {self.stk}, {self.lru}, {self.regs}, {self.fresh})'
 
@@ -132,6 +134,10 @@ class State:
             self.regs[reg] = None
         self.expvars.append(name)
         del self.stk[name]
+
+    @TrackLine
+    def I_ClearRegs(self):
+        self.regs = [None] * numRegs
 
     @TrackLine
     def I_RegUse(self, reg):
@@ -181,17 +187,21 @@ class State:
         return tar
 
     @TrackLine
-    def M_EvictReplace(self, buf, name, reg):
+    def I_Rename(self, name, reg):
+        self.regs[reg] = name
+
+    @TrackLine
+    def M_EvictReplace(self, buf, name, reg, comment = None):
         if self.regs[reg]:
             if name in self.stk:
                 addr = self.AddrOf(name)
-                self.M_AddPent(buf, 'stw', (f'r{reg}', f'r{STKPTR}', addr))
+                self.M_AddPent(buf, 'stw', (f'r{reg}', f'r{STKPTR}', addr), comment = comment)
         if name in self.fresh:
             self.fresh.remove(name)
         else:
             Debug(step = self.stk)
             addr = self.AddrOf(name)
-            self.M_AddPent(buf, 'ldw', (f'r{reg}', f'r{STKPTR}', addr))
+            self.M_AddPent(buf, 'ldw', (f'r{reg}', f'r{STKPTR}', addr), comment = comment)
         self.regs[reg] = name
 
     @TrackLine
@@ -213,14 +223,14 @@ class State:
 ##        buf.append({'name':'CHANGE', 'old': lbl[:-1], 'tar': self.Copy()})
 
     @TrackLine
-    def M_AddPent(self, buf, op, args, mods = []):
+    def M_AddPent(self, buf, op, args, mods = [], comment = None):
         if op[:2] == 'c.':
             mods.append('c.')
             op = op[2:]
-        if op == 'jmp':
+        if op in ['jmp','call']:
             jp=args[0]
 ##            self.M_ChangeState(buf, jp)
-        width = 24 if op == 'jmp' else 5
+        width = 24 if op in ['jmp','call'] else 5
         eximm = False
         tps = 0
 
@@ -234,7 +244,10 @@ class State:
             else:
                 break
         assert all([x == None for x in c]), f'Very bad: {c}'
-        
+
+        build = {}
+        if comment:
+            build['comment'] = comment
         data = asmblr.instrs[op]
         if 'ps' in data:
             fmt = data['fmt']
@@ -261,6 +274,9 @@ class State:
                         Debug(optimization = f'Skipping line due to expired destination {(op, c, mods)}')
                         return
                     x = self.M_Use(buf, x)
+                elif kind[:2] == 'Rs':
+                    j = int(kind[2])
+                    build[f'i{j}'] = True
                 if MinBitsOf(x) > width:
                     if not eximm:
                         eximm = True
@@ -279,7 +295,8 @@ class State:
         if op == 'jmp':
 ##            jp=args[0]
             self.M_ChangeState(buf, jp, cond=C)
-        buf.append({'name': op, 'c': C, 'n': 'cn.' in mods, 's': '.s' in mods, 'args': args, 'eximm': eximm})
+        build.update({'name': op, 'c': C, 'n': 'cn.' in mods, 's': '.s' in mods, 'args': args, 'eximm': eximm})
+        buf.append(build)
 ##        if op == 'jmp' and C:
 ##            self.M_RevChangeState(buf, jp)
         for name in self.finals:
@@ -300,9 +317,12 @@ class State:
             if loc not in self.stk.values():
                 self.stk[name] = loc
                 self.fresh.append(name)
+                self.I_UpdateTopOfStack()
                 return
 
-    
+    @TrackLine
+    def I_UpdateTopOfStack(self):
+        self.topofstk = 32+32*(max(list(self.stk.values())+[0])//32)
 
     @TrackLine
     def IsVar(self, name):
@@ -353,8 +373,10 @@ class Asm:
             lbls = sorted(self.lbls.items(), key = lambda x: x[1])
             sortkey = (lambda x: x['loc']) if self.stitched else (lambda x: x['vloc'])
             for line in sorted(self.body, key = sortkey):
+                oline = ''
                 if 'eximm' not in line:
-                    o += repr(line)+'\n'
+                    oline += repr(line)+'\n'
+                    o += oline
                     continue
                 addrkey = 'loc' if self.stitched else 'vloc'
                 addr = hex(line[addrkey])[2:].zfill(6).upper()
@@ -369,12 +391,19 @@ class Asm:
                         if loc <= line[addrkey]:
                             o += f'{lbl}'
                             if lbl in self.froms and not self.stitched:
-                                o += f' <- {self.froms[lbl]}'
+                                oline += f' <- {self.froms[lbl]}'
                             o += ':\n'
+                            
                             del lbls[0]
                         else:
                             break
-                o += f'{str(line.get("src", "????")).zfill(4)} {"v"*(not self.stitched)}{addr[:2]} {addr[2:]}:  {op.ljust(12)}{args}\n'
+                oline += f'{str(line.get("src", "????")).zfill(4)} {"v"*(not self.stitched)}{addr[:2]} {addr[2:]}:  {op.ljust(12)}{args}'
+                if 'comment' in line:
+                    oline = oline.replace('\t',' '*8).ljust(100)
+                    assert len(oline) == 100, f'`{oline}`'
+                    oline += f'\t//{line["comment"]}'
+                oline += '\n'
+                o += oline
         o += f'`{self.lbls}`\n'
         o += f'`{self.froms}`\n'
         
@@ -466,6 +495,7 @@ def Lower(llir):
             buf = []
             state.M_AddPent(buf, 'mov', ['r31', 1], [])
             asm.Addlines(buf)
+        asm.AddLabel(func['name'])
         for block in func['body']:
             if len(asm.sts.keys()) > 0:
                 pk = list(asm.sts.keys())[-1]
@@ -491,25 +521,33 @@ def Lower(llir):
                 elif cmd == 'expr':
                     op = line[1][0]
                     if op == 'retpsh':
+                        name = line[1][2]
+                        loc = line[1][1]
+                        state.M_EvictReplace(buf, name, loc, comment = f'Ret Push: {" ".join([str(x) for x in line[1][1:] if x != None])}')
+                    elif op == 'argpsh':
+                        name = line[1][2]
+                        loc = line[1][1]
+                        state.M_EvictReplace(buf, name, loc, comment = f'Arg Push: {" ".join([str(x) for x in line[1][1:] if x != None])}')
+                    elif op == 'retpop':
                         name = line[1][1]
                         loc = line[1][2]
-                        Debug(step = f'name is {name=}, loc is {loc=}')
-                        state.M_EvictReplace(buf, name, loc)
+                        state.I_Rename(name, loc)
                     elif op == 'argpop':
                         name = line[1][1]
                         loc = line[1][2]
                         state.I_Decl(name)
-                        state.M_EvictReplace(buf, name, loc)
-                    elif op == 'argpsh':
-                        err
-                    elif op == 'retpop':
-                        err
+                        state.I_Rename(name, loc)
+                    elif op == 'call':
+                        arg = line[1][1]
+                        state.I_UpdateTopOfStack()
+                        state.M_AddPent(buf, 'add', [f'r{STKPTR}', f'r{STKPTR}', state.topofstk], [], comment = f'Move Stack Pointer for `{arg}`')
+                        state.M_AddPent(buf, 'call', [arg+':'], [])
+                        state.M_AddPent(buf, 'sub', [f'r{STKPTR}', f'r{STKPTR}', state.topofstk], [], comment = f'Return Stack Pointer from `{arg}`')
+                        state.I_ClearRegs()
                     else:
                         args = line[1][1:]
                         mods = line[2]
-                        state.M_AddPent(buf, op, args, mods if mods else [])
-##                elif cmd == 'expr':
-##                    
+                        state.M_AddPent(buf, op, args, mods if mods else [], comment = f'Expr: {" ".join([str(x) for x in line[1] if x != None])}')
                 elif cmd == 'from':
                     tar = line[1]
                     state = asm.stsf[tar].Copy()

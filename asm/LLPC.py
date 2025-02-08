@@ -974,6 +974,9 @@ srcs=[]
 
 funcs = {}
 inter = HLIR()
+
+UnpackHex = LLL.asmblr.UnpackHex
+
 try:
     Gen(tree)
 except Exception as e:
@@ -997,3 +1000,6 @@ print(repr(asm))
 
 print('\nBIN:')
 print(repr(bn))
+
+print('\nMIF:')
+print(LLL.asmblr.Mifify(bn, 32))
