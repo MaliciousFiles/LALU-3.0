@@ -33,6 +33,17 @@ begin:
     bsf     R0, R0, #0, #7          // R0 = key code
     mov     R1, #0
 
+    // RETURN
+    eq.e    R0, #0x33
+    c.add.e R31, R31, #0b1000000
+    c.andn.e R31, R31, #0b111111
+    c.jmp   begin:
+
+    // SPACE
+    eq.e    R0, #0x34
+    c.add   R31, R31, #1
+    c.jmp   begin:
+
     // A
     eq.e    R0, #0x4E
     c.mov.e R1, #65
