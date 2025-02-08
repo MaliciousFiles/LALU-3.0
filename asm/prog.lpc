@@ -1,8 +1,9 @@
-fn Main() u32* {
-  var ary: u32*;
-  for (var i: u32 = 0; i < 8; i += 1) {
-    ary[i] = i;
-  }
-  return ary;
+fn Main() u32 {
+  var x: u32 = 7;
+  var t: u32 = Identity(x);
+  return t;
 }
 
+fn Identity(x: u32) u32 {
+  return x;
+}
