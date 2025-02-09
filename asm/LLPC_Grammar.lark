@@ -45,7 +45,7 @@ expr: assgexpr
         | unaryop castexpr
 ?postexpr: primexpr
 	| AT ident LPAREN [argexprs] RPAREN -> intrinsic
-        | postexpr LBRACK expr COLON expr RBRACK -> sliceexpr
+        | postexpr LBRACK expr PLUS COLON expr RBRACK -> sliceexpr
         | postexpr LBRACK expr RBRACK -> indexpr
         | postexpr LPAREN [argexprs] RPAREN -> callexpr
         | postexpr DOT ASTERISK -> derefexpr

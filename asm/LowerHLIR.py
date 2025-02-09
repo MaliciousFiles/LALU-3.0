@@ -176,13 +176,13 @@ def Lower(hlir):
                             AddPent(nblock, 'call', D, S0, S1, S2)
                         elif op in ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']:
                             cmp = op
-                            lhs = D
-                            rhs = S0
+                            lhs = S0
+                            rhs = S1
                             if cmp in ['==', '!=']:
                                 cmp = {'==': 'eq', '!=': 'ne'}[cmp]
                             else:
                                 cmp = 'us'['+-'.index(cmp[0])] + {'>': 'gt', '>=': 'ge', '<=': 'le', '<': 'lt'}[cmp[1:]]
-                            AddPent(nblock, cmp, lhs, rhs, None, None)
+                            AddPent(nblock, cmp, None, lhs, rhs, None)
                         elif op == '=<>':
                             D, S, dk, sk = D, S0, S1, S2
                             if sk.comptime:

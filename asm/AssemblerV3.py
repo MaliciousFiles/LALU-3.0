@@ -217,6 +217,12 @@ def ParseValue(txt, foundInstruction=True):
         reg = int(txt[1:])
         assert 0 <= reg < 32, f'Register {reg} is not in valid range [0, 32)'
         return ('reg', reg)
+    elif foundInstruction and txt[0] == '%':
+        if txt[1:][:4] == 'BIT(':
+            assert txt[-1] == ')', f'Expected `)`, got `{txt[-1]}` for directive %BIT'
+            return ('lit', Macro_BIT(txt[5:-1]))
+        else:
+            assert False, f'Unrecognized directive `{txt}`'
     elif foundInstruction and txt[0] == '#':
         if txt != '#0':
             if txt[1] == '0' and txt[2] in 'xdb':
@@ -382,11 +388,10 @@ def ParseDataLine(line):
                 tc = stk[-2]
                 while tc != '"':
 ##                    print(stk)
-                    stk[-2] = stk[-1] + stk[-2]
+                    stk[-2] += stk[-1]
                     del stk[-1]
                     tc = stk[-2]
                 del stk[-2]
-                stk[-1] = Binary(0, 8) + stk[-1]
             else:
                 stk.append(Binary(ord(c), 8))
         else:
@@ -448,7 +453,6 @@ def ParseFile(file):
                     args = [ParseValue(x.lstrip(' \t').rstrip(' \t')) for x in line.split(',')] if line != '' else []
                     ret = PrepInstr(tkn[1][0], args, tkn[1][1])
                     ret['loc'] = addr
-                    ret['line'] = oline
                     addr += 64 if ret['eximm'] else 32
                     codes.append(ret)
             elif segment == '.DATA':
@@ -459,8 +463,8 @@ def ParseFile(file):
                 nb = len(bits)
                 lbls[tkn[1]] = addr
                 while bits != '':
-                    mem[addr] = hex(int(bits[-32:], 2))[2:].upper().zfill(8)
-                    bits = bits[:-32]
+                    mem[addr] = hex(int(bits[:32], 2))[2:].upper().zfill(8)
+                    bits = bits[min(len(bits), 32):]
                     addr += 32
 ##                addr += -(-nb//32)
                         
@@ -471,12 +475,8 @@ def ParseFile(file):
             raise e
 ##    print(codes, lbls)
     out = []
-    lblsinv = {v:k for k,v in lbls.items()}
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
-        if code['loc'] in lblsinv:
-            print(f"\t{lblsinv[code['loc']]}:")
-        print(f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}")
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
@@ -510,6 +510,42 @@ def UnpackHex(instr):
     y=' '.join([y.center(l[i]) for i,(x,y) in enumerate(tab)])
     x=' '.join([x.center(l[i]) for i,(x,y) in enumerate(tab)])
     print(x+'\n'+y)
+
+def Macro_BIT(expr):
+    rexpr = expr
+    cases = ['00', '01', '10', '11'][::-1]
+    tab = 0
+    for case in cases:
+        expr = rexpr
+        expr = expr.replace(' ', '')
+        expr = expr.replace('a', case[0])
+        expr = expr.replace('b', case[1])
+        run = True
+        while run:
+            oexpr = expr
+            for i in range(2):
+                a = i % 2
+                expr = expr.replace(f'({a})', str(a))
+            for i in range(2):
+                a = i % 2
+                expr = expr.replace(f'~{a}', str(int(not a)))
+            for i in range(4):
+                a = i // 2
+                b = i % 2
+                expr = expr.replace(f'{a}&{b}', str(int(a and b)))
+            for i in range(4):
+                a = i // 2
+                b = i % 2
+                expr = expr.replace(f'{a}^{b}', str(int(a != b)))
+            for i in range(4):
+                a = i // 2
+                b = i % 2
+                expr = expr.replace(f'{a}|{b}', str(int(a or b)))
+            run = expr != oexpr
+        assert expr in ['1', '0'], f'While resolving `{rexpr}` under case a={case[0]}, b={case[1]}, got result `{expr}` which is not valid'
+        tab = 2*tab + int(expr)
+    return tab
+            
 
 inp = None
 
@@ -553,6 +589,8 @@ if __name__ == "__main__":
                             if os.path.exists("../.sim/Icarus Verilog-sim"):
                                 with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                     f2.write(program)
+                                    print('Wrote:\n\n')
+                                    print(program)
                             else:
                                 print(program)
                                 pyperclip.copy(program)
@@ -564,6 +602,7 @@ if __name__ == "__main__":
                         print(e)
                         print(traceback.format_exc())
         else:
+            contents = f.read()
             program  = ParseFile(contents)
             print(program)
             pyperclip.copy(program)

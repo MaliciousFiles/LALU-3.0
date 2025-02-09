@@ -5,10 +5,10 @@ import LowerLLIR2 as LLL
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('prog.lpc', 'r') as f:
+with open('slices.lpc', 'r') as f:
     tree = parser.parse(txt := f.read())
 
-voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
+##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
 nullret = ['@susp', '@rstkey']
 
 def Write(txt):
@@ -717,7 +717,7 @@ class HLIR:
         eid += 1
         self.Use(lhs)
         self.Use(rhs)
-        self.AddPent(op, lhs, rhs, None, None)
+        self.AddPent(op, None, lhs, rhs, None)
         self.body.exit = ('c.jmp', (lbl))
 ##        self.body.exit = ('if', (lhs, op, rhs, lbl), eid)
         self.body.exloc = lbl
@@ -731,10 +731,9 @@ class HLIR:
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
-        global eid
-        eid += 1
         self.Use(cond)
-        self.body.exit = ('if', (cond, '!=', 0, lbl), eid)
+        self.AddPent('!=', None, cond, 0, None)
+        self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def Jump(self, lbl):
@@ -803,24 +802,19 @@ class HLIR:
                     if line[1][0] == 'argpop':
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
-                    if line[1][0] in nullret or line[1][0] not in voidret:
+                    if line[1][0] in nullret:
                         args = line[1][2:][:4]
                     else:
-                        args = line[1][1:][:4]
+                        args = line[1][2:][:4]
                     for arg in args:
                         if type(arg) == str:
                             if arg not in ldict:
-                                ldict[arg] = ['pre', line[2]]
+                                if arg in ldict:
+                                    ldict[arg] = ['pre', line[2]]
+                                else:
+                                    print(f'`{arg}` is not declared')
                             elif type(ldict[arg][1]) != str:
                                 ldict[arg][1] = line[2]
-                elif line[0] == 'argret':
-                    print(f'Arg ret: {line}')
-                    arg = line[1]
-                    if type(arg) == str:
-                        if arg not in ldict:
-                            ldict[arg] = ['pre', line[2]]
-                        elif type(ldict[arg][1]) != str:
-                            ldict[arg][1] = line[2]
                 else:
                     print(line)
                     err
@@ -870,7 +864,6 @@ class HLIR:
                         if var not in lvars[succ]:
                             for i,b in enumerate(body):
                                 if b.entry == succ:
-                                    
                                     body[i].body.insert(0, ('undecl', var, k[var]))
                                     break
                             else:

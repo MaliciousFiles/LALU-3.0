@@ -258,11 +258,17 @@ class State:
         oargs = c[:]
         args = []
         for x in c[:]:
+            if x == None:
+                del c[0]
+            else:
+                break
+        for x in c[:]:
             if x != None:
                 args.append(x)
                 del c[0]
             else:
                 break
+
         assert all([x == None for x in c]), f'Very bad: {c}'
 
         build = {}
@@ -290,7 +296,8 @@ class State:
             if x != None:
                 if self.IsVar(x):
                     if kind == 'Rd' and (x in self.finals or x in self.expvars) and not hassideeffects:
-                        del self.stk[x]
+                        if x in self.stk:
+                            del self.stk[x]
                         Debug(optimization = f'Skipping line due to expired destination {(op, c, mods)}')
                         return
                     x = self.M_Use(buf, x)
@@ -350,7 +357,7 @@ class State:
 
     @TrackLine
     def IsVar(self, name):
-        return name in self.stk or name in self.finals
+        return name in self.stk or name in self.finals or name in self.expvars
 
 def Coi(x):
     return sum([x.count(c) for c in x])/(len(x)*len(x))
@@ -563,7 +570,7 @@ def Lower(llir):
                     state.M_AddComment(buf, f'Undeclare `{line[1]}`')
                 elif cmd == 'nodecl':
                     state.I_Decl(line[1])
-                    state.I_Final(line[1])
+                    state.I_Undecl(line[1])
                 elif cmd == 'expr':
                     op = line[1][0]
                     if op == 'retpsh':
