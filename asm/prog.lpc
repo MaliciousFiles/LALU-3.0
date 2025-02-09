@@ -1,9 +1,21 @@
 fn Main() u32 {
-  var x: u32 = 7;
-  var t: u32 = Identity(x);
-  return t;
+  //var x: u32 = 7;
+  //var t: u32 = Identity(x);
+  var f: u32 = Fib(5);
+  AssertEql(7, 7);
+  var z: u32 = 1;
+  return 0;
 }
 
 fn Identity(x: u32) u32 {
   return x;
+}
+
+fn Fib(x: u32) u32 {
+  return Fib(x-2) + Fib(x-1);
+}
+
+fn AssertEql(act: u32, exp: u32) void {
+  if (act != exp) @susp();
+  return;
 }

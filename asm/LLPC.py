@@ -8,6 +8,9 @@ parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagat
 with open('prog.lpc', 'r') as f:
     tree = parser.parse(txt := f.read())
 
+voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
+nullret = ['@susp', '@rstkey']
+
 def Write(txt):
     global out
     out += '  '*ind + txt
@@ -99,6 +102,8 @@ def Gen(tree, pre = True):
             args = []
             if rargs:
                 for arg in rargs.children:
+                    if type(arg) == Token:
+                        continue
                     aname, _, akind = arg.children
                     args.append((aname.children[0].value, Type.FromStr(akind.children[0].value)))
             ret = Type.FromStr(ret.children[0].value)
@@ -653,6 +658,8 @@ class HLIR:
                 return env[name]
         assert False, f'Cannot find name: `{name}` in current scope'
     def Decl(self, name, kind):
+        if kind.isvoid:
+            return
         self.Register(name, kind)
         self.body.Addline(('decl', name, kind, None))
     def CastAddPent(self, op, D, S0, S1, S2, desttype, origtype):
@@ -796,7 +803,10 @@ class HLIR:
                     if line[1][0] == 'argpop':
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
-                    args = line[1][1:][:4]
+                    if line[1][0] in nullret or line[1][0] not in voidret:
+                        args = line[1][2:][:4]
+                    else:
+                        args = line[1][1:][:4]
                     for arg in args:
                         if type(arg) == str:
                             if arg not in ldict:
@@ -872,9 +882,32 @@ class HLIR:
                             block.body.insert(i+1, ('undecl', var, k[var]))
                             break
                     else:
-                        print(f'Failed to undeclare {var=}')
-                        print(f'Last used at {life[1]} from {life}')
-                        bad
+                        print(f'Unused variable `{var}`')
+                        r = 0
+                        for i,b in enumerate(block.body):
+##                            print(b)
+                            if b[0] == 'expr' and b[1][1] == var:
+                                if b[1][0] in nullret:
+                                    print(f'Fix line `{b}`')
+                                    l = list(b)
+                                    li = list(l[1])
+                                    li[1] = None
+                                    l[1] = li
+                                    block.body[i] = tuple(l)
+                                else:
+                                    print(f'Purge line `{b}`')
+                                    assert block.body[i-r] == b, f'Ummm, desync internally tried to delete wrong expr'
+                                    del block.body[i-r]
+                                    r += 1
+                        for i,b in enumerate(block.body):
+                            if b[0] == 'decl' and b[1] == var:
+##                                block.body[i] = ('nodecl', var, k[var])
+                                del block.body[i]
+                                break
+                        else:
+                            print(f'Failed to delete declare {var=}')
+                            print(f'Last used at {life[1]} from {life}')
+                            bad
         
 ##        err
             
@@ -912,6 +945,8 @@ class Type:
         else:
             return f'{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
+        if self.isvoid == other.isvoid == True:
+            return True
         if self.isbool or other.isvoid:
             return False
         if self.comptime:
@@ -998,8 +1033,8 @@ asm, bn, fstate = LLL.Lower(llir)
 print('\nASM:')
 print(repr(asm))
 
-print('\nBIN:')
-print(repr(bn))
+##print('\nBIN:')
+##print(repr(bn))
 
 print('\nMIF:')
 print(LLL.asmblr.Mifify(bn, 32))

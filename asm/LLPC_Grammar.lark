@@ -161,6 +161,9 @@ AT: "@"
 TRUE: "true"
 FALSE: "false"
 
+COMMENT: /\/\/[^\r\n]*/
+
+%ignore COMMENT
 %ignore WS
 %ignore "\n"
 %ignore "\r"

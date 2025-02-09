@@ -16,11 +16,8 @@ def print(*args):
 # If a double is specified, it doesnt affect other modes or names
 diagnostics = {
     '*': 'DISABLE',
-    'step': 'ENABLE',
-    'Ex': 'ENABLE',
-    'From': 'ENABLE',
-    'Body': 'ENABLE',
-    'Lower': 'ENABLE',
+    'M_Use': 'ENABLE',
+    'fresh': 'ENABLE',
     #'M_Use::misc': 'DISABLE',
 }
 
@@ -162,10 +159,12 @@ class State:
         if name in self.regs:
             reg = self.regs.index(name)
             self.I_RegUse(reg)
+            Debug(misc = f'Found {name} at r{reg}')
             return f'r{reg}'
         else:
-            reg = self.M_ReplaceAny(buf, name)
+            reg = self.M_ReplaceAny(buf, name, comment = f'Restore `{name}` from memory')
             self.I_RegUse(reg)
+            Debug(misc = f'Replaced {name} into r{reg}')
             return f'r{reg}'
 
     @TrackLine
@@ -178,30 +177,47 @@ class State:
         return self.stk[name]
 
     @TrackLine
-    def M_ReplaceAny(self, buf, name):
+    def M_ReplaceAny(self, buf, name, comment = ''):
         if None in self.regs:
             tar = self.regs.index(None)
         else:
             tar = self.lru[0]
-        self.M_EvictReplace(buf, name, tar)
+        self.M_EvictReplace(buf, name, tar, comment = comment)
         return tar
 
     @TrackLine
     def I_Rename(self, name, reg):
         self.regs[reg] = name
-
-    @TrackLine
-    def M_EvictReplace(self, buf, name, reg, comment = None):
-        if self.regs[reg]:
-            if name in self.stk:
-                addr = self.AddrOf(name)
-                self.M_AddPent(buf, 'stw', (f'r{reg}', f'r{STKPTR}', addr), comment = comment)
         if name in self.fresh:
             self.fresh.remove(name)
+
+    @TrackLine
+    def M_EvictReplace(self, buf, name, reg, comment = '', noMove = False):
+        if self.regs[reg]:
+            if self.regs[reg] == name:
+                self.M_AddComment(buf, f'Move of `{name}` into itself at r{reg}' + ' <- ' + comment)
+                return
+            if None in self.regs and not noMove:
+                addr = self.regs.index(None)
+                self.M_AddPent(buf, 'mov', (f'r{reg}', f'r{addr}'), comment = f'Evict `{self.regs[reg]}` to r{addr} from r{reg}' + ' <- '+comment)
+            else:
+                addr = self.AddrOf(name)
+                self.M_AddPent(buf, 'stw', (f'r{reg}', f'r{STKPTR}', addr), comment = f'Evict `{self.regs[reg]}` to mem from r{reg}' + ' <- '+comment)
+        if name in self.fresh:
+            self.fresh.remove(name)
+            self.M_AddComment(buf, f'`{name}` = r{reg}')
+            Debug(fresh = f'Found fresh variable `{name}`\nFresh is now: `{self.fresh}`')
         else:
             Debug(step = self.stk)
-            addr = self.AddrOf(name)
-            self.M_AddPent(buf, 'ldw', (f'r{reg}', f'r{STKPTR}', addr), comment = comment)
+            if name in self.regs:
+                addr = self.regs.index(name)
+                self.M_AddPent(buf, 'mov', (f'r{reg}', f'r{addr}'), comment = f'Move `{name}` into r{reg} from r{addr}'+' <- '+comment)
+            elif type(name) == int:
+                self.M_AddPent(buf, 'mov', (f'r{reg}', f'#{name}'), comment = f'Move #{name} into r{reg}'+' <- '+comment)
+                return
+            else:
+                addr = self.AddrOf(name)
+                self.M_AddPent(buf, 'ldw', (f'r{reg}', f'r{STKPTR}', addr), comment = f'Restore `{name}` into r{reg}'+' <- '+comment)
         self.regs[reg] = name
 
     @TrackLine
@@ -212,7 +228,7 @@ class State:
             if v in tar.regs:
                 if v in self.regs and tar.regs.index(v) == self.regs.index(v):
                     continue
-                self.M_EvictReplace(buf, v, tar.regs.index(v))
+                self.M_EvictReplace(buf, v, tar.regs.index(v), comment = f'Change of State, move `{v}` int r{tar.regs.index(v)}')
 
     @TrackLine
     def M_ChangeState(self, buf, lbl, cond):
@@ -221,6 +237,10 @@ class State:
 ##    @TrackLine
 ##    def M_RevChangeState(self, buf, lbl):
 ##        buf.append({'name':'CHANGE', 'old': lbl[:-1], 'tar': self.Copy()})
+
+    @TrackLine
+    def M_AddComment(self, buf, comment):
+        buf.append({'name': 'COMMENT', 'comment': comment})
 
     @TrackLine
     def M_AddPent(self, buf, op, args, mods = [], comment = None):
@@ -312,13 +332,17 @@ class State:
         return ('reg', reg)
 
     @TrackLine
-    def I_Decl(self, name):
+    def I_Decl(self, name, fresh = True):
         for loc in countup:
             if loc not in self.stk.values():
                 self.stk[name] = loc
-                self.fresh.append(name)
+                if fresh:
+                    self.fresh.append(name)
                 self.I_UpdateTopOfStack()
                 return
+
+    def RegOf(self, name):
+        return self.regs.index(name)
 
     @TrackLine
     def I_UpdateTopOfStack(self):
@@ -357,6 +381,7 @@ class Asm:
         self.nextline = 0
         self.stitched = False
         self.froms = {}
+        self.comms = {}
     def Copy(self):
         nasm = Asm()
         nasm.body = self.body[:]
@@ -366,11 +391,13 @@ class Asm:
         nasm.nextline = self.nextline
         nasm.stitched = self.stitched
         nasm.froms = self.froms
+        nasm.comms = self.comms
         return nasm
     def __repr__(self):
         o=''
         if len(self.body) > 0:
             lbls = sorted(self.lbls.items(), key = lambda x: x[1])
+            comms = sorted(self.comms.items(), key = lambda x: x[1])
             sortkey = (lambda x: x['loc']) if self.stitched else (lambda x: x['vloc'])
             for line in sorted(self.body, key = sortkey):
                 oline = ''
@@ -395,6 +422,13 @@ class Asm:
                             o += ':\n'
                             
                             del lbls[0]
+                        else:
+                            break
+                for comm, loc in comms[:]:
+                    if addrkey in line:
+                        if loc <= line[addrkey]:
+                            o += ' '*100 + f'\t//{comm}\n'
+                            del comms[0]
                         else:
                             break
                 oline += f'{str(line.get("src", "????")).zfill(4)} {"v"*(not self.stitched)}{addr[:2]} {addr[2:]}:  {op.ljust(12)}{args}'
@@ -433,6 +467,7 @@ class Asm:
         #error_loc_lines
         nxl = 0
         svlbls = sorted(self.lbls.items(), key = lambda x: x[1])
+        scomms = sorted(self.comms.items(), key = lambda x: x[1])
         for line in self.body:
             assert 'vloc' in line, f'Could not fine `vloc` in {line}'
             vloc = line['vloc']
@@ -443,6 +478,12 @@ class Asm:
                     del svlbls[0]
                 else:
                     break
+            for comm, tvloc in scomms[:]:
+                if tvloc <= vloc:
+                    self.comms[comm] = line['loc']
+                    del scomms[0]
+                else:
+                    break
             assert 'eximm' in line, f'Could not fine `eximm` in {line}'
             nxl += 64 if line['eximm'] else 32
         assert len(svlbls) == 0, f'Svlbls != [], {svlbls}'
@@ -451,9 +492,11 @@ class Asm:
 
     def AddLabel(self, lbl):
         self.lbls[lbl] = len(self.body)
+    def AddComment(self, comm):
+        self.comms[comm] = len(self.body)
 
 numRegs = 32 - 3 #1 for stk ptr, 2 for scratch regs
-##numRegs = 1 #### Just for testing swapping and stuff
+numRegs = 3 #### Just for testing swapping and stuff
 STKPTR = 31
 TEMP_0 = 30
 TEMP_1 = 29
@@ -491,6 +534,7 @@ def Lower(llir):
     state = State()
 
     for func in llir.funcs:
+        state = State()
         if func['name'] == 'Main':
             buf = []
             state.M_AddPent(buf, 'mov', ['r31', 1], [])
@@ -511,10 +555,12 @@ def Lower(llir):
                 cmd = line[0]
                 if cmd == 'decl':
                     state.I_Decl(line[1])
+                    state.M_AddComment(buf, f'Declare `{line[1]}`')
                 elif cmd == 'final':
                     state.I_Final(line[1])
                 elif cmd == 'undecl':
                     state.I_Undecl(line[1])
+                    state.M_AddComment(buf, f'Undeclare `{line[1]}`')
                 elif cmd == 'nodecl':
                     state.I_Decl(line[1])
                     state.I_Final(line[1])
@@ -527,16 +573,18 @@ def Lower(llir):
                     elif op == 'argpsh':
                         name = line[1][2]
                         loc = line[1][1]
-                        state.M_EvictReplace(buf, name, loc, comment = f'Arg Push: {" ".join([str(x) for x in line[1][1:] if x != None])}')
+                        state.M_EvictReplace(buf, name, loc, comment = f'Arg Push: {" ".join([str(x) for x in line[1][1:] if x != None])}', noMove = True)
                     elif op == 'retpop':
                         name = line[1][1]
                         loc = line[1][2]
                         state.I_Rename(name, loc)
+                        state.M_AddComment(buf, f'Pop return `{name}` = r{loc}')
                     elif op == 'argpop':
                         name = line[1][1]
                         loc = line[1][2]
-                        state.I_Decl(name)
+                        state.I_Decl(name, fresh = False)
                         state.I_Rename(name, loc)
+                        state.M_AddComment(buf, f'Pop arg `{name}` = r{loc}')
                     elif op == 'call':
                         arg = line[1][1]
                         state.I_UpdateTopOfStack()
@@ -544,6 +592,7 @@ def Lower(llir):
                         state.M_AddPent(buf, 'call', [arg+':'], [])
                         state.M_AddPent(buf, 'sub', [f'r{STKPTR}', f'r{STKPTR}', state.topofstk], [], comment = f'Return Stack Pointer from `{arg}`')
                         state.I_ClearRegs()
+                        state.M_AddComment(buf, f'Clear Registers')
                     else:
                         args = line[1][1:]
                         mods = line[2]
@@ -590,6 +639,8 @@ def Lower(llir):
             Debug(buf = buf)
             nasm.Addlines(buf)
 ##            nbd.extend(buf)
+        elif line['name'] == 'COMMENT':
+            nasm.AddComment(line['comment'])
         else:
             nasm.Addline(line)
 ##            nbd.append(line)
