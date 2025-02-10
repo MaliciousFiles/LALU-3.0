@@ -159,11 +159,11 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1111'),
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
 
-    'and':   PSEUDO(3, 'bit @0, @1, @2, #0b0001'),
-    'or':    PSEUDO(3, 'bit @0, @1, @2, #0b0111'),
+    'and':   PSEUDO(3, 'bit @0, @1, @2, #0b1000'),
+    'or':    PSEUDO(3, 'bit @0, @1, @2, #0b1110'),
     'xor':   PSEUDO(3, 'bit @0, @1, @2, #0b0110'),
-    'andn':  PSEUDO(3, 'bit @0, @1, @2, #0b0100'),
-    'orn':   PSEUDO(3, 'bit @0, @1, @2, #0b1101'),
+    'andn':  PSEUDO(3, 'bit @0, @1, @2, #0b0010'),
+    'orn':   PSEUDO(3, 'bit @0, @1, @2, #0b1011'),
     'nxor':  PSEUDO(3, 'bit @0, @1, @2, #0b1001'),
     'bit':   Q_CODE(Fmt_Code = '001', Func_ID = '0000'),
 
@@ -513,7 +513,7 @@ def UnpackHex(instr):
 
 def Macro_BIT(expr):
     rexpr = expr
-    cases = ['00', '01', '10', '11'][::-1]
+    cases = ['00', '01', '10', '11']
     tab = 0
     for case in cases:
         expr = rexpr
