@@ -144,7 +144,7 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'umin':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0010'),
     'smax':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0011'),
     'smin':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_0100'),
-    'any':   T_CODE(Fmt_Code = '000', Func_ID = '0_0000_1000'),
+    'any':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1000'),
     'log':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0101'),
     'ctz':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0110'),
     'pcnt':  S_CODE(Fmt_Code = '000', Func_ID = '0_0001_0111'),
@@ -156,6 +156,9 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'bext':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1100'),
     'bdep':  T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1101'),
     'exs':   T_CODE(Fmt_Code = '000', Func_ID = '0_0001_1110'),
+    'vlb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1010'),
+    'vhb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1011'),
+    'dab':   S_CODE(Fmt_Code = '000', Func_ID = '0_0001_1100'),
     'lsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1111'),
     'hsb':   S_CODE(Fmt_Code = '000', Func_ID = '0_0000_1001'),
 
@@ -392,6 +395,7 @@ def ParseDataLine(line):
                     del stk[-1]
                     tc = stk[-2]
                 del stk[-2]
+                stk[-1] = Binary(0, 8) + stk[-1]
             else:
                 stk.append(Binary(ord(c), 8))
         else:
@@ -453,6 +457,7 @@ def ParseFile(file):
                     args = [ParseValue(x.lstrip(' \t').rstrip(' \t')) for x in line.split(',')] if line != '' else []
                     ret = PrepInstr(tkn[1][0], args, tkn[1][1])
                     ret['loc'] = addr
+                    ret['line'] = oline
                     addr += 64 if ret['eximm'] else 32
                     codes.append(ret)
             elif segment == '.DATA':
@@ -475,8 +480,12 @@ def ParseFile(file):
             raise e
 ##    print(codes, lbls)
     out = []
+    lblsinv = {v:k for k,v in lbls.items()}
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
+        if code['loc'] in lblsinv:
+            print(f"\t{lblsinv[code['loc']]}:")
+        print(f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}")
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
@@ -545,7 +554,7 @@ def Macro_BIT(expr):
         assert expr in ['1', '0'], f'While resolving `{rexpr}` under case a={case[0]}, b={case[1]}, got result `{expr}` which is not valid'
         tab = 2*tab + int(expr)
     return tab
-            
+
 
 inp = None
 
@@ -589,8 +598,6 @@ if __name__ == "__main__":
                             if os.path.exists("../.sim/Icarus Verilog-sim"):
                                 with open(f'../.sim/Icarus Verilog-sim/RAM.mif', 'w') as f2:
                                     f2.write(program)
-                                    print('Wrote:\n\n')
-                                    print(program)
                             else:
                                 print(program)
                                 pyperclip.copy(program)

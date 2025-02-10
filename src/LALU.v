@@ -47,6 +47,9 @@ module LALU(input CLOCK_50,
     parameter BEXT				= 9'b0_0001_1100;
     parameter BDEP				= 9'b0_0001_1101;
     parameter EXS				= 9'b0_0001_1110;
+    parameter VLB               = 9'b0_0001_1010;
+    parameter VHB               = 9'b0_0001_1011;
+    parameter DAB               = 9'b0_0001_1100;
     parameter LSB				= 9'b0_0000_1111;
     parameter HSB	            = 9'b0_0000_1001;
     
@@ -91,6 +94,7 @@ module LALU(input CLOCK_50,
     parameter GCLD				= 9'b1_1111_1111;
     parameter SUSP				= 9'b1_1111_1111;
 
+
     /*********************
      * Branch Predictor  *
      *********************/
@@ -100,10 +104,9 @@ module LALU(input CLOCK_50,
         .IP_f(IP_f),
         .wouldExecute(run && ~stall_e && ~executiveOverride && isValid_d),
         .expectedIP(expectedIP),
-        .willJump(format == JMP),
-        .didJump(format == JMP && ~(conditional && generalFlag == negate));
-        .prediction(prediction);
-    )
+        .wasJump(format == JMP),
+        .didJump(format == JMP && ~(conditional && generalFlag == negate)),
+        .prediction(prediction));
 
 
     /*********************
@@ -203,7 +206,13 @@ module LALU(input CLOCK_50,
      *********************/
     wire [31:0] FULL = 32'hFFFFFFFF;
     reg [31:0] VADD_MASKS [0:31];
-    initial for (i = 1; i < 32; i = i + 1) for (j = i; j < 32; j = j + i) VADD_MASKS[i][j] = 1'b1;
+    reg [31:0] VSUB_MASKS [0:31];
+    initial for (i = 1; i < 32; i = i + 1) begin
+        VADD_MASKS[i] = 32'b0;
+        VSUB_MASKS[i] = 32'b0;
+        for (j = i-1; j < 32; j = j + i) VADD_MASKS[i][j] = 1'b1;
+        for (j = 0; j < 32; j = j + i) VSUB_MASKS[i][j] = 1'b1;
+    end
 
     /*********************
      *     Registers     *
@@ -343,7 +352,7 @@ module LALU(input CLOCK_50,
     /*********************
      *       Fetch       *
      *********************/
-    assign fetchAddress = curFormat == JMP && (~conditional || prediction) ? jumpTo : IP; // fetch address is the current instruction pointer
+    assign fetchAddress = isValid_f && curFormat == JMP && (~conditional_d || prediction) ? jumpTo : IP; // fetch address is the current instruction pointer
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
@@ -360,8 +369,8 @@ module LALU(input CLOCK_50,
     /*********************
      *       Decode      *
      *********************/
-    wire jumpTo = instruction[25:5];
-    wire conditional = instruction[31];
+    wire [15:0] jumpTo = instruction[25:5];
+    wire conditional_d = instruction[31];
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
     always @(posedge CLOCK_50) if (run) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
@@ -371,7 +380,7 @@ module LALU(input CLOCK_50,
 
         // Universal
         format <= curFormat;
-        conditional <= conditional;
+        conditional <= conditional_d;
         negate <= instruction[30];
         sticky_d <= instruction[29];
 
@@ -477,15 +486,8 @@ module LALU(input CLOCK_50,
         : registers[Rd_d];
 
     // have to bring these out since the result is used for setting CF and OF
-    wire [32:0] sum  = Rs0 + Rs1, sum_carry  = Rs0 + Rs1 + CF, sum_shift = Rs0 + (Rs1 << Rs2), sum_right_shift = Rs0 + (Rs1 >> Rs2);
-    wire [32:0] diff = Rs0 - Rs1, diff_carry = Rs0 - Rs1 + CF;
-
-    // bring out flags for diff calc, since all comparisons use them
-    wire [32:0] cmp = Rs1 - Rs0;
-    wire cmp_NF = cmp[31];
-    wire cmp_OF = Rs0[31] != Rs1[31] && Rs1[31] != cmp[31];
-    wire cmp_CF = cmp[32];
-    wire cmp_ZF = cmp == 0;
+    wire [32:0] sum  = Rs0 + Rs1, sum_carry  = Rs0 + Rs1 + exec_CF, sum_shift = Rs0 + (Rs1 << Rs2), sum_right_shift = Rs0 + (Rs1 >> Rs2);
+    wire [32:0] diff = Rs0 - Rs1, diff_carry = Rs0 - Rs1 + exec_CF;
 
     // bring out flags for all flag get instructions, with passthru
     wire exec_NF = sticky_e && isWriteback_e ? result_e[31]
@@ -702,6 +704,17 @@ module LALU(input CLOCK_50,
                             ? (Rs0[Rs1] ? 32'hFFFFFFFF << Rs1 : 32'b0) | ((64'hFFFFFFFF << Rs1 >> 31) & Rs0)
                         : Rs0;
                     end
+                    VLB: begin
+                        result_e <= VSUB_MASKS[Rs0 == 0 ? 1 : Rs0 < 32 ? Rs0 : 31];
+                    end
+                    VHB: begin
+                        result_e <= VADD_MASKS[Rs0 == 0 ? 1 : Rs0 < 32 ? Rs0 : 31];
+                    end
+                    DAB: begin
+                        for (i = 0; i < 32; i += 4) begin
+                            result_e[i +: 3] <= Rs0[i +: 3] + (Rs0[i +: 3] > 4 ? 3 : 0);
+                        end
+                    end
                     LSB: begin
                         result_e <= Rs0 & -Rs0;
                     end
@@ -732,34 +745,34 @@ module LALU(input CLOCK_50,
                     end
                     RSTKEY: begin end
                     UGT: begin
-                        generalFlag <= cmp_CF && !cmp_ZF;
+                        generalFlag <= Rs0 > Rs1;
                     end
                     UGE: begin
-                        generalFlag <= cmp_CF;
+                        generalFlag <= Rs0 >= Rs1;
                     end
                     ULT: begin
-                        generalFlag <= ~cmp_CF;
+                        generalFlag <= Rs0 < Rs1;
                     end
                     ULE: begin
-                        generalFlag <= ~cmp_CF || ~cmp_ZF;
+                        generalFlag <= Rs0 <= Rs1;
                     end
                     SGT: begin
-                        generalFlag <= ~cmp_ZF && cmp_NF == cmp_OF;
+                        generalFlag <= Rs0[31] == Rs1[31] == (Rs0 > Rs1);
                     end
                     SGE: begin
-                        generalFlag <= cmp_NF == cmp_OF;
+                        generalFlag <= Rs0[31] == Rs1[31] == (Rs0 >= Rs1);
                     end
                     SLT: begin
-                        generalFlag <= cmp_NF != cmp_OF;
+                        generalFlag <= Rs0[31] == Rs1[31] == (Rs0 < Rs1);
                     end
                     SLE: begin
-                        generalFlag <= cmp_ZF || cmp_NF != cmp_OF;
+                        generalFlag <= Rs0[31] == Rs1[31] == (Rs0 <= Rs1);
                     end
                     EQ: begin
-                        generalFlag <= cmp_ZF;
+                        generalFlag <= Rs0 == Rs1;
                     end
                     NE: begin
-                        generalFlag <= ~cmp_ZF;
+                        generalFlag <= Rs0 != Rs1;
                     end
                     NF: begin
                         generalFlag <= exec_NF;
@@ -797,9 +810,9 @@ module LALU(input CLOCK_50,
                     VADD: begin
                         result_e <= ((Rs0 & ~VADD_MASKS[Rs2]) + (Rs1 & ~VADD_MASKS[Rs2])) ^ ((Rs0 & VADD_MASKS[Rs2]) ^ (Rs1 & VADD_MASKS[Rs2]));
                     end
-//                    VSUB: begin // TODO: ask grant lol
-//
-//                    end
+                    VSUB: begin
+                        result_e <= ((Rs0 &~ VADD_MASKS[Rs2]) + (~Rs1 &~ VADD_MASKS[Rs2]) + VSUB_MASKS[Rs2]) ^ ((Rs0 & VADD_MASKS[Rs2]) ^ (~Rs1 & VADD_MASKS[Rs2]));
+                    end
                     ADDS: begin
                         result_e <= sum_shift;
                         carryFlag_e <= sum_shift[32];
@@ -811,7 +824,7 @@ module LALU(input CLOCK_50,
                         overflowFlag_e <= (Rs0[31] == Rs1[31] && Rs0[31] != sum_right_shift[31]);
                     end
                     BIT: begin
-                        for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[~{Rs1[i], Rs0[i]}];
+                        for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[{Rs1[i], Rs0[i]}];
                     end
                     LD: begin
                         memAccessAddress_e <= sum[20:5];
