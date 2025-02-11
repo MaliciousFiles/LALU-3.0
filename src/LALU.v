@@ -562,7 +562,7 @@ module LALU(input CLOCK_50,
                     end
                     CSUB: begin
                         result_e <= Rs1 <= Rs0 ? diff : Rs0;
-                        overflowFlag_e <= Rs1 > Rs0;
+                        carryFlag_e <= Rs1 > Rs0;
                     end
                     MUL: begin
                         result_e <= Rs0[15:0] * Rs1[15:0];

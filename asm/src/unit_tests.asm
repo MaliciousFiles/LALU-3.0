@@ -302,7 +302,7 @@ main:
     call    assert:
 
     // test BRR                         [36]
-    brl.e   R30, #0b10101010111101010110111100010111, #12
+    brr.e   R30, #0b10101010111101010110111100010111, #12
     mov.e   R29, #0b11110001011110101010111101010110
     call    assert:
 
@@ -438,21 +438,21 @@ after:
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test ULE - pos/neg               [50]
+    // test ULE - pos/neg               [4A]
     mov.e   R30, #0b10110101010001110111110
     ule.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test ULE - neg/neg               [51]
+    // test ULE - neg/neg               [4B]
     mov.e   R30, #0b11011010101001001010001110111110
     ule.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test ULE - equal                 [52]
+    // test ULE - equal                 [4C]
     mov.e   R30, #0b11011010101001001010001110111110
     ule.e   R30, #0b11011010101001001010001110111110
     c.mov   R30, #1
@@ -460,28 +460,28 @@ after:
     mov     R29, #1
     call    assert:
 
-    // test SGT - pos/pos               [53]
+    // test SGT - pos/pos               [4D]
     mov.e   R30, #0b10110101010001110111110
     sgt.e   R30, #0b1010101011010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test SGT - pos/neg               [54]
+    // test SGT - pos/neg               [4E]
     mov.e   R30, #0b10110101010001110111110
     sgt.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test SGT - neg/neg               [55]
+    // test SGT - neg/neg               [4F]
     mov.e   R30, #0b11011010101001001010001110111110
     sgt.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test SGT - equal                 [56]
+    // test SGT - equal                 [50]
     mov.e   R30, #0b11011010101001001010001110111110
     sgt.e   R30, #0b11011010101001001010001110111110
     c.mov   R30, #1
@@ -489,28 +489,28 @@ after:
     mov     R29, #0
     call    assert:
     
-    // test SGE - pos/pos               [57]
+    // test SGE - pos/pos               [51]
     mov.e   R30, #0b10110101010001110111110
     sge.e   R30, #0b1010101011010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test SGE - pos/neg               [58]
+    // test SGE - pos/neg               [52]
     mov.e   R30, #0b10110101010001110111110
     sge.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test SGE - neg/neg               [59]
+    // test SGE - neg/neg               [53]
     mov.e   R30, #0b11011010101001001010001110111110
     sge.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test SGE - equal                 [5A]
+    // test SGE - equal                 [54]
     mov.e   R30, #0b11011010101001001010001110111110
     sge.e   R30, #0b11011010101001001010001110111110
     c.mov   R30, #1
@@ -518,28 +518,28 @@ after:
     mov     R29, #1
     call    assert:
     
-    // test SLT - pos/pos               [5B]
+    // test SLT - pos/pos               [55]
     mov.e   R30, #0b10110101010001110111110
     slt.e   R30, #0b1010101011010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test SLT - pos/neg               [5C]
+    // test SLT - pos/neg               [56]
     mov.e   R30, #0b10110101010001110111110
     slt.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test SLT - neg/neg               [5D]
+    // test SLT - neg/neg               [57]
     mov.e   R30, #0b11011010101001001010001110111110
     slt.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test SLT - equal                 [5E]
+    // test SLT - equal                 [58]
     mov.e   R30, #0b11011010101001001010001110111110
     slt.e   R30, #0b11011010101001001010001110111110
     c.mov   R30, #1
@@ -547,28 +547,28 @@ after:
     mov     R29, #0
     call    assert:
     
-    // test SLE - pos/pos               [5F]
+    // test SLE - pos/pos               [59]
     mov.e   R30, #0b10110101010001110111110
     sle.e   R30, #0b1010101011010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test SLE - pos/neg               [60]
+    // test SLE - pos/neg               [5A]
     mov.e   R30, #0b10110101010001110111110
     sle.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test SLE - neg/neg               [61]
+    // test SLE - neg/neg               [5B]
     mov.e   R30, #0b11011010101001001010001110111110
     sle.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test SLE - equal                 [62]
+    // test SLE - equal                 [5C]
     mov.e   R30, #0b11011010101001001010001110111110
     sle.e   R30, #0b11011010101001001010001110111110
     c.mov   R30, #1
@@ -576,14 +576,14 @@ after:
     mov     R29, #1
     call    assert:
 
-    // test EQ - equal                  [63]
+    // test EQ - equal                  [5D]
     mov.e   R30, #0b10110101010001110111110
     eq.e    R30, #0b10110101010001110111110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test EQ - not equal              [64]
+    // test EQ - not equal              [5E]
     mov.e   R30, #0b10110101010001110111110
     eq.e    R30, #0b01010101111010101010010
     c.mov   R30, #1
@@ -591,14 +591,14 @@ after:
     mov     R29, #0
     call    assert:
 
-    // test NE - equal                  [65]
+    // test NE - equal                  [5F]
     mov.e   R30, #0b10110101010001110111110
     eq.e    R30, #0b10110101010001110111110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
-    // test NE - not equal              [66]
+    // test NE - not equal              [60]
     mov.e   R30, #0b10110101010001110111110
     eq.e    R30, #0b01010101111010101010010
     c.mov   R30, #1
@@ -606,27 +606,27 @@ after:
     mov     R29, #1
     call    assert:
 
-    // test NF - neg                    [67]
+    // test NF - neg                    [61]
     mov.e   R30, #0b10000100110101010001111110111110
     nf
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
-    // test NF - pos                    [68]
+    // test NF - pos                    [62]
     mov.e   R30, #0b00000100110101010001111110111110
     nf
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
 
-    // test ZF - zero                   [69]
+    // test ZF - zero                   [63]
     mov     R30, #0
     zf
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
-    // test ZF - non-zero               [6A]
+    // test ZF - non-zero               [64]
     mov     R30, #1
     zf
     c.mov   R30, #1
@@ -634,17 +634,17 @@ after:
     mov     R29, #0
     call    assert:
 
-    // test VLB                         [6B]
+    // test VLB                         [65]
     vlb     R30, #6
     mov.e   R29, #0b10000010000010000001000001000001
     call    assert:
 
-    // test VHB                         [6C]
+    // test VHB                         [66]
     vhb     R30, #6
     mov.e   R29, #0b00100000100000100000100000100000
     call    assert:
 
-    // test DAB                         [6D]
+    // test DAB                         [67]
     dab.e   R30, #0b00100101011010100110
     mov.e   R29, #0b00101000100111011001
     call    assert:
