@@ -261,15 +261,15 @@ main:
     call    assert:
 
     // test CSUB (subtract)             [2D]
-    csub    R30, #30, #15
+    csub.s  R30, #30, #15
     mov     R29, #15
     call    assert:
-    // test CSUB (subract) - CF         [2E]
+    // test CSUB (subtract) - CF        [2E]
     radd    R30, #0, #0
     mov     R29, #0
     call    assert:
     // test CSUB (don't subtract)       [2F]
-    csub    R30, #4, #12
+    csub.s  R30, #4, #12
     mov     R29, #4
     call    assert:
     // test CSUB (don't subtract) - CF  [30]
@@ -319,13 +319,14 @@ main:
     mov.e   R30,      #0b11000010101111010100010101000010
     bit.e   R30, R30, #0b10101010111101010110111100010111, #0b1010
     mov.e   R29,      #0b11000010101111010100010101000010
+    call    assert:
 
     // test STW/LDW                     [3A]
     mov.e   R5, #0b1010101011010100110
     stw     R5, R5, #0b11010     // should set mem[R5+1] to 0b1010101011010100110
     mov.e   R5, #0b1010101011010101011
     ldw     R30, R5, #0b10101
-    mov.e   R29, #0b11010100
+    mov.e   R29, #0b1010101011010100110
     call    assert:
 
     // test MOV                         [3B]
@@ -479,7 +480,7 @@ after:
     sgt.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
-    mov     R29, #0
+    mov     R29, #1
     call    assert:
     // test SGT - equal                 [50]
     mov.e   R30, #0b11011010101001001010001110111110
@@ -508,7 +509,7 @@ after:
     sge.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
-    mov     R29, #0
+    mov     R29, #1
     call    assert:
     // test SGE - equal                 [54]
     mov.e   R30, #0b11011010101001001010001110111110
@@ -537,7 +538,7 @@ after:
     slt.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
-    mov     R29, #1
+    mov     R29, #0
     call    assert:
     // test SLT - equal                 [58]
     mov.e   R30, #0b11011010101001001010001110111110
@@ -566,7 +567,7 @@ after:
     sle.e   R30, #0b11010101011010101010101010100110
     c.mov   R30, #1
     cn.mov  R30, #0
-    mov     R29, #1
+    mov     R29, #0
     call    assert:
     // test SLE - equal                 [5C]
     mov.e   R30, #0b11011010101001001010001110111110
@@ -593,41 +594,43 @@ after:
 
     // test NE - equal                  [5F]
     mov.e   R30, #0b10110101010001110111110
-    eq.e    R30, #0b10110101010001110111110
+    ne.e    R30, #0b10110101010001110111110
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
     call    assert:
     // test NE - not equal              [60]
     mov.e   R30, #0b10110101010001110111110
-    eq.e    R30, #0b01010101111010101010010
+    ne.e    R30, #0b01010101111010101010010
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
 
     // test NF - neg                    [61]
-    mov.e   R30, #0b10000100110101010001111110111110
+    mov.e.s R30, #0b10000100110101010001111110111110
     nf
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
+    call    assert:
     // test NF - pos                    [62]
-    mov.e   R30, #0b00000100110101010001111110111110
+    mov.e.s R30, #0b00000100110101010001111110111110
     nf
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #0
+    call    assert:
 
     // test ZF - zero                   [63]
-    mov     R30, #0
+    mov.s   R30, #0
     zf
     c.mov   R30, #1
     cn.mov  R30, #0
     mov     R29, #1
     call    assert:
     // test ZF - non-zero               [64]
-    mov     R30, #1
+    mov.s   R30, #1
     zf
     c.mov   R30, #1
     cn.mov  R30, #0
@@ -636,7 +639,7 @@ after:
 
     // test VLB                         [65]
     vlb     R30, #6
-    mov.e   R29, #0b10000010000010000001000001000001
+    mov.e   R29, #0b01000001000001000001000001000001
     call    assert:
 
     // test VHB                         [66]
@@ -746,7 +749,7 @@ loop:
     sub     R14, R14, #4
 
     csub.s  R13, R13, #10
-    of
+    cf
     c.add.e R13, R13, #48
     cn.add.e R13, R13, #65
 

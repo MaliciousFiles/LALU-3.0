@@ -207,11 +207,15 @@ module LALU(input CLOCK_50,
     wire [31:0] FULL = 32'hFFFFFFFF;
     reg [31:0] VADD_MASKS [0:31];
     reg [31:0] VSUB_MASKS [0:31];
-    initial for (i = 1; i < 32; i = i + 1) begin
-        VADD_MASKS[i] = 32'b0;
-        VSUB_MASKS[i] = 32'b0;
-        for (j = i-1; j < 32; j = j + i) VADD_MASKS[i][j] = 1'b1;
-        for (j = 0; j < 32; j = j + i) VSUB_MASKS[i][j] = 1'b1;
+    initial begin
+        VADD_MASKS[0] = 32'b10000000000000000000000000000000;
+        VSUB_MASKS[0] = 32'b00000000000000000000000000000001;
+        for (i = 1; i < 32; i = i + 1) begin
+            VADD_MASKS[i] = 32'b0;
+            VSUB_MASKS[i] = 32'b0;
+            for (j = i-1; j < 32; j = j + i) VADD_MASKS[i][j] = 1'b1;
+            for (j = 0; j < 32; j = j + i) VSUB_MASKS[i][j] = 1'b1;
+        end
     end
 
     /*********************
@@ -705,14 +709,14 @@ module LALU(input CLOCK_50,
                         : Rs0;
                     end
                     VLB: begin
-                        result_e <= VSUB_MASKS[Rs0 == 0 ? 1 : Rs0 < 32 ? Rs0 : 31];
+                        result_e <= VSUB_MASKS[Rs0 & 32'h1F];
                     end
                     VHB: begin
-                        result_e <= VADD_MASKS[Rs0 == 0 ? 1 : Rs0 < 32 ? Rs0 : 31];
+                        result_e <= VADD_MASKS[Rs0 & 32'h1F];
                     end
                     DAB: begin
                         for (i = 0; i < 32; i += 4) begin
-                            result_e[i +: 3] <= Rs0[i +: 3] + (Rs0[i +: 3] > 4 ? 3 : 0);
+                            result_e[i +: 4] <= Rs0[i +: 4] + (Rs0[i +: 4] > 4 ? 3 : 0);
                         end
                     end
                     LSB: begin
@@ -808,10 +812,10 @@ module LALU(input CLOCK_50,
             end else if (format == WB_QUAD) begin
                 case (funcID)
                     VADD: begin
-                        result_e <= ((Rs0 & ~VADD_MASKS[Rs2]) + (Rs1 & ~VADD_MASKS[Rs2])) ^ ((Rs0 & VADD_MASKS[Rs2]) ^ (Rs1 & VADD_MASKS[Rs2]));
+                        result_e <= ((Rs0 & ~VADD_MASKS[Rs2 & 32'h1F]) + (Rs1 & ~VADD_MASKS[Rs2 & 32'h1F])) ^ ((Rs0 & VADD_MASKS[Rs2 & 32'h1F]) ^ (Rs1 & VADD_MASKS[Rs2 & 32'h1F]));
                     end
                     VSUB: begin
-                        result_e <= ((Rs0 &~ VADD_MASKS[Rs2]) + (~Rs1 &~ VADD_MASKS[Rs2]) + VSUB_MASKS[Rs2]) ^ ((Rs0 & VADD_MASKS[Rs2]) ^ (~Rs1 & VADD_MASKS[Rs2]));
+                        result_e <= ((Rs0 &~ VADD_MASKS[Rs2 & 32'h1F]) + (~Rs1 &~ VADD_MASKS[Rs2 & 32'h1F]) + VSUB_MASKS[Rs2 & 32'h1F]) ^ ((Rs0 & VADD_MASKS[Rs2 & 32'h1F]) ^ (~Rs1 & VADD_MASKS[Rs2 & 32'h1F]));
                     end
                     ADDS: begin
                         result_e <= sum_shift;
