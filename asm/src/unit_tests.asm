@@ -249,9 +249,9 @@ main:
     call    assert:
 
     // test ADDS                        [2B]
-    mov     R30, #30
-    adds.e  R30, R30, #3480912, #16
-    mov.e   R29, #228125048862
+    mov.e   R30, #38012384
+    adds.e  R30, R30, #3480912, #10
+    mov.e   R29, #3602466272
     call    assert:
 
     // test ADDRS                       [2C]
