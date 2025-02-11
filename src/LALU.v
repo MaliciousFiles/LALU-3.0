@@ -715,7 +715,7 @@ module LALU(input CLOCK_50,
                         result_e <= VADD_MASKS[Rs0 & 32'h1F];
                     end
                     DAB: begin
-                        for (i = 0; i < 32; i += 4) begin
+                        for (i = 0; i < 32; i = i + 4) begin
                             result_e[i +: 4] <= Rs0[i +: 4] + (Rs0[i +: 4] > 4 ? 3 : 0);
                         end
                     end
