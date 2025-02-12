@@ -3,6 +3,7 @@
 // R29 = expected value
 // R28 = VGA write sector
 // R27 = VGA write index
+    mov     R28, #2
 jmp main:
 
 .DATA
@@ -668,6 +669,10 @@ assert:
 
 print_debug:
     bsl     R27, R28, #5
+    bsf.s   R28, R28, #0, #1
+    zf
+    c.add   R27, R27, #3
+
     add     R28, R28, #1
 
     mov.e   R15, I_MSG:
