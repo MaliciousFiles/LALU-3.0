@@ -11,7 +11,7 @@ module predictor (
     parameter LOCAL_BIT_IDX     = 5;
 
     parameter GLOBAL_HIST_LEN   = 12;
-    parameter GLOBAL_BIT_IDX    = 12;
+    parameter GLOBAL_BIT_IDX    = 10;
 
     parameter META_BIT_IDX      = 10;
 
