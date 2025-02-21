@@ -18,6 +18,7 @@ diagnostics = {
     '*': 'DISABLE',
     'M_Use': 'ENABLE',
     'fresh': 'ENABLE',
+    'Print': 'ALWAYS',
     #'M_Use::misc': 'DISABLE',
 }
 
@@ -60,7 +61,8 @@ def Debug(**kwargs):
         line = __CALL_LINE__()
         trueprint(f'{name}::{kind}::{line}{cmsg}\n')
         
-                
+def print(*args):
+    Debug(Print = [*args])        
 
 srcs = []
 def TrackLine(func):
@@ -292,18 +294,27 @@ class State:
                 self.M_Use(buf, c[0])
             else:
                 assert False, f'C: `{c}` > `{argtypes}`'
+        print(op, args, c)
         for x, kind in zip(c, argtypes):
             if x != None:
                 if self.IsVar(x):
-                    if kind == 'Rd' and (x in self.finals or x in self.expvars) and not hassideeffects:
-                        if x in self.stk:
-                            del self.stk[x]
-                        Debug(optimization = f'Skipping line due to expired destination {(op, c, mods)}')
-                        return
-                    x = self.M_Use(buf, x)
+                    if x[-2:] == '.&':
+##                        x = x[:-2]
+                        treg = self.M_PushTempSum(buf, tps, self.AddrOf(x[:-2]), f'r{STKPTR}', comment = f'Compute address of {x[:-2]}')
+                        args.append(treg)
+                        tps += 1
+                        x = f'r{treg[1]}'
+                    else:
+                        if kind == 'Rd' and (x in self.finals or x in self.expvars) and not hassideeffects:
+                            if x in self.stk:
+                                del self.stk[x]
+                            Debug(optimization = f'Skipping line due to expired destination {(op, c, mods)}')
+                            return
+                        x = self.M_Use(buf, x)
                 elif kind[:2] == 'Rs':
                     j = int(kind[2])
                     build[f'i{j}'] = True
+##                assert x != 0, f'{x=}, {kind=}, {c=}'
                 if MinBitsOf(x) > width:
                     if not eximm:
                         eximm = True
@@ -333,9 +344,15 @@ class State:
         self.finals = {}
 
     @TrackLine
-    def M_PushTemp(buf, self, loc, x):
+    def M_PushTemp(self, buf, loc, x, comment = ''):
         reg = TEMP_0 if loc == 0 else TEMP_1
-        self.M_AddPent(buf, 'mov', [f'r{loc}', x], ['.e'])
+        self.M_AddPent(buf, 'mov', [f'r{reg}', x], ['.e'], comment = comment)
+        return ('reg', reg)
+
+    @TrackLine
+    def M_PushTempSum(self, buf, loc, x, y, comment = ''):
+        reg = TEMP_0 if loc == 0 else TEMP_1
+        self.M_AddPent(buf, 'add', [f'r{reg}', x, y], ['.e'], comment = comment)
         return ('reg', reg)
 
     @TrackLine
@@ -357,6 +374,8 @@ class State:
 
     @TrackLine
     def IsVar(self, name):
+        if type(name) == str and name[-2:] == '.&':
+            return True
         return name in self.stk or name in self.finals or name in self.expvars
 
 def Coi(x):
@@ -503,14 +522,16 @@ class Asm:
         self.comms[comm] = len(self.body)
 
 numRegs = 32 - 3 #1 for stk ptr, 2 for scratch regs
-numRegs = 3 #### Just for testing swapping and stuff
+##numRegs = 3 #### Just for testing swapping and stuff
 STKPTR = 31
 TEMP_0 = 30
 TEMP_1 = 29
 
 def MinBitsOf(x):
     if type(x) == str:
-        if x[0]=='r':
+        if x[-2:] == '.&':
+            return 24
+        elif x[0]=='r':
             return 5
         elif x[-1] == ':':
             return 24
@@ -520,6 +541,8 @@ def MinBitsOf(x):
 
 def TypeOf(x):
     if type(x) == str:
+        if x[-2:] == '.&':
+            return 'addr'
         if x[0]=='r':
             return 'reg'
         elif x[-1] == ':':

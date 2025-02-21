@@ -9,7 +9,8 @@ with open('slices.lpc', 'r') as f:
     tree = parser.parse(txt := f.read())
 
 ##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
-nullret = ['@susp', '@rstkey']
+usesRd = ['[]=', '[:]=']
+nullret = ['@susp', '@rstkey', '@stchr']
 
 def Write(txt):
     global out
@@ -335,8 +336,10 @@ def Rvalue(expr):
             le, _, re, _, = expr.children
             rhs, rk = Rvalue(re)
             lhs, lk = Rvalue(le)
+            prod = NewTemp(Type())
+            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
             tmp = NewTemp(lk.Deref())
-            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = prod, S2 = None)
             return tmp, lk.Deref()
         elif data == 'derefexpr':
             le, _, _, = expr.children
@@ -553,10 +556,21 @@ def Lvalue(expr):
         data = expr.data
 
         if data == 'indexpr':
+##            le, _, re, _, = expr.children
+##            rhs, rk = Rvalue(re)
+##            lhs, lk = Rvalue(le)
+##            prod = NewTemp(Type())
+##            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
+##            tmp = NewTemp(lk.Deref())
+##            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = prod, S2 = None)
+##            return tmp, lk.Deref()
+            
             le, _, re, _, = expr.children
             rhs, rk = Rvalue(re)
             lhs, lk = Rvalue(le)
-            tmp = f'{lhs}[{rhs}]'
+            prod = NewTemp(Type())
+            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
+            tmp = f'{lhs}[{prod}]'
 ##            inter.PreUse(lhs)
             return tmp, lk.Deref()
         elif data == 'derefexpr':
@@ -687,7 +701,10 @@ class HLIR:
             l, r = D[:-1].split('[')
             assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
             self.Use(S0)
-            self.Use(r)
+            if r.isnumeric():
+                r = int(r)
+            else:
+                self.Use(r)
             self.Use(S2)
             self.Use(l)
             self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
@@ -802,12 +819,14 @@ class HLIR:
                     if line[1][0] == 'argpop':
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
-                    if line[1][0] in nullret:
-                        args = line[1][2:][:4]
+                    if line[1][0] in usesRd:
+                        args = line[1][1:][:4]
                     else:
                         args = line[1][2:][:4]
                     for arg in args:
                         if type(arg) == str:
+                            if arg[-2:] == '.&':
+                                arg = arg[:-2]
                             if arg not in ldict:
                                 if arg in ldict:
                                     ldict[arg] = ['pre', line[2]]
@@ -889,7 +908,9 @@ class HLIR:
                                     block.body[i] = tuple(l)
                                 else:
                                     print(f'Purge line `{b}`')
-                                    assert block.body[i-r] == b, f'Ummm, desync internally tried to delete wrong expr'
+                                    idx = block.body.index(b)
+                                    r = i - idx
+                                    assert block.body[i-r] == b, f'Ummm, desync internally tried to delete wrong expr\n`{block.body[i-r]}`\nInstead Of:\n`{b}`'
                                     del block.body[i-r]
                                     r += 1
                         for i,b in enumerate(block.body):

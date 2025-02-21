@@ -1,7 +1,7 @@
 jmp main:
 
 .DATA
-X: [32d'12]
+    X: [32d'12]
 
 .CODE
 main:
@@ -33,8 +33,8 @@ mul32:
     ulmul R7, R0, R1
     lumul R8, R0, R1
 
-    add R1, R5, R6
-    add R1, R1, R7
-    add R1, R1, R8
+    adds R1, R5, R6, #16
+    adds R1, R1, R7, #16
+    adds R1, R1, R8, #16
 
     ret

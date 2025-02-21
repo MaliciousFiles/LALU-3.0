@@ -158,6 +158,9 @@ def Lower(hlir):
                             AddPent(nblock, 'add', D, S0, S1, S2)
                         elif op == '-':
                             AddPent(nblock, 'sub', D, S0, S1, S2)
+                        elif op == '*':
+                            print('WARNING: COMPILING USING BAD MULTIPLICATION')
+                            AddPent(nblock, 'mul', D, S0, S1, S2)
                         elif op == '=':
                             AddPent(nblock, 'mov', D, S0, S1, S2)
                         elif op == '[]=':
