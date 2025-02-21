@@ -1052,3 +1052,6 @@ print(repr(asm))
 
 print('\nMIF:')
 print(LLL.asmblr.Mifify(bn, 32))
+
+with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
+    f.write(LLL.asmblr.Mifify(bn, 32))
