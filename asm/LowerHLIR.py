@@ -1,3 +1,7 @@
+from math import log2
+log = lambda x:int(log2(x))
+
+
 class Block:
     def __init__(self, entry, From):
         self.entry = entry
@@ -9,6 +13,7 @@ class Block:
 class LLIR:
     def __init__(self):
         self.funcs = []
+        self.data = {}
     def __repr__(self):
         o = ''
         for func in self.funcs:
@@ -32,6 +37,20 @@ class LLIR:
         func['ret'] = ret
         func['body'] = []
     
+def ENamesOf(name, kind):
+    o = []
+    bits = WidthOf(kind) if type(kind) != int else kind
+    p = len(str(bits-1))
+    for i in range(bits):
+        ename = name + '_' + str(i).zfill(p) if bits > 1 else name
+        o.append(ename)
+    return o
+
+def EName(name, kind, i):
+    bits = WidthOf(kind) if type(kind) != int else kind
+    p = len(str(bits-1))
+    ename = name + '_' + str(i).zfill(p) if bits > 1 else name
+    return ename
 
 def WidthOf(kind):
     if kind == 'void':
@@ -46,6 +65,7 @@ def AddPent(block, op, D, S0, S1, S2, mods = []):
 
 def Lower(hlir):
     llir = LLIR()
+    llir.data = hlir.data
     finals = []
     comp = {}
     finex = []
@@ -110,7 +130,11 @@ def Lower(hlir):
                     op, D, S0, S1, S2, width = line[1]
 ##                    print(comp)
                     S0 = comp.get(S0, S0)
-                    S1 = comp.get(S1, S1)
+                    try:
+                        S1 = comp.get(S1, S1)
+                    except:
+                        print(f'{S1=}, {line=}')
+                    
                     S2 = comp.get(S2, S2)
                     eid = line[2]
                     HandleFinals(eid)
@@ -158,6 +182,12 @@ def Lower(hlir):
                             AddPent(nblock, 'add', D, S0, S1, S2)
                         elif op == '-':
                             AddPent(nblock, 'sub', D, S0, S1, S2)
+                        elif op == '&':
+                            AddPent(nblock, 'and', D, S0, S1, S2)
+                        elif op == '|':
+                            AddPent(nblock, 'or', D, S0, S1, S2)
+                        elif op == '*' and type(S1) == int and (S1==S1&-S1):
+                            AddPent(nblock, 'bsl', D, S0, log(S1), S2)
                         elif op == '*':
                             print('WARNING: COMPILING USING BAD MULTIPLICATION')
                             AddPent(nblock, 'mul', D, S0, S1, S2)
@@ -167,6 +197,12 @@ def Lower(hlir):
                             AddPent(nblock, 'stw', D, S0, S1, S2)
                         elif op == '=[]':
                             AddPent(nblock, 'ldw', D, S0, S1, S2)
+                        
+                        elif op == '<<':
+                            AddPent(nblock, 'bsl', D, S0, S1, S2)
+                        elif op == '>>':
+                            AddPent(nblock, 'bsr', D, S0, S1, S2)
+                        
                         elif op == 'argpsh':
                             AddPent(nblock, 'argpsh', D, S0, S1, S2)
                         elif op == 'retpop':
@@ -204,19 +240,21 @@ def Lower(hlir):
                             else:
                                 assert False, f'(Comptime) Cannot cast from type `{sk}` to `{dk}`'
                         else:
-                            assert False, f'Cannot lower operand `{op}`'
+                            assert False, f'Cannot lower operand `{op}` 32 width'
                     else:
                         assert op[0] != '@', f'Cannot perform instrincs on non 32 width instructions'
                         if op == '=':
                             rwidth = -(-width//32)
                             for i in range(rwidth):
-                                p = len(str(rwidth-1))
-                                eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
+                                eD = EName(D, rwidth, i) 
+##                                p = len(str(rwidth-1))
+##                                eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
                                 if type(S0) == str:
                                     if S0[-2:] == '.&':
                                         eS = S0
                                     else:
-                                        eS = S0 + '_' + str(i).zfill(p)
+                                        eS = EName(S0, rwidth, i) 
+##                                        eS = S0 + '_' + str(i).zfill(p)
                                 else:
                                     eS = S0
 ##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS

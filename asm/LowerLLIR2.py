@@ -16,8 +16,8 @@ def print(*args):
 # If a double is specified, it doesnt affect other modes or names
 diagnostics = {
     '*': 'DISABLE',
-    'M_Use': 'ENABLE',
-    'fresh': 'ENABLE',
+##    'M_Use': 'ENABLE',
+##    'fresh': 'ENABLE',
     'Print': 'ALWAYS',
     #'M_Use::misc': 'DISABLE',
 }
@@ -283,7 +283,7 @@ class State:
             args = [f'#{x}' if type(x) == int else x for x in args]
             op, line = asmblr.BuildPSEUDO(op, data['numargs'], data['fmt'], args).split(maxsplit=1)
             args = [x.lstrip(' \t').rstrip(' \t') for x in line.split(',')] if line != '' else []
-            args = [int(x[1:]) if x[0] == '#' else x for x in args]
+            args = [asmblr.ParseValue(x)[1] if x[0] == '#' else x for x in args]
         data = asmblr.instrs[op]
         argtypes = asmblr.instrs[op]['Args']
         c = args[:]
@@ -301,7 +301,7 @@ class State:
                     if x[-2:] == '.&':
 ##                        x = x[:-2]
                         treg = self.M_PushTempSum(buf, tps, self.AddrOf(x[:-2]), f'r{STKPTR}', comment = f'Compute address of {x[:-2]}')
-                        args.append(treg)
+##                        args.append(treg)
                         tps += 1
                         x = f'r{treg[1]}'
                     else:
@@ -315,6 +315,7 @@ class State:
                     j = int(kind[2])
                     build[f'i{j}'] = True
 ##                assert x != 0, f'{x=}, {kind=}, {c=}'
+                assert type(x) != tuple, f'{x=}'
                 if MinBitsOf(x) > width:
                     if not eximm:
                         eximm = True
@@ -408,6 +409,7 @@ class Asm:
         self.stitched = False
         self.froms = {}
         self.comms = {}
+        self.data = {}
     def Copy(self):
         nasm = Asm()
         nasm.body = self.body[:]
@@ -418,6 +420,7 @@ class Asm:
         nasm.stitched = self.stitched
         nasm.froms = self.froms
         nasm.comms = self.comms
+        nasm.data = self.data
         return nasm
     def __repr__(self):
         o=''
@@ -494,6 +497,7 @@ class Asm:
         nxl = 0
         svlbls = sorted(self.lbls.items(), key = lambda x: x[1])
         scomms = sorted(self.comms.items(), key = lambda x: x[1])
+##        assert False, f"{self.body=}"
         for line in self.body:
             assert 'vloc' in line, f'Could not fine `vloc` in {line}'
             vloc = line['vloc']
@@ -562,6 +566,7 @@ def SepVar(x):
 def Lower(llir):
     asm = Asm()
     state = State()
+    asm.data = llir.data
 
     for func in llir.funcs:
         state = State()
@@ -589,6 +594,7 @@ def Lower(llir):
                 elif cmd == 'final':
                     state.I_Final(line[1])
                 elif cmd == 'undecl':
+                    assert line[1] in state.stk, f'{state.stk=}, {func["name"]}'
                     state.I_Undecl(line[1])
                     state.M_AddComment(buf, f'Undeclare `{line[1]}`')
                 elif cmd == 'nodecl':
@@ -668,27 +674,46 @@ def Lower(llir):
                     buf[i]['c'] = True
             Debug(buf = buf)
             nasm.Addlines(buf)
-##            nbd.extend(buf)
         elif line['name'] == 'COMMENT':
             nasm.AddComment(line['comment'])
         else:
             nasm.Addline(line)
-##            nbd.append(line)
-##    asm.body = nbd
     Debug(step = nlbls)
     asm = nasm.Copy()
     asm.lbls = nlbls
+
+    nasm = asm.Copy()
+    nasm.ClearBody()
+    lbls = dict(asm.lbls)
+    nlbls = {}
+    for i, line in list(enumerate(asm.body)):
+##        if i in lbls.values():
+##            for k,v in lbls.items():
+##                if v == i:
+##                    nlbls[k] = len(nasm.body)
+        if line['name'] == 'COMMENT':
+            nasm.AddComment(line['comment'])
+        else:
+            nasm.Addline(line)
+    Debug(step = nlbls)
+    asm = nasm.Copy()
+##    asm.lbls = nlbls
+    
     Debug(misc = 'bod')
     Debug(Body = asm)
     asm.LocLines()
     Debug(misc = (asm.lbls))
     mem = {}
+    addr = 0
     for code in asm.body:
         Debug(misc = code)
         hx, ex = asmblr.ResolveInstr(code, asm.lbls)
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
+##    for k,v in asm.data.items():
+##        addr += 32
+##        mem[addr] = 
 ##    Debug(step = f'{asm.sts.keys()=}')
     for st,v in asm.sts.items():
         Debug(step = f'State `{st}`:\n\t{v}\n\tEnds with:\n\t{asm.stsf[st]}')
