@@ -5,7 +5,7 @@ fn Main() void {
   var chr: u32;
   do ((chr = @ldkey()) != 0x33) {
     if (chr < 0x36 or chr > 0x3F) continue;
-    var temp: u32 = chr-0x36;
+    var temp: u32 = chr-0x35;
     if (temp == 10) temp = 0;
     x += temp * place;
     place *= 10;

@@ -18,6 +18,7 @@ diagnostics = {
     '*': 'DISABLE',
 ##    'M_Use': 'ENABLE',
 ##    'fresh': 'ENABLE',
+    'step': 'ENABLE',
     'Print': 'ALWAYS',
     #'M_Use::misc': 'DISABLE',
 }
@@ -448,7 +449,7 @@ class Asm:
                             o += f'{lbl}'
                             if lbl in self.froms and not self.stitched:
                                 oline += f' <- {self.froms[lbl]}'
-                            o += ':\n'
+                            o += f' [{loc}]:\n'
                             
                             del lbls[0]
                         else:
@@ -657,6 +658,7 @@ def Lower(llir):
             for k,v in lbls.items():
                 if v == i:
                     nlbls[k] = len(nasm.body)
+                    print(f"DSFLKSJ: {i=}, {k=}, {v=}, len={len(nasm.body)}")
         if line['name'] == 'CHANGE':
             buf = []
             oldn = old = line['old']
@@ -687,17 +689,17 @@ def Lower(llir):
     lbls = dict(asm.lbls)
     nlbls = {}
     for i, line in list(enumerate(asm.body)):
-##        if i in lbls.values():
-##            for k,v in lbls.items():
-##                if v == i:
-##                    nlbls[k] = len(nasm.body)
+        if i in lbls.values():
+            for k,v in lbls.items():
+                if v == i:
+                    nlbls[k] = len(nasm.body)
         if line['name'] == 'COMMENT':
             nasm.AddComment(line['comment'])
         else:
             nasm.Addline(line)
     Debug(step = nlbls)
     asm = nasm.Copy()
-##    asm.lbls = nlbls
+    asm.lbls = nlbls
     
     Debug(misc = 'bod')
     Debug(Body = asm)
