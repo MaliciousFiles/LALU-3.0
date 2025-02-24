@@ -1,0 +1,7 @@
+fn Main() void {
+  for (var i: u32 = 0; i < 26; i+=1) {
+    @stchr(i+65, i, 0xFFFFFF, 0);
+  }
+  
+  while (true) {}
+}

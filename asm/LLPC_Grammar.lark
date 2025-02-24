@@ -85,13 +85,15 @@ arg: ident COLON type
 
 ident: /[_a-zA-Z][_a-zA-Z0-9]*/
 type: INT | VOID
-string: "STRING"
-constant: hexint | decint
+string: /"([^\x00"]*\x01)*[^\x01"]*"/
+//string: /"[^"]*"/
+constant: char | hexint | decint
 
 decint: "0d" UD* | D UD*
 hexint: "0x" UH*
+char: /\'.\'/
 
-INT: /[ui][0-9]+\**/
+INT: /[ui][0-9]+\**(\[[0-9]+\])?/
 
 assgop: EQUAL | PLUSEQUAL | MINUSEQUAL | LANGLEEEEQUAL | RANGLEEEEQUAL | LANGLEEEQUAL | RANGLEEEQUAL | PERCENTEQUAL | SLASHEQUAL | ASTERISKEQUAL | AMPERSANDEQUAL | PIPEEQUAL | CARROTEQUAL
 relop: LANGLEQ | RANGLEQ | EQUALL | NEQUAL | LANGLE | RANGLE

@@ -5,11 +5,13 @@ import LowerLLIR2 as LLL
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('slices.lpc', 'r') as f:
-    tree = parser.parse(txt := f.read())
+with open('src/mal.lpc', 'r') as f:
+    txt = f.read()
+    txt = txt.replace('\\"', '\x01')
+    tree = parser.parse(txt)
 
 ##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
-usesRd = ['[]=', '[:]=']
+usesRd = ['[]=', '[:]=', '@stchr']
 nullret = ['@susp', '@rstkey', '@stchr']
 
 def Write(txt):
@@ -377,6 +379,9 @@ def Rvalue(expr):
         elif data == 'intrinsic':
             _, name, _, args, _, = expr.children
             name = name.children[0].value
+            name = '@' + name
+##            if name in usesRd:
+##                bad
             ct = False
             if args:
                 ct=True
@@ -390,13 +395,18 @@ def Rvalue(expr):
                 args = nargs
             else:
                 args = []
-##            args = [x.children[0].value for x in args.children if type(x)==Tree] if args else []
-            assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguements'
-            args += [None]*3
-##            if ct:
-            tmp = NewTemp(Type(comptime = ct))
-            inter.AddPent(op = '@'+name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
-            return tmp, Type()
+            print(f'Int f: {name=}')
+            if name in usesRd:
+                assert len(args) <= 4, f'Intrinsic function takes 4 arguments'
+                args += [None]*4
+                inter.AddPent(op = name, D = args[0], S0 = args[1], S1 = args[2], S2 = args[3])
+                return None
+            else:
+                assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguments'
+                args += [None]*4
+                tmp = NewTemp(Type(comptime = ct))
+                inter.AddPent(op = name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
+                return tmp, Type()
         elif data == 'true':
             inter.Jump(inter.trues[-1])
             return None, Type(isbool = True)
@@ -499,7 +509,7 @@ def Rvalue(expr):
                 kind = lk.Common(rk)
                 inter.CastAddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None, desttype = lk, origtype = kind)
             else:
-                assert rk.CanCoerceTo(lk), f'Cannot coerce `{lk}` into type `{rk}`'
+                assert rk.CanCoerceTo(lk), f'Cannot coerce `{rk}` into type `{lk}`'
                 inter.CastAddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None, desttype = lk, origtype = rk)
             return lhs, lk
         elif data.value == 'unaryexpr':
@@ -535,6 +545,9 @@ def Rvalue(expr):
             return tmp, lk
         elif data.value == 'constant':
             return Rvalue(expr.children[0])
+        elif data.value == 'string':
+            ref = inter.AddString(expr.children[0])
+            return ref, Type.FromStr('u32*')
         elif data.value == 'primexpr':
             _, ex, _, = expr.children
             return Rvalue(ex)
@@ -556,29 +569,17 @@ def Lvalue(expr):
         data = expr.data
 
         if data == 'indexpr':
-##            le, _, re, _, = expr.children
-##            rhs, rk = Rvalue(re)
-##            lhs, lk = Rvalue(le)
-##            prod = NewTemp(Type())
-##            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
-##            tmp = NewTemp(lk.Deref())
-##            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = prod, S2 = None)
-##            return tmp, lk.Deref()
-            
             le, _, re, _, = expr.children
             rhs, rk = Rvalue(re)
             lhs, lk = Rvalue(le)
             prod = NewTemp(Type())
             inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
             tmp = f'{lhs}[{prod}]'
-##            inter.PreUse(lhs)
             return tmp, lk.Deref()
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
-##            tmp = NewTemp(lk.Deref())
             tmp = f'{lhs}[0]'
-##            inter.PreUse(lhs)
             return tmp, lk.Deref()
         elif type(data) == str:
             print(data)
@@ -624,6 +625,7 @@ class HLIR:
         self.trues = []
         self.falses = []
         self.func = {}
+        self.data = {}
 
     def __repr__(self):
         o = ''
@@ -644,7 +646,7 @@ class HLIR:
         func['name'] = name
         func['args'] = args
         func['ret'] = ret
-        self.body = Block('_')
+        self.body = Block(f'_{name}__')
         func['body'] = [self.body]
         
         self.NewEnv()
@@ -671,6 +673,13 @@ class HLIR:
             if name in env:
                 return env[name]
         assert False, f'Cannot find name: `{name}` in current scope'
+    def PotAliases(self, kind):
+        als = []
+        for env in self.envs[::-1]:
+            for name, nkind in env.items():
+                if nkind == kind:
+                    als.append(name)
+        return als
     def Decl(self, name, kind):
         if kind.isvoid:
             return
@@ -797,7 +806,10 @@ class HLIR:
         to = {}
         fto = {}
         k = {}
-        fto['_'] = ['Entry']
+##        print(f'{self.func["body"][0]["name"]=}')
+##        print(f'{self.func["body"][0]["name"]=}')
+##        err
+        fto[f'_{self.func["name"]}__'] = ['Entry']
         print(self)
         for block in body:
             ldict = lvars[block.entry] = {}
@@ -817,21 +829,24 @@ class HLIR:
                     if line[1][0] in ['call']:
                         continue
                     if line[1][0] == 'argpop':
+                        print(f'Popped var `{line[1][1]}`')
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
+                        print(f'{ldict=}')
                     if line[1][0] in usesRd:
                         args = line[1][1:][:4]
                     else:
                         args = line[1][2:][:4]
                     for arg in args:
-                        if type(arg) == str:
+                        if type(arg) == str and arg[-1]!=':':
                             if arg[-2:] == '.&':
                                 arg = arg[:-2]
                             if arg not in ldict:
-                                if arg in ldict:
-                                    ldict[arg] = ['pre', line[2]]
-                                else:
-                                    print(f'`{arg}` is not declared')
+                                ldict[arg] = ['pre', line[2]]
+##                                if arg in ldict:
+##                                    ldict[arg] = ['pre', line[2]]
+##                                else:
+##                                    print(f'`{arg}` is not declared\n{ldict=}')
                             elif type(ldict[arg][1]) != str:
                                 ldict[arg][1] = line[2]
                 else:
@@ -924,7 +939,10 @@ class HLIR:
                             bad
         
 ##        err
-            
+    def AddString(self, txt):
+        key = f's{len(self.data.keys())}:'
+        self.data[key] = txt
+        return key
 class Type:
     def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
         self.width = width
@@ -933,6 +951,8 @@ class Type:
         self.comptime = comptime
         self.isbool = isbool
         self.isvoid = isvoid
+    def __hash__(self):
+        return hash(repr(self))
     def FromStr(txt):
         self = Type()
         if txt == 'void':
@@ -976,6 +996,8 @@ class Type:
             return self.signed == other.signed and other.width >= self.width
     def BitSameAs(self, other):
         return self.CanCoerceTo(other) and other.CanCoerceTo(self)
+    def __eq__(self, other):
+        return repr(self) == repr(other)
     def Common(self, other):
         assert not self.isbool, 'Cannot take a common type of boolean and `{other}`'
         
@@ -1052,3 +1074,6 @@ print(repr(asm))
 
 print('\nMIF:')
 print(LLL.asmblr.Mifify(bn, 32))
+
+with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
+    f.write(LLL.asmblr.Mifify(bn, 32))
