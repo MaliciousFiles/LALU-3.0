@@ -7,11 +7,13 @@ _Main__:
 	mov r0, r0				// expr `argst 0, n`
 	// undecl `n`
 	add.e r31, r31, #32
-	call _Fac__:				// expr `call Fac`	// expr `retld t2, 0`
+	call _Fac__:				// expr `call Fac`
 	// decl `t2`: u32
+	// expr `retld t2, 0`
 	// undecl `t2`
-	susp 				// expr `susp `	// expr `argld n, 0`
+	susp 				// expr `susp `
 _Fac__:
+	// expr `argld n, 0`
 	eq r0, #1				// expr `eq n, 1`
 	c.jmp L4:				// expr `c.jmp L4:`
 _L6:
@@ -30,8 +32,9 @@ L5:
 	// undecl `t9`
 	stw r0, r31, #0
 	add.e r31, r31, #64
-	call _Fac__:				// expr `call Fac`	// expr `retld t10, 0`
+	call _Fac__:				// expr `call Fac`
 	// decl `t10`: u32
+	// expr `retld t10, 0`
 	// decl `t11`: u32
 	// assign r1 = `t11`
 	ldw.e r1, r31, #128

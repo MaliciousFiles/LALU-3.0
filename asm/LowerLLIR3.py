@@ -185,6 +185,8 @@ def CompileBlock(comp_state: CompilerState, block: Block):
 
             state.registers[instr[1]].contained = None
         elif instr[0] == 'expr': # ('expr', (op, Rd, Rs0, Rs1, Rs2))
+            start_len = len(comp_state.assembly)
+
             op = instr[1][0]
             args = instr[1][1:]
             preFlags = ['c', 'n'] if op.startswith("cn.") else ['c'] if op.startswith("c.") else []
@@ -240,7 +242,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             else:
                 comp_state.add_assembly((op, preFlags + postFlags, *[state.variables[arg].use(comp_state, state) if isinstance(arg, str) else arg for arg in args]))
 
-            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", True)
+            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", len(comp_state.assembly) != start_len)
 
     if not exits and block.fall_through is not None and block.fall_through not in comp_state.entrance_states:
         comp_state.compilation_queue.insert(0, block.fall_through)
