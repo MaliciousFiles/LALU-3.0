@@ -119,7 +119,7 @@ class BlockState:
 
     def declare_var(self, name: str, width: int, addr: int = None):
         self.variables[name] = Variable(name, self.stack_top if not addr else addr, width)
-        if not addr: self.stack_top += 1
+        self.stack_top += 1
 
     # clones the state to start a new block
     def fork(self):
@@ -210,6 +210,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             elif op == 'argst': # ('argst', addr, var)
                 if args[0] < NUM_REGS:
                     comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
+                    state.registers[args[0]].contained = args[1] # may result in two regs pointing to `var`, but that's fine
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
@@ -225,12 +226,16 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 comp_state.add_assembly(('add', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
                 comp_state.add_assembly(('call', preFlags, label+":"))
 
+                # assume the function clobbers everything
+                for i in range(NUM_REGS): state.registers[i].contained = None
+
                 if label not in comp_state.entrance_states:
                     comp_state.compilation_queue.append(label)
                     comp_state.entrance_states[label] = BlockState()
             elif op == 'retst': # ('retst', addr, var)
                 if args[0] < NUM_REGS:
                     comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
+                    state.registers[args[0]].contained = args[1]  # may result in two regs pointing to `var`, but that's fine
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))

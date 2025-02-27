@@ -1,4 +1,4 @@
-	mov.e r31, #1024
+	mov.e r31, #960
 _Main__:
 	// decl `n`: u32
 	// assign r0 = `n`
@@ -21,7 +21,7 @@ _L6:
 L4:
 	// undecl `n`
 	mov r0, #1				// expr `retst 0, 1`
-	sub.e r31, r31, #32
+	sub r31, r31, #0
 	ret 				// expr `ret `
 L5:
 	// decl `t9`: u32
@@ -30,7 +30,6 @@ L5:
 	sub r1, r0, #1				// expr `sub t9, n, 1`
 	mov r0, r1				// expr `argst 0, t9`
 	// undecl `t9`
-	stw r0, r31, #0
 	add.e r31, r31, #64
 	call _Fac__:				// expr `call Fac`
 	// decl `t10`: u32
@@ -45,5 +44,5 @@ L5:
 	// undecl `n`
 	mov r0, r1				// expr `retst 0, t11`
 	// undecl `t11`
-	sub.e r31, r31, #160
+	sub.e r31, r31, #128
 	ret 				// expr `ret `
