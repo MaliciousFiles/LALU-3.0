@@ -1,11 +1,11 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
-import LowerLLIR2 as LLL
+import LowerLLIR3 as LLL
 
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/mal.lpc', 'r') as f:
+with open('src/mal2.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -1064,7 +1064,7 @@ llir = LHL.Lower(inter)
 print('\nLLIR:')
 print(repr(llir))
 
-asm, bn, fstate = LLL.Lower(llir)
+asm, bn = LLL.Lower(llir)
 
 print('\nASM:')
 print(repr(asm))

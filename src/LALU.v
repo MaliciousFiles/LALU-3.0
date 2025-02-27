@@ -464,8 +464,8 @@ module LALU(input CLOCK_50,
     assign stackWriteData = {operationMode, IP_d + 16'b1};
 
 
-    wire stall_e = (isValid_d && isWriteback_e && isMemRead_e && ((~i0 && Rs0_d == Rd_e && format != JMP) || (~i1 && Rs1_d == Rd_e && format != JMP) || (~i2 && Rs2_d == Rd_e && format[1:0] == QUAD) || (Rd_d == Rd_e && (format == WB_QUAD && funcID == BST))))
-                || (isValid_d && sticky_e && isWriteback_e && isMemRead_e && format == NO_WB_TRIP && funcID[8:3] == FLAG_GET_INSTR)
+    wire stall_e = (isValid_d && isValid_e && isWriteback_e && isMemRead_e && ((~i0 && Rs0_d == Rd_e && format != JMP) || (~i1 && Rs1_d == Rd_e && format != JMP) || (~i2 && Rs2_d == Rd_e && format[1:0] == QUAD) || (Rd_d == Rd_e && (format == WB_QUAD && funcID == BST))))
+                || (isValid_d && isValid_e && sticky_e && isWriteback_e && isMemRead_e && format == NO_WB_TRIP && funcID[8:3] == FLAG_GET_INSTR)
                 || stall_m;
     wire isValid_e = isValid_e_reg && ~invalidFunction;
     wire executiveOverride = isValid_d && expectedIP != IP_d; // whether to override IP with EIP
@@ -880,6 +880,7 @@ module LALU(input CLOCK_50,
                 endcase
             end
         end
+        else isValid_e_reg <= 1'b0;
     end else isValid_e_reg <= 1'b0; end end
 
     /*********************
