@@ -41,10 +41,10 @@ class CompilerState:
         self.labels: dict[str, int] = {}
         self.assembly: list[tuple] = [None] # gets overwritten later (sets stkptr)
 
-        self.comments: list[tuple[int, str]] = []
+        self.comments: list[tuple[int, str, bool]] = []
 
     def add_comment(self, comment: str, inline=False):
-        self.comments.append((len(self.assembly), comment, inline))
+        self.comments.append((len(self.assembly) - inline, comment, inline))
 
     def add_assembly(self, instr: tuple):
         self.assembly.append((*instr, *[None for _ in range(6 - len(instr))]))
@@ -81,11 +81,11 @@ class Variable:
         if reg is None: reg = last_used_reg
 
         if state.registers[reg].contained != self.name:
+            comp_state.add_comment(f"assign r{reg} = `{self.name}`")
+
             if state.registers[reg].contained is not None:
                 comp_state.add_assembly(state.variables[state.registers[reg].contained].store(reg))
             comp_state.add_assembly(self.load(reg))
-
-            comp_state.add_comment(f"assign r{reg} = `{self.name}`")
 
         state.registers[reg].contained = self.name
         state.registers[reg].use()
