@@ -1,4 +1,5 @@
 import AssemblerV3 as asmblr
+from copy import deepcopy as copy
 
 NUM_REGS = 29
 SCRATCH_REGS = [29, 30]
@@ -38,7 +39,12 @@ class CompilerState:
         self.block_states: dict[str, BlockState] = {}
 
         self.labels: dict[str, int] = {}
-        self.assembly: list[tuple] = []
+        self.assembly: list[tuple] = [None] # gets overwritten later (sets stkptr)
+
+        self.comments: list[tuple[int, str]] = []
+
+    def add_comment(self, comment: str, inline=False):
+        self.comments.append((len(self.assembly), comment, inline))
 
     def add_assembly(self, instr: tuple):
         self.assembly.append((*instr, *[None for _ in range(6 - len(instr))]))
@@ -79,6 +85,8 @@ class Variable:
                 comp_state.add_assembly(state.variables[state.registers[reg].contained].store(reg))
             comp_state.add_assembly(self.load(reg))
 
+            comp_state.add_comment(f"assign r{reg} = `{self.name}`")
+
         state.registers[reg].contained = self.name
         state.registers[reg].use()
 
@@ -117,8 +125,8 @@ class BlockState:
     def fork(self):
         new_state = BlockState()
         new_state.stack_top = self.stack_top
-        new_state.variables = self.variables.copy()
-        new_state.registers = self.registers.copy()
+        new_state.variables = copy(self.variables)
+        new_state.registers = copy(self.registers)
         return new_state
 
     # emits the instructions required to transform from `self` to `other`
@@ -157,16 +165,24 @@ def CompileBlock(comp_state: CompilerState, block: Block):
     exits: bool = False
     for instr in block.instructions:
         if instr[0] == 'decl': # ('decl', name, width=32)
+            comp_state.add_comment(f"decl `{instr[1]}`: u{instr[2] if len(instr) > 2 else 32}")
+
             state.declare_var(instr[1], instr[2] if len(instr) > 2 else 32)
         elif instr[0] == 'undecl': # ('undecl', name)
+            comp_state.add_comment(f"undecl `{instr[1]}`")
+
             del state.variables[instr[1]]
             # TODO: mark mem as free so it can be reallocated?
             for reg in state.registers:
                 if reg.contained == instr[1]: reg.contained = None
         elif instr[0] == 'alloc': # ('alloc', name, length, width=32)
+            comp_state.add_comment(f"alloc `{instr[1]}`: u{instr[3] if len(instr) > 3 else 32}[{instr[2]}]")
+
             state.variables[instr[1]] = Variable(instr[1], state.stack_top, instr[3] if len(instr) > 3 else 32)
             state.stack_top += instr[2]
         elif instr[0] == 'regrst': # ('regrst', reg)
+            comp_state.add_comment(f"regrst `{instr[1]}`")
+
             state.registers[instr[1]].contained = None
         elif instr[0] == 'expr': # ('expr', (op, Rd, Rs0, Rs1, Rs2))
             op = instr[1][0]
@@ -191,33 +207,40 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 exits = True
             elif op == 'argst': # ('argst', addr, var)
                 if args[0] < NUM_REGS:
-                    comp_state.add_assembly(state.variables[args[1]].store(args[0], preFlags))
+                    comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
                 else:
-                    comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state), f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS) << 5))
-            elif op == 'argld': # ('argld', addr, var, width=32)
-                state.declare_var(args[1], args[2] if len(args) > 2 else 32, args[0] - NUM_REGS if args[0] >= NUM_REGS else None)
-                if args[0] < NUM_REGS:
-                    state.registers[args[0]].contained = args[1]
+                    if isinstance(args[1], int):
+                        comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
+                    comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS) << 5))
+            elif op == 'argld': # ('argld', var, addr, width=32)
+                state.declare_var(args[0], args[2] if len(args) > 2 else 32, args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
+                if args[1] < NUM_REGS:
+                    state.registers[args[1]].contained = args[0]
             elif op == 'call': # ('call', label)
+                label = comp_state.functions[args[0].replace(":", "")].start
+
                 comp_state.add_all_assembly(state.dump_regs(preFlags))
                 comp_state.add_assembly(('add', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
-                comp_state.add_assembly(('call', preFlags, args[0]))
+                comp_state.add_assembly(('call', preFlags, label+":"))
 
-                start = comp_state.functions[args[0].replace(":", "")].start
-                if start not in comp_state.entrance_states:
-                    comp_state.compilation_queue.append(start)
-                    comp_state.entrance_states[start] = BlockState()
+                if label not in comp_state.entrance_states:
+                    comp_state.compilation_queue.append(label)
+                    comp_state.entrance_states[label] = BlockState()
             elif op == 'retst': # ('retst', addr, var)
                 if args[0] < NUM_REGS:
-                    comp_state.add_assembly(state.variables[args[1]].store(args[0], preFlags))
+                    comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
                 else:
-                    comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state), f'r{STKPTR}', (args[0] - NUM_REGS) << 5))
-            elif op == 'retld': # ('retld', addr, var, width=32)
-                state.declare_var(args[1], args[2] if len(args) > 2 else 32, state.stack_top + args[0] - NUM_REGS if args[0] >= NUM_REGS else None)
-                if args[0] < NUM_REGS:
-                    state.registers[args[0]].contained = args[1]
+                    if isinstance(args[1], int):
+                        comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
+                    comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (args[0] - NUM_REGS) << 5))
+            elif op == 'retld': # ('retld', var, addr, width=32)
+                state.declare_var(args[0], args[2] if len(args) > 2 else 32, state.stack_top + args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
+                if args[1] < NUM_REGS:
+                    state.registers[args[1]].contained = args[0]
             else:
                 comp_state.add_assembly((op, preFlags + postFlags, *[state.variables[arg].use(comp_state, state) if isinstance(arg, str) else arg for arg in args]))
+
+            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", True)
 
     if not exits and block.fall_through is not None and block.fall_through not in comp_state.entrance_states:
         comp_state.compilation_queue.insert(0, block.fall_through)
@@ -229,18 +252,24 @@ def Lower(llir):
 
     while len(comp_state.compilation_queue) > 0:
         block = comp_state.compilation_queue.pop(0)
-        print("compiling", block)
         CompileBlock(comp_state, comp_state.blocks[block])
+
+    comp_state.assembly[0] = ('mov', [], f'r{STKPTR}', (len(comp_state.assembly)+1+len([i for i in comp_state.assembly[1:] if any(isinstance(a, int) and a >= 32 for a in i[2:])])) << 5)
 
     for i in range(len(comp_state.assembly)):
         for label, idx in comp_state.labels.items():
             if idx == i: print(f"{label}:")
+        comment = "\t\t\t"
+        for c in comp_state.comments:
+            if c[0] == i:
+                if c[2]: comment += f"\t// {c[1]}"
+                else: print("\t//", c[1])
 
         instr = comp_state.assembly[i]
 
         pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
         post = ('.s' if 's' in instr[1] else '') + ('.e' if any(isinstance(arg, int) and arg >= 32 for arg in instr[2:]) else '')
 
-        print(f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}")
+        print(f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}")
 
     pass

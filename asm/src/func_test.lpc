@@ -1,0 +1,10 @@
+fn Main() void {
+  var n: u32 = 5;
+  var fac: u32 = Fac(n);
+  @susp();
+}
+
+fn Fac(n: u32) u32 {
+  if (n == 1) return 1;
+  return n*Fac(n-1);
+}

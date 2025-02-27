@@ -377,7 +377,7 @@ module LALU(input CLOCK_50,
     wire conditional_d = instruction[31];
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
-    always @(posedge CLOCK_50) if (run) updateEIP <= ~stall_e && ~executiveOverride && isValid_f_reg;
+    always @(posedge CLOCK_50) if (run) updateEIP <= ~executiveOverride && isValid_f_reg;
     always @(posedge CLOCK_50) begin if (run) if (~stall_e) begin if (isValid_f) begin
         IP_d <= IP_f; // save IP of decoded instruction
         isValid_d <= 1'b1;

@@ -203,14 +203,14 @@ def Lower(hlir):
                         elif op == '>>':
                             AddPent(nblock, 'bsr', D, S0, S1, S2)
                         
-                        elif op == 'argpsh':
-                            AddPent(nblock, 'argpsh', D, S0, S1, S2)
-                        elif op == 'retpop':
-                            AddPent(nblock, 'retpop', D, S0, S1, S2)
-                        elif op == 'argpop':
-                            AddPent(nblock, 'argpop', D, S0, None, S2)
-                        elif op == 'retpsh':
-                            AddPent(nblock, 'retpsh', D, S0, S1, S2)
+                        elif op == 'argst':
+                            AddPent(nblock, 'argst', D, S0, S1, S2)
+                        elif op == 'retld':
+                            AddPent(nblock, 'retld', D, S0, S1, S2)
+                        elif op == 'argld':
+                            AddPent(nblock, 'argld', D, S0, None, S2)
+                        elif op == 'retst':
+                            AddPent(nblock, 'retst', D, S0, S1, S2)
                         elif op == 'call':
                             AddPent(nblock, 'call', D, S0, S1, S2)
                         elif op in ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']:
@@ -259,13 +259,13 @@ def Lower(hlir):
                                     eS = S0
 ##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS
                                 AddPent(nblock, 'mov', eD, eS, None, None)
-                        elif op == 'argpsh':
+                        elif op == 'argst':
                             rwidth = -(-width//32)
                             for i in range(rwidth):
                                 p = len(str(rwidth-1))
                                 eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
 ##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS
-                                AddPent(nblock, 'argpsh', eD, S0+i, None, None)
+                                AddPent(nblock, 'argst', eD, S0+i, None, None)
                         else:
                             assert False, f'HLIR -> LLIR does not currently support non-primative width `{width}` on operation `{op}`'
                     finex = []

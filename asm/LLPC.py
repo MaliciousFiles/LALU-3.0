@@ -5,7 +5,7 @@ import LowerLLIR3 as LLL
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/mal2.lpc', 'r') as f:
+with open('src/func_test.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -114,7 +114,7 @@ def Gen(tree, pre = True):
             if not pre:
                 inter.NewFunc(name, args, ret)
                 for i, (arg, kind) in enumerate(args):
-                    inter.AddPent('argpop', arg, i, kind, None, width = kind.OpWidth())
+                    inter.AddPent('argld', arg, i, kind, None, width = kind.OpWidth())
                 Gen(body)
                 inter.PopEnv()
                 inter.EndFunc()
@@ -370,10 +370,10 @@ def Rvalue(expr):
             funargs, funret = funcs[func]
             assert len(funargs) == len(args), f'Function `{func}` has arity `{len(funargs)}`, but was given `{len(args)}` args'
             for i, (arg, kind) in enumerate(args):
-                inter.AddPent('argpsh', i, arg, None, None, width=kind.OpWidth())
+                inter.AddPent('argst', i, arg, None, None, width=kind.OpWidth())
             inter.AddPent('call', func, None, None, None)
             tmp = NewTemp(funret)
-            inter.AddPent('retpop', tmp, 0, None, None, width=funret.OpWidth())
+            inter.AddPent('retld', tmp, 0, None, None, width=funret.OpWidth())
             return tmp, funret
             
         elif data == 'intrinsic':
@@ -783,7 +783,7 @@ class HLIR:
         if len(args) == 0:
             assert Type.FromStr('void').CanCoerceTo(self.func['ret']), f'Cannot return without value for function with return type `{self.func["ret"]}`'
         for i, (arg, kind) in enumerate(args):
-            self.AddPent('retpsh', i, arg, None, None, width = kind.OpWidth())
+            self.AddPent('retst', i, arg, None, None, width = kind.OpWidth())
         self.body.exit = ('return', eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
@@ -828,7 +828,7 @@ class HLIR:
                 elif line[0] == 'expr':
                     if line[1][0] in ['call']:
                         continue
-                    if line[1][0] == 'argpop':
+                    if line[1][0] == 'argld':
                         print(f'Popped var `{line[1][1]}`')
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
