@@ -1,9 +1,26 @@
 import AssemblerV3 as asmblr
 from copy import deepcopy as copy
+from math import log2
 
 NUM_REGS = 29
 SCRATCH_REGS = [29, 30]
 STKPTR = 31
+
+def RoundUp(x, k):
+    return -k*(-x//k)
+
+def AlignOf(bitwidth):
+    if bitwidth <= 32:
+        return 1<<int(log2(bitwidth-1)+1)
+    else:
+        return RoundUp(bitwidth, 32)
+assert AlignOf(32) == 32
+assert AlignOf(8) == 8
+assert AlignOf(7) == 8
+assert AlignOf(9) == 16
+assert AlignOf(48) == 64
+assert AlignOf(64) == 64
+
 
 class Block:
     def __init__(self, label: str, instructions: list[tuple]):
@@ -53,10 +70,10 @@ class CompilerState:
         for instr in instrs: self.add_assembly(instr)
 
 class Variable:
-    def __init__(self, name: str, offset: int, width: int):
+    def __init__(self, name: str, width: int, offset: int):
         self.name: str = name
         self.offset: int = offset
-        self.width: int = width
+        self.width: int = width if width else 32
 
     # makes sure the var is in a reg, returns that reg descriptor
     def use(self, comp_state, state) -> str:
@@ -117,9 +134,25 @@ class BlockState:
         self.variables: dict[str, Variable] = {}
         self.registers: list[Register] = [Register() for _ in range(NUM_REGS)]
 
-    def declare_var(self, name: str, width: int, addr: int = None):
-        self.variables[name] = Variable(name, self.stack_top if not addr else addr, width)
+    def declare_var(self, name: str, width: int, addr: int = None, alignment = ...):
+        if alignment == ...:
+            alignment = AlignOf(width)
+        var_addr = self.find_free_addr(width, alignment) if addr == None else addr
+        self.variables[name] = Variable(name, width, var_addr)
         self.stack_top += 1
+        
+
+    def find_free_addr(self, width: int, alignment: int = 32):
+        allocs = sorted([(0, 0)]+[(data.offset, data.offset+data.width) for data in self.variables.values()], key = lambda x:x[1])
+        for i, (_, old_end) in enumerate(allocs):
+            next_start = allocs[i+1][0] if i+1 < len(allocs) else 1<<32
+            new_start = RoundUp(old_end, alignment)
+            new_end = new_start + width
+            if new_end <= next_start:
+                return new_start
+        else:
+            print(f'Allocating block of width: {width} align: {alignment}, next_start: {next_start}, new_end: {new_end}')
+            assert False, f'Unreachable block `Allocation failure` reached'
 
     # clones the state to start a new block
     def fork(self):
@@ -173,13 +206,18 @@ def CompileBlock(comp_state: CompilerState, block: Block):
 
             del state.variables[instr[1]]
             # TODO: mark mem as free so it can be reallocated?
+            # Should be handled by allocation rework
             for reg in state.registers:
                 if reg.contained == instr[1]: reg.contained = None
         elif instr[0] == 'alloc': # ('alloc', name, length, width=32)
             comp_state.add_comment(f"alloc `{instr[1]}`: u{instr[3] if len(instr) > 3 else 32}[{instr[2]}]")
 
-            state.variables[instr[1]] = Variable(instr[1], state.stack_top, instr[3] if len(instr) > 3 else 32)
-            state.stack_top += instr[2]
+##            state.variables[instr[1]] = Variable(instr[1], instr[3] if len(instr) > 3 else 32, state.stack_top)
+##            state.stack_top += instr[2]
+            width = instr[3] if len(instr) > 3 and instr[3] else 32
+            state.declare_var('_ARRAY_'+instr[1], None, instr[2]*width, AlignOf(width))
+            state.declare_var(instr[1], 32)
+            #TODO: Set variable to hold the pointer
         elif instr[0] == 'regrst': # ('regrst', reg)
             comp_state.add_comment(f"regrst `{instr[1]}`")
 
@@ -216,7 +254,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
                     comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS) << 5))
             elif op == 'argld': # ('argld', var, addr, width=32)
-                state.declare_var(args[0], args[2] if len(args) > 2 else 32, args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
+                state.declare_var(args[0], args[2] if len(args) > 2 and args[2] else 32, args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
                 if args[1] < NUM_REGS:
                     state.registers[args[1]].contained = args[0]
             elif op == 'call': # ('call', label)
@@ -241,7 +279,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
                     comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (args[0] - NUM_REGS) << 5))
             elif op == 'retld': # ('retld', var, addr, width=32)
-                state.declare_var(args[0], args[2] if len(args) > 2 else 32, state.stack_top + args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
+                state.declare_var(args[0], args[2] if len(args) > 2 and args[2] else 32, state.stack_top + args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
                 if args[1] < NUM_REGS:
                     state.registers[args[1]].contained = args[0]
             else:

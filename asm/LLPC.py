@@ -944,9 +944,10 @@ class HLIR:
         self.data[key] = txt
         return key
 class Type:
-    def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
+    def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
         self.width = width
         self.signed = signed
+        self.arylen = arylen
         self.numPtrs = numPtrs
         self.comptime = comptime
         self.isbool = isbool
@@ -963,7 +964,12 @@ class Type:
              return Type(comptime = True)
         self.signed = txt[0]=='i'
         self.numPtrs = txt.count('*')
-        self.width = int(txt[1:len(txt)-self.numPtrs])
+        txt = txt[:len(txt)-self.numPtrs]
+        if '[' in txt:
+            arylen = int(txt.split('[')[1][:-1])
+            self.arylen = arylen
+            txt = txt.split('[')[0]
+        self.width = int(txt[1:])
         return self
     def OpWidth(self):
         return PTRWIDTH if self.numPtrs else self.width
@@ -977,7 +983,8 @@ class Type:
         if self.comptime:
             return 'comp'
         else:
-            return f'{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
+            ary = f'[{self.arylen}]' if self.arylen else ''
+            return f'{"ui"[self.signed]}{self.width}{ary}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
         if self.isvoid == other.isvoid == True:
             return True
@@ -987,6 +994,8 @@ class Type:
             return True
         if other.comptime:
             return False
+        if self.arylen and other.numPtrs > 0:
+            return True
         if self.numPtrs > 0:
             if other.numPtrs > 0:
                 return other.numPtrs == self.numPtrs
@@ -1017,8 +1026,11 @@ class Type:
             assert self.signed == other.signed, f'Cannot do math on different signs `{self}` and `{other}`'
             return Type(max(self.width, other.width), self.signed, 0)
     def Deref(self):
-        assert self.numPtrs > 0, f'Cannot dereference type `{self}`'
-        return Type(self.width, self.signed, self.numPtrs - 1)
+        assert self.numPtrs > 0 or self.arylen, f'Cannot dereference type `{self}`'
+        if self.numPtrs > 0:
+            return Type(self.width, self.signed, self.arylen, self.numPtrs - 1)
+        elif self.arylen:
+            return Type(self.width, self.signed)
     def Addr(self):
         assert not self.comptime, f'Cannot take address of comptime variable `{self}`'
         return Type(self.width, self.signed, self.numPtrs + 1)
@@ -1056,24 +1068,34 @@ except Exception as e:
 
 print('\nOUT:')
 print(out)
+
 print('\nHLIR:')
 print(repr(inter))
+with open('out.hlr', 'w') as f:
+    f.write(repr(inter))
 
 llir = LHL.Lower(inter)
 
 print('\nLLIR:')
 print(repr(llir))
+with open('out.llr', 'w') as f:
+    f.write(repr(llir))
 
 asm, bn = LLL.Lower(llir)
 
 print('\nASM:')
 print(repr(asm))
+with open('out.asm', 'w') as f:
+    f.write(repr(asm))
 
 ##print('\nBIN:')
 ##print(repr(bn))
 
+mif = LLL.asmblr.Mifify(bn, 32)
 print('\nMIF:')
-print(LLL.asmblr.Mifify(bn, 32))
+print(mif)
+with open('out.mif', 'w') as f:
+    f.write(repr(inter))
 
 with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
-    f.write(LLL.asmblr.Mifify(bn, 32))
+    f.write(mif)

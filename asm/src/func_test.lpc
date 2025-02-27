@@ -1,6 +1,8 @@
 fn Main() void {
   var n: u32 = 5;
   var fac: u32 = Fac(n);
+  var ary: u32[8];
+  ary[0] = 7;
   @susp();
 }
 

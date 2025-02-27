@@ -104,12 +104,15 @@ def Lower(hlir):
 ##                        nblock.Addline(('comptimedecl', name))
                         if final:
                             finals.append((name, final))
-                    elif final:
-                        for i in range(WidthOf(kind)):
-                            p = len(str(WidthOf(kind)-1))
-                            ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
-                            finals.append((ename, final))
-                            nblock.Addline(('decl', ename))
+                    elif final:     #Vestigially always true, final always == -1 which is True-ish
+                        if kind.arylen:
+                            nblock.Addline(('alloc', name, kind.arylen, kind.OpWidth()))
+                        else:
+                            for i in range(WidthOf(kind)):
+                                p = len(str(WidthOf(kind)-1))
+                                ename = name + '_' + str(i).zfill(p) if WidthOf(kind) > 1 else name
+                                finals.append((ename, final))
+                                nblock.Addline(('decl', ename, kind.OpWidth()))
                     else:
                         for i in range(WidthOf(kind)):
                             p = len(str(WidthOf(kind)-1))
