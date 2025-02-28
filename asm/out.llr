@@ -1,48 +1,145 @@
 fn Main () 1 {
   _Main__:
-    ('decl', 'n', 32)
-    ('expr', ('mov', 'n', 5, None, None), [])
-    ('expr', ('argst', 0, 'n', None, None), [])
-    ('undecl', 'n')
+    ('decl', 'x', 32)
+    ('decl', 'place', 32)
+    ('expr', ('mov', 'place', 1, None, None), [])
+    ('decl', 'chr', 32)
+  L3:
+    ('expr', ('ult', None, 'chr', 54, None), [])
+    ('expr', ('c.jmp', 'L5:', None, None, None), [])
+  _L8:
+    ('expr', ('jmp', 'L7:', None, None, None), [])
+  L7 <- _L8:
+    ('expr', ('ugt', None, 'chr', 63, None), [])
+    ('expr', ('c.jmp', 'L5:', None, None, None), [])
+  _L10:
+    ('expr', ('jmp', 'L6:', None, None, None), [])
+  L5 <- L3:
+    ('expr', ('jmp', 'L2:', None, None, None), [])
+  L6 <- _L10:
+    ('decl', 't13', 32)
+    ('expr', ('sub', 't13', 'chr', 53, None), [])
+    ('decl', 'temp', 32)
+    ('expr', ('mov', 'temp', 't13', None, None), [])
+    ('undecl', 't13')
+    ('expr', ('eq', None, 'temp', 10, None), [])
+    ('expr', ('c.jmp', 'L14:', None, None, None), [])
+  _L16:
+    ('expr', ('jmp', 'L15:', None, None, None), [])
+  L14 <- L6:
+    ('expr', ('mov', 'temp', 0, None, None), [])
+  L15:
+    ('decl', 't19', 32)
+    ('expr', ('mul', 't19', 'temp', 'place', None), [])
+    ('undecl', 'temp')
+    ('expr', ('add', 'x', 'x', 't19', None), [])
+    ('undecl', 't19')
+    ('expr', ('mul', 'place', 'place', 10, None), [])
+  L2:
+    ('decl', 't20', 32)
+    ('expr', ('ldkey', 't20', None, None, None), [])
+    ('expr', ('mov', 'chr', 't20', None, None), [])
+    ('undecl', 't20')
+    ('expr', ('ne', None, 'chr', 51, None), [])
+    ('expr', ('c.jmp', 'L3:', None, None, None), [])
+  _L21:
+    ('undecl', 'place')
+    ('undecl', 'chr')
+    ('expr', ('jmp', 'L4:', None, None, None), [])
+  L4 <- _L21:
+    ('expr', ('argst', 0, 'x', None, None), [])
+    ('undecl', 'x')
     ('expr', ('call', 'Fac', None, None, None), [])
-    ('decl', 't2', 32)
-    ('expr', ('retld', 't2', 0, None, None), [])
-    ('undecl', 't2')
-    ('alloc', 'ary', 8, 32)
-    ('decl', 't3', 32)
-    ('expr', ('bsl', 't3', 0, 5, None), [])
-    ('decl', 't5', 32)
-    ('expr', ('mov', 't5', 7, None, None), [])
-    ('expr', ('stw', 'ary', 't3', 't5', None), [])
-    ('undecl', 't5')
-    ('undecl', 't3')
-    ('undecl', 'ary')
+    ('decl', 't23', 32)
+    ('expr', ('retld', 't23', 0, None, None), [])
+    ('decl', 'fac', 32)
+    ('expr', ('mov', 'fac', 't23', None, None), [])
+    ('undecl', 't23')
+    ('expr', ('argst', 0, 'fac', None, None), [])
+    ('undecl', 'fac')
+    ('expr', ('call', 'BCD', None, None, None), [])
+    ('decl', 't24', 32)
+    ('expr', ('retld', 't24', 0, None, None), [])
+    ('decl', 'bcd', 32)
+    ('expr', ('mov', 'bcd', 't24', None, None), [])
+    ('undecl', 't24')
+    ('decl', 'idx', 32)
+    ('expr', ('mov', 'idx', 0, None, None), [])
+  L27:
+    ('decl', 't29', 32)
+    ('expr', ('and', 't29', 'bcd', 15, None), [])
+    ('decl', 't30', 32)
+    ('expr', ('add', 't30', 't29', 48, None), [])
+    ('undecl', 't29')
+    ('expr', ('stchr', 't30', 'idx', 4294967295, 0), [])
+    ('undecl', 't30')
+    ('expr', ('add', 'idx', 'idx', 1, None), [])
+    ('undecl', 'idx')
+    ('expr', ('mov', 'bcd', 4, None, None), [])
+  L26:
+    ('expr', ('ne', None, 'bcd', 0, None), [])
+    ('undecl', 'bcd')
+    ('expr', ('c.jmp', 'L28:', None, None, None), [])
+  _L32:
+  L28:
     ('expr', ('susp', None, None, None, None), [])
 }
 fn Fac (n_0) 1 {
   _Fac__:
     ('expr', ('argld', 'n', 0, None, None), [])
     ('expr', ('eq', None, 'n', 1, None), [])
-    ('expr', ('c.jmp', 'L7:', None, None, None), [])
-  _L9:
-    ('expr', ('jmp', 'L8:', None, None, None), [])
-  L7 <- _Fac__:
+    ('expr', ('c.jmp', 'L34:', None, None, None), [])
+  _L36:
+    ('expr', ('jmp', 'L35:', None, None, None), [])
+  L34 <- _Fac__:
     ('undecl', 'n')
     ('expr', ('retst', 0, 1, None, None), [])
     ('expr', ('ret', None, None, None, None), [])
-  L8 <- _L9:
-    ('decl', 't12', 32)
-    ('expr', ('sub', 't12', 'n', 1, None), [])
-    ('expr', ('argst', 0, 't12', None, None), [])
-    ('undecl', 't12')
+  L35 <- _L36:
+    ('decl', 't39', 32)
+    ('expr', ('sub', 't39', 'n', 1, None), [])
+    ('expr', ('argst', 0, 't39', None, None), [])
+    ('undecl', 't39')
     ('expr', ('call', 'Fac', None, None, None), [])
-    ('decl', 't13', 32)
-    ('expr', ('retld', 't13', 0, None, None), [])
-    ('decl', 't14', 32)
-    ('expr', ('mul', 't14', 'n', 't13', None), [])
-    ('undecl', 't13')
+    ('decl', 't40', 32)
+    ('expr', ('retld', 't40', 0, None, None), [])
+    ('decl', 't41', 32)
+    ('expr', ('mul', 't41', 'n', 't40', None), [])
+    ('undecl', 't40')
     ('undecl', 'n')
-    ('expr', ('retst', 0, 't14', None, None), [])
-    ('undecl', 't14')
+    ('expr', ('retst', 0, 't41', None, None), [])
+    ('undecl', 't41')
+    ('expr', ('ret', None, None, None, None), [])
+}
+fn BCD (x_0) 1 {
+  _BCD__:
+    ('expr', ('argld', 'x', 0, None, None), [])
+    ('decl', 'y', 32)
+    ('expr', ('mov', 'y', 0, None, None), [])
+  L44:
+    ('expr', ('ne', None, 'x', 0, None), [])
+    ('expr', ('c.jmp', 'L46:', None, None, None), [])
+  _L47:
+  L45:
+    ('decl', 't48', 32)
+    ('expr', ('dab', 't48', 'y', None, None), [])
+    ('expr', ('mov', 'y', 't48', None, None), [])
+    ('undecl', 't48')
+    ('expr', ('mov', 'y', 1, None, None), [])
+    ('decl', 't53', 32)
+    ('expr', ('and', 't53', 'x', 2147483648, None), [])
+    ('expr', ('ne', None, 't53', 0, None), [])
+    ('undecl', 't53')
+    ('expr', ('c.jmp', 'L51:', None, None, None), [])
+  _L54:
+  L50:
+    ('expr', ('or', 'y', 'y', 1, None), [])
+  L51:
+    ('expr', ('mov', 'x', 1, None, None), [])
+    ('expr', ('jmp', 'L44:', None, None, None), [])
+  L46 <- L44:
+    ('undecl', 'x')
+    ('expr', ('retst', 0, 'y', None, None), [])
+    ('undecl', 'y')
     ('expr', ('ret', None, None, None, None), [])
 }

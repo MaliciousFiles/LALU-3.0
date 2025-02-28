@@ -63,29 +63,34 @@ class CompilerState:
     def add_comment(self, comment: str, inline=False):
         self.comments.append((len(self.assembly) - inline, comment, inline))
 
-    def add_assembly(self, instr: tuple):
+    def add_assembly(self, instr: tuple|None):
+        if not instr: return # handy to be able to return None in some places
         self.assembly.append((*instr, *[None for _ in range(6 - len(instr))]))
 
-    def add_all_assembly(self, instrs: list[tuple]):
+    def add_all_assembly(self, instrs: list[tuple|None]):
         for instr in instrs: self.add_assembly(instr)
 
 class Variable:
-    def __init__(self, name: str, width: int, offset: int):
+    def __init__(self, name: str, width: int, offset: int, stored_data: bool):
         self.name: str = name
         self.offset: int = offset
         self.width: int = width if width else 32
+        self.stored_data = stored_data
 
     # makes sure the var is in a reg, returns that reg descriptor
-    def use(self, comp_state, state) -> str:
-        reg = None
-
-        min_last_used = Register.reg_counter # guaranteed higher than all `last_used`s
+    def use(self, comp_state, state, reg=None) -> str:
+        # may or may not use this for assignment, but gotta do the preprocessing anyway
+        min_last_used = Register.reg_counter  # guaranteed higher than all `last_used`s
         last_used_reg = None
+
+        cur_reg = None
         for i in range(NUM_REGS):
-            if state.registers[i].contained == self.name: reg = i
+            if state.registers[i].contained == self.name: cur_reg = i
             if state.registers[i].last_used < min_last_used:
                 min_last_used = state.registers[i].last_used
                 last_used_reg = i
+
+        if reg is None: reg = cur_reg
 
         # look for empty register
         if reg is None:
@@ -98,11 +103,16 @@ class Variable:
         if reg is None: reg = last_used_reg
 
         if state.registers[reg].contained != self.name:
-            comp_state.add_comment(f"assign r{reg} = `{self.name}`")
-
             if state.registers[reg].contained is not None:
                 comp_state.add_assembly(state.variables[state.registers[reg].contained].store(reg))
-            comp_state.add_assembly(self.load(reg))
+                comp_state.add_comment(f"clobbering r{reg} (`{state.registers[reg].contained}`)", True)
+
+            if cur_reg is not None:
+                comp_state.add_assembly(('mov', [], f'r{reg}', f'r{cur_reg}'))
+                state.registers[cur_reg].contaiend = None
+            else:
+                comp_state.add_assembly(self.load(reg))
+            comp_state.add_comment(f"assign r{reg} = `{self.name}`", cur_reg is not None or self.stored_data) # in the case where self.load(...) = None, shouldn't be inline
 
         state.registers[reg].contained = self.name
         state.registers[reg].use()
@@ -112,9 +122,11 @@ class Variable:
 
     # TODO: left-aligned numbers
     def store(self, reg: int, mods: list[str]=[]) -> tuple:
+        self.stored_data = True
         return 'stw', mods,  f'r{reg}', f'r{STKPTR}', self.offset << 5
 
-    def load(self, reg: int, mods: list[str]=[]) -> tuple:
+    def load(self, reg: int, mods: list[str]=[]) -> tuple|None:
+        if not self.stored_data: return None # will get cleared later
         return 'ldw', mods, f'r{reg}', f'r{STKPTR}', self.offset << 5
 
 class Register:
@@ -134,11 +146,12 @@ class BlockState:
         self.variables: dict[str, Variable] = {}
         self.registers: list[Register] = [Register() for _ in range(NUM_REGS)]
 
+    # assumes that if you give an addr, there is data already stored there
     def declare_var(self, name: str, width: int, addr: int = None, alignment = ...):
-        if alignment == ...:
+        if alignment is ...:
             alignment = AlignOf(width)
-        var_addr = self.find_free_addr(width, alignment) if addr == None else addr
-        self.variables[name] = Variable(name, width, var_addr)
+        var_addr = self.find_free_addr(width, alignment) if addr is None else addr
+        self.variables[name] = Variable(name, width, var_addr, addr is not None)
         self.stack_top += 1
         
 
@@ -212,8 +225,6 @@ def CompileBlock(comp_state: CompilerState, block: Block):
         elif instr[0] == 'alloc': # ('alloc', name, length, width=32)
             comp_state.add_comment(f"alloc `{instr[1]}`: u{instr[3] if len(instr) > 3 else 32}[{instr[2]}]")
 
-##            state.variables[instr[1]] = Variable(instr[1], instr[3] if len(instr) > 3 else 32, state.stack_top)
-##            state.stack_top += instr[2]
             width = instr[3] if len(instr) > 3 and instr[3] else 32
             state.declare_var('_ARRAY_'+instr[1], None, instr[2]*width, AlignOf(width))
             state.declare_var(instr[1], 32)
@@ -242,13 +253,18 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 comp_state.add_assembly(('jmp', preFlags, args[0]))
                 if 'c' not in preFlags: exits = True
             elif op == 'ret': # ('ret',)
-                comp_state.add_assembly(('sub', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
                 comp_state.add_assembly(('ret', preFlags))
                 exits = True
             elif op == 'argst': # ('argst', addr, var)
                 if args[0] < NUM_REGS:
-                    comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
-                    state.registers[args[0]].contained = args[1] # may result in two regs pointing to `var`, but that's fine
+                    if isinstance(args[1], str):
+                        state.variables[args[1]].use(comp_state, state, args[0])
+                    else:
+                        if state.registers[args[0]].contained is not None:
+                            comp_state.add_assembly(state.variables[state.registers[args[0]].contained].store(args[0]))
+
+                        comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', args[1]))
+                        state.registers[args[0]].contained = None
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
@@ -263,6 +279,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 comp_state.add_all_assembly(state.dump_regs(preFlags))
                 comp_state.add_assembly(('add', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
                 comp_state.add_assembly(('call', preFlags, label+":"))
+                comp_state.add_assembly(('sub', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
 
                 # assume the function clobbers everything
                 for i in range(NUM_REGS): state.registers[i].contained = None
@@ -272,8 +289,14 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                     comp_state.entrance_states[label] = BlockState()
             elif op == 'retst': # ('retst', addr, var)
                 if args[0] < NUM_REGS:
-                    comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
-                    state.registers[args[0]].contained = args[1]  # may result in two regs pointing to `var`, but that's fine
+                    if isinstance(args[1], str):
+                        state.variables[args[1]].use(comp_state, state, args[0])
+                    else:
+                        if state.registers[args[0]].contained is not None:
+                            comp_state.add_assembly(state.variables[state.registers[args[0]].contained].store(args[0]))
+
+                        comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', args[1]))
+                        state.registers[args[0]].contained = None
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
