@@ -1,4 +1,3 @@
-import AssemblerV3 as asmblr
 from copy import deepcopy as copy
 from math import log2
 
@@ -324,20 +323,21 @@ def Lower(llir):
 
     comp_state.assembly[0] = ('mov', [], f'r{STKPTR}', (len(comp_state.assembly)+1+len([i for i in comp_state.assembly[1:] if any(isinstance(a, int) and a >= 32 for a in i[2:])])) << 5)
 
+    out = ""
     for i in range(len(comp_state.assembly)):
         for label, idx in comp_state.labels.items():
-            if idx == i: print(f"{label}:")
+            if idx == i: out += f"{label}:\n"
         comment = "\t\t\t"
         for c in comp_state.comments:
             if c[0] == i:
                 if c[2]: comment += f"\t// {c[1]}"
-                else: print("\t//", c[1])
+                else: out += f"\t// {c[1]}\n"
 
         instr = comp_state.assembly[i]
 
         pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
         post = ('.s' if 's' in instr[1] else '') + ('.e' if any(isinstance(arg, int) and arg >= 32 for arg in instr[2:]) else '')
 
-        print(f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}")
+        out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"
 
-    pass
+    return out

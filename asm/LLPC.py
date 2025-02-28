@@ -1,6 +1,7 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
 import LowerLLIR3 as LLL
+import AssemblerV3 as ASM
 
 PTRWIDTH = 32
 
@@ -1058,8 +1059,6 @@ srcs=[]
 funcs = {}
 inter = HLIR()
 
-UnpackHex = LLL.asmblr.UnpackHex
-
 try:
     Gen(tree)
 except Exception as e:
@@ -1081,21 +1080,20 @@ print(repr(llir))
 with open('out.llr', 'w') as f:
     f.write(repr(llir))
 
-asm, bn = LLL.Lower(llir)
+asm = LLL.Lower(llir)
 
 print('\nASM:')
-print(repr(asm))
+print(asm)
 with open('out.asm', 'w') as f:
-    f.write(repr(asm))
+    f.write(asm)
 
-##print('\nBIN:')
-##print(repr(bn))
+program = ASM.ParseFile(asm)
 
-mif = LLL.asmblr.Mifify(bn, 32)
+mif = ASM.Mifify(program, 15)
 print('\nMIF:')
 print(mif)
 with open('out.mif', 'w') as f:
-    f.write(repr(inter))
+    f.write(mif)
 
 with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
     f.write(mif)
