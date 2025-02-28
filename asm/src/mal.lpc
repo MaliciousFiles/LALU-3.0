@@ -11,15 +11,8 @@ fn Main() void {
     place *= 10;
   }
 
-  var fac: u32 = Fac(x);
-  var bcd: u32 = BCD(fac);
-  
-  var idx: u32 = 0;
-  for (var nibble: i32 = <i32> @andn(@log(bcd), 3); nibble >= 0; nibble -= 4) {
-    @stchr((@bsf(bcd, nibble, 4)&15) + 48, idx, 0xFFFFFFFF, 0);
-    idx += 1;
-  }
-  
+  Print(Fac(x));
+
   while (true) {}
 }
 
@@ -28,17 +21,21 @@ fn Fac(n: u32) u32 {
   return n*Fac(n-1);
 }
 
-fn BCD(x: u32) u32 {
-  var y: u32 = 0;
+fn Print(x: u32) void {
+  var bcd: u32 = 0;
 
   for (var _: u32 = 0; _ < 32; _ += 1) {
-    y = @dab(y);
-    y <<= 1;
+    bcd = @dab(bcd);
+    bcd <<= 1;
     if (x & (1 << 31)) {
-      y |= 1;
+      bcd |= 1;
     }
     x <<= 1;
   }
 
-  return y;
+  var idx: u32 = 0;
+  for (var nibble: i32 = <i32> @andn(@log(bcd), 3); nibble >= 0; nibble -= 4) {
+    @stchr((@bsf(bcd, nibble, 4)&15) + 48, idx, 0xFFFFFFFF, 0);
+    idx += 1;
+  }
 }
