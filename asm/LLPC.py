@@ -1,11 +1,11 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
-import LowerLLIR2 as LLL
+import LowerLLIR3 as LLL
 
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/mal.lpc', 'r') as f:
+with open('src/func_test.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -114,7 +114,7 @@ def Gen(tree, pre = True):
             if not pre:
                 inter.NewFunc(name, args, ret)
                 for i, (arg, kind) in enumerate(args):
-                    inter.AddPent('argpop', arg, i, kind, None, width = kind.OpWidth())
+                    inter.AddPent('argld', arg, i, kind, None, width = kind.OpWidth())
                 Gen(body)
                 inter.PopEnv()
                 inter.EndFunc()
@@ -370,10 +370,10 @@ def Rvalue(expr):
             funargs, funret = funcs[func]
             assert len(funargs) == len(args), f'Function `{func}` has arity `{len(funargs)}`, but was given `{len(args)}` args'
             for i, (arg, kind) in enumerate(args):
-                inter.AddPent('argpsh', i, arg, None, None, width=kind.OpWidth())
+                inter.AddPent('argst', i, arg, None, None, width=kind.OpWidth())
             inter.AddPent('call', func, None, None, None)
             tmp = NewTemp(funret)
-            inter.AddPent('retpop', tmp, 0, None, None, width=funret.OpWidth())
+            inter.AddPent('retld', tmp, 0, None, None, width=funret.OpWidth())
             return tmp, funret
             
         elif data == 'intrinsic':
@@ -783,7 +783,7 @@ class HLIR:
         if len(args) == 0:
             assert Type.FromStr('void').CanCoerceTo(self.func['ret']), f'Cannot return without value for function with return type `{self.func["ret"]}`'
         for i, (arg, kind) in enumerate(args):
-            self.AddPent('retpsh', i, arg, None, None, width = kind.OpWidth())
+            self.AddPent('retst', i, arg, None, None, width = kind.OpWidth())
         self.body.exit = ('return', eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
@@ -828,7 +828,7 @@ class HLIR:
                 elif line[0] == 'expr':
                     if line[1][0] in ['call']:
                         continue
-                    if line[1][0] == 'argpop':
+                    if line[1][0] == 'argld':
                         print(f'Popped var `{line[1][1]}`')
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
@@ -944,9 +944,10 @@ class HLIR:
         self.data[key] = txt
         return key
 class Type:
-    def __init__(self, width = 32, signed = False, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
+    def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
         self.width = width
         self.signed = signed
+        self.arylen = arylen
         self.numPtrs = numPtrs
         self.comptime = comptime
         self.isbool = isbool
@@ -963,7 +964,12 @@ class Type:
              return Type(comptime = True)
         self.signed = txt[0]=='i'
         self.numPtrs = txt.count('*')
-        self.width = int(txt[1:len(txt)-self.numPtrs])
+        txt = txt[:len(txt)-self.numPtrs]
+        if '[' in txt:
+            arylen = int(txt.split('[')[1][:-1])
+            self.arylen = arylen
+            txt = txt.split('[')[0]
+        self.width = int(txt[1:])
         return self
     def OpWidth(self):
         return PTRWIDTH if self.numPtrs else self.width
@@ -977,7 +983,8 @@ class Type:
         if self.comptime:
             return 'comp'
         else:
-            return f'{"ui"[self.signed]}{self.width}{"*"*self.numPtrs}'
+            ary = f'[{self.arylen}]' if self.arylen else ''
+            return f'{"ui"[self.signed]}{self.width}{ary}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
         if self.isvoid == other.isvoid == True:
             return True
@@ -987,6 +994,8 @@ class Type:
             return True
         if other.comptime:
             return False
+        if self.arylen and other.numPtrs > 0:
+            return True
         if self.numPtrs > 0:
             if other.numPtrs > 0:
                 return other.numPtrs == self.numPtrs
@@ -1017,8 +1026,11 @@ class Type:
             assert self.signed == other.signed, f'Cannot do math on different signs `{self}` and `{other}`'
             return Type(max(self.width, other.width), self.signed, 0)
     def Deref(self):
-        assert self.numPtrs > 0, f'Cannot dereference type `{self}`'
-        return Type(self.width, self.signed, self.numPtrs - 1)
+        assert self.numPtrs > 0 or self.arylen, f'Cannot dereference type `{self}`'
+        if self.numPtrs > 0:
+            return Type(self.width, self.signed, self.arylen, self.numPtrs - 1)
+        elif self.arylen:
+            return Type(self.width, self.signed)
     def Addr(self):
         assert not self.comptime, f'Cannot take address of comptime variable `{self}`'
         return Type(self.width, self.signed, self.numPtrs + 1)
@@ -1056,24 +1068,34 @@ except Exception as e:
 
 print('\nOUT:')
 print(out)
+
 print('\nHLIR:')
 print(repr(inter))
+with open('out.hlr', 'w') as f:
+    f.write(repr(inter))
 
 llir = LHL.Lower(inter)
 
 print('\nLLIR:')
 print(repr(llir))
+with open('out.llr', 'w') as f:
+    f.write(repr(llir))
 
-asm, bn, fstate = LLL.Lower(llir)
+asm, bn = LLL.Lower(llir)
 
 print('\nASM:')
 print(repr(asm))
+with open('out.asm', 'w') as f:
+    f.write(repr(asm))
 
 ##print('\nBIN:')
 ##print(repr(bn))
 
+mif = LLL.asmblr.Mifify(bn, 32)
 print('\nMIF:')
-print(LLL.asmblr.Mifify(bn, 32))
+print(mif)
+with open('out.mif', 'w') as f:
+    f.write(repr(inter))
 
 with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
-    f.write(LLL.asmblr.Mifify(bn, 32))
+    f.write(mif)
