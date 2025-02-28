@@ -22,7 +22,7 @@ module operational_memory (
             .q_a(userOut_fetch),
 
             .address_b(memAccessAddress),
-            .wren_b(memAccessWren),
+            .wren_b(~operationMode && memAccessWren),
             .data_b(memAccessData),
             .rden_b(memAccessRden),
             .q_b(userOut_memAccess));
@@ -38,7 +38,7 @@ module operational_memory (
             .q_a(kernOut_fetch),
 
             .address_b(memAccessAddress[14:0]),
-            .wren_b(memAccessWren),
+            .wren_b(operationMode && memAccessWren),
             .data_b(memAccessData),
             .rden_b(memAccessRden),
             .q_b(kernOut_memAccess));

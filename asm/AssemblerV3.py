@@ -481,14 +481,20 @@ def ParseFile(file):
 ##    print(codes, lbls)
     out = []
     lblsinv = {v:k for k,v in lbls.items()}
+
+    prnt = ""
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
         if code['loc'] in lblsinv:
-            print(f"\t{lblsinv[code['loc']]}:")
-        print(f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}")
+            prnt += f"\t{lblsinv[code['loc']]}:\n"
+        prnt += f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}\n"
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
+
+    with open("asm_dbg.txt", 'w') as f:
+        f.write(prnt)
+
     return mem
 
 def Mifify(mem, size):

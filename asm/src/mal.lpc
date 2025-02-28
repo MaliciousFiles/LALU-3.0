@@ -15,13 +15,12 @@ fn Main() void {
   var bcd: u32 = BCD(fac);
   
   var idx: u32 = 0;
-  do (bcd) {
-    @stchr((bcd&15) + 48, idx, 0xFFFFFFFF, 0);
+  for (var nibble: i32 = <i32> @andn(@log(bcd), 3); nibble >= 0; nibble -= 4) {
+    @stchr((@bsf(bcd, nibble, 4)&15) + 48, idx, 0xFFFFFFFF, 0);
     idx += 1;
-    bcd >>= 4;
   }
   
-  @susp();
+  while (true) {}
 }
 
 fn Fac(n: u32) u32 {
@@ -31,7 +30,8 @@ fn Fac(n: u32) u32 {
 
 fn BCD(x: u32) u32 {
   var y: u32 = 0;
-  while (x) {
+
+  for (var _: u32 = 0; _ < 32; _ += 1) {
     y = @dab(y);
     y <<= 1;
     if (x & (1 << 31)) {
@@ -39,6 +39,6 @@ fn BCD(x: u32) u32 {
     }
     x <<= 1;
   }
-  return y;
 
+  return y;
 }

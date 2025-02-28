@@ -1,12 +1,12 @@
 fn Main () void {
   _Main__:
-    ('decl', 'x', Type.FromStr("u32"), -1, 'src', 74)
-    ('decl', 'place', Type.FromStr("u32"), -1, 'src', 75)
-    ('decl', 't1', Type.FromStr("comp"), -1, 'src', 76)
+    ('decl', 'x', Type.FromStr("u32"), -1, 'src', 121)
+    ('decl', 'place', Type.FromStr("u32"), -1, 'src', 122)
+    ('decl', 't1', Type.FromStr("comp"), -1, 'src', 123)
     ('expr', ('=', 't1', 1, None, None, 32), 1, 'src', 3)
     ('expr', ('=<>', 'place', 't1', Type.FromStr("u32"), Type.FromStr("comp"), 32), 2, 'src', 4)
-    ('undecl', 't1', Type.FromStr("comp"), 'src', 89)
-    ('decl', 'chr', Type.FromStr("u32"), -1, 'src', 77)
+    ('undecl', 't1', Type.FromStr("comp"), 'src', 132)
+    ('decl', 'chr', Type.FromStr("u32"), -1, 'src', 124)
   None 
     FALL: L3
 
@@ -37,7 +37,7 @@ fn Main () void {
     ('expr', ('-', 't13', 'chr', 53, None, 32), 10, 'src', 12)
     ('decl', 'temp', Type.FromStr("u32"), -1, 'src', 22)
     ('expr', ('=', 'temp', 't13', None, None, 32), 11, 'src', 15)
-    ('undecl', 't13', Type.FromStr("u32"), 'src', 90)
+    ('undecl', 't13', Type.FromStr("u32"), 'src', 133)
     ('expr', ('==', None, 'temp', 10, None, 32), 13, 'src', 17)
   ('c.jmp', 'L14') 
     FALL: _L16
@@ -50,189 +50,209 @@ fn Main () void {
     ('decl', 't18', Type.FromStr("comp"), -1, 'src', 18)
     ('expr', ('=', 't18', 0, None, None, 32), 15, 'src', 19)
     ('expr', ('=<>', 'temp', 't18', Type.FromStr("u32"), Type.FromStr("comp"), 32), 16, 'src', 20)
-    ('undecl', 't18', Type.FromStr("comp"), 'src', 91)
+    ('undecl', 't18', Type.FromStr("comp"), 'src', 134)
   None 
     FALL: L15
 
   L15:
     ('decl', 't19', Type.FromStr("u32"), -1, 'src', 26)
     ('expr', ('*', 't19', 'temp', 'place', None, 32), 17, 'src', 24)
-    ('undecl', 'temp', Type.FromStr("u32"), 'src', 92)
+    ('undecl', 'temp', Type.FromStr("u32"), 'src', 135)
     ('expr', ('+', 'x', 'x', 't19', None, 32), 18, 'src', 27)
-    ('undecl', 't19', Type.FromStr("u32"), 'src', 93)
+    ('undecl', 't19', Type.FromStr("u32"), 'src', 136)
     ('expr', ('*', 'place', 'place', 10, None, 32), 19, 'src', 29)
   None 
     FALL: L2
 
   L2:
-    ('decl', 't20', Type.FromStr("u32"), -1, 'src', 78)
+    ('decl', 't20', Type.FromStr("u32"), -1, 'src', 125)
     ('expr', ('@ldkey', 't20', None, None, None, 32), 20, 'src', 35)
     ('expr', ('=', 'chr', 't20', None, None, 32), 21, 'src', 37)
-    ('undecl', 't20', Type.FromStr("u32"), 'src', 94)
+    ('undecl', 't20', Type.FromStr("u32"), 'src', 137)
     ('expr', ('!=', None, 'chr', 51, None, 32), 23, 'src', 39)
   ('c.jmp', 'L3') 
     FALL: _L21
 
   _L21:
-    ('undecl', 'place', Type.FromStr("u32"), 'src', 95)
-    ('undecl', 'chr', Type.FromStr("u32"), 'src', 96)
+    ('undecl', 'place', Type.FromStr("u32"), 'src', 138)
+    ('undecl', 'chr', Type.FromStr("u32"), 'src', 139)
   ('goto', 'L4', 24) 
     FALL: None
 
   L4:
-    ('expr', ('argst', 0, 'x', None, None, 32), 25, 'src', 41)
-    ('undecl', 'x', Type.FromStr("u32"), 'src', 97)
-    ('expr', ('call', 'Fac', None, None, None, 32), 26, 'src', 42)
-    ('decl', 't23', Type.FromStr("u32"), -1, 'src', 79)
-    ('expr', ('retld', 't23', 0, None, None, 32), 27, 'src', 44)
-    ('decl', 'fac', Type.FromStr("u32"), -1, 'src', 80)
-    ('expr', ('=', 'fac', 't23', None, None, 32), 28, 'src', 47)
-    ('undecl', 't23', Type.FromStr("u32"), 'src', 98)
-    ('expr', ('argst', 0, 'fac', None, None, 32), 29, 'src', 49)
-    ('undecl', 'fac', Type.FromStr("u32"), 'src', 99)
-    ('expr', ('call', 'BCD', None, None, None, 32), 30, 'src', 50)
-    ('decl', 't24', Type.FromStr("u32"), -1, 'src', 81)
-    ('expr', ('retld', 't24', 0, None, None, 32), 31, 'src', 52)
-    ('decl', 'bcd', Type.FromStr("u32"), -1, 'src', 85)
-    ('expr', ('=', 'bcd', 't24', None, None, 32), 32, 'src', 55)
-    ('undecl', 't24', Type.FromStr("u32"), 'src', 100)
-    ('decl', 'idx', Type.FromStr("u32"), -1, 'src', 83)
-    ('decl', 't25', Type.FromStr("comp"), -1, 'src', 84)
-    ('expr', ('=', 't25', 0, None, None, 32), 33, 'src', 58)
-    ('expr', ('=<>', 'idx', 't25', Type.FromStr("u32"), Type.FromStr("comp"), 32), 34, 'src', 59)
-    ('undecl', 't25', Type.FromStr("comp"), 'src', 101)
+    ('expr', ('argst', 0, 'x', None, None, 32), 26, 'src', 41)
+    ('undecl', 'x', Type.FromStr("u32"), 'src', 140)
+    ('expr', ('call', 'Fac', None, None, None, 32), 27, 'src', 42)
+    ('decl', 't24', Type.FromStr("u32"), -1, 'src', 126)
+    ('expr', ('retld', 't24', 0, None, None, 32), 28, 'src', 44)
+    ('decl', 'fac', Type.FromStr("u32"), -1, 'src', 127)
+    ('expr', ('=', 'fac', 't24', None, None, 32), 29, 'src', 47)
+    ('undecl', 't24', Type.FromStr("u32"), 'src', 141)
+    ('expr', ('argst', 0, 'fac', None, None, 32), 30, 'src', 49)
+    ('undecl', 'fac', Type.FromStr("u32"), 'src', 142)
+    ('expr', ('call', 'BCD', None, None, None, 32), 31, 'src', 50)
+    ('decl', 't25', Type.FromStr("u32"), -1, 'src', 128)
+    ('expr', ('retld', 't25', 0, None, None, 32), 32, 'src', 52)
+    ('decl', 'bcd', Type.FromStr("u32"), -1, 'src', 129)
+    ('expr', ('=', 'bcd', 't25', None, None, 32), 33, 'src', 55)
+    ('undecl', 't25', Type.FromStr("u32"), 'src', 143)
+    ('decl', 'idx', Type.FromStr("u32"), -1, 'src', 130)
+    ('decl', 't26', Type.FromStr("comp"), -1, 'src', 131)
+    ('expr', ('=', 't26', 0, None, None, 32), 34, 'src', 58)
+    ('expr', ('=<>', 'idx', 't26', Type.FromStr("u32"), Type.FromStr("comp"), 32), 35, 'src', 59)
+    ('undecl', 't26', Type.FromStr("comp"), 'src', 144)
+    ('decl', 't30', Type.FromStr("u32"), -1, 'src', 117)
+    ('expr', ('@log', 't30', 'bcd', None, None, 32), 36, 'src', 62)
+    ('decl', 't31', Type.FromStr("u32"), -1, 'src', 118)
+    ('expr', ('@andn', 't31', 't30', 3, None, 32), 37, 'src', 65)
+    ('undecl', 't30', Type.FromStr("u32"), 'src', 145)
+    ('decl', 't32', Type.FromStr("i32"), -1, 'src', 119)
+    ('expr', ('=<>', 't32', 't31', Type.FromStr("i32"), Type.FromStr("u32"), 32), 38, 'src', 68)
+    ('undecl', 't31', Type.FromStr("u32"), 'src', 146)
+    ('decl', 'nibble', Type.FromStr("i32"), -1, 'src', 120)
+    ('expr', ('=', 'nibble', 't32', None, None, 32), 39, 'src', 71)
+    ('undecl', 't32', Type.FromStr("i32"), 'src', 147)
   None 
     FALL: L27
 
   L27:
-    ('decl', 't29', Type.FromStr("u32"), -1, 'src', 63)
-    ('expr', ('&', 't29', 'bcd', 15, None, 32), 35, 'src', 62)
-    ('decl', 't30', Type.FromStr("u32"), -1, 'src', 67)
-    ('expr', ('+', 't30', 't29', 48, None, 32), 36, 'src', 65)
-    ('undecl', 't29', Type.FromStr("u32"), 'src', 102)
-    ('expr', ('@stchr', 't30', 'idx', 4294967295, 0, 32), 37, 'src', 68)
-    ('undecl', 't30', Type.FromStr("u32"), 'src', 103)
-    ('expr', ('+', 'idx', 'idx', 1, None, 32), 38, 'src', 70)
-    ('undecl', 'idx', Type.FromStr("u32"), 'src', 104)
-    ('decl', 't31', Type.FromStr("comp"), -1, 'src', 71)
-    ('expr', ('=', 't31', 4, None, None, 32), 39, 'src', 72)
-    ('expr', ('=<>', 'bcd', 't31', Type.FromStr("u32"), Type.FromStr("comp"), 32), 40, 'src', 73)
-    ('undecl', 't31', Type.FromStr("comp"), 'src', 105)
-  None 
-    FALL: L26
-
-  L26:
-    ('expr', ('!=', None, 'bcd', 0, None, 32), 41, 'src', 86)
-    ('undecl', 'bcd', Type.FromStr("u32"), 'src', 106)
+    ('expr', ('->=', None, 'nibble', 0, None, 32), 41, 'src', 73)
   ('c.jmp', 'L28') 
-    FALL: _L32
+    FALL: _L33
 
-  _L32:
-  None 
-    FALL: L28
+  _L33:
+    ('undecl', 'idx', Type.FromStr("u32"), 'src', 148)
+    ('undecl', 'bcd', Type.FromStr("u32"), 'src', 149)
+    ('undecl', 'nibble', Type.FromStr("i32"), 'src', 150)
+  ('goto', 'L29', 42) 
+    FALL: None
 
   L28:
-    ('expr', ['@susp', None, None, None, None, 32], 42, 'src', 88)
+    ('decl', 't35', Type.FromStr("u32"), -1, 'src', 78)
+    ('expr', ('@bsf', 't35', 'bcd', 'nibble', 4, 32), 43, 'src', 77)
+    ('decl', 't36', Type.FromStr("u32"), -1, 'src', 81)
+    ('expr', ('&', 't36', 't35', 15, None, 32), 44, 'src', 80)
+    ('undecl', 't35', Type.FromStr("u32"), 'src', 151)
+    ('decl', 't37', Type.FromStr("u32"), -1, 'src', 85)
+    ('expr', ('+', 't37', 't36', 48, None, 32), 45, 'src', 83)
+    ('undecl', 't36', Type.FromStr("u32"), 'src', 152)
+    ('expr', ('@stchr', 't37', 'idx', 4294967295, 0, 32), 46, 'src', 86)
+    ('undecl', 't37', Type.FromStr("u32"), 'src', 153)
+    ('expr', ('+', 'idx', 'idx', 1, None, 32), 47, 'src', 88)
+    ('expr', ('-', 'nibble', 'nibble', 4, None, 32), 48, 'src', 105)
+  ('goto', 'L27', 49) 
+    FALL: None
+
+  L29:
   None 
-    FALL: EOF
+    FALL: L39
+
+  L39:
+  ('goto', 'L40', 50) 
+    FALL: None
+
+  L40:
+  ('goto', 'L39', 51) 
+    FALL: None
 
 }
 fn Fac (n: u32) u32 {
   _Fac__:
-    ('expr', ('argld', 'n', 0, Type.FromStr("u32"), None, 32), 43, 'src', 107)
-    ('expr', ('==', None, 'n', 1, None, 32), 45, 'src', 108)
-  ('c.jmp', 'L34') 
-    FALL: _L36
+    ('expr', ('argld', 'n', 0, Type.FromStr("u32"), None, 32), 52, 'src', 154)
+    ('expr', ('==', None, 'n', 1, None, 32), 54, 'src', 155)
+  ('c.jmp', 'L44') 
+    FALL: _L46
 
-  _L36:
-  ('goto', 'L35', 46) 
+  _L46:
+  ('goto', 'L45', 55) 
     FALL: None
 
-  L34:
-    ('undecl', 'n', Type.FromStr("u32"), 'src', 122)
-    ('expr', ('retst', 0, 1, None, None, 32), 48, 'src', 109)
-  ('return', 48) 
+  L44:
+    ('undecl', 'n', Type.FromStr("u32"), 'src', 169)
+    ('expr', ('retst', 0, 1, None, None, 32), 57, 'src', 156)
+  ('return', 57) 
     FALL: None
 
-  L35:
-    ('decl', 't39', Type.FromStr("u32"), -1, 'src', 112)
-    ('expr', ('-', 't39', 'n', 1, None, 32), 49, 'src', 111)
-    ('expr', ('argst', 0, 't39', None, None, 32), 50, 'src', 113)
-    ('undecl', 't39', Type.FromStr("u32"), 'src', 123)
-    ('expr', ('call', 'Fac', None, None, None, 32), 51, 'src', 114)
-    ('decl', 't40', Type.FromStr("u32"), -1, 'src', 117)
-    ('expr', ('retld', 't40', 0, None, None, 32), 52, 'src', 116)
-    ('decl', 't41', Type.FromStr("u32"), -1, 'src', 120)
-    ('expr', ('*', 't41', 'n', 't40', None, 32), 53, 'src', 119)
-    ('undecl', 't40', Type.FromStr("u32"), 'src', 124)
-    ('undecl', 'n', Type.FromStr("u32"), 'src', 125)
-    ('expr', ('retst', 0, 't41', None, None, 32), 55, 'src', 121)
-    ('undecl', 't41', Type.FromStr("u32"), 'src', 126)
-  ('return', 55) 
+  L45:
+    ('decl', 't49', Type.FromStr("u32"), -1, 'src', 159)
+    ('expr', ('-', 't49', 'n', 1, None, 32), 58, 'src', 158)
+    ('expr', ('argst', 0, 't49', None, None, 32), 59, 'src', 160)
+    ('undecl', 't49', Type.FromStr("u32"), 'src', 170)
+    ('expr', ('call', 'Fac', None, None, None, 32), 60, 'src', 161)
+    ('decl', 't50', Type.FromStr("u32"), -1, 'src', 164)
+    ('expr', ('retld', 't50', 0, None, None, 32), 61, 'src', 163)
+    ('decl', 't51', Type.FromStr("u32"), -1, 'src', 167)
+    ('expr', ('*', 't51', 'n', 't50', None, 32), 62, 'src', 166)
+    ('undecl', 't50', Type.FromStr("u32"), 'src', 171)
+    ('undecl', 'n', Type.FromStr("u32"), 'src', 172)
+    ('expr', ('retst', 0, 't51', None, None, 32), 64, 'src', 168)
+    ('undecl', 't51', Type.FromStr("u32"), 'src', 173)
+  ('return', 64) 
     FALL: None
 
 }
 fn BCD (x: u32) u32 {
   _BCD__:
-    ('expr', ('argld', 'x', 0, Type.FromStr("u32"), None, 32), 56, 'src', 127)
-    ('decl', 'y', Type.FromStr("u32"), -1, 'src', 161)
-    ('decl', 't43', Type.FromStr("comp"), -1, 'src', 160)
-    ('expr', ('=', 't43', 0, None, None, 32), 57, 'src', 130)
-    ('expr', ('=<>', 'y', 't43', Type.FromStr("u32"), Type.FromStr("comp"), 32), 58, 'src', 131)
-    ('undecl', 't43', Type.FromStr("comp"), 'src', 163)
+    ('expr', ('argld', 'x', 0, Type.FromStr("u32"), None, 32), 65, 'src', 174)
+    ('decl', 'y', Type.FromStr("u32"), -1, 'src', 219)
+    ('decl', 't53', Type.FromStr("comp"), -1, 'src', 216)
+    ('expr', ('=', 't53', 0, None, None, 32), 66, 'src', 177)
+    ('expr', ('=<>', 'y', 't53', Type.FromStr("u32"), Type.FromStr("comp"), 32), 67, 'src', 178)
+    ('undecl', 't53', Type.FromStr("comp"), 'src', 221)
+    ('decl', '_', Type.FromStr("u32"), -1, 'src', 217)
+    ('decl', 't57', Type.FromStr("comp"), -1, 'src', 218)
+    ('expr', ('=', 't57', 0, None, None, 32), 68, 'src', 181)
+    ('expr', ('=<>', '_', 't57', Type.FromStr("u32"), Type.FromStr("comp"), 32), 69, 'src', 182)
+    ('undecl', 't57', Type.FromStr("comp"), 'src', 222)
   None 
-    FALL: L44
+    FALL: L54
 
-  L44:
-    ('expr', ('!=', None, 'x', 0, None, 32), 59, 'src', 132)
-  ('c.jmp', 'L46') 
-    FALL: _L47
+  L54:
+    ('expr', ('+<', None, '_', 32, None, 32), 71, 'src', 184)
+  ('c.jmp', 'L55') 
+    FALL: _L58
 
-  _L47:
-  None 
-    FALL: L45
-
-  L45:
-    ('decl', 't48', Type.FromStr("u32"), -1, 'src', 152)
-    ('expr', ('@dab', 't48', 'y', None, None, 32), 60, 'src', 135)
-    ('expr', ('=', 'y', 't48', None, None, 32), 61, 'src', 137)
-    ('undecl', 't48', Type.FromStr("u32"), 'src', 164)
-    ('decl', 't49', Type.FromStr("comp"), -1, 'src', 153)
-    ('expr', ('=', 't49', 1, None, None, 32), 62, 'src', 139)
-    ('expr', ('=<>', 'y', 't49', Type.FromStr("u32"), Type.FromStr("comp"), 32), 63, 'src', 140)
-    ('undecl', 't49', Type.FromStr("comp"), 'src', 165)
-    ('decl', 't52', Type.FromStr("comp"), -1, 'src', 154)
-    ('expr', ('<<', 't52', 1, 31, None, 32), 64, 'src', 142)
-    ('decl', 't53', Type.FromStr("u32"), -1, 'src', 155)
-    ('expr', ('&', 't53', 'x', 't52', None, 32), 65, 'src', 145)
-    ('undecl', 't52', Type.FromStr("comp"), 'src', 166)
-    ('expr', ('!=', None, 't53', 0, None, 32), 66, 'src', 147)
-    ('undecl', 't53', Type.FromStr("u32"), 'src', 167)
-  ('c.jmp', 'L51') 
-    FALL: _L54
-
-  _L54:
-  None 
-    FALL: L50
-
-  L50:
-    ('expr', ('|', 'y', 'y', 1, None, 32), 67, 'src', 149)
-  None 
-    FALL: L51
-
-  L51:
-    ('decl', 't55', Type.FromStr("comp"), -1, 'src', 156)
-    ('expr', ('=', 't55', 1, None, None, 32), 68, 'src', 157)
-    ('expr', ('=<>', 'x', 't55', Type.FromStr("u32"), Type.FromStr("comp"), 32), 69, 'src', 158)
-    ('undecl', 't55', Type.FromStr("comp"), 'src', 168)
-  ('goto', 'L44', 70) 
+  _L58:
+    ('undecl', 'x', Type.FromStr("u32"), 'src', 223)
+    ('undecl', '_', Type.FromStr("u32"), 'src', 224)
+  ('goto', 'L56', 72) 
     FALL: None
 
-  L46:
-    ('undecl', 'x', Type.FromStr("u32"), 'src', 169)
-    ('expr', ('retst', 0, 'y', None, None, 32), 72, 'src', 162)
-    ('undecl', 'y', Type.FromStr("u32"), 'src', 170)
-  ('return', 72) 
+  L55:
+    ('decl', 't60', Type.FromStr("u32"), -1, 'src', 205)
+    ('expr', ('@dab', 't60', 'y', None, None, 32), 73, 'src', 187)
+    ('expr', ('=', 'y', 't60', None, None, 32), 74, 'src', 189)
+    ('undecl', 't60', Type.FromStr("u32"), 'src', 225)
+    ('expr', ('<<', 'y', 'y', 1, None, 32), 75, 'src', 191)
+    ('decl', 't63', Type.FromStr("comp"), -1, 'src', 206)
+    ('expr', ('<<', 't63', 1, 31, None, 32), 76, 'src', 193)
+    ('decl', 't64', Type.FromStr("u32"), -1, 'src', 207)
+    ('expr', ('&', 't64', 'x', 't63', None, 32), 77, 'src', 196)
+    ('undecl', 't63', Type.FromStr("comp"), 'src', 226)
+    ('expr', ('==', None, 't64', 0, None, 32), 78, 'src', 198)
+    ('undecl', 't64', Type.FromStr("u32"), 'src', 227)
+  ('c.jmp', 'L62') 
+    FALL: _L65
+
+  _L65:
+  None 
+    FALL: L61
+
+  L61:
+    ('expr', ('|', 'y', 'y', 1, None, 32), 79, 'src', 200)
+  None 
+    FALL: L62
+
+  L62:
+    ('expr', ('<<', 'x', 'x', 1, None, 32), 80, 'src', 208)
+    ('expr', ('+', '_', '_', 1, None, 32), 81, 'src', 214)
+  ('goto', 'L54', 82) 
+    FALL: None
+
+  L56:
+    ('expr', ('retst', 0, 'y', None, None, 32), 84, 'src', 220)
+    ('undecl', 'y', Type.FromStr("u32"), 'src', 228)
+  ('return', 84) 
     FALL: None
 
 }

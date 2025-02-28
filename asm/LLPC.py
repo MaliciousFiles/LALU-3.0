@@ -165,6 +165,7 @@ def Gen(tree, pre = True):
             inter.trues = []; inter.falses = []
             if cond:
                 inter.CJump(cond, post)
+            inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(post)
         elif data.type == 'RULE' and data.value == 'doelsestmt':
@@ -185,6 +186,7 @@ def Gen(tree, pre = True):
             inter.trues = []; inter.falses = []
             if cond:
                 inter.CJump(cond, _else)
+            inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(_else)
             Gen(stmt1.children[0])
@@ -504,7 +506,7 @@ def Rvalue(expr):
             lhs, lk = Lvalue(le)
             rhs, rk = Rvalue(re)
 ##            print(op.children)
-            if len(op.children[0].value) == 2:
+            if len(op.children[0].value) >= 2:
                 op = op.children[0].value[:-1]
                 assert rk.CanCoerceTo(lk)
                 kind = lk.Common(rk)
@@ -759,7 +761,7 @@ class HLIR:
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
         self.Use(cond)
-        self.AddPent('!=', None, cond, 0, None)
+        self.AddPent('==', None, cond, 0, None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
