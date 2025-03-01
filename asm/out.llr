@@ -10,7 +10,7 @@ fn Main () 1 {
     ('undecl', 't2')
     ('alloc', 'ary', 8, 32)
     ('decl', 't3', 32)
-    ('expr', ('bsl', 't3', 0, 5, None), [])
+    ('expr', ('bsl', 't3', 1, 5, None), [])
     ('decl', 't5', 32)
     ('expr', ('mov', 't5', 7, None, None), [])
     ('expr', ('stw', 'ary', 't3', 't5', None), [])

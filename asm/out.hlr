@@ -13,7 +13,7 @@ fn Main () void {
     ('undecl', 't2', Type.FromStr("u32"), 'src', 26)
     ('decl', 'ary', Type.FromStr("u32[8]"), -1, 'src', 15)
     ('decl', 't3', Type.FromStr("u32"), -1, 'src', 16)
-    ('expr', ('*', 't3', 0, 32, None, 32), 7, 'src', 14)
+    ('expr', ('*', 't3', 1, 32, None, 32), 7, 'src', 14)
     ('decl', 't4', Type.FromStr("comp"), -1, 'src', 17)
     ('expr', ('=', 't4', 7, None, None, 32), 8, 'src', 18)
     ('decl', 't5', Type.FromStr("u32"), -1, 'src', 19)
