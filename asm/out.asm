@@ -1,4 +1,4 @@
-	mov.e r31, #3296			// Setup stack pointer
+	mov.e r31, #3136			// Setup stack pointer
 
 //
 // Main
@@ -137,99 +137,26 @@ L4:
 	sub.e r31, r31, #128				// expr `call Fac`
 	// decl `t24`: u32
 	// expr `retld t24, 0`
-	// decl `fac`: u32
-	// assign r1 = `fac`
-	mov r1, r0				// expr `mov fac, t24`
+	// expr `argst 0, t24`
 	// undecl `t24`
-	mov r0, r1				// assign r0 = `fac`	// expr `argst 0, fac`
-	// undecl `fac`
-	add.e r31, r31, #224
-	call _BCD__:
-	sub.e r31, r31, #224				// expr `call BCD`
-	// decl `t25`: u32
+	add.e r31, r31, #192
+	call _Print__:
+	sub.e r31, r31, #192				// expr `call Print`
 	// expr `retld t25, 0`
-	// decl `bcd`: u32
-	// assign r1 = `bcd`
-	mov r1, r0				// expr `mov bcd, t25`
-	// undecl `t25`
-	// decl `idx`: u32
-	// assign r0 = `idx`
-	mov r0, #0				// expr `mov idx, 0`
-	// decl `t30`: u32
-	// assign r2 = `t30`
-	log r2, r1				// expr `log t30, bcd`
-	// decl `t31`: u32
-	// assign r3 = `t31`
-	andn r3, r2, #3				// expr `andn t31, t30, 3`
-	// undecl `t30`
-	// decl `t32`: u32
-	// assign r2 = `t32`
-	mov r2, r3				// expr `mov t32, t31`
-	// undecl `t31`
-	// decl `nibble`: u32
-	// assign r3 = `nibble`
-	mov r3, r2				// expr `mov nibble, t32`
-	// undecl `t32`
 			
 
-// expecting `r0` = `idx`
-// expecting `r1` = `bcd`
-// expecting `r3` = `nibble`
-// stack is [`bcd`, `idx`, empty, `nibble`]
+// expecting `r0` = `t25`
+// stack is [`t25`]
 // from L4:
-L27:
-	sge r3, #0				// expr `sge nibble, 0`
-	c.jmp L28:				// expr `c.jmp L28:`
-
-// expecting `r0` = `idx`
-// expecting `r1` = `bcd`
-// expecting `r3` = `nibble`
-// stack is [`bcd`, `idx`, empty, `nibble`]
-// from L27:
-_L33:
-	// undecl `idx`
-	// undecl `bcd`
-	// undecl `nibble`
-	jmp L29:				// expr `jmp L29:`
-
-// expecting `r0` = `idx`
-// expecting `r1` = `bcd`
-// expecting `r3` = `nibble`
-// stack is [`bcd`, `idx`, empty, `nibble`]
-// from L27:
-L28:
-	// decl `t35`: u32
-	// assign r2 = `t35`
-	bsf r2, r1, r3, #4				// expr `bsf t35, bcd, nibble, 4`
-	// decl `t36`: u32
-	// assign r4 = `t36`
-	and r4, r2, #15				// expr `and t36, t35, 15`
-	// undecl `t35`
-	// decl `t37`: u32
-	// assign r2 = `t37`
-	add.e r2, r4, #48				// expr `add t37, t36, 48`
-	// undecl `t36`
-	stchr.e r2, r0, #4294967295, #0				// expr `stchr t37, idx, 4294967295, 0`
-	// undecl `t37`
-	add r0, r0, #1				// expr `add idx, idx, 1`
-	sub r3, r3, #4				// expr `sub nibble, nibble, 4`
-	// prepare state for L27:
+L26:
 	jmp L27:				// expr `jmp L27:`
 
-// stack is []
-// from _L33:
-L29:
-
-// stack is []
-// from L29:
-L39:
-	jmp L40:				// expr `jmp L40:`
-
-// stack is []
-// from L39:
-L40:
-	// prepare state for L39:
-	jmp L39:				// expr `jmp L39:`
+// expecting `r0` = `t25`
+// stack is [`t25`]
+// from L26:
+L27:
+	// prepare state for L26:
+	jmp L26:				// expr `jmp L26:`
 
 //
 // Fac
@@ -241,133 +168,197 @@ L40:
 _Fac__:
 	// expr `argld n, 0`
 	eq r0, #1				// expr `eq n, 1`
-	c.jmp L44:				// expr `c.jmp L44:`
+	c.jmp L31:				// expr `c.jmp L31:`
 
 // expecting `r0` = `n`
 // stack is [`n`]
 // from _Fac__:
-_L46:
-	jmp L45:				// expr `jmp L45:`
+_L33:
+	jmp L32:				// expr `jmp L32:`
 
 // expecting `r0` = `n`
 // stack is [`n`]
 // from _Fac__:
-L44:
+L31:
 	// undecl `n`
 	mov r0, #1				// expr `retst 0, 1`
 	ret 				// expr `ret `
 
 // expecting `r0` = `n`
 // stack is [`n`]
-// from _L46:
-L45:
-	// decl `t49`: u32
-	// assign r1 = `t49`
-	sub r1, r0, #1				// expr `sub t49, n, 1`
+// from _L33:
+L32:
+	// decl `t36`: u32
+	// assign r1 = `t36`
+	sub r1, r0, #1				// expr `sub t36, n, 1`
 	stw r0, r31, #0				// clobbering r0 (`n`)
-	mov r0, r1				// assign r0 = `t49`	// expr `argst 0, t49`
-	// undecl `t49`
+	mov r0, r1				// assign r0 = `t36`	// expr `argst 0, t36`
+	// undecl `t36`
 	add.e r31, r31, #64
 	call _Fac__:
 	sub.e r31, r31, #64				// expr `call Fac`
-	// decl `t50`: u32
-	// expr `retld t50, 0`
-	// decl `t51`: u32
-	// assign r1 = `t51`
+	// decl `t37`: u32
+	// expr `retld t37, 0`
+	// decl `t38`: u32
+	// assign r1 = `t38`
 	ldw r2, r31, #0				// assign r2 = `n`
-	mul r1, r2, r0				// expr `mul t51, n, t50`
-	// undecl `t50`
+	mul r1, r2, r0				// expr `mul t38, n, t37`
+	// undecl `t37`
 	// undecl `n`
-	mov r0, r1				// assign r0 = `t51`	// expr `retst 0, t51`
-	// undecl `t51`
+	mov r0, r1				// assign r0 = `t38`	// expr `retst 0, t38`
+	// undecl `t38`
 	ret 				// expr `ret `
 
 //
-// BCD
+// Print
 // args: x_0
 //
 
 // stack is []
 // from L4:
-_BCD__:
+_Print__:
 	// expr `argld x, 0`
-	// decl `y`: u32
-	// assign r1 = `y`
-	mov r1, #0				// expr `mov y, 0`
+	// decl `bcd`: u32
+	// assign r1 = `bcd`
+	mov r1, #0				// expr `mov bcd, 0`
 	// decl `_`: u32
 	// assign r2 = `_`
 	mov r2, #0				// expr `mov _, 0`
 
 // expecting `r0` = `x`
-// expecting `r1` = `y`
+// expecting `r1` = `bcd`
 // expecting `r2` = `_`
-// stack is [`x`, `y`, `_`]
-// from _BCD__:
-L54:
+// stack is [`x`, `bcd`, `_`]
+// from _Print__:
+L41:
 	ult.e r2, #32				// expr `ult _, 32`
-	c.jmp L55:				// expr `c.jmp L55:`
+	c.jmp L42:				// expr `c.jmp L42:`
 
 // expecting `r0` = `x`
-// expecting `r1` = `y`
+// expecting `r1` = `bcd`
 // expecting `r2` = `_`
-// stack is [`x`, `y`, `_`]
-// from L54:
-_L58:
+// stack is [`x`, `bcd`, `_`]
+// from L41:
+_L45:
 	// undecl `x`
 	// undecl `_`
-	jmp L56:				// expr `jmp L56:`
+	jmp L43:				// expr `jmp L43:`
 
 // expecting `r0` = `x`
-// expecting `r1` = `y`
+// expecting `r1` = `bcd`
 // expecting `r2` = `_`
-// stack is [`x`, `y`, `_`]
-// from L54:
-L55:
-	// decl `t60`: u32
-	// assign r3 = `t60`
-	dab r3, r1				// expr `dab t60, y`
-	mov r1, r3				// expr `mov y, t60`
-	// undecl `t60`
-	bsl r1, r1, #1				// expr `bsl y, y, 1`
-	// decl `t64`: u32
-	// assign r3 = `t64`
-	and.e r3, r0, #2147483648				// expr `and t64, x, 2147483648`
-	eq r3, #0				// expr `eq t64, 0`
-	// undecl `t64`
-	c.jmp L62:				// expr `c.jmp L62:`
+// stack is [`x`, `bcd`, `_`]
+// from L41:
+L42:
+	// decl `t47`: u32
+	// assign r3 = `t47`
+	dab r3, r1				// expr `dab t47, bcd`
+	mov r1, r3				// expr `mov bcd, t47`
+	// undecl `t47`
+	bsl r1, r1, #1				// expr `bsl bcd, bcd, 1`
+	// decl `t51`: u32
+	// assign r3 = `t51`
+	and.e r3, r0, #2147483648				// expr `and t51, x, 2147483648`
+	eq r3, #0				// expr `eq t51, 0`
+	// undecl `t51`
+	c.jmp L49:				// expr `c.jmp L49:`
 
 // expecting `r0` = `x`
-// expecting `r1` = `y`
+// expecting `r1` = `bcd`
 // expecting `r2` = `_`
-// stack is [`x`, `y`, `_`]
-// from L55:
-_L65:
+// stack is [`x`, `bcd`, `_`]
+// from L42:
+_L52:
 
 // expecting `r0` = `x`
-// expecting `r1` = `y`
+// expecting `r1` = `bcd`
 // expecting `r2` = `_`
-// stack is [`x`, `y`, `_`]
-// from _L65:
-L61:
-	or r1, r1, #1				// expr `or y, y, 1`
-	// prepare state for L62:
+// stack is [`x`, `bcd`, `_`]
+// from _L52:
+L48:
+	or r1, r1, #1				// expr `or bcd, bcd, 1`
+	// prepare state for L49:
 			
 
 // expecting `r0` = `x`
-// expecting `r1` = `y`
+// expecting `r1` = `bcd`
 // expecting `r2` = `_`
-// stack is [`x`, `y`, `_`]
-// from L55:
-L62:
+// stack is [`x`, `bcd`, `_`]
+// from L42:
+L49:
 	bsl r0, r0, #1				// expr `bsl x, x, 1`
 	add r2, r2, #1				// expr `add _, _, 1`
-	// prepare state for L54:
-	jmp L54:				// expr `jmp L54:`
+	// prepare state for L41:
+	jmp L41:				// expr `jmp L41:`
 
-// expecting `r1` = `y`
-// stack is [empty, `y`]
-// from _L58:
+// expecting `r1` = `bcd`
+// stack is [empty, `bcd`]
+// from _L45:
+L43:
+	// decl `idx`: u32
+	// assign r0 = `idx`
+	mov r0, #0				// expr `mov idx, 0`
+	// decl `t58`: u32
+	// assign r2 = `t58`
+	log r2, r1				// expr `log t58, bcd`
+	// decl `t59`: u32
+	// assign r3 = `t59`
+	andn r3, r2, #3				// expr `andn t59, t58, 3`
+	// undecl `t58`
+	// decl `t60`: u32
+	// assign r2 = `t60`
+	mov r2, r3				// expr `mov t60, t59`
+	// undecl `t59`
+	// decl `nibble`: u32
+	// assign r3 = `nibble`
+	mov r3, r2				// expr `mov nibble, t60`
+	// undecl `t60`
+			
+
+// expecting `r0` = `idx`
+// expecting `r1` = `bcd`
+// expecting `r3` = `nibble`
+// stack is [`idx`, `bcd`, empty, `nibble`]
+// from L43:
+L55:
+	sge r3, #0				// expr `sge nibble, 0`
+	c.jmp L56:				// expr `c.jmp L56:`
+
+// expecting `r0` = `idx`
+// expecting `r1` = `bcd`
+// expecting `r3` = `nibble`
+// stack is [`idx`, `bcd`, empty, `nibble`]
+// from L55:
+_L61:
+	// undecl `idx`
+	// undecl `bcd`
+	// undecl `nibble`
+	jmp L57:				// expr `jmp L57:`
+
+// expecting `r0` = `idx`
+// expecting `r1` = `bcd`
+// expecting `r3` = `nibble`
+// stack is [`idx`, `bcd`, empty, `nibble`]
+// from L55:
 L56:
-	mov r0, r1				// assign r0 = `y`	// expr `retst 0, y`
-	// undecl `y`
-	ret 				// expr `ret `
+	// decl `t63`: u32
+	// assign r2 = `t63`
+	bsf r2, r1, r3, #4				// expr `bsf t63, bcd, nibble, 4`
+	// decl `t64`: u32
+	// assign r4 = `t64`
+	and r4, r2, #15				// expr `and t64, t63, 15`
+	// undecl `t63`
+	// decl `t65`: u32
+	// assign r2 = `t65`
+	add.e r2, r4, #48				// expr `add t65, t64, 48`
+	// undecl `t64`
+	stchr.e r2, r0, #4294967295, #0				// expr `stchr t65, idx, 4294967295, 0`
+	// undecl `t65`
+	add r0, r0, #1				// expr `add idx, idx, 1`
+	sub r3, r3, #4				// expr `sub nibble, nibble, 4`
+	// prepare state for L55:
+	jmp L55:				// expr `jmp L55:`
+
+// stack is []
+// from _L61:
+L57:
