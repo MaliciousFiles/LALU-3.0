@@ -1,11 +1,12 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
 import LowerLLIR3 as LLL
+import AssemblerV3 as ASM
 
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/func_test.lpc', 'r') as f:
+with open('src/mal.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -164,6 +165,7 @@ def Gen(tree, pre = True):
             inter.trues = []; inter.falses = []
             if cond:
                 inter.CJump(cond, post)
+            inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(post)
         elif data.type == 'RULE' and data.value == 'doelsestmt':
@@ -184,6 +186,7 @@ def Gen(tree, pre = True):
             inter.trues = []; inter.falses = []
             if cond:
                 inter.CJump(cond, _else)
+            inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(_else)
             Gen(stmt1.children[0])
@@ -503,7 +506,7 @@ def Rvalue(expr):
             lhs, lk = Lvalue(le)
             rhs, rk = Rvalue(re)
 ##            print(op.children)
-            if len(op.children[0].value) == 2:
+            if len(op.children[0].value) >= 2:
                 op = op.children[0].value[:-1]
                 assert rk.CanCoerceTo(lk)
                 kind = lk.Common(rk)
@@ -758,7 +761,7 @@ class HLIR:
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
         self.Use(cond)
-        self.AddPent('!=', None, cond, 0, None)
+        self.AddPent('==', None, cond, 0, None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
@@ -1058,8 +1061,6 @@ srcs=[]
 funcs = {}
 inter = HLIR()
 
-UnpackHex = LLL.asmblr.UnpackHex
-
 try:
     Gen(tree)
 except Exception as e:
@@ -1081,21 +1082,20 @@ print(repr(llir))
 with open('out.llr', 'w') as f:
     f.write(repr(llir))
 
-asm, bn = LLL.Lower(llir)
+asm = LLL.Lower(llir)
 
 print('\nASM:')
-print(repr(asm))
+print(asm)
 with open('out.asm', 'w') as f:
-    f.write(repr(asm))
+    f.write(asm)
 
-##print('\nBIN:')
-##print(repr(bn))
+program = ASM.ParseFile(asm)
 
-mif = LLL.asmblr.Mifify(bn, 32)
+mif = ASM.Mifify(program, 15)
 print('\nMIF:')
 print(mif)
 with open('out.mif', 'w') as f:
-    f.write(repr(inter))
+    f.write(mif)
 
 with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
     f.write(mif)

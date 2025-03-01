@@ -1,4 +1,3 @@
-import AssemblerV3 as asmblr
 from copy import deepcopy as copy
 from math import log2
 
@@ -31,6 +30,18 @@ class Block:
 
         self.function: str = ''
 
+        self.assembly: list[tuple] = []
+        self.comments: list[tuple[int, str, bool]] = []
+
+        self.compiled_from: str = ""
+
+    def add_comment(self, comment: str, inline=False):
+        self.comments.append((len(self.assembly) - inline, comment, inline))
+
+    def add_assembly(self, instr: tuple|None):
+        if not instr: return # handy to be able to return None in some places
+        self.assembly.append((*instr, *[None for _ in range(6 - len(instr))]))
+
 class Func:
     def __init__(self, name: str, args: list[str], blocks: list[Block]):
         self.name: str = name
@@ -42,50 +53,51 @@ class Func:
             if i < len(blocks) - 1: blocks[i].fall_through = blocks[i+1].label
             blocks[i].function = name
 
-        self.blocks: {str: Block} = {block.label: block for block in blocks}
+        self.blocks: list[Block] = blocks # maintain order
 
 class CompilerState:
     def __init__(self, functions: list[Func]):
         self.functions: dict[str, Func] = {f.name: f for f in functions}
 
-        self.blocks: dict[str, Block] = {b.label: b for f in functions for b in f.blocks.values()}
+        self.blocks: dict[str, Block] = {b.label: b for f in functions for b in f.blocks}
 
         self.compilation_queue: list[str] = [functions[0].start]
 
         self.entrance_states: dict[str, BlockState] = {functions[0].start: BlockState()}
         self.block_states: dict[str, BlockState] = {}
 
-        self.labels: dict[str, int] = {}
-        self.assembly: list[tuple] = [None] # gets overwritten later (sets stkptr)
-
-        self.comments: list[tuple[int, str, bool]] = []
+        self.cur_block = None # the currently compiling block, to know which to add assembly to
 
     def add_comment(self, comment: str, inline=False):
-        self.comments.append((len(self.assembly) - inline, comment, inline))
+        self.blocks[self.cur_block].add_comment(comment, inline)
 
-    def add_assembly(self, instr: tuple):
-        self.assembly.append((*instr, *[None for _ in range(6 - len(instr))]))
+    def add_assembly(self, instr: tuple|None):
+        self.blocks[self.cur_block].add_assembly(instr)
 
-    def add_all_assembly(self, instrs: list[tuple]):
-        for instr in instrs: self.add_assembly(instr)
+    def add_all_assembly(self, instrs: list[tuple|None]):
+        for instr in instrs: self.blocks[self.cur_block].add_assembly(instr)
 
 class Variable:
-    def __init__(self, name: str, width: int, offset: int):
+    def __init__(self, name: str, width: int, offset: int, stored_data: bool):
         self.name: str = name
         self.offset: int = offset
         self.width: int = width if width else 32
+        self.stored_data = stored_data
 
     # makes sure the var is in a reg, returns that reg descriptor
-    def use(self, comp_state, state) -> str:
-        reg = None
-
-        min_last_used = Register.reg_counter # guaranteed higher than all `last_used`s
+    def use(self, comp_state, state, reg=None) -> str:
+        # may or may not use this for assignment, but gotta do the preprocessing anyway
+        min_last_used = Register.reg_counter  # guaranteed higher than all `last_used`s
         last_used_reg = None
+
+        cur_reg = None
         for i in range(NUM_REGS):
-            if state.registers[i].contained == self.name: reg = i
+            if state.registers[i].contained == self.name: cur_reg = i
             if state.registers[i].last_used < min_last_used:
                 min_last_used = state.registers[i].last_used
                 last_used_reg = i
+
+        if reg is None: reg = cur_reg
 
         # look for empty register
         if reg is None:
@@ -98,11 +110,16 @@ class Variable:
         if reg is None: reg = last_used_reg
 
         if state.registers[reg].contained != self.name:
-            comp_state.add_comment(f"assign r{reg} = `{self.name}`")
-
             if state.registers[reg].contained is not None:
                 comp_state.add_assembly(state.variables[state.registers[reg].contained].store(reg))
-            comp_state.add_assembly(self.load(reg))
+                comp_state.add_comment(f"clobbering r{reg} (`{state.registers[reg].contained}`)", True)
+
+            if cur_reg is not None:
+                comp_state.add_assembly(('mov', [], f'r{reg}', f'r{cur_reg}'))
+                state.registers[cur_reg].contaiend = None
+            else:
+                comp_state.add_assembly(self.load(reg))
+            comp_state.add_comment(f"assign r{reg} = `{self.name}`", cur_reg is not None or self.stored_data) # in the case where self.load(...) = None, shouldn't be inline
 
         state.registers[reg].contained = self.name
         state.registers[reg].use()
@@ -112,9 +129,11 @@ class Variable:
 
     # TODO: left-aligned numbers
     def store(self, reg: int, mods: list[str]=[]) -> tuple:
+        self.stored_data = True
         return 'stw', mods,  f'r{reg}', f'r{STKPTR}', self.offset << 5
 
-    def load(self, reg: int, mods: list[str]=[]) -> tuple:
+    def load(self, reg: int, mods: list[str]=[]) -> tuple|None:
+        if not self.stored_data: return None # will get cleared later
         return 'ldw', mods, f'r{reg}', f'r{STKPTR}', self.offset << 5
 
 class Register:
@@ -134,11 +153,12 @@ class BlockState:
         self.variables: dict[str, Variable] = {}
         self.registers: list[Register] = [Register() for _ in range(NUM_REGS)]
 
+    # assumes that if you give an addr, there is data already stored there
     def declare_var(self, name: str, width: int, addr: int = None, alignment = ...):
-        if alignment == ...:
+        if alignment is ...:
             alignment = AlignOf(width)
-        var_addr = self.find_free_addr(width, alignment) if addr == None else addr
-        self.variables[name] = Variable(name, width, var_addr)
+        var_addr = self.find_free_addr(width, alignment) if addr is None else addr
+        self.variables[name] = Variable(name, width, var_addr, addr is not None)
         self.stack_top += 1
         
 
@@ -190,9 +210,13 @@ class BlockState:
 
 # compiles a block, assuming it already has an `entrance_state`
 def CompileBlock(comp_state: CompilerState, block: Block):
-    state = comp_state.entrance_states[block.label].fork()
+    comp_state.cur_block = block.label
 
-    comp_state.labels[block.label] = len(comp_state.assembly)
+    state = comp_state.entrance_states[block.label].fork()
+    # at the beginning of a block, we have to assume all variables have data stored
+    for var in state.variables.values():
+        var.stored_data = True
+
     comp_state.block_states[block.label] = state
 
     exits: bool = False
@@ -212,8 +236,6 @@ def CompileBlock(comp_state: CompilerState, block: Block):
         elif instr[0] == 'alloc': # ('alloc', name, length, width=32)
             comp_state.add_comment(f"alloc `{instr[1]}`: u{instr[3] if len(instr) > 3 else 32}[{instr[2]}]")
 
-##            state.variables[instr[1]] = Variable(instr[1], instr[3] if len(instr) > 3 else 32, state.stack_top)
-##            state.stack_top += instr[2]
             width = instr[3] if len(instr) > 3 and instr[3] else 32
             state.declare_var('_ARRAY_'+instr[1], None, instr[2]*width, AlignOf(width))
             state.declare_var(instr[1], 32)
@@ -223,7 +245,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
 
             state.registers[instr[1]].contained = None
         elif instr[0] == 'expr': # ('expr', (op, Rd, Rs0, Rs1, Rs2))
-            start_len = len(comp_state.assembly)
+            start_len = len(comp_state.blocks[block.label].assembly)
 
             op = instr[1][0]
             args = instr[1][1:]
@@ -234,21 +256,28 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             if op == 'jmp': # ('jmp', label)
                 label = args[0].replace(":", "")
                 if label in comp_state.entrance_states:
+                    comp_state.add_comment(f"prepare state for {label}:")
                     comp_state.add_all_assembly(state.transform(comp_state.entrance_states[label], preFlags))
                 else:
                     comp_state.compilation_queue.append(label)
+                    comp_state.blocks[label].compiled_from = block.label
                     comp_state.entrance_states[label] = state.fork()
 
                 comp_state.add_assembly(('jmp', preFlags, args[0]))
                 if 'c' not in preFlags: exits = True
             elif op == 'ret': # ('ret',)
-                comp_state.add_assembly(('sub', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
                 comp_state.add_assembly(('ret', preFlags))
                 exits = True
             elif op == 'argst': # ('argst', addr, var)
                 if args[0] < NUM_REGS:
-                    comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
-                    state.registers[args[0]].contained = args[1] # may result in two regs pointing to `var`, but that's fine
+                    if isinstance(args[1], str):
+                        state.variables[args[1]].use(comp_state, state, args[0])
+                    else:
+                        if state.registers[args[0]].contained is not None:
+                            comp_state.add_assembly(state.variables[state.registers[args[0]].contained].store(args[0]))
+
+                        comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', args[1]))
+                        state.registers[args[0]].contained = None
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
@@ -263,17 +292,25 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 comp_state.add_all_assembly(state.dump_regs(preFlags))
                 comp_state.add_assembly(('add', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
                 comp_state.add_assembly(('call', preFlags, label+":"))
+                comp_state.add_assembly(('sub', preFlags, f'r{STKPTR}', f'r{STKPTR}', state.stack_top << 5))
 
                 # assume the function clobbers everything
                 for i in range(NUM_REGS): state.registers[i].contained = None
 
                 if label not in comp_state.entrance_states:
                     comp_state.compilation_queue.append(label)
+                    comp_state.blocks[label].compiled_from = block.label
                     comp_state.entrance_states[label] = BlockState()
             elif op == 'retst': # ('retst', addr, var)
                 if args[0] < NUM_REGS:
-                    comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else args[1]))
-                    state.registers[args[0]].contained = args[1]  # may result in two regs pointing to `var`, but that's fine
+                    if isinstance(args[1], str):
+                        state.variables[args[1]].use(comp_state, state, args[0])
+                    else:
+                        if state.registers[args[0]].contained is not None:
+                            comp_state.add_assembly(state.variables[state.registers[args[0]].contained].store(args[0]))
+
+                        comp_state.add_assembly(('mov', preFlags, f'r{args[0]}', args[1]))
+                        state.registers[args[0]].contained = None
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
@@ -285,13 +322,20 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             else:
                 comp_state.add_assembly((op, preFlags + postFlags, *[state.variables[arg].use(comp_state, state) if isinstance(arg, str) else arg for arg in args]))
 
-            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", len(comp_state.assembly) != start_len)
+            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", len(comp_state.blocks[block.label].assembly) != start_len)
 
-    if not exits and block.fall_through is not None and block.fall_through not in comp_state.entrance_states:
-        comp_state.compilation_queue.insert(0, block.fall_through)
-        comp_state.entrance_states[block.fall_through] = state.fork()
+    if not exits and block.fall_through is not None:
+        if block.fall_through in comp_state.entrance_states:
+            comp_state.add_comment(f"prepare state for {block.fall_through}:")
+            comp_state.add_all_assembly(state.transform(comp_state.entrance_states[block.fall_through], []))
+        else:
+            comp_state.compilation_queue.insert(0, block.fall_through)
+            comp_state.blocks[block.fall_through].compiled_from = block.label
+            comp_state.entrance_states[block.fall_through] = state.fork()
 
 def Lower(llir):
+    # TODO: do funcs together (don't splice them :p)
+
     # this just converts from what HLIR emits to my own data structures
     comp_state: CompilerState = CompilerState([Func(func['name'], func['args'], [Block(block.entry, block.body) for block in func['body']]) for func in llir.funcs])
 
@@ -299,22 +343,47 @@ def Lower(llir):
         block = comp_state.compilation_queue.pop(0)
         CompileBlock(comp_state, comp_state.blocks[block])
 
-    comp_state.assembly[0] = ('mov', [], f'r{STKPTR}', (len(comp_state.assembly)+1+len([i for i in comp_state.assembly[1:] if any(isinstance(a, int) and a >= 32 for a in i[2:])])) << 5)
+    addr = 2 # one for setting up the stack pointer, and one to point to the address immediately after
+    out = ""
+    for func in comp_state.functions.values():
+        out += f"\n//\n// {func.name}\n// args: {', '.join(func.args)}\n//\n"
+        for block in func.blocks:
+            entrance_state = comp_state.entrance_states[block.label]
+            expected = {f"r{i}": entrance_state.registers[i].contained for i in range(NUM_REGS) if entrance_state.registers[i].contained is not None}
+            out += "\n"
+            for k,v in expected.items():
+                out += f"// expecting `{k}` = `{v}`\n"
 
-    for i in range(len(comp_state.assembly)):
-        for label, idx in comp_state.labels.items():
-            if idx == i: print(f"{label}:")
-        comment = "\t\t\t"
-        for c in comp_state.comments:
-            if c[0] == i:
-                if c[2]: comment += f"\t// {c[1]}"
-                else: print("\t//", c[1])
+            vars = {v.offset//32: k for k,v in entrance_state.variables.items()}
+            out += f"// stack is [{', '.join(f"`{vars[i]}`" if i in vars else "empty" for i in range(max(vars.keys())+1)) if len(vars) > 0 else ''}]\n"
+            out += f"// from {block.compiled_from}:\n"
+            out += f"{block.label}:\n"
 
-        instr = comp_state.assembly[i]
+            for i in range(len(block.assembly)):
+                comment = "\t\t\t"
+                for c in block.comments:
+                    if c[0] == i:
+                        if c[2]: comment += f"\t// {c[1]}"
+                        else: out += f"\t// {c[1]}\n"
 
-        pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
-        post = ('.s' if 's' in instr[1] else '') + ('.e' if any(isinstance(arg, int) and arg >= 32 for arg in instr[2:]) else '')
+                instr = block.assembly[i]
 
-        print(f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}")
+                pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
+                post = ('.s' if 's' in instr[1] else '') + ('.e' if any(isinstance(arg, int) and arg >= 32 for arg in instr[2:]) else '')
 
-    pass
+                out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"
+
+                addr += 1 if '.e' not in post else 2
+
+            if len(block.comments) > 0:
+                for j in range(i+1, max(c[0] for c in block.comments)+1):
+                    comment = "\t\t\t"
+                    for c in block.comments:
+                        if c[0] == j:
+                            if c[2]: comment += f"\t// {c[1]}"
+                            else: out += f"\t// {c[1]}\n"
+
+                    out += f"{comment}\n"
+    out = f"\tmov.e r{STKPTR}, #{addr << 5}\t\t\t// Setup stack pointer\n" + out
+
+    return out
