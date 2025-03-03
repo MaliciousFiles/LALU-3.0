@@ -286,11 +286,22 @@ def Lower(hlir):
                         elif op == '=[:]':
                             rwidth = -(-width//32)
                             i = 0
+                            AddPent(nblock, 'memsave', None, S0+'.&', None, None)
                             while S2 > 32:
+                                S2 -= 32
                                 eD = EName(D, rwidth, i)
                                 eS = EName(D, rwidth, i)
+                                if type(S1) == int:
+                                    AddPent(nblock, 'ldw', eD, S0+'.&', S1+32*i, 32)
+                                else:
+                                    sad
                                 i += 1
-                                AddPent(nblock, 'mov', eD, S0, S1, S2)
+                            eD = EName(D, rwidth, i)
+                            eS = EName(D, rwidth, i)
+                            if type(S1) == int:
+                                AddPent(nblock, 'ldw', eD, S0+'.&', S1+32*i, S2)
+                            else:
+                                sad
                         else:
                             print(f'Compiling line:\n{line}')
                             assert False, f'HLIR -> LLIR does not currently support non-primative width `{width}` on operation `{op}`'

@@ -1,4 +1,4 @@
-	mov.e r31, #512			// Setup stack pointer
+	mov.e r31, #416			// Setup stack pointer
 
 //
 // Main
@@ -8,32 +8,28 @@
 // stack is []
 // from :
 _Main__:
-	// decl `x`: u32
-	// assign r0 = `x`
-	mov.e r0, #19088743				// expr `mov x, 19088743`
-	// decl `t2`: u8
-	// assign r1 = `t2`
-	mov r1, r0				// expr `mov t2, x`
-	// decl `y`: u8
-	// assign r2 = `y`
-	mov r2, r1				// expr `mov y, t2`
-	// undecl `t2`
+	// decl `x_0`: u64
+	// decl `x_1`: u64
+	// assign r0 = `x_0`
+	mov.e r0, #19088743				// expr `mov x_0, 19088743`
+	// assign r1 = `x_1`
+	mov r1, #0				// expr `mov x_1, 0`
 	breakpoint 				// expr `breakpoint `
-	// decl `t4`: u8
-	// decl `t5`: u32
-	// assign r1 = `t5`
-	bsf r1, r0, #0, #8				// expr `bsf t5, x, 0, 8`
-	// assign r3 = `t4`
-	mov r3, r1				// expr `mov t4, t5`
-	// undecl `t5`
-	// decl `lowest`: u8
+	// decl `t3`: u32
+	// decl `t4_0`: u64
+	// decl `t4_1`: u64
+	// undecl `x_0`
+	// undecl `x_1`
+	// assign r0 = `t3`
+	// assign r1 = `t4_0`
+	mov r0, r1				// expr `mov t3, t4_0`
+	// undecl `t4_0`
+	// undecl `t4_1`
+	// decl `lowest`: u32
 	// assign r1 = `lowest`
-	mov r1, r3				// expr `mov lowest, t4`
-	// undecl `t4`
-	// undecl `y`
-	bst r0, r1, #8, #8				// expr `bst x, lowest, 8, 8`
+	mov r1, r0				// expr `mov lowest, t3`
+	// undecl `t3`
 	// undecl `lowest`
-	// undecl `x`
 	nop 				// expr `nop `
 	nop 				// expr `nop `
 	nop 				// expr `nop `
