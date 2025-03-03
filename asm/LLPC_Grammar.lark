@@ -45,13 +45,14 @@ expr: assgexpr
         | unaryop castexpr
 ?postexpr: primexpr
 	| AT ident LPAREN [argexprs] RPAREN -> intrinsic
-        | postexpr LBRACK expr PLUS COLON expr RBRACK -> sliceexpr
+        | postexpr LBRACK expr PLUSCOLON expr RBRACK -> sliceexpr
         | postexpr LBRACK expr RBRACK -> indexpr
         | postexpr LPAREN [argexprs] RPAREN -> callexpr
         | postexpr DOT ASTERISK -> derefexpr
         | postexpr DOT AMPERSAND -> addrexpr
         | postexpr DOT QMARK -> denullexpr
         | postexpr DOT ident -> fieldexpr
+	| BREAKPOINT -> breakpoint
 ?primexpr: ident
         | constant
         | string
@@ -101,6 +102,7 @@ addop: PLUS | MINUS
 multop: LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK
 unaryop: PLUS | MINUS | TILDE
 
+BREAKPOINT: "BREAKPOINT"
 VOID: "void"
 EQUAL: "="
 LEFTARROW: "CAST"
@@ -122,7 +124,8 @@ OR: "or"
 AND: "and"
 PIPE: "|"
 CARROT: "^"
-PLUS: "+"
+PLUS: /\+(?!:)/
+PLUSCOLON: "+:"
 PLUSEQUAL: "+="
 MINUS: "-"
 MINUSEQUAL: "-="

@@ -179,7 +179,9 @@ def Lower(hlir):
                             assert op != '<<<' and op != '>>>', f'Cannot perform bit rotation on unsized compile time integers'
                             assert False, f'Cannot lower comptime operand `{op}`'
                     elif width == 32:
-                        if op[0]=='@':
+                        if op == 'breakpoint':
+                            AddPent(nblock, op, D, S0, S1, S2)
+                        elif op[0]=='@':
                             AddPent(nblock, op[1:], D, S0, S1, S2)
                         elif op == '+':
                             AddPent(nblock, 'add', D, S0, S1, S2)
@@ -200,6 +202,10 @@ def Lower(hlir):
                             AddPent(nblock, 'stw', D, S0, S1, S2)
                         elif op == '=[]':
                             AddPent(nblock, 'ldw', D, S0, S1, S2)
+                        elif op == '[:]=':
+                            AddPent(nblock, 'bst', D, S0, S1, S2)
+                        elif op == '=[:]':
+                            AddPent(nblock, 'bsf', D, S0, S1, S2)
                         
                         elif op == '<<':
                             AddPent(nblock, 'bsl', D, S0, S1, S2)
@@ -240,7 +246,15 @@ def Lower(hlir):
                                     eD = D + '_' + str(i).zfill(pD) if WidthOf(dk) > 1 else D
                                     eS = (S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S) if i < WidthOf(sk) else 0
                                     AddPent(nblock, 'mov', eD, eS, None, None)
+                            elif dk.OpWidth() < 32:
+                                for i in range(WidthOf(dk)):
+                                    pD = len(str(WidthOf(dk)-1))
+                                    pS = len(str(WidthOf(sk)-1))
+                                    eD = D + '_' + str(i).zfill(pD) if WidthOf(dk) > 1 else D
+                                    eS = (S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S) if i < WidthOf(sk) else 0
+                                    AddPent(nblock, 'mov', eD, eS, None, None)
                             else:
+                                print(f'Compiling line:\n{line}')
                                 assert False, f'(Comptime) Cannot cast from type `{sk}` to `{dk}`'
                         else:
                             assert False, f'Cannot lower operand `{op}` 32 width'
@@ -269,7 +283,16 @@ def Lower(hlir):
                                 eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
 ##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS
                                 AddPent(nblock, 'argst', eD, S0+i, None, None)
+                        elif op == '=[:]':
+                            rwidth = -(-width//32)
+                            i = 0
+                            while S2 > 32:
+                                eD = EName(D, rwidth, i)
+                                eS = EName(D, rwidth, i)
+                                i += 1
+                                AddPent(nblock, 'mov', eD, S0, S1, S2)
                         else:
+                            print(f'Compiling line:\n{line}')
                             assert False, f'HLIR -> LLIR does not currently support non-primative width `{width}` on operation `{op}`'
                     finex = []
                 else:

@@ -6,14 +6,14 @@ import AssemblerV3 as ASM
 PTRWIDTH = 32
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/mal.lpc', 'r') as f:
+with open('src/slice.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
 
 ##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
 usesRd = ['[]=', '[:]=', '@stchr']
-nullret = ['@susp', '@rstkey', '@stchr']
+nullret = ['@susp', '@rstkey', '@stchr', '@nop']
 
 def Write(txt):
     global out
@@ -357,6 +357,18 @@ def Rvalue(expr):
             lhs, lk = Rvalue(le)
             inter.PreUse(lhs)
             return f'{lhs}.&', lk.Addr()
+        elif data == 'breakpoint':
+            inter.AddPent('breakpoint', None, None, None, None)
+            return f'NO_USE', NewTemp(Type())
+        elif data == 'sliceexpr':
+            le, _, root, _, width, _, = expr.children
+            lhs, lk = Rvalue(le)
+            rv, rk = Rvalue(root)
+            wv, wk = Rvalue(width)
+            desttype = Type(wv)
+            tmp = NewTemp(desttype)
+            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = rv, S2 = wv, origtype = lk, desttype = desttype)
+            return tmp, desttype
         elif data == 'callexpr':
             func, _, args, _ = expr.children
             func = func.children[0].value
@@ -378,13 +390,10 @@ def Rvalue(expr):
             tmp = NewTemp(funret)
             inter.AddPent('retld', tmp, 0, None, None, width=funret.OpWidth())
             return tmp, funret
-            
         elif data == 'intrinsic':
             _, name, _, args, _, = expr.children
             name = name.children[0].value
             name = '@' + name
-##            if name in usesRd:
-##                bad
             ct = False
             if args:
                 ct=True
@@ -398,7 +407,7 @@ def Rvalue(expr):
                 args = nargs
             else:
                 args = []
-            print(f'Int f: {name=}')
+##            print(f'Int f: {name=}')
             if name in usesRd:
                 assert len(args) <= 4, f'Intrinsic function takes 4 arguments'
                 args += [None]*4
@@ -579,6 +588,14 @@ def Lvalue(expr):
             inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
             tmp = f'{lhs}[{prod}]'
             return tmp, lk.Deref()
+        elif data == 'sliceexpr':
+            le, _, root, _, width, _, = expr.children
+            lhs, lk = Rvalue(le)
+            rv, rk = Rvalue(root)
+            wv, wk = Rvalue(width)
+            desttype = Type(wv)
+            tmp = f'{lhs}[{rv}+:{wv}]'
+            return tmp, desttype
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
@@ -710,16 +727,33 @@ class HLIR:
                 S0 = tmp
                 S2 = None
                 op = '='
+            print(f'{D=}')
             l, r = D[:-1].split('[')
-            assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
-            self.Use(S0)
-            if r.isnumeric():
-                r = int(r)
+            if '+:' not in r:
+                assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
+                self.Use(S0)
+                if r.isnumeric():
+                    r = int(r)
+                else:
+                    self.Use(r)
+                self.Use(S2)
+                self.Use(l)
+                self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
             else:
-                self.Use(r)
-            self.Use(S2)
-            self.Use(l)
-            self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
+                r, w = r.split('+:')
+                assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
+                self.Use(S0)
+                if r.isnumeric():
+                    r = int(r)
+                else:
+                    self.Use(r)
+                if w.isnumeric():
+                    w = int(w)
+                else:
+                    self.Use(w)
+                self.Use(S2)
+                self.Use(l)
+                self.body.Addline(('expr', ('[:]=', l, S0, r, w, inter.Lookup(l).OpWidth()), eid))
         elif type(S0) == str and '[' in S0:
             l, r = S0[:-1].split('[')
             assert op == '=', f'Expected operation to be `=` when rhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
