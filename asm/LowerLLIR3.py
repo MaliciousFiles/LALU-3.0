@@ -212,7 +212,7 @@ class BlockState:
         return instrs
 
     def __repr__(self):
-        return str({'stack_top': self.stack_top, 'registers': [r.contained for r in self.registers], 'variables': {k: {'name': v.name, 'width': v.width, 'offset': v.offset, 'stored_data': v.stored_data} for k,v in self.variables.items()}})
+        return str({'stack_top': self.stack_top, 'registers': [r.contained for r in self.registers], 'variables': {k: {'width': v.width, 'offset': v.offset, 'stored_data': v.stored_data} for k,v in self.variables.items()}})
 
 # compiles a block, assuming it already has an `entrance_state`
 def CompileBlock(comp_state: CompilerState, block: Block):
