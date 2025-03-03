@@ -1,15 +1,12 @@
-0000 :		mov.e r31, #512			// Setup stack pointer
+0000 :		mov.e r31, #416			// Setup stack pointer
 	_Main__:
-0002 :		mov.e r0, #19088743				// expr `mov x, 19088743`
-0004 :		mov r1, r0				// expr `mov t2, x`
-0005 :		mov r2, r1				// expr `mov y, t2`
+0002 :		mov.e r0, #19088743				// expr `mov x_0, 19088743`
+0004 :		mov r1, #0				// expr `mov x_1, 0`
 breakpoint
-0006 :		bsf r1, r0, #0, #8				// expr `bsf t5, x, 0, 8`
-0007 :		mov r3, r1				// expr `mov t4, t5`
-0008 :		mov r1, r3				// expr `mov lowest, t4`
-0009 :		bst r0, r1, #8, #8				// expr `bst x, lowest, 8, 8`
+0005 :		mov r0, r1				// expr `mov t3, t4_0`
+0006 :		mov r1, r0				// expr `mov lowest, t3`
+0007 :		nop 				// expr `nop `
+0008 :		nop 				// expr `nop `
+0009 :		nop 				// expr `nop `
 000A :		nop 				// expr `nop `
-000B :		nop 				// expr `nop `
-000C :		nop 				// expr `nop `
-000D :		nop 				// expr `nop `
-000E :		susp 				// expr `susp `
+000B :		susp 				// expr `susp `
