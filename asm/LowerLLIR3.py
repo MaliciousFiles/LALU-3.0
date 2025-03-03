@@ -88,7 +88,12 @@ class Variable:
         self.stored_data = stored_data
 
     # makes sure the var is in a reg, returns that reg descriptor
-    def use(self, comp_state, state, reg=None) -> str:
+    def use(self, comp_state, state, reg=None, is_address: bool=False) -> str:
+        if is_address:
+            r = f'r{reg}' if reg is not None else f'r{SCRATCH_REGS[0]}'
+            comp_state.add_assembly(('add', [], r, f'r{STKPTR}', self.offset << 5))
+            return r
+
         # may or may not use this for assignment, but gotta do the preprocessing anyway
         min_last_used = Register.reg_counter  # guaranteed higher than all `last_used`s
         last_used_reg = None
@@ -163,7 +168,10 @@ class BlockState:
         var_addr = self.find_free_addr(width, alignment) if addr is None else addr
         self.variables[name] = Variable(name, width, var_addr, addr is not None)
         self.stack_top += 1
-        
+
+    def use_var(self, name: str, state: CompilerState, reg=None) -> str:
+        return self.variables[name.rstrip(".&")].use(state, self, reg, name.endswith(".&"))
+
 
     def find_free_addr(self, width: int, alignment: int = 32):
         allocs = sorted([(0, 0)]+[(data.offset, data.offset+data.width) for data in self.variables.values()], key = lambda x:x[1])
@@ -276,7 +284,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             elif op == 'argst': # ('argst', addr, var)
                 if args[0] < NUM_REGS:
                     if isinstance(args[1], str):
-                        state.variables[args[1]].use(comp_state, state, args[0])
+                        state.use_var(args[1], comp_state, args[0])
                     else:
                         if state.registers[args[0]].contained is not None:
                             comp_state.add_assembly(state.variables[state.registers[args[0]].contained].store(args[0]))
@@ -286,7 +294,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
-                    comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS) << 5))
+                    comp_state.add_assembly(('stw', preFlags, state.use_var(args[1], comp_state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS) << 5))
             elif op == 'argld': # ('argld', var, addr, width=32)
                 state.declare_var(args[0], args[2] if len(args) > 2 and args[2] else 32, args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
                 if args[1] < NUM_REGS:
@@ -309,7 +317,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             elif op == 'retst': # ('retst', addr, var)
                 if args[0] < NUM_REGS:
                     if isinstance(args[1], str):
-                        state.variables[args[1]].use(comp_state, state, args[0])
+                        state.use_var(args[1], comp_state, args[0])
                     else:
                         if state.registers[args[0]].contained is not None:
                             comp_state.add_assembly(state.variables[state.registers[args[0]].contained].store(args[0]))
@@ -319,13 +327,13 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
-                    comp_state.add_assembly(('stw', preFlags, state.variables[args[1]].use(comp_state, state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (args[0] - NUM_REGS) << 5))
+                    comp_state.add_assembly(('stw', preFlags, state.use_var(args[1], comp_state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (args[0] - NUM_REGS) << 5))
             elif op == 'retld': # ('retld', var, addr, width=32)
                 state.declare_var(args[0], args[2] if len(args) > 2 and args[2] else 32, state.stack_top + args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
                 if args[1] < NUM_REGS:
                     state.registers[args[1]].contained = args[0]
             else:
-                comp_state.add_assembly((op, preFlags + postFlags, *[state.variables[arg].use(comp_state, state) if isinstance(arg, str) else arg for arg in args]))
+                comp_state.add_assembly((op, preFlags + postFlags, *[state.use_var(arg, comp_state) if isinstance(arg, str) else arg for arg in args]))
 
             comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", len(comp_state.blocks[block.label].assembly) != start_len)
 
