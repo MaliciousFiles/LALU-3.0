@@ -1,0 +1,16 @@
+// struct Vec {
+//   u32: x;
+//   u32: y;
+// }
+
+fn Main() void {
+  var x: u64 = 0x01_23_45_67;
+  BREAKPOINT;
+  var lowest: u32 = x[0 +: 32];
+  x[32 +: 32] = lowest;
+  @nop();
+  @nop();
+  @nop();
+  @nop();
+  @susp();
+}
