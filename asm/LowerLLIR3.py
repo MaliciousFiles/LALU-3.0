@@ -33,14 +33,17 @@ class Block:
         self.assembly: list[tuple] = []
         self.comments: list[tuple[int, str, bool]] = []
 
+        self.state_dump: list[BlockState] = []
+
         self.compiled_from: str = ""
 
     def add_comment(self, comment: str, inline=False):
         self.comments.append((len(self.assembly) - inline, comment, inline))
 
-    def add_assembly(self, instr: tuple|None):
+    def add_assembly(self, instr: tuple|None, state):
         if not instr: return # handy to be able to return None in some places
         self.assembly.append((*instr, *[None for _ in range(6 - len(instr))]))
+        self.state_dump.append(state)
 
 class Func:
     def __init__(self, name: str, args: list[str], blocks: list[Block]):
@@ -72,10 +75,10 @@ class CompilerState:
         self.blocks[self.cur_block].add_comment(comment, inline)
 
     def add_assembly(self, instr: tuple|None):
-        self.blocks[self.cur_block].add_assembly(instr)
+        self.blocks[self.cur_block].add_assembly(instr, self.block_states[self.cur_block].fork())
 
     def add_all_assembly(self, instrs: list[tuple|None]):
-        for instr in instrs: self.blocks[self.cur_block].add_assembly(instr)
+        for instr in instrs: self.add_assembly(instr)
 
 class Variable:
     def __init__(self, name: str, width: int, offset: int, stored_data: bool):
@@ -208,6 +211,9 @@ class BlockState:
 
         return instrs
 
+    def __repr__(self):
+        return str({'stack_top': self.stack_top, 'registers': [r.contained for r in self.registers], 'variables': {k: {'name': v.name, 'width': v.width, 'offset': v.offset, 'stored_data': v.stored_data} for k,v in self.variables.items()}})
+
 # compiles a block, assuming it already has an `entrance_state`
 def CompileBlock(comp_state: CompilerState, block: Block):
     comp_state.cur_block = block.label
@@ -229,7 +235,6 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.add_comment(f"undecl `{instr[1]}`")
 
             del state.variables[instr[1]]
-            # TODO: mark mem as free so it can be reallocated?
             # Should be handled by allocation rework
             for reg in state.registers:
                 if reg.contained == instr[1]: reg.contained = None
@@ -334,8 +339,6 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.entrance_states[block.fall_through] = state.fork()
 
 def Lower(llir):
-    # TODO: do funcs together (don't splice them :p)
-
     # this just converts from what HLIR emits to my own data structures
     comp_state: CompilerState = CompilerState([Func(func['name'], func['args'], [Block(block.entry, block.body) for block in func['body']]) for func in llir.funcs])
 
@@ -344,34 +347,37 @@ def Lower(llir):
         CompileBlock(comp_state, comp_state.blocks[block])
 
     addr = 2 # one for setting up the stack pointer, and one to point to the address immediately after
-    out = ""
+    asm_out = ""
+    state_dump_out = ""
     for func in comp_state.functions.values():
-        out += f"\n//\n// {func.name}\n// args: {', '.join(func.args)}\n//\n"
+        asm_out += f"\n//\n// {func.name}\n// args: {', '.join(func.args)}\n//\n"
         for block in func.blocks:
             entrance_state = comp_state.entrance_states[block.label]
             expected = {f"r{i}": entrance_state.registers[i].contained for i in range(NUM_REGS) if entrance_state.registers[i].contained is not None}
-            out += "\n"
+            asm_out += "\n"
             for k,v in expected.items():
-                out += f"// expecting `{k}` = `{v}`\n"
+                asm_out += f"// expecting `{k}` = `{v}`\n"
 
             vars = {v.offset//32: k for k,v in entrance_state.variables.items()}
-            out += f"// stack is [{', '.join(f'`{vars[i]}`' if i in vars else 'empty' for i in range(max(vars.keys())+1)) if len(vars) > 0 else ''}]\n"
-            out += f"// from {block.compiled_from}:\n"
-            out += f"{block.label}:\n"
+            asm_out += f"// stack is [{', '.join(f"`{vars[i]}`" if i in vars else "empty" for i in range(max(vars.keys())+1)) if len(vars) > 0 else ''}]\n"
+            asm_out += f"// from {block.compiled_from}:\n"
+            asm_out += f"{block.label}:\n"
 
             for i in range(len(block.assembly)):
                 comment = "\t\t\t"
                 for c in block.comments:
                     if c[0] == i:
                         if c[2]: comment += f"\t// {c[1]}"
-                        else: out += f"\t// {c[1]}\n"
+                        else: asm_out += f"\t// {c[1]}\n"
 
                 instr = block.assembly[i]
 
                 pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
                 post = ('.s' if 's' in instr[1] else '') + ('.e' if any(isinstance(arg, int) and arg >= 32 for arg in instr[2:]) else '')
 
-                out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"
+                asm_out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"
+
+                state_dump_out += f"{hex(addr)[2:].capitalize().zfill(4)}: {block.state_dump[i]}\n"
 
                 addr += 1 if '.e' not in post else 2
 
@@ -381,9 +387,12 @@ def Lower(llir):
                     for c in block.comments:
                         if c[0] == j:
                             if c[2]: comment += f"\t// {c[1]}"
-                            else: out += f"\t// {c[1]}\n"
+                            else: asm_out += f"\t// {c[1]}\n"
 
-                    out += f"{comment}\n"
-    out = f"\tmov.e r{STKPTR}, #{addr << 5}\t\t\t// Setup stack pointer\n" + out
+                    asm_out += f"{comment}\n"
+    asm_out = f"\tmov.e r{STKPTR}, #{addr << 5}\t\t\t// Setup stack pointer\n" + asm_out
 
-    return out
+    with open("state_dump.txt", "w") as f:
+        f.write(state_dump_out)
+
+    return asm_out
