@@ -1,18 +1,12 @@
-0000 :		mov.e r31, #608			// Setup stack pointer
+0000 :		mov.e r31, #480			// Setup stack pointer
 	_Main__:
 breakpoint
-0002 :		mov r0, #7				// expr `mov t3, 7`
-0003 :		add r29, r31, #0
-0004 :		st r0, r29, #0, #15				// expr `st t3, vec.&, 0, 15`
-0005 :		mov r0, #8				// expr `mov t5, 8`
-0006 :		bst.e r1, r0, #32, #0				// expr `bst vec, t5, 32, 0`
-0008 :		mov r0, #9				// expr `mov t7, 9`
-0009 :		stw r1, r31, #0				// memsave r1 => `vec`
-000A :		add r29, r31, #0
-000B :		st r0, r29, #15, #16				// expr `st t7, vec.&, 15, 16`	// regrst r1 (`vec`) => None
-000C :		nop 				// expr `nop `
-000D :		nop 				// expr `nop `
-000E :		nop 				// expr `nop `
-000F :		nop 				// expr `nop `
-0010 :		nop 				// expr `nop `
-0011 :		susp 				// expr `susp `
+0005 :		add r29, r31, #0
+0006 :		ld r2, r29, #0, #0				// expr `ld t4_0, x_0.&, 0, 0`
+0007 :		mov r0, r2				// expr `mov t3, t4_0`
+0008 :		mov r1, r0				// expr `mov lowest, t3`
+0009 :		nop 				// expr `nop`
+000A :		nop 				// expr `nop`
+000B :		nop 				// expr `nop`
+000C :		nop 				// expr `nop`
+000D :		susp 				// expr `susp`
