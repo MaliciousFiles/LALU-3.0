@@ -253,10 +253,14 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             state.declare_var('_ARRAY_'+instr[1], None, instr[2]*width, AlignOf(width))
             state.declare_var(instr[1], 32)
             #TODO: Set variable to hold the pointer
-        elif instr[0] == 'regrst': # ('regrst', reg)
-            comp_state.add_comment(f"regrst `{instr[1]}`")
-
-            state.registers[instr[1]].contained = None
+        elif instr[0] == 'regrst': # ('regrst', var)
+            for i in range(NUM_REGS):
+                if state.registers[i].contained == instr[1]:
+                    state.registers[i].contained = None
+                    comp_state.add_comment(f"regrst r{i} (`{instr[1]}`) => None", True)
+                    break
+            else:
+                comp_state.add_comment(f"regrst `{instr[1]}`", False)
         elif instr[0] == 'memsave': # ('memsave', var)
             for i in range(NUM_REGS):
                 if state.registers[i].contained == instr[1]:

@@ -1,6 +1,11 @@
 start: ex_decl+
 
-ex_decl: FN ident LPAREN [args] RPAREN type stmt
+ex_decl: struct_decl 
+       | fn_decl
+
+struct_decl: STRUCT ident LCURLY args RCURLY
+
+fn_decl: FN ident LPAREN [args] RPAREN type stmt
 
 stmt: blockstmt 
     | declexpr
@@ -85,7 +90,8 @@ args: arg (COMMA arg)* COMMA?
 arg: ident COLON type
 
 ident: /[_a-zA-Z][_a-zA-Z0-9]*/
-type: INT | VOID
+identtype: ident ASTERISK*
+type: INT | VOID | identtype
 string: /"([^\x00"]*\x01)*[^\x01"]*"/
 //string: /"[^"]*"/
 constant: char | hexint | decint
@@ -165,6 +171,7 @@ FOR: "for"
 AT: "@"
 TRUE: "true"
 FALSE: "false"
+STRUCT: "struct"
 
 COMMENT: /\/\/[^\r\n]*/
 

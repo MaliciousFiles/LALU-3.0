@@ -1,0 +1,26 @@
+fn Main() void {
+  BREAKPOINT;
+  var vec: Vec;
+  vec.x = 7;
+  vec.y = 8;
+  vec.z = 9;
+  
+  @nop();
+  @nop();
+  @nop();
+  @nop();
+  @nop();
+  @susp();
+}
+
+
+struct Vec {
+  x: u15,
+  y: u32,
+  z: u16,
+}
+
+struct Node {
+  vec: Vec,
+  self: Node*,
+}

@@ -50,6 +50,7 @@ def EName(name, kind, i):
     bits = WidthOf(kind) if type(kind) != int else kind
     p = len(str(bits-1))
     ename = name + '_' + str(i).zfill(p) if bits > 1 else name
+    assert ename != 't4', f'{name=}; {kind=}; {i=}'
     return ename
 
 def WidthOf(kind):
@@ -203,9 +204,9 @@ def Lower(hlir):
                         elif op == '=[]':
                             AddPent(nblock, 'ldw', D, S0, S1, S2)
                         elif op == '[:]=':
-                            AddPent(nblock, 'bst', D, S0, S1, S2)
+                            AddPent(nblock, 'bst', D, S0, S1, S2 % 32)
                         elif op == '=[:]':
-                            AddPent(nblock, 'bsf', D, S0, S1, S2)
+                            AddPent(nblock, 'bsf', D, S0, S1, S2 % 32)
                         
                         elif op == '<<':
                             AddPent(nblock, 'bsl', D, S0, S1, S2)
@@ -298,10 +299,33 @@ def Lower(hlir):
                                     sad
                                 i += 1
                             eD = EName(D, rwidth, i)
-                            eS = EName(D, rwidth, i)
+                            eS = EName(S0, rwidth, i)
                             if type(S1) == int:
                                 nblock.Addline(('memsave', eS))
                                 AddPent(nblock, 'ld', eD, eS0+'.&', S1+32*i, S2 % 32)
+                        elif op == '[:]=':
+                            D, S0 = S0, D
+                            print(width)
+                            rwidth = -(-width//32)
+                            i = 0
+                            eS0 = EName(S0, rwidth, 0)
+                            while S2 > 32:
+                                S2 -= 32
+                                eD = EName(D, rwidth, i)
+                                eS = EName(S0, rwidth, i)
+                                if type(S1) == int:
+                                    nblock.Addline(('memsave', eS))
+                                    AddPent(nblock, 'st', eD, eS0+'.&', S1+32*i, 32 % 32)
+                                    nblock.Addline(('regrst', eS))
+                                else:
+                                    sad
+                                i += 1
+                            eD = EName(D, rwidth, i)
+                            eS = EName(S0, rwidth, i)
+                            if type(S1) == int:
+                                nblock.Addline(('memsave', eS))
+                                AddPent(nblock, 'st', eD, eS0+'.&', S1+32*i, S2 % 32)
+                                nblock.Addline(('regrst', eS))
                             else:
                                 sad
                         else:
