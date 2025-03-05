@@ -138,6 +138,7 @@ def fmtregs():
         print(''.join(buf))
 
     exfor, refor = getforwards()
+
     
     print(' | '+' | '.join([f'reg{i}'.center(9) for i in range(16)]))
     print(' | '+' | '.join([f'{fmtval(vals[f"reg{i}"])}' for i in range(16)]))
