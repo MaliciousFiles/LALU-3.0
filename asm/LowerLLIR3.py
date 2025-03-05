@@ -343,7 +343,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             else:
                 comp_state.add_assembly((op, preFlags + postFlags, *[state.use_var(arg, comp_state) if isinstance(arg, str) else arg for arg in args]))
 
-            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`", len(comp_state.blocks[block.label].assembly) != start_len)
+            comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`".replace(f"`{instr[1][0]} `", f"`{instr[1][0]}`"), len(comp_state.blocks[block.label].assembly) != start_len)
 
     if not exits and block.fall_through is not None:
         if block.fall_through in comp_state.entrance_states:
