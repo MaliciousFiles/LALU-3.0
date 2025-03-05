@@ -18,6 +18,7 @@ _Main__:
 	// decl `t3`: u32
 	// decl `t4_0`: u64
 	// decl `t4_1`: u64
+	// memsave `t4_0.&`
 	// assign r2 = `t4_0`
 	add r29, r31, #0
 	ld.e r2, r29, #0, #32				// expr `ld t4_0, x_0.&, 0, 32`
