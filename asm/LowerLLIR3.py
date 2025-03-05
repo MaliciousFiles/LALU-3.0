@@ -257,6 +257,11 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.add_comment(f"regrst `{instr[1]}`")
 
             state.registers[instr[1]].contained = None
+        elif instr[0] == 'memsave': # ('memsave', var)
+            for i in range(NUM_REGS):
+                if state.registers[i].contained == instr[1]:
+                    comp_state.add_assembly(state.variables[instr[1]].store(i))
+                    break
         elif instr[0] == 'expr': # ('expr', (op, Rd, Rs0, Rs1, Rs2))
             start_len = len(comp_state.blocks[block.label].assembly)
 
