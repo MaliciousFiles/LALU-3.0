@@ -292,16 +292,16 @@ def Lower(hlir):
                                 eD = EName(D, rwidth, i)
                                 eS = EName(S0, rwidth, i)
                                 if type(S1) == int:
-                                    AddPent(nblock, 'memsave', None, eS+'.&', None, None)
-                                    AddPent(nblock, 'ldw', eD, eS0+'.&', S1+32*i, 32)
+                                    nblock.Addline(('memsave', eS+'.&'))
+                                    AddPent(nblock, 'ld', eD, eS0+'.&', S1+32*i, 32)
                                 else:
                                     sad
                                 i += 1
                             eD = EName(D, rwidth, i)
                             eS = EName(D, rwidth, i)
                             if type(S1) == int:
-                                AddPent(nblock, 'memsave', None, eS+'.&', None, None)
-                                AddPent(nblock, 'ldw', eD, eS0+'.&', S1+32*i, S2)
+                                nblock.Addline(('memsave', eS+'.&'))
+                                AddPent(nblock, 'ld', eD, eS0+'.&', S1+32*i, S2)
                             else:
                                 sad
                         else:

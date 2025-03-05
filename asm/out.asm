@@ -1,4 +1,4 @@
-	mov.e r31, #608			// Setup stack pointer
+	mov.e r31, #512			// Setup stack pointer
 
 //
 // Main
@@ -18,11 +18,9 @@ _Main__:
 	// decl `t3`: u32
 	// decl `t4_0`: u64
 	// decl `t4_1`: u64
-	add.e r29, r31, #6144
-	memsave r29				// expr `memsave t4_0.&`
 	// assign r2 = `t4_0`
 	add r29, r31, #0
-	ldw.e r2, r29, #0, #32				// expr `ldw t4_0, x_0.&, 0, 32`
+	ld.e r2, r29, #0, #32				// expr `ld t4_0, x_0.&, 0, 32`
 	// undecl `x_0`
 	// undecl `x_1`
 	// assign r0 = `t3`
