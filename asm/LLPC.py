@@ -652,7 +652,7 @@ def Lvalue(expr):
             desttype = idk['type']
             tmp = f'{lhs}[{off}+:{width}]'
 ##            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = off, S2 = width, origtype = lk, desttype = desttype)
-            return tmp, desttype
+            return tmp, lk
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
@@ -810,7 +810,8 @@ class HLIR:
                     self.Use(w)
                 self.Use(S2)
                 self.Use(l)
-                self.body.Addline(('expr', ('[:]=', l, S0, r, w, inter.Lookup(S0).OpWidth()), eid))
+##                if S0 == 'vec': print(f'{inter.Lookup(S0)=}')
+                self.body.Addline(('expr', ('[:]=', l, S0, r, w, inter.Lookup(l).OpWidth()), eid))
         elif type(S0) == str and '[' in S0:
             l, r = S0[:-1].split('[')
             assert op == '=', f'Expected operation to be `=` when rhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
@@ -1039,7 +1040,7 @@ class HLIR:
         return key
 class Type:
     def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False, struct = None):
-        self.width = width
+        self.width = width if not struct else structs[struct]['size']
         self.signed = signed
         self.arylen = arylen
         self.numPtrs = numPtrs
@@ -1071,7 +1072,9 @@ class Type:
         self.width = int(txt[1:])
         return self
     def OpWidth(self):
-        return PTRWIDTH if self.numPtrs else self.width
+        if self.numPtrs: return PTRWIDTH
+##        if self.struct: return structs[self.struct]['size']
+        return self.width
     def ElementSizeOf(self):
         return AlignOf(self.OpWidth())
     def __repr__(self):
@@ -1192,9 +1195,11 @@ def RecuSolveType(name, stk = ()):
         elif strk in structs:
             RecuSolveType(strk, stk)
             width = structs[strk]['size']
+            assert width != None, f'Recu failure'
         else:
             kind = Type.FromStr(strk)
             width = kind.OpWidth()
+            assert width != None, f'Bad kind'
         align = AlignOf(width)
         structs[name]['args'][argname]['type'] = Type.FromStr(strk)
         structs[name]['args'][argname]['width'] = width

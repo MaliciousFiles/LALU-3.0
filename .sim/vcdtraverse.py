@@ -223,12 +223,18 @@ def getmeminfo():
     
 def updatemem():
     inf = getmeminfo()
-    if inf:
+    if inf and False: #Ignore this old code, it wasnt based on how the process works :|
         mode, waddr, baddr, width, v = inf
         low = waddr << 5 | baddr
         high = low + width
         memoryseen[low:high] = width*bitarray('1')
-        memoryval[low:high] = bitarray(bin(v)[2:][::-1])
+        memoryval[low:high] = bitarray(bin(v)[2:].zfill(width)[::-1])
+    if inf: 
+        mode, waddr, baddr, width, v = inf
+        low = waddr << 5
+        high = low + 32
+        memoryseen[low:high] = 32*bitarray('1')
+        memoryval[low:high] = bitarray(bin(v)[2:].zfill(32)[::-1])
 
 def getforwards():
     exfor = None

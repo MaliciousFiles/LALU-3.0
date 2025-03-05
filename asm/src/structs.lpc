@@ -4,6 +4,8 @@ fn Main() void {
   vec.x = 7;
   vec.y = 8;
   vec.z = 9;
+
+  -vec;
   
   @nop();
   @nop();
@@ -15,7 +17,7 @@ fn Main() void {
 
 
 struct Vec {
-  x: u15,
+  x: u16,
   y: u32,
   z: u16,
 }
