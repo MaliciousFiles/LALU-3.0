@@ -50,6 +50,7 @@ def EName(name, kind, i):
     bits = WidthOf(kind) if type(kind) != int else kind
     p = len(str(bits-1))
     ename = name + '_' + str(i).zfill(p) if bits > 1 else name
+    assert ename != 't4', f'{name=}; {kind=}; {i=}'
     return ename
 
 def WidthOf(kind):
@@ -179,7 +180,9 @@ def Lower(hlir):
                             assert op != '<<<' and op != '>>>', f'Cannot perform bit rotation on unsized compile time integers'
                             assert False, f'Cannot lower comptime operand `{op}`'
                     elif width == 32:
-                        if op[0]=='@':
+                        if op == 'breakpoint':
+                            AddPent(nblock, op, D, S0, S1, S2)
+                        elif op[0]=='@':
                             AddPent(nblock, op[1:], D, S0, S1, S2)
                         elif op == '+':
                             AddPent(nblock, 'add', D, S0, S1, S2)
@@ -200,6 +203,10 @@ def Lower(hlir):
                             AddPent(nblock, 'stw', D, S0, S1, S2)
                         elif op == '=[]':
                             AddPent(nblock, 'ldw', D, S0, S1, S2)
+                        elif op == '[:]=':
+                            AddPent(nblock, 'bst', D, S0, S1, S2 % 32)
+                        elif op == '=[:]':
+                            AddPent(nblock, 'bsf', D, S0, S1, S2 % 32)
                         
                         elif op == '<<':
                             AddPent(nblock, 'bsl', D, S0, S1, S2)
@@ -240,7 +247,15 @@ def Lower(hlir):
                                     eD = D + '_' + str(i).zfill(pD) if WidthOf(dk) > 1 else D
                                     eS = (S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S) if i < WidthOf(sk) else 0
                                     AddPent(nblock, 'mov', eD, eS, None, None)
+                            elif dk.OpWidth() < 32:
+                                for i in range(WidthOf(dk)):
+                                    pD = len(str(WidthOf(dk)-1))
+                                    pS = len(str(WidthOf(sk)-1))
+                                    eD = D + '_' + str(i).zfill(pD) if WidthOf(dk) > 1 else D
+                                    eS = (S + '_' + str(i).zfill(pS) if WidthOf(sk) > 1 else S) if i < WidthOf(sk) else 0
+                                    AddPent(nblock, 'mov', eD, eS, None, None)
                             else:
+                                print(f'Compiling line:\n{line}')
                                 assert False, f'(Comptime) Cannot cast from type `{sk}` to `{dk}`'
                         else:
                             assert False, f'Cannot lower operand `{op}` 32 width'
@@ -269,7 +284,52 @@ def Lower(hlir):
                                 eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
 ##                                eS = eS.replace('.&', '') + '.&' if '.&' in eS else eS
                                 AddPent(nblock, 'argst', eD, S0+i, None, None)
+                        elif op == '=[:]':
+                            rwidth = -(-width//32)
+                            i = 0
+                            eS0 = EName(S0, rwidth, 0)
+                            while S2 > 32:
+                                S2 -= 32
+                                eD = EName(D, rwidth, i)
+                                eS = EName(S0, rwidth, i)
+                                if type(S1) == int:
+                                    nblock.Addline(('memsave', eS))
+                                    AddPent(nblock, 'ld', eD, eS0+'.&', S1+32*i, 32 % 32)
+                                else:
+                                    sad
+                                i += 1
+                            eD = EName(D, rwidth, i)
+                            eS = EName(S0, rwidth, i)
+                            if type(S1) == int:
+                                nblock.Addline(('memsave', eS))
+                                AddPent(nblock, 'ld', eD, eS0+'.&', S1+32*i, S2 % 32)
+                        elif op == '[:]=':
+                            D, S0 = S0, D
+                            print(width)
+                            rwidth = -(-width//32)
+                            i = 0
+                            eS0 = EName(S0, rwidth, 0)
+                            while S2 > 32:
+                                S2 -= 32
+                                eD = EName(D, rwidth, i)
+                                eS = EName(S0, rwidth, i)
+                                if type(S1) == int:
+                                    nblock.Addline(('memsave', eS))
+                                    AddPent(nblock, 'st', eD, eS0+'.&', S1+32*i, 32 % 32)
+                                    nblock.Addline(('regrst', eS))
+                                else:
+                                    sad
+                                i += 1
+                            eD = EName(D, rwidth, i)
+                            eS = EName(S0, rwidth, i)
+                            if type(S1) == int:
+                                nblock.Addline(('memsave', eS))
+                                AddPent(nblock, 'st', eD, eS0+'.&', S1+32*i, S2 % 32)
+                                nblock.Addline(('regrst', eS))
+                            else:
+                                sad
                         else:
+                            print(f'Compiling line:\n{line}')
                             assert False, f'HLIR -> LLIR does not currently support non-primative width `{width}` on operation `{op}`'
                     finex = []
                 else:

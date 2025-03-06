@@ -1,18 +1,23 @@
 from lark import Lark, Token, Tree
 import LowerHLIR as LHL
 import LowerLLIR3 as LLL
+import AssemblerV3 as ASM
+from math import log2
 
 PTRWIDTH = 32
 
+def RoundUp(x, k):
+    return -k*(-x//k)
+
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/func_test.lpc', 'r') as f:
+with open('src/structs.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
 
 ##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
 usesRd = ['[]=', '[:]=', '@stchr']
-nullret = ['@susp', '@rstkey', '@stchr']
+nullret = ['@susp', '@rstkey', '@stchr', '@nop']
 
 def Write(txt):
     global out
@@ -69,6 +74,19 @@ def logerror(func):
 
 FAILEDLINE = None
 
+def GetStrKind(kind):
+    if type(kind.children[0]) != Tree:
+        strk = kind.children[0].value
+    else:
+        o = ''
+        for child in kind.children[0].children:
+            if type(child) == Tree:
+                o += child.children[0].value
+            else:
+                o += child.value
+        strk = o
+    return strk
+
 @logerror
 @TrackLine
 def Gen(tree, pre = True):
@@ -97,9 +115,13 @@ def Gen(tree, pre = True):
             bds = []
             for child in tree.children:
                 Gen(child)
+            ResolveTypes()
             for child in tree.children:
                 Gen(child, pre = False)
+
         elif data.type == 'RULE' and data.value == 'ex_decl':
+            Gen(tree.children[0], pre)
+        elif data.type == 'RULE' and data.value == 'fn_decl':
             _, name, _, rargs, _, ret, body = tree.children
             name = name.children[0].value
             args = []
@@ -122,7 +144,8 @@ def Gen(tree, pre = True):
                 return
         elif data.type == 'RULE' and data.value == 'declstmt':
             _, name, _, kind, _, = tree.children
-            kind = kind.children[0].value
+            kind = GetStrKind(kind)
+##            kind = kind.children[0].value
             name = name.children[0].value
             inter.Decl(name, Type.FromStr(kind))
         elif data.type == 'RULE' and data.value == 'declexpr':
@@ -164,6 +187,7 @@ def Gen(tree, pre = True):
             inter.trues = []; inter.falses = []
             if cond:
                 inter.CJump(cond, post)
+            inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(post)
         elif data.type == 'RULE' and data.value == 'doelsestmt':
@@ -184,6 +208,7 @@ def Gen(tree, pre = True):
             inter.trues = []; inter.falses = []
             if cond:
                 inter.CJump(cond, _else)
+            inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
             inter.AddLabel(_else)
             Gen(stmt1.children[0])
@@ -321,6 +346,19 @@ def Gen(tree, pre = True):
         
         elif data.type == 'RULE' and data.value == 'stmt':
             Gen(tree.children[0])
+
+        elif data.type == 'RULE' and data.value == 'struct_decl':
+            _, name, _, args, _, = tree.children
+##            print(tree.pretty())
+            self = structs[name.children[0].value] = {'size': None, 'args': {}}
+            for arg in args.children:
+                if type(arg) != Tree: continue
+##                arg = arg.children[0]
+                argname, _, argkind = arg.children
+                assert argname not in self['args']
+                self['args'][argname.children[0].value] = {'offset': None, 'width': None, 'type': argkind}
+            return
+            
         else:
             print(tree)
             assert False, f'Uh oh'
@@ -354,6 +392,29 @@ def Rvalue(expr):
             lhs, lk = Rvalue(le)
             inter.PreUse(lhs)
             return f'{lhs}.&', lk.Addr()
+        elif data == 'breakpoint':
+            inter.AddPent('breakpoint', None, None, None, None)
+            return f'NO_USE', NewTemp(Type())
+        elif data == 'sliceexpr':
+            le, _, root, _, width, _, = expr.children
+            lhs, lk = Rvalue(le)
+            rv, rk = Rvalue(root)
+            wv, wk = Rvalue(width)
+            desttype = Type(wv)
+            tmp = NewTemp(desttype)
+            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = rv, S2 = wv, origtype = lk, desttype = desttype)
+            return tmp, desttype
+        elif data == 'fieldexpr':
+            le, _, re, = expr.children
+            lhs, lk = Rvalue(le)
+            field = re.children[0].value
+            idk = structs[str(lk)]['args'][field]
+            off = idk['offset']
+            width = idk['width']
+            desttype = idk['type']
+            tmp = NewTemp(desttype)
+            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = off, S2 = width, origtype = lk, desttype = desttype)
+            return tmp, desttype
         elif data == 'callexpr':
             func, _, args, _ = expr.children
             func = func.children[0].value
@@ -375,13 +436,10 @@ def Rvalue(expr):
             tmp = NewTemp(funret)
             inter.AddPent('retld', tmp, 0, None, None, width=funret.OpWidth())
             return tmp, funret
-            
         elif data == 'intrinsic':
             _, name, _, args, _, = expr.children
             name = name.children[0].value
             name = '@' + name
-##            if name in usesRd:
-##                bad
             ct = False
             if args:
                 ct=True
@@ -395,7 +453,7 @@ def Rvalue(expr):
                 args = nargs
             else:
                 args = []
-            print(f'Int f: {name=}')
+##            print(f'Int f: {name=}')
             if name in usesRd:
                 assert len(args) <= 4, f'Intrinsic function takes 4 arguments'
                 args += [None]*4
@@ -503,7 +561,7 @@ def Rvalue(expr):
             lhs, lk = Lvalue(le)
             rhs, rk = Rvalue(re)
 ##            print(op.children)
-            if len(op.children[0].value) == 2:
+            if len(op.children[0].value) >= 2:
                 op = op.children[0].value[:-1]
                 assert rk.CanCoerceTo(lk)
                 kind = lk.Common(rk)
@@ -576,6 +634,25 @@ def Lvalue(expr):
             inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lk.OpWidth(), S2 = None)
             tmp = f'{lhs}[{prod}]'
             return tmp, lk.Deref()
+        elif data == 'sliceexpr':
+            le, _, root, _, width, _, = expr.children
+            lhs, lk = Rvalue(le)
+            rv, rk = Rvalue(root)
+            wv, wk = Rvalue(width)
+            desttype = Type(wv)
+            tmp = f'{lhs}[{rv}+:{wv}]'
+            return tmp, lk
+        elif data == 'fieldexpr':
+            le, _, re, = expr.children
+            lhs, lk = Rvalue(le)
+            field = re.children[0].value
+            idk = structs[str(lk)]['args'][field]
+            off = idk['offset']
+            width = idk['width']
+            desttype = idk['type']
+            tmp = f'{lhs}[{off}+:{width}]'
+##            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = off, S2 = width, origtype = lk, desttype = desttype)
+            return tmp, lk
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
@@ -707,16 +784,34 @@ class HLIR:
                 S0 = tmp
                 S2 = None
                 op = '='
+            print(f'{D=}')
             l, r = D[:-1].split('[')
-            assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
-            self.Use(S0)
-            if r.isnumeric():
-                r = int(r)
+            if '+:' not in r:
+                assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
+                self.Use(S0)
+                if r.isnumeric():
+                    r = int(r)
+                else:
+                    self.Use(r)
+                self.Use(S2)
+                self.Use(l)
+                self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
             else:
-                self.Use(r)
-            self.Use(S2)
-            self.Use(l)
-            self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
+                r, w = r.split('+:')
+                assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
+                self.Use(S0)
+                if r.isnumeric():
+                    r = int(r)
+                else:
+                    self.Use(r)
+                if w.isnumeric():
+                    w = int(w)
+                else:
+                    self.Use(w)
+                self.Use(S2)
+                self.Use(l)
+##                if S0 == 'vec': print(f'{inter.Lookup(S0)=}')
+                self.body.Addline(('expr', ('[:]=', l, S0, r, w, inter.Lookup(l).OpWidth()), eid))
         elif type(S0) == str and '[' in S0:
             l, r = S0[:-1].split('[')
             assert op == '=', f'Expected operation to be `=` when rhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
@@ -758,7 +853,7 @@ class HLIR:
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
         self.Use(cond)
-        self.AddPent('!=', None, cond, 0, None)
+        self.AddPent('==', None, cond, 0, None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
@@ -944,18 +1039,23 @@ class HLIR:
         self.data[key] = txt
         return key
 class Type:
-    def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False):
-        self.width = width
+    def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False, struct = None):
+        self.width = width if not struct else structs[struct]['size']
         self.signed = signed
         self.arylen = arylen
         self.numPtrs = numPtrs
         self.comptime = comptime
         self.isbool = isbool
         self.isvoid = isvoid
+        self.struct = struct
     def __hash__(self):
         return hash(repr(self))
     def FromStr(txt):
         self = Type()
+        if txt in structs:
+            return Type(struct = txt)
+        if txt.rstrip('*') in structs:
+            return Type(struct = txt.rstrip('*'), numPtrs = txt.count('*'))
         if txt == 'void':
             return Type(isvoid = True)
         if txt == 'bool':
@@ -972,10 +1072,16 @@ class Type:
         self.width = int(txt[1:])
         return self
     def OpWidth(self):
-        return PTRWIDTH if self.numPtrs else self.width
+        if self.numPtrs: return PTRWIDTH
+##        if self.struct: return structs[self.struct]['size']
+        return self.width
+    def ElementSizeOf(self):
+        return AlignOf(self.OpWidth())
     def __repr__(self):
         return f'Type.FromStr("{self}")'
     def __str__(self):
+        if self.struct:
+            return self.struct + '*' * self.numPtrs
         if self.isvoid:
             return 'void'
         if self.isbool:
@@ -1037,6 +1143,12 @@ class Type:
     def Runtime(self):
         return Type(self.width, self.signed, self.numPtrs)
 
+def AlignOf(bitwidth):
+    if bitwidth <= 32:
+        return 1<<int(log2(bitwidth-1)+1)
+    else:
+        return RoundUp(bitwidth, 32)
+
 class Block:
     def __init__(self, entry):
         self.entry = entry
@@ -1047,7 +1159,84 @@ class Block:
         self.From = None
     def Addline(self, line):
         self.body.append(line)
-   
+
+def ResolveTypes():
+    global structs
+    queue = list(structs.keys())
+    while queue != []:
+        n = queue[0]
+        if structs[n]['size']:
+            del queue[0]
+            continue
+        RecuSolveType(queue[0])
+        del queue[0]
+
+def RecuSolveType(name, stk = ()):
+    print(f'Recu {name} from {stk}')
+    global structs
+    assert name not in stk, f'Type `{name}` is self referential'
+    stk = stk + (name,)
+    
+    for argname, arg in structs[name]['args'].items():
+        kind = arg['type']
+##        print(kind.children[0])
+        if type(kind.children[0]) != Tree:
+            strk = kind.children[0].value
+        else:
+            o = ''
+            for child in kind.children[0].children:
+                if type(child) == Tree:
+                    o += child.children[0].value
+                else:
+                    o += child.value
+            strk = o
+        if strk in structs and structs[strk]['size']:
+            width = structs[strk]['size']
+        elif strk in structs:
+            RecuSolveType(strk, stk)
+            width = structs[strk]['size']
+            assert width != None, f'Recu failure'
+        else:
+            kind = Type.FromStr(strk)
+            width = kind.OpWidth()
+            assert width != None, f'Bad kind'
+        align = AlignOf(width)
+        structs[name]['args'][argname]['type'] = Type.FromStr(strk)
+        structs[name]['args'][argname]['width'] = width
+        print(name, argname, width)
+    PackArgs(name)
+
+def PackArgs(name):
+    global structs
+    words = {}
+    laddr = 0
+    for argname, arg in structs[name]['args'].items():
+        print(argname, arg)
+        width = arg['width']
+        for addr, cw in words.items():
+            if 32 - cw > width:
+                structs[name]['args'][argname]['offset'] = addr << 5 | cw
+                words[addr] += width
+                break
+            elif 32-cw == width:
+                structs[name]['args'][argname]['offset'] = addr << 5 | cw
+                del words[addr]
+                break
+        else:
+            if width <= 32:
+                structs[name]['args'][argname]['offset'] = laddr << 5
+                words[laddr] = width
+                if width == 32:
+                    del words[laddr]
+                laddr += 1
+            else:
+                structs[name]['args'][argname]['offset'] = laddr << 5
+                laddr += -(-width//32)
+            print(f"{structs[name]['args'][argname]['offset']=}")
+    print(words)
+    structs[name]['size'] = 32 * laddr
+
+structs = {}
 syms = [{}]
 out = ''
 ind = 0
@@ -1057,8 +1246,6 @@ srcs=[]
 
 funcs = {}
 inter = HLIR()
-
-UnpackHex = LLL.asmblr.UnpackHex
 
 try:
     Gen(tree)
@@ -1081,21 +1268,20 @@ print(repr(llir))
 with open('out.llr', 'w') as f:
     f.write(repr(llir))
 
-asm, bn = LLL.Lower(llir)
+asm = LLL.Lower(llir)
 
 print('\nASM:')
-print(repr(asm))
+print(asm)
 with open('out.asm', 'w') as f:
-    f.write(repr(asm))
+    f.write(asm)
 
-##print('\nBIN:')
-##print(repr(bn))
+program = ASM.ParseFile(asm)
 
-mif = LLL.asmblr.Mifify(bn, 32)
+mif = ASM.Mifify(program, 15)
 print('\nMIF:')
 print(mif)
 with open('out.mif', 'w') as f:
-    f.write(repr(inter))
+    f.write(mif)
 
 with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
     f.write(mif)

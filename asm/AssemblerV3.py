@@ -430,6 +430,7 @@ def ParseFile(file):
     codes = []
     mem = {}
     addr = 0
+    breaks = []
     for line in lines:
         oline = line
         mline = oline
@@ -443,6 +444,9 @@ def ParseFile(file):
                 continue
             if segment == '.CODE':
                 tkn, line = (line.split(maxsplit=1)+[''])[:2]
+                if tkn == 'breakpoint':
+                    breaks.append(addr)
+                    continue
                 tkn = ParseValue(tkn, False)
                 if tkn[0] == 'lbl':
                     lbls[tkn[1]] = addr
@@ -481,14 +485,24 @@ def ParseFile(file):
 ##    print(codes, lbls)
     out = []
     lblsinv = {v:k for k,v in lbls.items()}
+
+    prnt = ""
     for code in codes:
         hx, ex = ResolveInstr(code, lbls)
         if code['loc'] in lblsinv:
-            print(f"\t{lblsinv[code['loc']]}:")
-        print(f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}")
+            prnt += f"\t{lblsinv[code['loc']]}:\n"
+        if code['loc'] in breaks:
+            prnt += 'breakpoint\n'
+        prnt += f"{hex(code['loc']//32)[2:].rjust(4, '0').upper()} :\t\t{code['line'].strip()}\n"
         mem[code['loc']] = hx
         if ex:
             mem[code['loc']+32] = ex
+
+    with open("asm_dbg.txt", 'w') as f:
+        f.write(prnt)
+    with open('asm_breaks.txt', 'w') as f:
+        f.write(repr(breaks))
+
     return mem
 
 def Mifify(mem, size):

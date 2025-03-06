@@ -1,0 +1,12 @@
+fn Main() void {
+  BREAKPOINT;
+  var x: u64 = 0x01_23_45_67;
+  var lowest: u32 = x[0 +: 32];
+  x[32 +: 32] = lowest;
+  -lowest;
+  @nop();
+  @nop();
+  @nop();
+  @nop();
+  @susp();
+}

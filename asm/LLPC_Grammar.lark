@@ -1,6 +1,11 @@
 start: ex_decl+
 
-ex_decl: FN ident LPAREN [args] RPAREN type stmt
+ex_decl: struct_decl 
+       | fn_decl
+
+struct_decl: STRUCT ident LCURLY args RCURLY
+
+fn_decl: FN ident LPAREN [args] RPAREN type stmt
 
 stmt: blockstmt 
     | declexpr
@@ -45,13 +50,14 @@ expr: assgexpr
         | unaryop castexpr
 ?postexpr: primexpr
 	| AT ident LPAREN [argexprs] RPAREN -> intrinsic
-        | postexpr LBRACK expr PLUS COLON expr RBRACK -> sliceexpr
+        | postexpr LBRACK expr PLUSCOLON expr RBRACK -> sliceexpr
         | postexpr LBRACK expr RBRACK -> indexpr
         | postexpr LPAREN [argexprs] RPAREN -> callexpr
         | postexpr DOT ASTERISK -> derefexpr
         | postexpr DOT AMPERSAND -> addrexpr
         | postexpr DOT QMARK -> denullexpr
         | postexpr DOT ident -> fieldexpr
+	| BREAKPOINT -> breakpoint
 ?primexpr: ident
         | constant
         | string
@@ -84,7 +90,8 @@ args: arg (COMMA arg)* COMMA?
 arg: ident COLON type
 
 ident: /[_a-zA-Z][_a-zA-Z0-9]*/
-type: INT | VOID
+identtype: ident ASTERISK*
+type: INT | VOID | identtype
 string: /"([^\x00"]*\x01)*[^\x01"]*"/
 //string: /"[^"]*"/
 constant: char | hexint | decint
@@ -101,6 +108,7 @@ addop: PLUS | MINUS
 multop: LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK
 unaryop: PLUS | MINUS | TILDE
 
+BREAKPOINT: "BREAKPOINT"
 VOID: "void"
 EQUAL: "="
 LEFTARROW: "CAST"
@@ -122,7 +130,8 @@ OR: "or"
 AND: "and"
 PIPE: "|"
 CARROT: "^"
-PLUS: "+"
+PLUS: /\+(?!:)/
+PLUSCOLON: "+:"
 PLUSEQUAL: "+="
 MINUS: "-"
 MINUSEQUAL: "-="
@@ -162,6 +171,7 @@ FOR: "for"
 AT: "@"
 TRUE: "true"
 FALSE: "false"
+STRUCT: "struct"
 
 COMMENT: /\/\/[^\r\n]*/
 
