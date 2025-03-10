@@ -152,7 +152,7 @@ def Gen(tree, pre = True):
             _, name, _, kind, _, expr, _, = tree.children
             rhs, tkind = Rvalue(expr.children[0])
             name = name.children[0].value
-            kind = Type.FromStr(kind.children[0].value)
+            kind = Type.FromStr(GetStrKind(kind))
             assert tkind.CanCoerceTo(kind), f'Type `{tkind}` cannot coerce into type `{kind}`'
             inter.Decl(name, kind)
             assert tkind.CanCoerceTo(kind)

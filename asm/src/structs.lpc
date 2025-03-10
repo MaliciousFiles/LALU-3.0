@@ -3,9 +3,15 @@ fn Main() void {
   var vec: Vec;
   vec.x = 7;
   vec.y = 8;
-  vec.z = 9;
+  vec.z = vec.x;
 
-  -vec;
+  var node: Node;
+  var ptr: Node* = node.&;
+  node.self = ptr;
+  node.vec = vec;
+  
+  BREAKPOINT;
+  -node;
   
   @nop();
   @nop();

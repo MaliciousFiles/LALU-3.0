@@ -1,4 +1,4 @@
-	mov.e r31, #704			// Setup stack pointer
+	mov.e r31, #832			// Setup stack pointer
 
 //
 // Main
@@ -35,18 +35,34 @@ _Main__:
 	// regrst `vec_0`
 	// undecl `t5_0`
 	// undecl `t5_1`
+	// decl `t6`: u16
 	// decl `t7_0`: u64
 	// decl `t7_1`: u64
-	// assign r0 = `t7_0`
-	mov r0, #9				// expr `mov t7_0, 9`
-	// assign r1 = `t7_1`
-	mov r1, #0				// expr `mov t7_1, 0`
 	// memsave `vec_0`
+	// assign r0 = `t7_0`
 	add r29, r31, #0
-	st r0, r29, #16, #16				// expr `st t7_0, vec_0.&, 16, 16`
-	// regrst `vec_0`
+	ld r0, r29, #0, #16				// expr `ld t7_0, vec_0.&, 0, 16`
+	// assign r1 = `t6`
+	mov r1, r0				// expr `mov t6, t7_0`
 	// undecl `t7_0`
 	// undecl `t7_1`
+	// decl `t8`: u16
+	// assign r0 = `t8`
+	mov r0, r1				// expr `mov t8, t6`
+	// undecl `t6`
+	// decl `t9_0`: u64
+	// decl `t9_1`: u64
+	// assign r1 = `t9_0`
+	mov r1, r0				// expr `mov t9_0, t8`
+	// assign r2 = `t9_1`
+	mov r2, #0				// expr `mov t9_1, 0`
+	// undecl `t8`
+	// memsave `vec_0`
+	add r29, r31, #0
+	st r1, r29, #16, #16				// expr `st t9_0, vec_0.&, 16, 16`
+	// regrst `vec_0`
+	// undecl `t9_0`
+	// undecl `t9_1`
 	// undecl `vec_0`
 	// undecl `vec_1`
 	nop 				// expr `nop`

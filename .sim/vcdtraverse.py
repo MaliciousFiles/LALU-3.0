@@ -139,10 +139,14 @@ def fmtregs():
 
     exfor, refor = getforwards()
 
+    if simple and exfor:
+        vals[f'reg{exfor[0]}'] = exfor[1]
+    if simple and refor:
+        vals[f'reg{refor[0]}'] = refor[1]
     
     print(' | '+' | '.join([f'reg{i}'.center(9) for i in range(16)]))
     print(' | '+' | '.join([f'{fmtval(vals[f"reg{i}"])}' for i in range(16)]))
-    printfwds()
+    if not simple: printfwds()
     print()
 
     if exfor: exfor[0] -= 16
@@ -151,7 +155,7 @@ def fmtregs():
     if refor and refor[0] < 0: refor = None
     print(' | '+' | '.join([f'reg{i}'.center(9) for i in range(16, 32)]))
     print(' | '+' | '.join([fmtval(vals[f"reg{i}"]) for i in range(16, 32)]))
-    printfwds()
+    if not simple: printfwds()
     print()
 
 def fmtflgs():
