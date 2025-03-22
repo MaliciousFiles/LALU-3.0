@@ -94,13 +94,20 @@ module LALU(input CLOCK_50,
     parameter GCLD				= 9'b1_1111_1111;
     parameter SUSP				= 9'b1_1111_1111;
 
+    /*********************
+     *       Clock       *
+     *********************/
+    wire clk;
+    pll_clk pll #("500 MHz", 1) (
+        .CLOCK_50(CLOCK_50)
+        .clk(clk))
 
     /*********************
      * Branch Predictor  *
      *********************/
     wire prediction;
     predictor PREDICTOR(
-        .CLOCK_50(CLOCK_50),
+        .clk(clk),
         .IP_f(IP_f),
         .wouldExecute(run && ~stall_e && ~executiveOverride && isValid_d),
         .expectedIP(expectedIP),
@@ -121,7 +128,7 @@ module LALU(input CLOCK_50,
     wire memAccessRden;
     wire [31:0] memAccessOutput;
     operational_memory MEM(
-        .clk(CLOCK_50),
+        .clk(clk),
         .operationMode(operationMode),
 
         .fetchAddress(fetchAddress),
@@ -139,7 +146,7 @@ module LALU(input CLOCK_50,
     wire [16:0] stackReadOut, stackWriteData;
     wire stackWren;
     RAM #(12, 17) STACK(
-        .clk(CLOCK_50),
+        .clk(clk),
 
         .address_a(stackReadAddr),
         .q_a(stackReadOut),
@@ -163,6 +170,7 @@ module LALU(input CLOCK_50,
     wire pollKeyboard;
     wire [18:0] keyboardOut;
     Keyboard keyboard (
+        .clk(clk),
         .CLOCK_50(CLOCK_50),
         .PS2_CLK(PS2_CLK),
         .PS2_DAT(PS2_DAT),
@@ -223,7 +231,7 @@ module LALU(input CLOCK_50,
      *********************/
     // GENERAL
     integer globalCounter = 0; // how many cycles the processor has been running for
-    always @(posedge CLOCK_50) if (run) globalCounter <= globalCounter + 1;
+    always @(posedge clk) if (run) globalCounter <= globalCounter + 1;
 
     reg [15:0] IP = 0; // instruction pointer
     reg operationMode = 1; // 0 = user mode, 1 = kernel mode
@@ -360,7 +368,7 @@ module LALU(input CLOCK_50,
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
-    always @(posedge CLOCK_50) begin if (run) if (~stall_e) begin
+    always @(posedge clk) begin if (run) if (~stall_e) begin
         IP_f <= fetchAddress; // save IP of fetched instruction
 
         IP <= executiveOverride
@@ -377,8 +385,8 @@ module LALU(input CLOCK_50,
     wire conditional_d = instruction[31];
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
-    always @(posedge CLOCK_50) if (run) updateEIP <= ~executiveOverride && isValid_f_reg;
-    always @(posedge CLOCK_50) begin if (run) if (~stall_e) begin if (~executiveOverride && isValid_f) begin
+    always @(posedge clk) if (run) updateEIP <= ~executiveOverride && isValid_f_reg;
+    always @(posedge clk) begin if (run) if (~stall_e) begin if (~executiveOverride && isValid_f) begin
         IP_d <= IP_f; // save IP of decoded instruction
         isValid_d <= 1'b1;
 
@@ -522,7 +530,7 @@ module LALU(input CLOCK_50,
 
     wire isExecuting = run && ~stall_e && ~executiveOverride && executeInstr;
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
-    always @(posedge CLOCK_50) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
+    always @(posedge clk) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
             expectedIP <= expectedIP + 1;
         end
@@ -886,7 +894,7 @@ module LALU(input CLOCK_50,
     /*********************
      *    Memory Read    *
      *********************/
-    always @(posedge CLOCK_50) if (run) begin
+    always @(posedge clk) if (run) begin
         // if we just returned, we need to update the current return address from the stack
         // we have to put some Execute stuff here so that returnAddress is only being driven once
         if (isExecuting && format == JMP && funcID == CALL) returnAddress <= stackWriteData;
@@ -899,7 +907,7 @@ module LALU(input CLOCK_50,
     assign memAccessWren = isMemWrite_m || fullByteWrite;
     assign memAccessRden = (isMemRead_e || isMemWrite_e) && ~memAccessWren; // only read if we aren't writing
     assign memAccessAddress = isMemWrite_m ? memAccessAddress_m : memAccessAddress_e; // either write address or read address
-    always @(posedge CLOCK_50) begin if (run) if (~stall_m && isValid_e) begin
+    always @(posedge clk) begin if (run) if (~stall_m && isValid_e) begin
         IP_m <= IP_e; // save IP of memory access instruction
         isValid_m <= 1'b1;
 
@@ -932,7 +940,7 @@ module LALU(input CLOCK_50,
         memOutput >> memAccessNumBits_m >> memAccessNumBitsBefore_m << memAccessNumBits_m << memAccessNumBitsBefore_m
         | (32'hFFFFFFFF & registers[Rd_m] << memAccessNumBitsAfter_m << memAccessNumBitsBefore_m) >> memAccessNumBitsAfter_m
         | (32'hFFFFFFFF & memOutput << memAccessNumBitsAfter_m << memAccessNumBits_m) >> memAccessNumBitsAfter_m >> memAccessNumBits_m;
-    always @(posedge CLOCK_50) begin if (run) if (isValid_m) begin
+    always @(posedge clk) begin if (run) if (isValid_m) begin
         if (halt_m) run <= 1'b0;
 
         if (isWriteback_m) begin

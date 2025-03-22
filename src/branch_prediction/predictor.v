@@ -1,5 +1,5 @@
 module predictor (
-    input CLOCK_50,
+    input clk,
     input [15:0] IP_f,
     input wouldExecute,
     input [15:0] expectedIP,
@@ -21,7 +21,7 @@ module predictor (
 
     wire [0:2**(LOCAL_BIT_IDX+LOCAL_HIST_LEN)-1] localPred;
     saturating_counter #(LOCAL_BIT_IDX+LOCAL_HIST_LEN) localPredCounter (
-        .clk(CLOCK_50),
+        .clk(clk),
         .modify(WJ),
         .isIncrement(DJ),
         .modifyIdx(CLA),
@@ -29,7 +29,7 @@ module predictor (
 
     wire [0:2**GLOBAL_BIT_IDX-1] globalPred;
     saturating_counter #(GLOBAL_BIT_IDX) globalPredCounter (
-        .clk(CLOCK_50),
+        .clk(clk),
         .modify(WJ),
         .isIncrement(DJ),
         .modifyIdx(GSA),
@@ -37,7 +37,7 @@ module predictor (
 
     wire [0:2**META_BIT_IDX-1] metaPred;
     saturating_counter #(META_BIT_IDX) metaPredCounter (
-        .clk(CLOCK_50),
+        .clk(clk),
         .modify(WJ && PL_d != PG_d),
         .isIncrement(PG_d == DJ),
         .modifyIdx(MPA),
@@ -61,14 +61,14 @@ module predictor (
     assign prediction = PM ? PG : PL;
 
     reg PL_f = 0, PG_f = 0;
-    always @(posedge CLOCK_50) begin
+    always @(posedge clk) begin
         PL_f <= PL;
         PG_f <= PG;
     end
 
     // decode
     reg PL_d = 0, PG_d = 0;
-    always @(posedge CLOCK_50) begin
+    always @(posedge clk) begin
         PL_d <= PL_f;
         PG_d <= PG_f;
     end
@@ -87,7 +87,7 @@ module predictor (
     wire [LOCAL_HIST_LEN-1:0] LBH = localHistTable[LHA];
     wire [LOCAL_BIT_IDX+LOCAL_HIST_LEN-1:0] CLA = {LPA, LBH};
 
-    always @(posedge CLOCK_50) if (wouldExecute) begin
+    always @(posedge clk) if (wouldExecute) begin
         JA <= expectedIP;
         WJ <= wasJump;
         DJ <= didJump;

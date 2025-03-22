@@ -1,11 +1,11 @@
-module clock25 (input CLOCK_50, output CLOCK_25);
+module pll_clock #(parameter frequency="50 MHz", parameter simulation=10) (input CLOCK_50, output clk);
 `ifndef __ICARUS__
     altera_pll #(
     	.fractional_vco_multiplier("false"),
         .reference_clock_frequency("50.0 MHz"),
         .operation_mode("direct"),
         .number_of_clocks(1),
-        .output_clock_frequency0("25.175644 MHz"),
+        .output_clock_frequency0(frequency),
         .phase_shift0("0 ps"),
         .duty_cycle0(50),
         .output_clock_frequency1("0 MHz"),
@@ -67,11 +67,11 @@ module clock25 (input CLOCK_50, output CLOCK_25);
         .locked	(),
         .fboutclk	( ),
         .fbclk	(1'b0),
-        .refclk	(CLOCK_50)
+        .refclk	(clk)
      );
  `else
-     reg CLK_25 = 0;
-     assign CLOCK_25 = CLK_25;
-     always @(posedge CLOCK_50) CLK_25 <= ~CLK_25;
+     reg clock = 0;
+     assign clk = clock;
+     always #simulation clock <= ~clock;
  `endif
 endmodule

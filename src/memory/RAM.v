@@ -1,6 +1,7 @@
 // DON'T INIT WITH THE SAME FILE; FREEZES IVERILOG
-module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, parameter initfile = "UNUSED") (
+module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, parameter initfile = "UNUSED", parameter TWO_CLK=0) (
     input                   clk,
+    input                   clk_b=0,
 
     input [widthad-1:0]     address_a,
     input                   wren_a,
@@ -16,6 +17,7 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
 
     altsyncram ram (
         .clock0(clk),
+        .clock1(clk_b),
 
         .address_a(address_a),
         .wren_a(wren_a),
@@ -45,16 +47,17 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
     defparam
        ram.init_file = initfile,
 //        ram.lpm_hint = "ENABLE_RUNTIME_MOD=yes",
-       ram.address_reg_b = "CLOCK0",
-       ram.rdcontrol_reg_b = "CLOCK0",
-       ram.indata_reg_b = "CLOCK0",
-       ram.wrcontrol_wraddress_reg_b = "CLOCK0",
-       ram.byteena_reg_b = "CLOCK0",
+       ram.address_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+       ram.rdcontrol_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+       ram.indata_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+       ram.wrcontrol_wraddress_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+       ram.byteena_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+       ram.wrcontrol_wraddress_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+       ram.indata_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
        ram.clock_enable_input_a = "BYPASS",
        ram.clock_enable_input_b = "BYPASS",
        ram.clock_enable_output_a = "BYPASS",
        ram.clock_enable_output_b = "BYPASS",
-       ram.indata_reg_b = "CLOCK0",
        ram.intended_device_family = "Cyclone V",
        ram.lpm_type = "altsyncram",
        ram.numwords_a = 1<<widthad,
@@ -78,7 +81,6 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
         ram.width_a = width,
         ram.width_b = width,
         ram.width_byteena_a = 1,
-        ram.width_byteena_b = 1,
-        ram.wrcontrol_wraddress_reg_b = "CLOCK0";
+        ram.width_byteena_b = 1;
 
 endmodule
