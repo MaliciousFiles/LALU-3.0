@@ -4,21 +4,24 @@ fn Main() u32 {
   var x: u32 = 17;
   var ptr: u32* = x.&;
   ptr.* = 16;
+  x -= 5;
   
   //var ary: u8[4];
   //ary[0] = 'h';
 
-  PrintStr(msg, 0, 0xFFFFFF, 0x000000, 0);
+  PrintStr(msg, 0, 0xFFFFFF, 0x000000, ptr);
+  x.&.* = x + 2;
+  PrintStr(msg, 0, 0x000000, 0xFFFFFF, ptr);
 
-  @susp();
+  while (true) {} // let VGA do its thing
 }
 
 
-fn PrintStr(charPtr: u8*, rendFlags: u32, foreGround: u32, backGround: u32, pos: u32) void {
-  for (var char: u8; char != 0; char = (charPtr += 1).*) {
+fn PrintStr(charPtr: u8*, rendFlags: u32, foreGround: u32, backGround: u32, pos: u32*) void {
+  for (var char: u8 = charPtr.*; char != 0; char = (charPtr += 1).*) {
     var flagChar: u32 = char + rendFlags << 8;
-    @stchr(flagChar, pos, foreGround, backGround);
-    pos += 1;
+    @stchr(flagChar, pos.*, foreGround, backGround);
+    pos.* = pos.* + 1;
   }
   return;
 }

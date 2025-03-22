@@ -395,7 +395,7 @@ def ParseDataLine(line):
                     del stk[-1]
                     tc = stk[-2]
                 del stk[-2]
-                stk[-1] = Binary(0, 8) + stk[-1]
+                stk[-1] = stk[-1] + Binary(0, 8)
             else:
                 stk.append(Binary(ord(c), 8))
         else:

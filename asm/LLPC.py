@@ -2,7 +2,7 @@ from lark import Lark, Token, Tree
 import LowerHLIR as LHL
 import LowerLLIR3 as LLL
 import AssemblerV3 as ASM
-from math import log2
+from math import log2, ceil
 
 PTRWIDTH = 32
 
@@ -10,7 +10,7 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/sha256.lpc', 'r') as f:
+with open('src/printstr.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -604,7 +604,7 @@ def Rvalue(expr):
         elif data.value == 'constant':
             return Rvalue(expr.children[0])
         elif data.value == 'string':
-            ref = inter.AddString(expr.children[0])
+            ref = inter.AddString(expr.children[0].value)
             return ref, Type.FromStr('u32*')
         elif data.value == 'primexpr':
             _, ex, _, = expr.children
@@ -795,7 +795,7 @@ class HLIR:
                     self.Use(r)
                 self.Use(S2)
                 self.Use(l)
-                self.body.Addline(('expr', ('[]=', l, r, S0, S2, width), eid))
+                self.body.Addline(('expr', ('[]=', S0, l, r, S2, width), eid))
             else:
                 r, w = r.split('+:')
                 assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
@@ -1036,7 +1036,7 @@ class HLIR:
 ##        err
     def AddString(self, txt):
         key = f's{len(self.data.keys())}:'
-        self.data[key] = txt
+        self.data[key] = (txt, ceil((len(txt)-1)/4)) # -2 for the quotes are still there, +1 for the null termination
         return key
 class Type:
     def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False, struct = None):
