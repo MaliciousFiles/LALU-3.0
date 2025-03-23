@@ -51,8 +51,6 @@ _Main__:
 	// assign r0 = `vecptr`
 	add.e r29, r31, #64
 	mov r0, r29				// expr `mov vecptr, vec_0.&`
-	// undecl `vec_0`
-	// undecl `vec_1`
 	breakpoint 				// expr `breakpoint`
 	// memsave `vec_0`
 	// memsave `vec_1`
@@ -69,6 +67,7 @@ _Main__:
 	// memsave `t3`
 	// memsave `t4`
 	// memsave `t5`
+	// memsave `vec_1`
 	// memsave `t6`
 	stw r1, #0, #7				// expr `stw xptr, 0, 7`
 	// regrst `t1`
@@ -77,6 +76,7 @@ _Main__:
 	// regrst `t3`
 	// regrst `t4`
 	// regrst `t5`
+	// regrst `vec_1`
 	// regrst `t6`
 	breakpoint 				// expr `breakpoint`
 	// decl `ft`: u15
@@ -84,16 +84,20 @@ _Main__:
 	mov r0, #1				// expr `mov ft, 1`
 	// decl `ftptr`: u32
 	// assign r2 = `ftptr`
-	add.e r29, r31, #64
+	add.e r29, r31, #128
 	mov r2, r29				// expr `mov ftptr, ft.&`
 	// undecl `ft`
+	// memsave `vec_0`
 	// memsave `ft`
 	mov r29, #6
 	st r29, r2, #0, #16				// expr `st 6, ftptr, 0, 16`
 	// undecl `ftptr`
+	// regrst `vec_0`
 	// regrst `ft`
 	// undecl `x`
 	// undecl `xptr`
+	// undecl `vec_0`
+	// undecl `vec_1`
 	nop 				// expr `nop`
 	nop 				// expr `nop`
 	nop 				// expr `nop`

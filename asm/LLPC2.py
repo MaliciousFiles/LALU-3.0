@@ -888,8 +888,12 @@ class HLIR:
 
     def Evict(self, name):
         self.body.Addline(('memsave', name))
+    def EvictBits(self, name, offset, width):
+        self.body.Addline(('memsavebit', name, offset, width))
     def Invalidate(self, name):
         self.body.Addline(('regrst', name))
+    def InvalidateBits(self, name, offset, width):
+        self.body.Addline(('regrstbit', name, offset, width))
     def NoFallLabel(self, lbl):
         self.body = Block(lbl)
         self.func['body'].append(self.body)
@@ -1003,7 +1007,7 @@ class HLIR:
                             else:
                                 pass
 ##                                print(f'{arg} already maps to {ldict[arg][1]}')
-                elif line[0] in ['regrst', 'memsave']: pass
+                elif line[0] in ['regrst', 'memsave', 'regrstbit', 'memsavebit']: pass
                 else:
                     print(line)
                     err
@@ -1309,6 +1313,20 @@ def EvictAliasFor(inter, kind):
         for varname, varkind in env.items():
             if str(kind) == str(varkind):
                 inter.Evict(Var(varname, varkind))
+            elif str(varkind) in structs:
+                cstk = []
+                for arg in structs[str(varkind)]['args'].values():
+                    cstk.append(arg)
+                while cstk:
+                    print(cstk)
+                    arg = cstk[0]
+                    del cstk[0]
+                    if str(arg['type']) == str(kind):
+                        inter.EvictBits(Var(varname, varkind), arg['offset'], arg['width'])
+                    elif str(arg['type']) in structs:
+                        for carg in structs[str(arg['type'])]['args'].values():
+                            carg['offset'] += arg['offset']
+                            cstk.append(carg)
 
 def InvalidateAliasFor(inter, kind):
     print(f'{inter.envs!r}')
@@ -1316,6 +1334,19 @@ def InvalidateAliasFor(inter, kind):
         for varname, varkind in env.items():
             if str(kind) == str(varkind):
                 inter.Invalidate(Var(varname, varkind))
+            elif str(varkind) in structs:
+                cstk = []
+                for arg in structs[str(varkind)]['args'].values():
+                    cstk.append(arg)
+                while cstk:
+                    arg = cstk[0]
+                    del cstk[0]
+                    if str(arg['type']) == str(kind):
+                        inter.InvalidateBits(Var(varname, varkind), arg['offset'], arg['width'])
+                    elif str(arg['type']) in structs:
+                        for carg in structs[str(arg['type'])]['args'].values():
+                            carg['offset'] += arg['offset']
+                            cstk.append(carg)
 
 structs = {}
 syms = [{}]

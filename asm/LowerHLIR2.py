@@ -437,12 +437,34 @@ def Lower(hlir):
                             for subreg in SubRegs(var):
                                 nblock.Addline(('regrst', subreg))
 
+                    #BIT LEVEL REGISTER RESET / INVALIDATION
+                    elif cmd == 'regrstbit':
+                        var = line[1]
+                        offset = line[2]
+                        width = line[3]
+                        minreg = offset // 32
+                        maxreg = (offset + width - 1) // 32
+                        if not var.kind.comptime:
+                            for regid in range(minreg, maxreg+1):
+                                nblock.Addline(('regrst', SubReg(var, regid)))
+
                     #REGISTER EVICTION / SAVE TO MEMORY
                     elif cmd == 'memsave':
                         var = line[1]
                         if not var.kind.comptime:
                             for subreg in SubRegs(var):
                                 nblock.Addline(('memsave', subreg))
+
+                    #BIT LEVEL REGISTER EVICTION / SAVE TO MEMORY
+                    elif cmd == 'memsavebit':
+                        var = line[1]
+                        offset = line[2]
+                        width = line[3]
+                        minreg = offset // 32
+                        maxreg = (offset + width - 1) // 32
+                        if not var.kind.comptime:
+                            for regid in range(minreg, maxreg+1):
+                                nblock.Addline(('memsave', SubReg(var, regid)))
                                 
                     #EXPRESSIONS
                     elif cmd == 'expr':
