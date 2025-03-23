@@ -346,7 +346,12 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 if args[1] < NUM_REGS:
                     state.registers[args[1]].contained = args[0]
             else:
-                comp_state.add_assembly((op, preFlags + postFlags, *[state.use_var(arg, comp_state) if isinstance(arg, str) else arg for arg in args]))
+                args = [state.use_var(arg, comp_state) if isinstance(arg, str) else arg for arg in args]
+                if len(args) == 4 and isinstance(args[0], int):
+                    comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[0]))
+                    args[0] = f'r{SCRATCH_REGS[0]}'
+
+                comp_state.add_assembly((op, preFlags + postFlags, *processed_args))
 
             comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`".replace(f"`{instr[1][0]} `", f"`{instr[1][0]}`"), len(comp_state.blocks[block.label].assembly) != start_len)
 
