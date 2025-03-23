@@ -1,26 +1,14 @@
-fn Main () u32 {
+fn Main () void {
   _Main__:
-    ('expr', ('argst', Var(0, 'comp'), Var(5, 'comp'), NoVar, NoVar), 1, 'src', 0)
-    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 2, 'src', 1)
-    ('decl', Var('t1', 'u32'), None, None, 'src', 2)
-    ('expr', ('retld', Var('t1', 'u32'), Var(0, 'comp'), NoVar, NoVar), 3, 'src', 3)
-    ('undecl', Var('t1', 'u32'), None, 'src', 15)
-    ('decl', Var('u_t__0', 'u32'), None, None, 'src', 6)
-    ('expr', ('=', Var('u_t__0', 'u32'), Var(5, 'comp'), NoVar, NoVar), 5, 'src', 7)
-    ('expr', ('argst', Var(0, 'comp'), Var(7, 'comp'), NoVar, NoVar), 6, 'src', 8)
-    ('expr', ('argst', Var(1, 'comp'), Var(7, 'comp'), NoVar, NoVar), 7, 'src', 9)
-    ('expr', ('call', Var('AssertEql', 'u32'), NoVar, NoVar, NoVar), 8, 'src', 10)
-    ('expr', ('retld', Var('t2', 'void'), Var(0, 'comp'), NoVar, NoVar), 9, 'src', 11)
-    ('expr', ('retst', Var(0, 'comp'), Var('u_t__0', 'u32'), NoVar, NoVar), 11, 'src', 14)
-    ('undecl', Var('u_t__0', 'u32'), None, 'src', 16)
-  ('return', 11) 
-    FALL: None
+    ('decl', Var('x', 'u32'), None, None, 'src', 0)
+    ('decl', Var('place', 'u32'), None, None, 'src', 1)
+    ('expr', ('=', Var('place', 'u32'), Var(1, 'comp'), NoVar, NoVar), 1, 'src', 2)
+    ('decl', Var('chr', 'u32'), None, None, 'src', 3)
+  None 
+    FALL: L2
 
-}
-fn Fib (x: u32) u32 {
-  _Fib__:
-    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comp'), NoVar, NoVar), 12, 'src', 17)
-    ('expr', ('==', NoVar, Var('x', 'u32'), Var(1, 'comp'), NoVar), 13, 'src', 18)
+  L2:
+    ('expr', ('+<', NoVar, Var('chr', 'u32'), Var(54, 'comp'), NoVar), 2, 'src', 4)
   ('c.jmp', 'L4') 
     FALL: _L7
 
@@ -29,7 +17,7 @@ fn Fib (x: u32) u32 {
     FALL: None
 
   L6:
-    ('expr', ('==', NoVar, Var('x', 'u32'), Var(0, 'comp'), NoVar), 14, 'src', 19)
+    ('expr', ('+>', NoVar, Var('chr', 'u32'), Var(63, 'comp'), NoVar), 3, 'src', 5)
   ('c.jmp', 'L4') 
     FALL: _L9
 
@@ -38,58 +26,209 @@ fn Fib (x: u32) u32 {
     FALL: None
 
   L4:
-    ('undecl', Var('x', 'u32'), NoVar, 'src', 37)
-    ('expr', ('retst', Var(0, 'comp'), Var(1, 'comp'), NoVar, NoVar), 16, 'src', 21)
-  ('return', 16) 
+  ('goto', 'L1') 
     FALL: None
 
   L5:
-    ('decl', Var('t13', 'u32'), None, None, 'src', 22)
-    ('expr', ('-', Var('t13', 'u32'), Var('x', 'u32'), Var(2, 'comp'), NoVar), 17, 'src', 23)
-    ('expr', ('argst', Var(0, 'comp'), Var('t13', 'u32'), NoVar, NoVar), 18, 'src', 24)
-    ('undecl', Var('t13', 'u32'), None, 'src', 38)
-    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 19, 'src', 25)
-    ('decl', Var('t14', 'u32'), None, None, 'src', 26)
-    ('expr', ('retld', Var('t14', 'u32'), Var(0, 'comp'), NoVar, NoVar), 20, 'src', 27)
-    ('decl', Var('t15', 'u32'), None, None, 'src', 28)
-    ('expr', ('-', Var('t15', 'u32'), Var('x', 'u32'), Var(1, 'comp'), NoVar), 21, 'src', 29)
-    ('undecl', Var('x', 'u32'), None, 'src', 39)
-    ('expr', ('argst', Var(0, 'comp'), Var('t15', 'u32'), NoVar, NoVar), 22, 'src', 30)
-    ('undecl', Var('t15', 'u32'), None, 'src', 40)
-    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 23, 'src', 31)
-    ('decl', Var('t16', 'u32'), None, None, 'src', 32)
-    ('expr', ('retld', Var('t16', 'u32'), Var(0, 'comp'), NoVar, NoVar), 24, 'src', 33)
-    ('decl', Var('t17', 'u32'), None, None, 'src', 34)
-    ('expr', ('+', Var('t17', 'u32'), Var('t14', 'u32'), Var('t16', 'u32'), NoVar), 25, 'src', 35)
-    ('undecl', Var('t16', 'u32'), None, 'src', 41)
-    ('undecl', Var('t14', 'u32'), None, 'src', 42)
-    ('expr', ('retst', Var(0, 'comp'), Var('t17', 'u32'), NoVar, NoVar), 26, 'src', 36)
-    ('undecl', Var('t17', 'u32'), None, 'src', 43)
-  ('return', 26) 
+    ('decl', Var('t12', 'u32'), None, None, 'src', 6)
+    ('expr', ('-', Var('t12', 'u32'), Var('chr', 'u32'), Var(53, 'comp'), NoVar), 4, 'src', 7)
+    ('decl', Var('u_temp', 'u32'), None, None, 'src', 8)
+    ('expr', ('=', Var('u_temp', 'u32'), Var('t12', 'u32'), NoVar, NoVar), 5, 'src', 9)
+    ('undecl', Var('t12', 'u32'), None, 'src', 27)
+    ('expr', ('==', NoVar, Var('u_temp', 'u32'), Var(10, 'comp'), NoVar), 6, 'src', 10)
+  ('c.jmp', 'L13') 
+    FALL: _L15
+
+  _L15:
+  ('goto', 'L14') 
+    FALL: None
+
+  L13:
+    ('expr', ('=', Var('u_temp', 'u32'), Var(0, 'comp'), NoVar, NoVar), 7, 'src', 11)
+  None 
+    FALL: L14
+
+  L14:
+    ('decl', Var('t17', 'u32'), None, None, 'src', 12)
+    ('expr', ('*', Var('t17', 'u32'), Var('u_temp', 'u32'), Var('place', 'u32'), NoVar), 8, 'src', 13)
+    ('undecl', Var('u_temp', 'u32'), None, 'src', 28)
+    ('expr', ('+', Var('x', 'u32'), Var('x', 'u32'), Var('t17', 'u32'), NoVar), 9, 'src', 14)
+    ('undecl', Var('t17', 'u32'), None, 'src', 29)
+    ('expr', ('*', Var('place', 'u32'), Var('place', 'u32'), Var(10, 'comp'), NoVar), 10, 'src', 15)
+  None 
+    FALL: L1
+
+  L1:
+    ('decl', Var('t18', 'u32'), None, None, 'src', 16)
+    ('expr', ('@ldkey', Var('t18', 'u32'), NoVar, NoVar, NoVar), 11, 'src', 17)
+    ('expr', ('=', Var('chr', 'u32'), Var('t18', 'u32'), NoVar, NoVar), 12, 'src', 18)
+    ('undecl', Var('t18', 'u32'), None, 'src', 30)
+    ('expr', ('!=', NoVar, Var('chr', 'u32'), Var(51, 'comp'), NoVar), 13, 'src', 19)
+  ('c.jmp', 'L2') 
+    FALL: _L19
+
+  _L19:
+    ('undecl', Var('place', 'u32'), None, 'src', 31)
+    ('undecl', Var('chr', 'u32'), None, 'src', 32)
+  ('goto', 'L3') 
+    FALL: None
+
+  L3:
+    ('expr', ('argst', Var(0, 'comp'), Var('x', 'u32'), NoVar, NoVar), 14, 'src', 20)
+    ('undecl', Var('x', 'u32'), None, 'src', 33)
+    ('expr', ('call', Var('Fac', 'u32'), NoVar, NoVar, NoVar), 15, 'src', 21)
+    ('decl', Var('t22', 'u32'), None, None, 'src', 22)
+    ('expr', ('retld', Var('t22', 'u32'), Var(0, 'comp'), NoVar, NoVar), 16, 'src', 23)
+    ('expr', ('argst', Var(0, 'comp'), Var('t22', 'u32'), NoVar, NoVar), 17, 'src', 24)
+    ('undecl', Var('t22', 'u32'), None, 'src', 34)
+    ('expr', ('call', Var('Print', 'u32'), NoVar, NoVar, NoVar), 18, 'src', 25)
+    ('expr', ('retld', Var('t23', 'void'), Var(0, 'comp'), NoVar, NoVar), 19, 'src', 26)
+  None 
+    FALL: L24
+
+  L24:
+  ('goto', 'L25') 
+    FALL: None
+
+  L25:
+  ('goto', 'L24') 
     FALL: None
 
 }
-fn AssertEql (act: u32, exp: u32) void {
-  _AssertEql__:
-    ('expr', ('argld', Var('act', 'u32'), Var(0, 'comp'), NoVar, NoVar), 27, 'src', 44)
-    ('expr', ('argld', Var('exp', 'u32'), Var(1, 'comp'), NoVar, NoVar), 28, 'src', 45)
-    ('expr', ('!=', NoVar, Var('act', 'u32'), Var('exp', 'u32'), NoVar), 29, 'src', 46)
-    ('undecl', Var('exp', 'u32'), None, 'src', 50)
-    ('undecl', Var('act', 'u32'), None, 'src', 51)
-  ('c.jmp', 'L19') 
-    FALL: _L21
+fn Fac (n: u32) u32 {
+  _Fac__:
+    ('expr', ('argld', Var('n', 'u32'), Var(0, 'comp'), NoVar, NoVar), 20, 'src', 35)
+    ('expr', ('==', NoVar, Var('n', 'u32'), Var(1, 'comp'), NoVar), 21, 'src', 36)
+  ('c.jmp', 'L29') 
+    FALL: _L31
 
-  _L21:
-  ('goto', 'L20') 
+  _L31:
+  ('goto', 'L30') 
     FALL: None
 
-  L19:
-    ('expr', ['@susp', None, NoVar, NoVar, NoVar], 31, 'src', 49)
+  L29:
+    ('undecl', Var('n', 'u32'), NoVar, 'src', 47)
+    ('expr', ('retst', Var(0, 'comp'), Var(1, 'comp'), NoVar, NoVar), 22, 'src', 37)
+  ('return', 22) 
+    FALL: None
+
+  L30:
+    ('decl', Var('t34', 'u32'), None, None, 'src', 38)
+    ('expr', ('-', Var('t34', 'u32'), Var('n', 'u32'), Var(1, 'comp'), NoVar), 23, 'src', 39)
+    ('expr', ('argst', Var(0, 'comp'), Var('t34', 'u32'), NoVar, NoVar), 24, 'src', 40)
+    ('undecl', Var('t34', 'u32'), None, 'src', 48)
+    ('expr', ('call', Var('Fac', 'u32'), NoVar, NoVar, NoVar), 25, 'src', 41)
+    ('decl', Var('t35', 'u32'), None, None, 'src', 42)
+    ('expr', ('retld', Var('t35', 'u32'), Var(0, 'comp'), NoVar, NoVar), 26, 'src', 43)
+    ('decl', Var('t36', 'u32'), None, None, 'src', 44)
+    ('expr', ('*', Var('t36', 'u32'), Var('n', 'u32'), Var('t35', 'u32'), NoVar), 27, 'src', 45)
+    ('undecl', Var('t35', 'u32'), None, 'src', 49)
+    ('undecl', Var('n', 'u32'), None, 'src', 50)
+    ('expr', ('retst', Var(0, 'comp'), Var('t36', 'u32'), NoVar, NoVar), 28, 'src', 46)
+    ('undecl', Var('t36', 'u32'), None, 'src', 51)
+  ('return', 28) 
+    FALL: None
+
+}
+fn Print (x: u32) void {
+  _Print__:
+    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comp'), NoVar, NoVar), 29, 'src', 52)
+    ('decl', Var('bcd', 'u32'), None, None, 'src', 53)
+    ('expr', ('=', Var('bcd', 'u32'), Var(0, 'comp'), NoVar, NoVar), 30, 'src', 54)
+    ('decl', Var('u___', 'u32'), None, None, 'src', 55)
+    ('expr', ('=', Var('u___', 'u32'), Var(0, 'comp'), NoVar, NoVar), 31, 'src', 56)
   None 
-    FALL: L20
+    FALL: L38
 
-  L20:
-  ('return', 31) 
+  L38:
+    ('expr', ('+<', NoVar, Var('u___', 'u32'), Var(32, 'comp'), NoVar), 32, 'src', 57)
+  ('c.jmp', 'L39') 
+    FALL: _L41
+
+  _L41:
+    ('undecl', Var('x', 'u32'), NoVar, 'src', 91)
+    ('undecl', Var('u___', 'u32'), None, 'src', 92)
+  ('goto', 'L40') 
     FALL: None
+
+  L39:
+    ('decl', Var('t43', 'u32'), None, None, 'src', 58)
+    ('expr', ('@dab', Var('t43', 'u32'), Var('bcd', 'u32'), NoVar, NoVar), 33, 'src', 59)
+    ('expr', ('=', Var('bcd', 'u32'), Var('t43', 'u32'), NoVar, NoVar), 34, 'src', 60)
+    ('undecl', Var('t43', 'u32'), None, 'src', 93)
+    ('expr', ('<<', Var('bcd', 'u32'), Var('bcd', 'u32'), Var(1, 'comp'), NoVar), 35, 'src', 61)
+    ('decl', Var('t46', 'comp'), None, None, 'src', 62)
+    ('expr', ('<<', Var('t46', 'comp'), Var(1, 'comp'), Var(31, 'comp'), NoVar), 36, 'src', 63)
+    ('decl', Var('t47', 'u32'), None, -1, 'src', 66)
+    ('expr', ('&', Var('t47', 'u32'), Var('x', 'u32'), Var('t46', 'comp'), NoVar), 37, 'src', 65)
+    ('undecl', Var('t46', 'comp'), None, 'src', 94)
+    ('expr', ('==', NoVar, Var('t47', 'u32'), Var(0, 'comp'), NoVar), 38, 'src', 67)
+    ('undecl', Var('t47', 'u32'), None, 'src', 95)
+  ('c.jmp', 'L45') 
+    FALL: _L48
+
+  _L48:
+  None 
+    FALL: L44
+
+  L44:
+    ('expr', ('|', Var('bcd', 'u32'), Var('bcd', 'u32'), Var(1, 'comp'), NoVar), 39, 'src', 68)
+  None 
+    FALL: L45
+
+  L45:
+    ('expr', ('<<', Var('x', 'u32'), Var('x', 'u32'), Var(1, 'comp'), NoVar), 40, 'src', 69)
+    ('expr', ('+', Var('u___', 'u32'), Var('u___', 'u32'), Var(1, 'comp'), NoVar), 41, 'src', 70)
+  ('goto', 'L38') 
+    FALL: None
+
+  L40:
+    ('decl', Var('idx', 'u32'), None, None, 'src', 71)
+    ('expr', ('=', Var('idx', 'u32'), Var(0, 'comp'), NoVar, NoVar), 42, 'src', 72)
+    ('decl', Var('t53', 'u32'), None, None, 'src', 73)
+    ('expr', ('@log', Var('t53', 'u32'), Var('bcd', 'u32'), NoVar, NoVar), 43, 'src', 74)
+    ('decl', Var('t54', 'u32'), None, None, 'src', 75)
+    ('expr', ('@andn', Var('t54', 'u32'), Var('t53', 'u32'), Var(3, 'comp'), NoVar), 44, 'src', 76)
+    ('undecl', Var('t53', 'u32'), None, 'src', 96)
+    ('decl', Var('t55', 'i32'), None, None, 'src', 77)
+    ('expr', ('=<>', Var('t55', 'i32'), Var('t54', 'u32'), NoVar, NoVar), 45, 'src', 78)
+    ('undecl', Var('t54', 'u32'), None, 'src', 97)
+    ('decl', Var('nibble', 'i32'), None, None, 'src', 79)
+    ('expr', ('=', Var('nibble', 'i32'), Var('t55', 'i32'), NoVar, NoVar), 46, 'src', 80)
+    ('undecl', Var('t55', 'i32'), None, 'src', 98)
+  None 
+    FALL: L50
+
+  L50:
+    ('expr', ('->=', NoVar, Var('nibble', 'i32'), Var(0, 'comp'), NoVar), 47, 'src', 81)
+  ('c.jmp', 'L51') 
+    FALL: _L56
+
+  _L56:
+    ('undecl', Var('idx', 'u32'), None, 'src', 99)
+    ('undecl', Var('bcd', 'u32'), None, 'src', 100)
+    ('undecl', Var('nibble', 'i32'), None, 'src', 101)
+  ('goto', 'L52') 
+    FALL: None
+
+  L51:
+    ('decl', Var('t58', 'u32'), None, None, 'src', 82)
+    ('expr', ('@bsf', Var('t58', 'u32'), Var('bcd', 'u32'), Var('nibble', 'i32'), Var(4, 'comp')), 48, 'src', 83)
+    ('decl', Var('t59', 'u32'), None, None, 'src', 84)
+    ('expr', ('&', Var('t59', 'u32'), Var('t58', 'u32'), Var(15, 'comp'), NoVar), 49, 'src', 85)
+    ('undecl', Var('t58', 'u32'), None, 'src', 102)
+    ('decl', Var('t60', 'u32'), None, None, 'src', 86)
+    ('expr', ('+', Var('t60', 'u32'), Var('t59', 'u32'), Var(48, 'comp'), NoVar), 50, 'src', 87)
+    ('undecl', Var('t59', 'u32'), None, 'src', 103)
+    ('expr', ('@stchr', Var('t60', 'u32'), Var('idx', 'u32'), Var(4294967295, 'comp'), Var(0, 'comp')), 51, 'src', 88)
+    ('undecl', Var('t60', 'u32'), None, 'src', 104)
+    ('expr', ('+', Var('idx', 'u32'), Var('idx', 'u32'), Var(1, 'comp'), NoVar), 52, 'src', 89)
+    ('expr', ('-', Var('nibble', 'i32'), Var('nibble', 'i32'), Var(4, 'comp'), NoVar), 53, 'src', 90)
+  ('goto', 'L50') 
+    FALL: None
+
+  L52:
+  None 
+    FALL: EOF
 
 }

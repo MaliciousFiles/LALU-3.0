@@ -191,11 +191,11 @@ def Gen(tree, pre = True):
             inter.AddLabel(pre)
             inter.trues.append(inner)
             inter.falses.append(post)
-            cond, _ = Rvalue(expr.children[0])
+            cond = Rvalue(expr.children[0])
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, post)
             inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
@@ -216,7 +216,7 @@ def Gen(tree, pre = True):
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, _else)
             inter.Jump(inner)
             inter.PopLoopLabels(pre, post)
@@ -232,11 +232,11 @@ def Gen(tree, pre = True):
             inter.falses.append(post)
             inter.PushLoopLabels(pre, post)
             inter.AddLabel(pre)
-            cond, _ = Rvalue(expr.children[0])
+            cond = Rvalue(expr.children[0])
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, post)
             inter.AddLabel(inner)
             Gen(stmt.children[0])
@@ -257,7 +257,7 @@ def Gen(tree, pre = True):
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, _else)
             inter.AddLabel(inner)
             Gen(stmt0.children[0])
@@ -281,7 +281,7 @@ def Gen(tree, pre = True):
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, _else)
             inter.AddLabel(inner)
             Gen(body.children[0])
@@ -303,11 +303,12 @@ def Gen(tree, pre = True):
             inter.NewEnv()
             Gen(preexpr.children[0])
             inter.AddLabel(pre)
-            cond, _ = Rvalue(cond.children[0])
+            cond = Rvalue(cond.children[0])
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
+                print(f'cj {cond=}')
                 inter.CJump(cond, post)
             inter.AddLabel(inner)
             inter.NewEnv()
@@ -329,7 +330,7 @@ def Gen(tree, pre = True):
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, post)
             inter.AddLabel(inner)
             Gen(body.children[0])
@@ -345,7 +346,7 @@ def Gen(tree, pre = True):
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
-            if cond:
+            if cond and cond.name:
                 inter.CJump(cond, einner)
             inter.AddLabel(inner)
             Gen(body.children[0])
@@ -457,9 +458,9 @@ def Rvalue(expr):
                 nargs = []
                 for arg in args.children:
                     if type(arg)==Tree:
-                        v, k = Rvalue(arg)
-                        nargs.append(v)
-                        if not k.comptime:
+                        var = Rvalue(arg)
+                        nargs.append(var)
+                        if not var.kind.comptime:
                             ct = False
                 args = nargs
             else:
@@ -469,20 +470,20 @@ def Rvalue(expr):
                 assert len(args) <= 4, f'Intrinsic function takes 4 arguments'
                 args += [None]*4
                 inter.AddPent(op = name, D = args[0], S0 = args[1], S1 = args[2], S2 = args[3])
-                return None
+                return NoVar
             else:
                 assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguments'
                 args += [None]*4
                 tk = Type(comptime = ct)
                 tmp = NewTemp(tk)
                 inter.AddPent(op = name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
-                return tmp, Type()
+                return tmp
         elif data == 'true':
             inter.Jump(inter.trues[-1])
-            return None, Type(isbool = True)
+            return Var(None, Type(isbool = True))
         elif data == 'false':
             inter.Jump(inter.falses[-1])
-            return None, Type(isbool = True)
+            return Var(None, Type(isbool = True))
         elif type(data) == str:
             print(data)
             print(expr)
@@ -531,7 +532,7 @@ def Rvalue(expr):
             op = op.children[0].value
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.CastAddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None)
             return tmp
         elif data.value == 'bandexpr':
             le, _, re = expr.children
@@ -539,7 +540,7 @@ def Rvalue(expr):
             rhs = Rvalue(re)
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.CastAddPent(op = '&', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = '&', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
             return tmp
         elif data.value == 'bxorexpr':
             le, _, re = expr.children
@@ -547,7 +548,7 @@ def Rvalue(expr):
             rhs = Rvalue(re)
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.CastAddPent(op = '^', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = '^', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
             return tmp
         elif data.value == 'borexpr':
             le, _, re = expr.children
@@ -673,9 +674,10 @@ def Lvalue(expr):
             err
         
         if data.type == 'RULE' and data.value == 'ident':
-            ident = expr.children[0].value
+            ident = TreeToName(expr)
+##            ident = MapRawName(expr.children[0].value)
             kind = inter.Lookup(ident)
-            return ident, kind
+            return Var(ident, kind)
         elif data.value == 'addexpr':
             assert False, f'Cannot take L-value of arithmetic'
         elif data.value == 'assgexpr':
@@ -895,7 +897,7 @@ class HLIR:
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
         self.Use(cond)
-        self.AddPent('==', None, cond, 0, None)
+        self.AddPent('==', None, cond, Var(0, 'comp'), None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
