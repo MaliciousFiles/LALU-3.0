@@ -11,7 +11,7 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/mal.lpc', 'r') as f:
+with open('src/pointer.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -162,7 +162,10 @@ def Gen(tree, pre = True):
             _, name, _, kind, _, expr, _, = tree.children
             rhs = Rvalue(expr.children[0])
             name = TreeToName(name)
-            kind = Type.FromStr(GetStrKind(kind))
+            if kind:
+                kind = Type.FromStr(GetStrKind(kind))
+            else:
+                kind = rhs.kind
             assert rhs.kind.CanCoerceTo(kind), f'Type `{rhs.kind}` cannot coerce into type `{kind}`'
             inter.Decl(name, kind)
             assert rhs.kind.CanCoerceTo(kind)
@@ -389,13 +392,15 @@ def Rvalue(expr):
             prod = NewTemp(Type())
             inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = lhs.kind.OpWidth(), S2 = None)
             tmp = NewTemp(lhs.kind.Deref())
+            EvictAliasFor(inter, tmp.kind)
             inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = prod, S2 = None)
             return tmp
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs = Rvalue(le)
             tmp = NewTemp(lhs.kind.Deref())
-            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = 0, S2 = None)
+            EvictAliasFor(inter, tmp.kind)
+            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = Var(0, 'comp'), S2 = None)
             return tmp
         elif data == 'addrexpr':
             le, _, _, = expr.children
@@ -413,6 +418,7 @@ def Rvalue(expr):
             wv = Rvalue(width)
             assert wv.kind.comptime
             tmp = NewTemp(Type(wv.name))
+            EvictAliasFor(inter, tmp.kind)
             inter.AddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = rv, S2 = wv)
             return tmp
         elif data == 'fieldexpr':
@@ -578,7 +584,11 @@ def Rvalue(expr):
                 op = op.children[0].value[:-1]
                 assert rhs.kind.CanCoerceTo(lhs.kind)
                 kind = lhs.kind.Common(rhs.kind)
-                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None)
+                tmp = NewTemp(kind)
+                rlhs = Rvalue(le)
+                inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None)
+                inter.AddPent(op = '=', D = lhs, S0 = tmp, S1 = None, S2 = None)
+##                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None)
             else:
                 assert rhs.kind.CanCoerceTo(lhs.kind), f'Cannot coerce `{rhs.kind}` into type `{lhs.kind}`'
                 inter.AddPent(op = '=', D = lhs, S0 = rhs, S1 = None, S2 = None)
@@ -665,9 +675,8 @@ def Lvalue(expr):
             return Var(tmp, lhs.kind)
         elif data == 'derefexpr':
             le, _, _, = expr.children
-            lhs, lk = Rvalue(le)
-            tmp = f'{lhs}[0]'
-            return tmp, lk.Deref()
+            lhs = Rvalue(le)
+            return Var(f'{lhs.name}[0]', lhs.kind.Deref())
         elif type(data) == str:
             print(data)
             print(expr)
@@ -805,13 +814,15 @@ class HLIR:
         self.body.Addline(('decl', Var(name, kind), None, None))
 
     def AddMemStore(self, ary, idx, val):
-        self.Use(l)
-        if idx.isnumeric():
-            idx = int(idx)
-        else:
-            self.Use(idx)
-        self.Use(val)
+##        self.Use(l)
+##        if idx.name.isnumeric():
+##            idx = int(idx)
+##        else:
+##            self.Use(idx)
+##        self.Use(val)
+        EvictAliasFor(inter, ary.kind.Deref())
         self.AddPent('[]=', ary, idx, val, None)
+        InvalidateAliasFor(inter, ary.kind.Deref())
 
     def AddBitStore(self, ary, off, width, val):
 ##        ary, aryk = ary if ary else (None, None)
@@ -827,7 +838,9 @@ class HLIR:
         assert width.kind.comptime, f'Must use a comptime known width, not `{width}`. To use runtime use @bst'
 ##        width = int(width)
 ##        self.Use(ary)
+        EvictAliasFor(inter, tmp.kind)
         self.AddPent('[:]=', ary, val, off, width)
+        InvalidateAliasFor(inter, tmp.kind)
     
     def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var):
 
@@ -856,13 +869,13 @@ class HLIR:
             l = Var.FromVal(self, l)
             if '+:' not in r:
                 r = Var.FromVal(self, r)
-                assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
+                assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
                 self.AddMemStore(l, r, S0)
             else:
                 r, w = r.split('+:')
                 r = Var.FromVal(self, r)
                 w = Var.FromVal(self, w)
-                assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
+                assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
 ##                print(f'{l=}; {r=}, {w=}, {S0=}')
                 self.AddBitStore(l, r, w, S0)
             return
@@ -872,6 +885,11 @@ class HLIR:
         self.body.fall = lbl
         self.body = Block(lbl)
         self.func['body'].append(self.body)
+
+    def Evict(self, name):
+        self.body.Addline(('memsave', name))
+    def Invalidate(self, name):
+        self.body.Addline(('regrst', name))
     def NoFallLabel(self, lbl):
         self.body = Block(lbl)
         self.func['body'].append(self.body)
@@ -985,6 +1003,7 @@ class HLIR:
                             else:
                                 pass
 ##                                print(f'{arg} already maps to {ldict[arg][1]}')
+                elif line[0] in ['regrst', 'memsave']: pass
                 else:
                     print(line)
                     err
@@ -1052,7 +1071,7 @@ class HLIR:
 ##                                    print(f'Fix line `{b}`')
                                     l = list(b)
                                     li = list(l[1])
-                                    li[1] = None
+                                    li[1] = NoVar
                                     l[1] = li
                                     block.body[i] = tuple(l)
                                 else:
@@ -1112,8 +1131,10 @@ class Type:
         if self.numPtrs: return PTRWIDTH
 ##        if self.struct: return structs[self.struct]['size']
         return self.width
-    def ElementSizeOf(self):
+    def AsElementSizeOf(self):
         return AlignOf(self.OpWidth())
+    def ElementSize(self):
+        return self.Deref().AsElementSizeOf()
     def __repr__(self):
         return f'Type.FromStr("{self}")'
     def __str__(self):
@@ -1281,6 +1302,20 @@ def PackArgs(name):
 ##            print(f"{structs[name]['args'][argname]['offset']=}")
 ##    print(words)
     structs[name]['size'] = 32 * laddr
+
+def EvictAliasFor(inter, kind):
+    print(f'{inter.envs!r}')
+    for env in inter.envs[::-1]:
+        for varname, varkind in env.items():
+            if str(kind) == str(varkind):
+                inter.Evict(Var(varname, varkind))
+
+def InvalidateAliasFor(inter, kind):
+    print(f'{inter.envs!r}')
+    for env in inter.envs[::-1]:
+        for varname, varkind in env.items():
+            if str(kind) == str(varkind):
+                inter.Invalidate(Var(varname, varkind))
 
 structs = {}
 syms = [{}]

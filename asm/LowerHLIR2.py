@@ -48,7 +48,7 @@ class LLIR:
         func['body'] = []
 
 def IsNative(var):
-    return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.OpWidth() == 32 or var.kind.comptime)
+    return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.IsBasicInt() or var.kind.numPtrs > 0 and var.kind.width == 32 or var.kind.comptime)
 
 def SubRegs(var):
     return [SubReg(var, i) for i in range(WordSizeOf(var.kind))]
@@ -73,7 +73,7 @@ def SubReg(var, i):
     assert i < words, f'Cannot take register index `{i}` of variable `{var}` with wordsize `{words}`'
     p = len(str(words-1))
     ename = var.name + ('_' + str(i).zfill(p) if words > 1 else '')
-    return Var(ename, Type(32 if i+1 < words else bitwidth))
+    return Var(ename, Type(32 if i+1 < words else bitwidth - 32*i))
 
 def WordSizeOf(kind):
     if kind == 'void':
@@ -139,6 +139,16 @@ def Inv(nblock, res, x):
     raise NotImplementedError
 
 def Store(nblock, array, offset, val):
+    assert offset.kind.comptime, f'Offset must be comptime known'
+    bitwidth = array.kind.ElementSize()
+    regid = 0
+    while bitwidth > 0:
+        bits = 32 if bitwidth > 32 else bitwidth
+        bitwidth -= 32
+        
+        AddPent(nblock, 'st', SubReg(val, regid), array, Var(offset.name + regid, 'comp'), bits % 32)
+        regid += 1
+    return
     raise NotImplementedError
 
 def Load(nblock, res, array, offset):
@@ -374,12 +384,13 @@ def ConvertMeta(block):
         elif line[0] == 'decl':
             var = line[1]
             nbody.append(('decl', var.name, var.kind.OpWidth()))
-        elif line[0] == 'undecl':
+        elif line[0] in ['undecl', 'regrst', 'memsave']:
             var = line[1]
-            nbody.append(('undecl', var.name))
+            nbody.append((line[0], var.name))
+##        elif line[0] in ['regrst', 'memsave']:
+##            nbody.append(line)
         else:
             assert False, f'Unreachable: Uncompiled control word `{line[0]}` from line `{line}`'
-            nbody.append(line)
     block.body = nbody
 
 def Lower(hlir):
@@ -418,8 +429,21 @@ def Lower(hlir):
                         if not var.kind.comptime:
                             for subreg in SubRegs(var):
                                 nblock.Addline(('undecl', subreg))
-    ##                        for i in range(WordSizeOf(var.kind)):
-    ##                            nblock.Addline(('undecl', SubReg(name))
+
+                    #REGISTER RESET / INVALIDATION
+                    elif cmd == 'regrst':
+                        var = line[1]
+                        if not var.kind.comptime:
+                            for subreg in SubRegs(var):
+                                nblock.Addline(('regrst', subreg))
+
+                    #REGISTER EVICTION / SAVE TO MEMORY
+                    elif cmd == 'memsave':
+                        var = line[1]
+                        if not var.kind.comptime:
+                            for subreg in SubRegs(var):
+                                nblock.Addline(('memsave', subreg))
+                                
                     #EXPRESSIONS
                     elif cmd == 'expr':
                         op, D, S0, S1, S2 = line[1]
