@@ -190,6 +190,7 @@ module LALU(input CLOCK_50,
     wire [5:0] charWrX;
     wire [4:0] charWrY;
     VGA vga (
+        .clk(clk),
         .CLOCK_50(CLOCK_50),
 
         .charWr(charWr),

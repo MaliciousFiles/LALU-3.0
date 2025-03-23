@@ -1,4 +1,5 @@
 module VGA (
+    input clk,
     input CLOCK_50,
 
     input charWr,
@@ -282,7 +283,7 @@ module VGA (
     wire [10:0] readAddr = charX | charY << 6;
     wire [63:0] vramOut;
     RAM #(11, 64, 1) vram (
-        .clk(CLOCK_50),
+        .clk(clk),
 
         .address_a(wrAddr),
         .wren_a(charWr),
