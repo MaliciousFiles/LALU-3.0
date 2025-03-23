@@ -21,8 +21,11 @@ module LALU_tb();
     wire suspended;
     always @(posedge suspended) $finish;
 
+    wire clk;
+    always #10 clk <= ~clk;
+
     // run simulation
     wire PS2_CLK, PS2_DAT, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS;
     wire [7:0] VGA_R, VGA_G, VGA_B;
-    LALU lalu(0, PS2_CLK, PS2_DAT, VGA_R, VGA_G, VGA_B, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS, suspended);
+    LALU lalu(clk, PS2_CLK, PS2_DAT, VGA_R, VGA_G, VGA_B, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS, suspended);
 endmodule
