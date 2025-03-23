@@ -1,4 +1,5 @@
 module Keyboard (
+    input clk,
     input CLOCK_50,
     inout PS2_CLK,
     inout PS2_DAT,
@@ -152,7 +153,6 @@ module Keyboard (
             break_code <= 0;
             ex_code <= 0;
             writeIdx <= 0;
-            readIdx <= 0;
         end else begin
             break_code <= data == 8'hF0;
             if (data != 8'hF0) ex_code <= data == 8'hE0;
@@ -161,9 +161,12 @@ module Keyboard (
                 depressed[keycode] <= ~break_code;
                 writeIdx <= writeIdx + 1;
             end
-
-            if (validPoll) readIdx <= readIdx + 1;
         end
+    end
+
+    always @(posedge clk) begin
+        if (reset) readIdx <= 0;
+        else if (validPoll) readIdx <= readIdx + 1;
     end
 
     // buffer
@@ -183,8 +186,9 @@ module Keyboard (
 
     reg [11:0] writeIdx = 0, readIdx = 0;
     wire [18:0] bufOut;
-    RAM #(12, 19, 1) buffer (
+    RAM #(12, 19, 1, "UNUSED", 1) buffer (
         .clk(CLOCK_50),
+        .clk_b(clk),
 
         .address_a(writeIdx),
         .wren_a(keycode != 0),

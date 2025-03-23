@@ -1,4 +1,4 @@
-`timescale 10ns / 1ns // 50 MHz, in a 1ns timescale
+`timescale 1ns / 1ns
 
 `define SIM_CYCLES 1000000 // how many clock cycles to simulate (1000000 for ~1 VGA frame)
 
@@ -18,15 +18,11 @@ module LALU_tb();
         $fclose(fd);
     end
 
-    // setup the clock
-    reg clk = 0;
-    always #1 clk = ~clk;
-
     wire suspended;
     always @(posedge suspended) $finish;
 
     // run simulation
     wire PS2_CLK, PS2_DAT, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS;
     wire [7:0] VGA_R, VGA_G, VGA_B;
-    LALU lalu(clk, PS2_CLK, PS2_DAT, VGA_R, VGA_G, VGA_B, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS, suspended);
+    LALU lalu(0, PS2_CLK, PS2_DAT, VGA_R, VGA_G, VGA_B, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS, suspended);
 endmodule

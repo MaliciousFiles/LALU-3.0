@@ -317,7 +317,7 @@ def dispmem():
 
 dbgmap = {}
 
-with open('Icarus Verilog-sim/LALU_tb.vcd', 'r', encoding='utf-8') as f:
+with open('Icarus Verilog-sim/LALU_tb.vcd' if os.path.exists('Icarus Verilog-sim/LALU_tb.vcd') else 'Icarus Verilog-sim/LALU_tb_waveform.vcd', 'r', encoding='utf-8') as f:
     txt = f.read()
 
 with open('../asm/asm_dbg.txt', 'r') as f:

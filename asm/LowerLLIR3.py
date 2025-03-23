@@ -91,7 +91,7 @@ class Variable:
     def use(self, comp_state, state, reg=None, is_address: bool=False) -> str:
         if is_address:
             r = f'r{reg}' if reg is not None else f'r{SCRATCH_REGS[0]}'
-            comp_state.add_assembly(('add', [], r, f'r{STKPTR}', self.offset << 5))
+            comp_state.add_assembly(('add', [], r, f'r{STKPTR}', self.offset))
             return r
 
         # may or may not use this for assignment, but gotta do the preprocessing anyway
@@ -138,11 +138,11 @@ class Variable:
     # TODO: left-aligned numbers
     def store(self, reg: int, mods: list[str]=[]) -> tuple:
         self.stored_data = True
-        return 'stw', mods,  f'r{reg}', f'r{STKPTR}', self.offset << 5
+        return 'stw', mods,  f'r{reg}', f'r{STKPTR}', self.offset
 
     def load(self, reg: int, mods: list[str]=[]) -> tuple|None:
         if not self.stored_data: return None # will get cleared later
-        return 'ldw', mods, f'r{reg}', f'r{STKPTR}', self.offset << 5
+        return 'ldw', mods, f'r{reg}', f'r{STKPTR}', self.offset
 
 class Register:
     reg_counter = 0 # just an incremental counter for register eviction
@@ -170,6 +170,7 @@ class BlockState:
         self.stack_top += 1
 
     def use_var(self, name: str, state: CompilerState, reg=None) -> str:
+        if name[-1] == ":": return name     # handled in the data segment
         return self.variables[name.rstrip(".&")].use(state, self, reg, name.endswith(".&"))
 
 
@@ -306,7 +307,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 else:
                     if isinstance(args[1], int):
                         comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[1]))
-                    comp_state.add_assembly(('stw', preFlags, state.use_var(args[1], comp_state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS) << 5))
+                    comp_state.add_assembly(('stw', preFlags, state.use_var(args[1], comp_state) if isinstance(args[1], str) else f'r{SCRATCH_REGS[0]}', f'r{STKPTR}', (state.stack_top + args[0] - NUM_REGS)))
             elif op == 'argld': # ('argld', var, addr, width=32)
                 state.declare_var(args[0], args[2] if len(args) > 2 and args[2] else 32, args[1] - NUM_REGS if args[1] >= NUM_REGS else None)
                 if args[1] < NUM_REGS:
@@ -366,7 +367,8 @@ def Lower(llir):
         block = comp_state.compilation_queue.pop(0)
         CompileBlock(comp_state, comp_state.blocks[block])
 
-    addr = 2 # one for setting up the stack pointer, and one to point to the address immediately after
+    # expects data to be {label: (value, words)}
+    addr = 2 + sum(v[1] for v in llir.data.values()) # one for setting up the stack pointer, and one to point to the address immediately after
     asm_out = ""
     state_dump_out = ""
     for func in comp_state.functions.values():
@@ -383,17 +385,18 @@ def Lower(llir):
             asm_out += f"// from {block.compiled_from}:\n"
             asm_out += f"{block.label}:\n"
 
-            for i in range(len(block.assembly)):
+            for i in range(len(block.assembly)+1):
                 comment = "\t\t\t"
                 for c in block.comments:
                     if c[0] == i:
                         if c[2]: comment += f"\t// {c[1]}"
                         else: asm_out += f"\t// {c[1]}\n"
+                if i >= len(block.assembly): continue # give non-inline comments on end line a chance
 
                 instr = block.assembly[i]
 
                 pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
-                post = ('.s' if 's' in instr[1] else '') + ('.e' if any(isinstance(arg, int) and arg >= 32 for arg in instr[2:]) else '')
+                post = ('.s' if 's' in instr[1] else '') + ('.e' if any((isinstance(arg, int) and arg >= 32) or arg in llir.data for arg in instr[2:]) else '')
 
                 asm_out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"
 
@@ -415,4 +418,9 @@ def Lower(llir):
     with open("state_dump.txt", "w") as f:
         f.write(state_dump_out)
 
-    return asm_out
+    return f""".DATA
+{'\n'.join(f'\t{k} {v[0]}' for k,v in llir.data.items())}
+
+.CODE
+{asm_out}
+    """
