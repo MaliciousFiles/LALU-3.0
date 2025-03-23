@@ -1,32 +1,95 @@
-fn Main () void {
+fn Main () u32 {
   _Main__:
-    ('expr', ('breakpoint', NoVar, NoVar, NoVar, NoVar), 1, 'src', 0)
-    ('decl', Var('vec', 'Vec'), None, None, 'src', 2)
-    ('expr', ('[:]=', Var('vec', 'Vec'), Var(7, 'comp'), Var(0, 'comp'), Var(16, 'comp')), 3, 'src', 3)
-    ('expr', ('[:]=', Var('vec', 'Vec'), Var(8, 'comp'), Var(32, 'comp'), Var(32, 'comp')), 5, 'src', 4)
-    ('decl', Var('t2', 'u16'), None, None, 'src', 5)
-    ('expr', ('=[:]', Var('t2', 'u16'), Var('vec', 'Vec'), Var(0, 'comp'), Var(16, 'comp')), 6, 'src', 6)
-    ('expr', ('[:]=', Var('vec', 'Vec'), Var('t2', 'u16'), Var(16, 'comp'), Var(16, 'comp')), 8, 'src', 7)
-    ('undecl', Var('t2', 'u16'), None, 'src', 33)
-    ('decl', Var('t3', 'u8'), None, None, 'src', 8)
-    ('expr', ('=<>', Var('t3', 'u8'), Var('vec', 'Vec'), NoVar, NoVar), 9, 'src', 9)
-    ('undecl', Var('t3', 'u8'), None, 'src', 34)
-    ('decl', Var('node', 'Node'), None, None, 'src', 12)
-    ('decl', Var('ptr', 'Node*'), None, None, 'src', 13)
-    ('expr', ('=', Var('ptr', 'Node*'), Var('node.&', 'Node*'), NoVar, NoVar), 11, 'src', 14)
-    ('expr', ('[:]=', Var('node', 'Node'), Var('ptr', 'Node*'), Var(64, 'comp'), Var(32, 'comp')), 13, 'src', 15)
-    ('undecl', Var('ptr', 'Node*'), None, 'src', 35)
-    ('expr', ('[:]=', Var('node', 'Node'), Var('vec', 'Vec'), Var(0, 'comp'), Var(64, 'comp')), 15, 'src', 16)
-    ('undecl', Var('vec', 'Vec'), None, 'src', 36)
-    ('expr', ('breakpoint', NoVar, NoVar, NoVar, NoVar), 16, 'src', 17)
-    ('undecl', Var('node', 'Node'), None, 'src', 37)
-    ('expr', ['@nop', None, NoVar, NoVar, NoVar], 18, 'src', 22)
-    ('expr', ['@nop', None, NoVar, NoVar, NoVar], 19, 'src', 24)
-    ('expr', ['@nop', None, NoVar, NoVar, NoVar], 20, 'src', 26)
-    ('expr', ['@nop', None, NoVar, NoVar, NoVar], 21, 'src', 28)
-    ('expr', ['@nop', None, NoVar, NoVar, NoVar], 22, 'src', 30)
-    ('expr', ['@susp', None, NoVar, NoVar, NoVar], 23, 'src', 32)
+    ('expr', ('argst', Var(0, 'comp'), Var(5, 'comp'), NoVar, NoVar), 1, 'src', 0)
+    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 2, 'src', 1)
+    ('decl', Var('t1', 'u32'), None, None, 'src', 2)
+    ('expr', ('retld', Var('t1', 'u32'), Var(0, 'comp'), NoVar, NoVar), 3, 'src', 3)
+    ('undecl', Var('t1', 'u32'), None, 'src', 15)
+    ('decl', Var('u_t__0', 'u32'), None, None, 'src', 6)
+    ('expr', ('=', Var('u_t__0', 'u32'), Var(5, 'comp'), NoVar, NoVar), 5, 'src', 7)
+    ('expr', ('argst', Var(0, 'comp'), Var(7, 'comp'), NoVar, NoVar), 6, 'src', 8)
+    ('expr', ('argst', Var(1, 'comp'), Var(7, 'comp'), NoVar, NoVar), 7, 'src', 9)
+    ('expr', ('call', Var('AssertEql', 'u32'), NoVar, NoVar, NoVar), 8, 'src', 10)
+    ('expr', ('retld', Var('t2', 'void'), Var(0, 'comp'), NoVar, NoVar), 9, 'src', 11)
+    ('expr', ('retst', Var(0, 'comp'), Var('u_t__0', 'u32'), NoVar, NoVar), 11, 'src', 14)
+    ('undecl', Var('u_t__0', 'u32'), None, 'src', 16)
+  ('return', 11) 
+    FALL: None
+
+}
+fn Fib (x: u32) u32 {
+  _Fib__:
+    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comp'), NoVar, NoVar), 12, 'src', 17)
+    ('expr', ('==', NoVar, Var('x', 'u32'), Var(1, 'comp'), NoVar), 13, 'src', 18)
+  ('c.jmp', 'L4') 
+    FALL: _L7
+
+  _L7:
+  ('goto', 'L6') 
+    FALL: None
+
+  L6:
+    ('expr', ('==', NoVar, Var('x', 'u32'), Var(0, 'comp'), NoVar), 14, 'src', 19)
+  ('c.jmp', 'L4') 
+    FALL: _L9
+
+  _L9:
+  ('goto', 'L5') 
+    FALL: None
+
+  L4:
+    ('undecl', Var('x', 'u32'), NoVar, 'src', 37)
+    ('expr', ('retst', Var(0, 'comp'), Var(1, 'comp'), NoVar, NoVar), 16, 'src', 21)
+  ('return', 16) 
+    FALL: None
+
+  L5:
+    ('decl', Var('t13', 'u32'), None, None, 'src', 22)
+    ('expr', ('-', Var('t13', 'u32'), Var('x', 'u32'), Var(2, 'comp'), NoVar), 17, 'src', 23)
+    ('expr', ('argst', Var(0, 'comp'), Var('t13', 'u32'), NoVar, NoVar), 18, 'src', 24)
+    ('undecl', Var('t13', 'u32'), None, 'src', 38)
+    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 19, 'src', 25)
+    ('decl', Var('t14', 'u32'), None, None, 'src', 26)
+    ('expr', ('retld', Var('t14', 'u32'), Var(0, 'comp'), NoVar, NoVar), 20, 'src', 27)
+    ('decl', Var('t15', 'u32'), None, None, 'src', 28)
+    ('expr', ('-', Var('t15', 'u32'), Var('x', 'u32'), Var(1, 'comp'), NoVar), 21, 'src', 29)
+    ('undecl', Var('x', 'u32'), None, 'src', 39)
+    ('expr', ('argst', Var(0, 'comp'), Var('t15', 'u32'), NoVar, NoVar), 22, 'src', 30)
+    ('undecl', Var('t15', 'u32'), None, 'src', 40)
+    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 23, 'src', 31)
+    ('decl', Var('t16', 'u32'), None, None, 'src', 32)
+    ('expr', ('retld', Var('t16', 'u32'), Var(0, 'comp'), NoVar, NoVar), 24, 'src', 33)
+    ('decl', Var('t17', 'u32'), None, None, 'src', 34)
+    ('expr', ('+', Var('t17', 'u32'), Var('t14', 'u32'), Var('t16', 'u32'), NoVar), 25, 'src', 35)
+    ('undecl', Var('t16', 'u32'), None, 'src', 41)
+    ('undecl', Var('t14', 'u32'), None, 'src', 42)
+    ('expr', ('retst', Var(0, 'comp'), Var('t17', 'u32'), NoVar, NoVar), 26, 'src', 36)
+    ('undecl', Var('t17', 'u32'), None, 'src', 43)
+  ('return', 26) 
+    FALL: None
+
+}
+fn AssertEql (act: u32, exp: u32) void {
+  _AssertEql__:
+    ('expr', ('argld', Var('act', 'u32'), Var(0, 'comp'), NoVar, NoVar), 27, 'src', 44)
+    ('expr', ('argld', Var('exp', 'u32'), Var(1, 'comp'), NoVar, NoVar), 28, 'src', 45)
+    ('expr', ('!=', NoVar, Var('act', 'u32'), Var('exp', 'u32'), NoVar), 29, 'src', 46)
+    ('undecl', Var('exp', 'u32'), None, 'src', 50)
+    ('undecl', Var('act', 'u32'), None, 'src', 51)
+  ('c.jmp', 'L19') 
+    FALL: _L21
+
+  _L21:
+  ('goto', 'L20') 
+    FALL: None
+
+  L19:
+    ('expr', ['@susp', None, NoVar, NoVar, NoVar], 31, 'src', 49)
   None 
-    FALL: EOF
+    FALL: L20
+
+  L20:
+  ('return', 31) 
+    FALL: None
 
 }

@@ -11,7 +11,7 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/structs.lpc', 'r') as f:
+with open('src/mal.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -124,7 +124,7 @@ def Gen(tree, pre = True):
             bds = []
             for child in tree.children:
                 Gen(child)
-            print('PREPROCESS END')
+##            print('PREPROCESS END')
             ResolveTypes()
             for child in tree.children:
                 Gen(child, pre = False)
@@ -599,9 +599,9 @@ def Rvalue(expr):
                 assert False, f'Bad unary: `{op}`'
         elif data.value == 'lunaryexpr':
             _, re = expr.children
-            print(inter.trues)
+##            print(inter.trues)
             inter.trues[-1], inter.falses[-1] = inter.falses[-1], inter.trues[-1]
-            print(inter.trues)
+##            print(inter.trues)
             rhs, rk = Rvalue(re)
             return None, Type(isbool = True)
         elif data.value == 'castexpr':
@@ -774,10 +774,11 @@ class HLIR:
     def PopEnv(self):
         for env in self.envs[:-1]:
             for var in env:
-                print(f'Extend variable `{var}`')
+##                print(f'Extend variable `{var}`')
                 self.PreUse(var)
         for var in self.envs[-1]:
-            print(f'End of var `{var}`')
+##            print(f'End of var `{var}`')
+            pass
         del self.envs[-1]
 
     def Register(self, name, kind):
@@ -860,7 +861,7 @@ class HLIR:
                 r = Var.FromVal(self, r)
                 w = Var.FromVal(self, w)
                 assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2, width)}`'
-                print(f'{l=}; {r=}, {w=}, {S0=}')
+##                print(f'{l=}; {r=}, {w=}, {S0=}')
                 self.AddBitStore(l, r, w, S0)
             return
 
@@ -913,7 +914,7 @@ class HLIR:
 ##        global WordSizeOf
 ##        WordSizeOf += 1
         for arg in args:
-            print(arg.kind, self.func['ret'])
+##            print(arg.kind, self.func['ret'])
             assert arg.kind.CanCoerceTo(self.func['ret']), f'Cannot coerce type `{arg.kind}` to `{self.func["ret"]}`'
 ##            self.Use(arg)
         if len(args) == 0:
@@ -935,7 +936,7 @@ class HLIR:
                     self.func['body'][j].body[i] = line[:3] + (-1,)
 ##                    self.func['body'][j].body[i] = line[:3] + (eid,)
     def EndFunc(self):
-        print('END OF FUNCTION BEGIN')
+##        print('END OF FUNCTION BEGIN')
         body = self.func['body']
         lvars = {}
         ito = {}
@@ -943,7 +944,7 @@ class HLIR:
         fto = {}
         k = {}
         fto[f'_{self.func["name"]}__'] = ['Entry']
-        print(self)
+##        print(self)
         for block in body:
             ldict = lvars[block.entry] = {}
             if block.exloc != None:
@@ -962,10 +963,10 @@ class HLIR:
                     if line[1][0] in ['call']:
                         continue
                     if line[1][0] == 'argld':
-                        print(f'Popped var `{line[1][1]}`')
+##                        print(f'Popped var `{line[1][1]}`')
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
-                        print(f'{ldict=}')
+##                        print(f'{ldict=}')
                     if line[1][0] in usesRd:
                         args = line[1][1:][:4]
                     else:
@@ -980,31 +981,32 @@ class HLIR:
                             elif type(ldict[arg][1]) != str:
                                 ldict[arg][1] = line[2]
                             else:
-                                print(f'{arg} already maps to {ldict[arg][1]}')
+                                pass
+##                                print(f'{arg} already maps to {ldict[arg][1]}')
                 else:
                     print(line)
                     err
-        print(f'{k=}')
+##        print(f'{k=}')
         From = False
         for block in body[:]:
             if block.entry not in fto or fto[block.entry] == []:
                 if block.entry not in ito or ito[block.entry] == []:
-                    print(f'{block.entry=} is unreachable')
+##                    print(f'{block.entry=} is unreachable')
                     self.func['body'].remove(block)
                     if block.fall != 'EOF' and block.fall != None:
-                        print(f'Revoke fall {block.fall=}')
+##                        print(f'Revoke fall {block.fall=}')
                         ito[block.fall].remove(block.entry)
                         fto[block.fall].remove(block.entry)
                 else:
                     block.From = ito[block.entry][0]
-                    print(f'{block.entry=} is start of spine')
+##                    print(f'{block.entry=} is start of spine')
                     
-        print(lvars)
-        print('BEGIN ITERATION')
-        print(to, ito)
+##        print(lvars)
+##        print('BEGIN ITERATION')
+##        print(to, ito)
         run = True
         while run:
-            print(lvars)
+##            print(lvars)
             run = False
             for block in body:
                 ldict = lvars[block.entry]
@@ -1018,7 +1020,7 @@ class HLIR:
                             if lvars[precur][var][1] != 'post':
                                 lvars[precur][var][1] = 'post'
                                 run = True
-        print(lvars)
+##        print(lvars)
         for block in body:
             ldict = lvars[block.entry]
             for var, life in ldict.items():
@@ -1036,23 +1038,23 @@ class HLIR:
                 else:
                     for i,b in enumerate(block.body):
                         if b[0] == 'expr' and b[2] == life[1]:
-                            print(f'{var=}')
+##                            print(f'{var=}')
                             block.body.insert(i+1, ('undecl', var, None))
                             break
                     else:
-                        print(f'Unused variable `{var}`')
+##                        print(f'Unused variable `{var}`')
                         r = 0
                         for i,b in enumerate(block.body):
                             if b[0] == 'expr' and b[1][1] == var:
                                 if b[1][0] in nullret:
-                                    print(f'Fix line `{b}`')
+##                                    print(f'Fix line `{b}`')
                                     l = list(b)
                                     li = list(l[1])
                                     li[1] = None
                                     l[1] = li
                                     block.body[i] = tuple(l)
                                 else:
-                                    print(f'Purge line `{b}`')
+##                                    print(f'Purge line `{b}`')
                                     idx = block.body.index(b)
                                     r = i - idx
                                     assert block.body[i-r] == b, f'Ummm, desync internally tried to delete wrong expr\n`{block.body[i-r]}`\nInstead Of:\n`{b}`'
@@ -1214,7 +1216,7 @@ def ResolveTypes():
         del queue[0]
 
 def RecuSolveType(name, stk = ()):
-    print(f'Recu {name} from {stk}')
+##    print(f'Recu {name} from {stk}')
     global structs
     assert name not in stk, f'Type `{name}` is self referential'
     stk = stk + (name,)
@@ -1245,7 +1247,7 @@ def RecuSolveType(name, stk = ()):
         align = AlignOf(width)
         structs[name]['args'][argname]['type'] = Type.FromStr(strk)
         structs[name]['args'][argname]['width'] = width
-        print(name, argname, width)
+##        print(name, argname, width)
     PackArgs(name)
 
 def PackArgs(name):
@@ -1253,7 +1255,7 @@ def PackArgs(name):
     words = {}
     laddr = 0
     for argname, arg in structs[name]['args'].items():
-        print(argname, arg)
+##        print(argname, arg)
         width = arg['width']
         for addr, cw in words.items():
             if 32 - cw > width:
@@ -1274,8 +1276,8 @@ def PackArgs(name):
             else:
                 structs[name]['args'][argname]['offset'] = laddr << 5
                 laddr += -(-width//32)
-            print(f"{structs[name]['args'][argname]['offset']=}")
-    print(words)
+##            print(f"{structs[name]['args'][argname]['offset']=}")
+##    print(words)
     structs[name]['size'] = 32 * laddr
 
 structs = {}
