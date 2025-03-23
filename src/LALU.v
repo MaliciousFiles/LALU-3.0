@@ -98,7 +98,7 @@ module LALU(input CLOCK_50,
      *       Clock       *
      *********************/
     wire clk;
-    pll_clock #("50 MHz", 1) pll (
+    pll_clock #("50 MHz", 10) pll (
         .CLOCK_50(CLOCK_50),
         .clk(clk));
 
