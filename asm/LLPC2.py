@@ -821,7 +821,7 @@ class HLIR:
 ##            self.Use(idx)
 ##        self.Use(val)
         EvictAliasFor(inter, ary.kind.Deref())
-        self.AddPent('[]=', ary, idx, val, None)
+        self.AddPent('[]=', val, ary, idx, None)
         InvalidateAliasFor(inter, ary.kind.Deref())
 
     def AddBitStore(self, ary, off, width, val):

@@ -138,7 +138,7 @@ def Xor(nblock, res, x, y):
 def Inv(nblock, res, x):
     raise NotImplementedError
 
-def Store(nblock, array, offset, val):
+def Store(nblock, val, array, offset):
     assert offset.kind.comptime, f'Offset must be comptime known'
     bitwidth = array.kind.ElementSize()
     regid = 0
