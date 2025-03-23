@@ -626,7 +626,7 @@ def Rvalue(expr):
             return Rvalue(expr.children[0])
         elif data.value == 'string':
             ref = inter.AddString(expr.children[0])
-            return ref, Type.FromStr('u32*')
+            return Var(ref, Type.FromStr('u32*'))
         elif data.value == 'primexpr':
             _, ex, _, = expr.children
             return Rvalue(ex)
