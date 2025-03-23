@@ -1,9 +1,22 @@
+struct Vec {
+  x: u16,
+  y: u32,
+  z: u16,
+}
+
+struct Node {
+  vec: Vec,
+  self: Node*,
+}
+
 fn Main() void {
   BREAKPOINT;
   var vec: Vec;
   vec.x = 7;
   vec.y = 8;
   vec.z = vec.x;
+
+  var tv: u8 = <u8>vec;
 
   var node: Node;
   var ptr: Node* = node.&;
@@ -21,14 +34,3 @@ fn Main() void {
   @susp();
 }
 
-
-struct Vec {
-  x: u16,
-  y: u32,
-  z: u16,
-}
-
-struct Node {
-  vec: Vec,
-  self: Node*,
-}

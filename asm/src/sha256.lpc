@@ -1,19 +1,19 @@
 struct SHA256_CTX {
-  data: u8 [64],
+  data: u8[64],
   datalen: u32,
   bitlen: u64,
-  state: u32 [8],
+  state: u32[8],
 }
 
 fn Sha256_Transform(ctx: SHA256_CTX*, data: u8*) void {
-  var let: u32 [8];
+  var let: u32[8];
   var i: u32;
   var j: u32;
   var temp0: u32;
   var temp1: u32;
-  var m: u32 [64];
+  var m: u32[64];
   
-  for (i = 0, j = 0; i < 16; ++i, j += 4) {
+  for (i = 0, j = 0; i < 16; {i+=1; j += 4;}) {
     (<u32*>m)[i] = (<u32*>data)[j];
   }
 }

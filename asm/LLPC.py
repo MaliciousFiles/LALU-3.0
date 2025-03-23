@@ -10,7 +10,7 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/sha256.lpc', 'r') as f:
+with open('src/func_test.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -115,6 +115,7 @@ def Gen(tree, pre = True):
             bds = []
             for child in tree.children:
                 Gen(child)
+            print('PREPROCESS END')
             ResolveTypes()
             for child in tree.children:
                 Gen(child, pre = False)
@@ -145,7 +146,6 @@ def Gen(tree, pre = True):
         elif data.type == 'RULE' and data.value == 'declstmt':
             _, name, _, kind, _, = tree.children
             kind = GetStrKind(kind)
-##            kind = kind.children[0].value
             name = name.children[0].value
             inter.Decl(name, Type.FromStr(kind))
         elif data.type == 'RULE' and data.value == 'declexpr':
@@ -348,12 +348,11 @@ def Gen(tree, pre = True):
             Gen(tree.children[0])
 
         elif data.type == 'RULE' and data.value == 'struct_decl':
+            if not pre: return
             _, name, _, args, _, = tree.children
-##            print(tree.pretty())
             self = structs[name.children[0].value] = {'size': None, 'args': {}}
             for arg in args.children:
                 if type(arg) != Tree: continue
-##                arg = arg.children[0]
                 argname, _, argkind = arg.children
                 assert argname not in self['args']
                 self['args'][argname.children[0].value] = {'offset': None, 'width': None, 'type': argkind}
@@ -390,8 +389,12 @@ def Rvalue(expr):
         elif data == 'addrexpr':
             le, _, _, = expr.children
             lhs, lk = Rvalue(le)
-            inter.PreUse(lhs)
-            return f'{lhs}.&', lk.Addr()
+##            inter.PreUse(lhs)
+            desttype = Type()
+            tmp = NewTemp(desttype)
+            inter.CastAddPent(op = '=', D = tmp, S0 = f'{lhs}.&', S1 = None, S2 = None, origtype = lk, desttype = desttype)
+##            return f'{lhs}.&', lk.Addr()
+            return tmp, lk.Addr()
         elif data == 'breakpoint':
             inter.AddPent('breakpoint', None, None, None, None)
             return f'NO_USE', NewTemp(Type())
@@ -901,9 +904,6 @@ class HLIR:
         to = {}
         fto = {}
         k = {}
-##        print(f'{self.func["body"][0]["name"]=}')
-##        print(f'{self.func["body"][0]["name"]=}')
-##        err
         fto[f'_{self.func["name"]}__'] = ['Entry']
         print(self)
         for block in body:
@@ -938,10 +938,6 @@ class HLIR:
                                 arg = arg[:-2]
                             if arg not in ldict:
                                 ldict[arg] = ['pre', line[2]]
-##                                if arg in ldict:
-##                                    ldict[arg] = ['pre', line[2]]
-##                                else:
-##                                    print(f'`{arg}` is not declared\n{ldict=}')
                             elif type(ldict[arg][1]) != str:
                                 ldict[arg][1] = line[2]
                 else:
@@ -958,16 +954,13 @@ class HLIR:
                         print(f'Revoke fall {block.fall=}')
                         ito[block.fall].remove(block.entry)
                         fto[block.fall].remove(block.entry)
-##                        print(f'{ito=}, {fto=}')
                 else:
                     block.From = ito[block.entry][0]
-##                    block.body.insert(0, ('from', ))
                     print(f'{block.entry=} is start of spine')
                     
         print(lvars)
         print('BEGIN ITERATION')
         print(to, ito)
-##        err
         run = True
         while run:
             print(lvars)
@@ -998,7 +991,6 @@ class HLIR:
                             else:
                                 bad
                 else:
-##                    print(f'Looking for {life[1]=} in {block.body=} ({block.entry=})')
                     for i,b in enumerate(block.body):
                         if b[0] == 'expr' and b[2] == life[1]:
                             block.body.insert(i+1, ('undecl', var, k[var]))
@@ -1007,7 +999,6 @@ class HLIR:
                         print(f'Unused variable `{var}`')
                         r = 0
                         for i,b in enumerate(block.body):
-##                            print(b)
                             if b[0] == 'expr' and b[1][1] == var:
                                 if b[1][0] in nullret:
                                     print(f'Fix line `{b}`')
@@ -1025,7 +1016,6 @@ class HLIR:
                                     r += 1
                         for i,b in enumerate(block.body):
                             if b[0] == 'decl' and b[1] == var:
-##                                block.body[i] = ('nodecl', var, k[var])
                                 del block.body[i]
                                 break
                         else:
@@ -1033,7 +1023,6 @@ class HLIR:
                             print(f'Last used at {life[1]} from {life}')
                             bad
         
-##        err
     def AddString(self, txt):
         key = f's{len(self.data.keys())}:'
         self.data[key] = txt

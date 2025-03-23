@@ -134,10 +134,12 @@ def Lower(hlir):
                     op, D, S0, S1, S2, width = line[1]
 ##                    print(comp)
                     S0 = comp.get(S0, S0)
+##                    if type(S0) == str and S0.endswith('.&'): S0 = f'{EName(S0, -(-width//32), 0)}.&'
                     try:
                         S1 = comp.get(S1, S1)
                     except:
                         print(f'{S1=}, {line=}')
+##                    if type(S1) == str and S1.endswith('.&'): S1 = f'{EName(S1, -(-width//32), 0)}.&'
                     
                     S2 = comp.get(S2, S2)
                     eid = line[2]
@@ -269,7 +271,7 @@ def Lower(hlir):
 ##                                eD = D + '_' + str(i).zfill(p) if rwidth > 1 else D
                                 if type(S0) == str:
                                     if S0[-2:] == '.&':
-                                        eS = S0
+                                        eS = EName(S0[:-2], rwidth, i) +'.&'
                                     else:
                                         eS = EName(S0, rwidth, i) 
 ##                                        eS = S0 + '_' + str(i).zfill(p)

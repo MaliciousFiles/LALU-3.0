@@ -1,56 +1,95 @@
-fn Main () void {
+fn Main () u32 {
   _Main__:
-    ('expr', ('breakpoint', None, None, None, None, 32), 1, 'src', 0)
-    ('decl', 'vec', Type.FromStr("Vec"), -1, 'src', 34)
-    ('decl', 't2', Type.FromStr("comp"), -1, 'src', 4)
-    ('expr', ('=', 't2', 7, None, None, 32), 2, 'src', 5)
-    ('decl', 't3', Type.FromStr("Vec"), -1, 'src', 6)
-    ('expr', ('=<>', 't3', 't2', Type.FromStr("Vec"), Type.FromStr("comp"), 32), 3, 'src', 7)
-    ('undecl', 't2', Type.FromStr("comp"), 'src', 58)
-    ('expr', ('[:]=', 'vec', 't3', 0, 16, 64), 4, 'src', 8)
-    ('undecl', 't3', Type.FromStr("Vec"), 'src', 59)
-    ('decl', 't4', Type.FromStr("comp"), -1, 'src', 10)
-    ('expr', ('=', 't4', 8, None, None, 32), 5, 'src', 11)
-    ('decl', 't5', Type.FromStr("Vec"), -1, 'src', 12)
-    ('expr', ('=<>', 't5', 't4', Type.FromStr("Vec"), Type.FromStr("comp"), 32), 6, 'src', 13)
-    ('undecl', 't4', Type.FromStr("comp"), 'src', 60)
-    ('expr', ('[:]=', 'vec', 't5', 32, 32, 64), 7, 'src', 14)
-    ('undecl', 't5', Type.FromStr("Vec"), 'src', 61)
-    ('decl', 't6', Type.FromStr("u16"), -1, 'src', 21)
-    ('decl', 't7', Type.FromStr("Vec"), -1, 'src', 17)
-    ('expr', ('=[:]', 't7', 'vec', 0, 16, 64), 8, 'src', 18)
-    ('expr', ('=<>', 't6', 't7', Type.FromStr("u16"), Type.FromStr("Vec"), 32), 9, 'src', 19)
-    ('undecl', 't7', Type.FromStr("Vec"), 'src', 62)
-    ('decl', 't8', Type.FromStr("u16"), -1, 'src', 22)
-    ('expr', ('=', 't8', 't6', None, None, 16), 10, 'src', 23)
-    ('undecl', 't6', Type.FromStr("u16"), 'src', 63)
-    ('decl', 't9', Type.FromStr("Vec"), -1, 'src', 24)
-    ('expr', ('=<>', 't9', 't8', Type.FromStr("Vec"), Type.FromStr("u16"), 32), 11, 'src', 25)
-    ('undecl', 't8', Type.FromStr("u16"), 'src', 64)
-    ('expr', ('[:]=', 'vec', 't9', 16, 16, 64), 12, 'src', 26)
-    ('undecl', 't9', Type.FromStr("Vec"), 'src', 65)
-    ('decl', 'node', Type.FromStr("Node"), -1, 'src', 43)
-    ('decl', 'ptr', Type.FromStr("Node*"), -1, 'src', 32)
-    ('expr', ('=', 'ptr', 'node.&', None, None, 32), 13, 'src', 30)
-    ('expr', ('[:]=', 'node', 'ptr', 64, 32, 96), 14, 'src', 33)
-    ('undecl', 'ptr', Type.FromStr("Node*"), 'src', 66)
-    ('decl', 't10', Type.FromStr("Vec"), -1, 'src', 36)
-    ('expr', ('=', 't10', 'vec', None, None, 64), 15, 'src', 37)
-    ('undecl', 'vec', Type.FromStr("Vec"), 'src', 67)
-    ('decl', 't11', Type.FromStr("Node"), -1, 'src', 38)
-    ('expr', ('=<>', 't11', 't10', Type.FromStr("Node"), Type.FromStr("Vec"), 32), 16, 'src', 39)
-    ('undecl', 't10', Type.FromStr("Vec"), 'src', 68)
-    ('expr', ('[:]=', 'node', 't11', 0, 64, 96), 17, 'src', 40)
-    ('undecl', 't11', Type.FromStr("Node"), 'src', 69)
-    ('expr', ('breakpoint', None, None, None, None, 32), 18, 'src', 41)
-    ('undecl', 'node', Type.FromStr("Node"), 'src', 70)
-    ('expr', ['@nop', None, None, None, None, 32], 20, 'src', 47)
-    ('expr', ['@nop', None, None, None, None, 32], 21, 'src', 49)
-    ('expr', ['@nop', None, None, None, None, 32], 22, 'src', 51)
-    ('expr', ['@nop', None, None, None, None, 32], 23, 'src', 53)
-    ('expr', ['@nop', None, None, None, None, 32], 24, 'src', 55)
-    ('expr', ['@susp', None, None, None, None, 32], 25, 'src', 57)
+    ('expr', ('argst', Var(0, 'comp'), Var(5, 'comp'), NoVar, NoVar), 1, 'src', 0)
+    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 2, 'src', 1)
+    ('decl', Var('t1', 'u32'), None, None, 'src', 2)
+    ('expr', ('retld', Var('t1', 'u32'), Var(0, 'comp'), NoVar, NoVar), 3, 'src', 3)
+    ('undecl', Var('t1', 'u32'), None, 'src', 15)
+    ('decl', Var('u_t__0', 'u32'), None, None, 'src', 6)
+    ('expr', ('=', Var('u_t__0', 'u32'), Var(5, 'comp'), NoVar, NoVar), 5, 'src', 7)
+    ('expr', ('argst', Var(0, 'comp'), Var(7, 'comp'), NoVar, NoVar), 6, 'src', 8)
+    ('expr', ('argst', Var(1, 'comp'), Var(7, 'comp'), NoVar, NoVar), 7, 'src', 9)
+    ('expr', ('call', Var('AssertEql', 'u32'), NoVar, NoVar, NoVar), 8, 'src', 10)
+    ('expr', ('retld', Var('t2', 'void'), Var(0, 'comp'), NoVar, NoVar), 9, 'src', 11)
+    ('expr', ('retst', Var(0, 'comp'), Var('u_t__0', 'u32'), NoVar, NoVar), 11, 'src', 14)
+    ('undecl', Var('u_t__0', 'u32'), None, 'src', 16)
+  ('return', 11) 
+    FALL: None
+
+}
+fn Fib (x: u32) u32 {
+  _Fib__:
+    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comp'), NoVar, NoVar), 12, 'src', 17)
+    ('expr', ('==', NoVar, Var('x', 'u32'), Var(1, 'comp'), NoVar), 13, 'src', 18)
+  ('c.jmp', 'L4') 
+    FALL: _L7
+
+  _L7:
+  ('goto', 'L6') 
+    FALL: None
+
+  L6:
+    ('expr', ('==', NoVar, Var('x', 'u32'), Var(0, 'comp'), NoVar), 14, 'src', 19)
+  ('c.jmp', 'L4') 
+    FALL: _L9
+
+  _L9:
+  ('goto', 'L5') 
+    FALL: None
+
+  L4:
+    ('undecl', Var('x', 'u32'), NoVar, 'src', 37)
+    ('expr', ('retst', Var(0, 'comp'), Var(1, 'comp'), NoVar, NoVar), 16, 'src', 21)
+  ('return', 16) 
+    FALL: None
+
+  L5:
+    ('decl', Var('t13', 'u32'), None, None, 'src', 22)
+    ('expr', ('-', Var('t13', 'u32'), Var('x', 'u32'), Var(2, 'comp'), NoVar), 17, 'src', 23)
+    ('expr', ('argst', Var(0, 'comp'), Var('t13', 'u32'), NoVar, NoVar), 18, 'src', 24)
+    ('undecl', Var('t13', 'u32'), None, 'src', 38)
+    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 19, 'src', 25)
+    ('decl', Var('t14', 'u32'), None, None, 'src', 26)
+    ('expr', ('retld', Var('t14', 'u32'), Var(0, 'comp'), NoVar, NoVar), 20, 'src', 27)
+    ('decl', Var('t15', 'u32'), None, None, 'src', 28)
+    ('expr', ('-', Var('t15', 'u32'), Var('x', 'u32'), Var(1, 'comp'), NoVar), 21, 'src', 29)
+    ('undecl', Var('x', 'u32'), NoVar, 'src', 39)
+    ('expr', ('argst', Var(0, 'comp'), Var('t15', 'u32'), NoVar, NoVar), 22, 'src', 30)
+    ('undecl', Var('t15', 'u32'), None, 'src', 40)
+    ('expr', ('call', Var('Fib', 'u32'), NoVar, NoVar, NoVar), 23, 'src', 31)
+    ('decl', Var('t16', 'u32'), None, None, 'src', 32)
+    ('expr', ('retld', Var('t16', 'u32'), Var(0, 'comp'), NoVar, NoVar), 24, 'src', 33)
+    ('decl', Var('t17', 'u32'), None, None, 'src', 34)
+    ('expr', ('+', Var('t17', 'u32'), Var('t14', 'u32'), Var('t16', 'u32'), NoVar), 25, 'src', 35)
+    ('undecl', Var('t16', 'u32'), None, 'src', 41)
+    ('undecl', Var('t14', 'u32'), None, 'src', 42)
+    ('expr', ('retst', Var(0, 'comp'), Var('t17', 'u32'), NoVar, NoVar), 26, 'src', 36)
+    ('undecl', Var('t17', 'u32'), None, 'src', 43)
+  ('return', 26) 
+    FALL: None
+
+}
+fn AssertEql (act: u32, exp: u32) void {
+  _AssertEql__:
+    ('expr', ('argld', Var('act', 'u32'), Var(0, 'comp'), NoVar, NoVar), 27, 'src', 44)
+    ('expr', ('argld', Var('exp', 'u32'), Var(1, 'comp'), NoVar, NoVar), 28, 'src', 45)
+    ('expr', ('!=', NoVar, Var('act', 'u32'), Var('exp', 'u32'), NoVar), 29, 'src', 46)
+    ('undecl', Var('exp', 'u32'), NoVar, 'src', 50)
+    ('undecl', Var('act', 'u32'), NoVar, 'src', 51)
+  ('c.jmp', 'L19') 
+    FALL: _L21
+
+  _L21:
+  ('goto', 'L20') 
+    FALL: None
+
+  L19:
+    ('expr', ['@susp', None, NoVar, NoVar, NoVar], 31, 'src', 49)
   None 
-    FALL: EOF
+    FALL: L20
+
+  L20:
+  ('return', 31) 
+    FALL: None
 
 }
