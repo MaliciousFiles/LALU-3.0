@@ -54,10 +54,15 @@ def SubRegs(var):
     return [SubReg(var, i) for i in range(WordSizeOf(var.kind))]
 
 def SubReg(var, i):
+    global comp
     if var == None or var.kind == None:
         return var
     if var.kind.comptime:
-        return Var.FromVal(None, (var.name >> (32 * i)) % (1<<32) )
+        if var.name in comp:
+            val = comp[var.name]
+        else:
+            val = var.name
+        return Var.FromVal(None, (val >> (32 * i)) % (1<<32) )
     if var.name.endswith('.&'):
         rootvar = Var(var.name[:-2], var.kind.Deref())
         print(f'{rootvar=}')
@@ -209,14 +214,17 @@ def ComplexCast(nblock, dest, val):
     raise NotImplementedError
 
 
-def NativeCast(nblock, D, S, dk, sk):
-    if sk.comptime:
+def NativeCast(nblock, D, S):
+    Assg(nblock, D, S)
+    return
+    
+    if S.kind.comptime:
         for i in range(WordSizeOf(dk)):
             p = len(str(WordSizeOf(dk)-1))
             ename = D + '_' + str(i).zfill(p) if WordSizeOf(dk) > 1 else D
             AddPent(nblock, 'mov', ename, S % (1<<32), None, None)
             S >>= 32
-    elif dk.OpWidth() // 32 == dk.OpWidth() / 32:
+    elif D.kind.OpWidth() // 32 == D.kind.OpWidth() / 32:
         for i in range(WordSizeOf(dk)):
             pD = len(str(WordSizeOf(dk)-1))
             pS = len(str(WordSizeOf(sk)-1))
@@ -313,7 +321,7 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
     elif op == 'argld':         AddPent(nblock, 'argld', D, S0, None, S2)
     elif op == 'retst':         AddPent(nblock, 'retst', D, S0, S1, S2)
     elif op == 'call':          AddPent(nblock, 'call', D, S0, S1, S2)
-    elif op == '=<>':           NativeCast(nblock, D, S0, S1, S2)
+    elif op == '=<>':           NativeCast(nblock, D, S0)
 
     elif op == '*' and IsPow2(S1):
         AddPent(nblock, 'bsl', D, S0, log(S1), S2)
@@ -331,6 +339,9 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
         assert False, f'Cannot lower operand `{op}` 32 width'
 
 def Comptime(comp, op, D, S0, S1, S2):
+    S0 = S0.name
+    S1 = S1.name
+    S2 = S2.name
     if op[0]=='@':      op = op[1:]
     if op == '+':           comp[D] = S0 + S1
     elif op == '-':         comp[D] = S0 - S1
@@ -353,6 +364,7 @@ def Comptime(comp, op, D, S0, S1, S2):
     else:
         assert op != '<<<' and op != '>>>', f'Cannot perform bit rotation on unsized compile time integers'
         assert False, f'Cannot lower comptime operand `{op}`'
+    comp[D] = Var(comp[D], 'comp')
 
 def ConvertMeta(block):
     nbody = []
@@ -371,6 +383,7 @@ def ConvertMeta(block):
     block.body = nbody
 
 def Lower(hlir):
+    global comp
     llir = LLIR()
     llir.data = hlir.data
     comp = {}
@@ -413,8 +426,8 @@ def Lower(hlir):
                         S0 = comp.get(S0, S0)
                         S1 = comp.get(S1, S1)
                         S2 = comp.get(S2, S2)
-                        if D in comp:
-                            Comptime(comp, D, S0, S1, S2)
+                        if D.name in comp:
+                            Comptime(comp, op, D, S0, S1, S2)
                         elif all([IsNative(x) for x in [D, S0, S1, S2]]) or op == 'breakpoint':
                             Native(nblock, op, D, S0, S1, S2)
                         else:
@@ -457,7 +470,7 @@ def Lower(hlir):
     return llir
 
 def Init(caller):
-    global Var, Type
+    global Var, Type, comp
     Var = caller.Var
     Type = caller.Type
 
