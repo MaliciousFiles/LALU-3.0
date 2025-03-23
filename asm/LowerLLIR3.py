@@ -347,7 +347,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                     state.registers[args[1]].contained = args[0]
             else:
                 args = [state.use_var(arg, comp_state) if isinstance(arg, str) else arg for arg in args]
-                if len(args) == 4 and isinstance(args[0], int):
+                if len(args) == 4 and isinstance(args[0], int): # TODO: macros :(
                     comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[0]))
                     args[0] = f'r{SCRATCH_REGS[0]}'
 
@@ -402,6 +402,7 @@ def Lower(llir):
 
                 pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
                 post = ('.s' if 's' in instr[1] else '') + ('.e' if any((isinstance(arg, int) and arg >= 32) or arg in llir.data for arg in instr[2:]) else '')
+                # TODO: if multiple eximms, use scratch
 
                 asm_out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"
 
