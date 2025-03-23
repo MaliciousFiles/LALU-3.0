@@ -351,7 +351,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                     comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[0]))
                     args[0] = f'r{SCRATCH_REGS[0]}'
 
-                comp_state.add_assembly((op, preFlags + postFlags, *processed_args))
+                comp_state.add_assembly((op, preFlags + postFlags, *args))
 
             comp_state.add_comment(f"expr `{instr[1][0]} {', '.join(str(a) for a in instr[1][1:] if a is not None)}`".replace(f"`{instr[1][0]} `", f"`{instr[1][0]}`"), len(comp_state.blocks[block.label].assembly) != start_len)
 
