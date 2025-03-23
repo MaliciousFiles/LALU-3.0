@@ -1,60 +1,56 @@
-0004 :		mov.e r31, #2336			// Setup stack pointer
+0000 :		mov.e r31, #1760			// Setup stack pointer
 	_Main__:
-0006 :		mov.e r0, s0:				// expr `mov msg, s0:`
-0008 :		mov r1, #17				// expr `mov x, 17`
-0009 :		add.e r29, r31, #32
-000B :		mov r2, r29				// expr `mov ptr, x.&`
-000C :		mov r3, #16				// expr `mov t3, 16`
-000D :		stw r3, r2, #0				// expr `stw t3, ptr, 0`
-000E :		sub r1, r1, #5				// expr `sub x, x, 5`
-000F :		stw.e r1, r31, #32
-0011 :		mov r1, #0				// expr `argst 1, 0`
-0012 :		stw.e r2, r31, #64
-0014 :		mov.e r2, #16777215				// expr `argst 2, 16777215`
-0016 :		mov r3, #0				// expr `argst 3, 0`
-0017 :		ldw.e r4, r31, #64				// assign r4 = `ptr`	// expr `argst 4, ptr`
-0019 :		stw r0, r31, #0
-001A :		stw.e r4, r31, #64
-001C :		add.e r31, r31, #128
-001E :		call _PrintStr__:
-001F :		sub.e r31, r31, #128				// expr `call PrintStr`
-0021 :		ldw.e r2, r31, #32				// assign r2 = `x`
-0023 :		add r1, r2, #2				// expr `add t5, x, 2`
-0024 :		add.e r29, r31, #32
-0026 :		stw r1, r29, #0				// expr `stw t5, x.&, 0`
-0027 :		stw.e r0, r31, #96				// clobbering r0 (`t4`)
-0029 :		ldw r0, r31, #0				// assign r0 = `msg`	// expr `argst 0, msg`
-002A :		mov r1, #0				// expr `argst 1, 0`
-002B :		mov r2, #0				// expr `argst 2, 0`
-002C :		mov.e r3, #16777215				// expr `argst 3, 16777215`
-002E :		ldw.e r4, r31, #64				// assign r4 = `ptr`	// expr `argst 4, ptr`
-0030 :		add.e r31, r31, #192
-0032 :		call _PrintStr__:
-0033 :		sub.e r31, r31, #192				// expr `call PrintStr`
-	L7:
-0035 :		jmp L8:				// expr `jmp L8:`
-	L8:
-0036 :		jmp L7:				// expr `jmp L7:`
-	_PrintStr__:
-0037 :		ldw r5, r0, #0				// expr `ldw t15, charPtr, 0`
-0038 :		mov r6, r5				// expr `mov char, t15`
-	L12:
-0039 :		ne r6, #0				// expr `ne char, 0`
-003A :		c.jmp L13:				// expr `c.jmp L13:`
-	_L16:
-003B :		jmp L14:				// expr `jmp L14:`
-	L13:
-003C :		bsl r5, r1, #8				// expr `bsl t18, rendFlags, 8`
-003D :		add r7, r6, r5				// expr `add t19, char, t18`
-003E :		mov r5, r7				// expr `mov flagChar, t19`
-003F :		ldw r7, r4, #0				// expr `ldw t20, pos, 0`
-0040 :		stchr r5, r7, r2, r3				// expr `stchr flagChar, t20, foreGround, backGround`
-0041 :		ldw r5, r4, #0				// expr `ldw t21, pos, 0`
-0042 :		add r7, r5, #1				// expr `add t22, t21, 1`
-0043 :		stw r7, r4, #0				// expr `stw t22, pos, 0`
-0044 :		add r0, r0, #1				// expr `add charPtr, charPtr, 1`
-0045 :		ldw r5, r0, #0				// expr `ldw t23, charPtr, 0`
-0046 :		mov r6, r5				// expr `mov char, t23`
-0047 :		jmp L12:				// expr `jmp L12:`
-	L14:
-0048 :		ret 				// expr `ret`
+0002 :		mov r0, #5				// expr `argst 0, 5`
+0003 :		add r31, r31, #0
+0004 :		call _Fib__:
+0005 :		sub r31, r31, #0				// expr `call Fib`
+0006 :		mov r0, #5				// expr `mov u_t__0, 5`
+0007 :		stw r0, r31, #0
+0008 :		mov r0, #7				// expr `argst 0, 7`
+0009 :		mov r1, #7				// expr `argst 1, 7`
+000A :		add.e r31, r31, #96
+000C :		call _AssertEql__:
+000D :		sub.e r31, r31, #96				// expr `call AssertEql`
+000F :		stw.e r0, r31, #32				// clobbering r0 (`t2`)
+0011 :		ldw r0, r31, #0				// assign r0 = `u_t__0`	// expr `retst 0, u_t__0`
+0012 :		ret 				// expr `ret`
+	_Fib__:
+0013 :		eq r0, #1				// expr `eq x, 1`
+0014 :		c.jmp L4:				// expr `c.jmp L4:`
+	_L7:
+0015 :		jmp L6:				// expr `jmp L6:`
+	L6:
+0016 :		eq r0, #0				// expr `eq x, 0`
+0017 :		c.jmp L4:				// expr `c.jmp L4:`
+	_L9:
+0018 :		jmp L5:				// expr `jmp L5:`
+	L4:
+0019 :		mov r0, #1				// expr `retst 0, 1`
+001A :		ret 				// expr `ret`
+	L5:
+001B :		sub r1, r0, #2				// expr `sub t13, x, 2`
+001C :		stw r0, r31, #0				// clobbering r0 (`x`)
+001D :		mov r0, r1				// assign r0 = `t13`	// expr `argst 0, t13`
+001E :		add.e r31, r31, #64
+0020 :		call _Fib__:
+0021 :		sub.e r31, r31, #64				// expr `call Fib`
+0023 :		ldw r2, r31, #0				// assign r2 = `x`
+0024 :		sub r1, r2, #1				// expr `sub t15, x, 1`
+0025 :		stw.e r0, r31, #64				// clobbering r0 (`t14`)
+0027 :		mov r0, r1				// assign r0 = `t15`	// expr `argst 0, t15`
+0028 :		add.e r31, r31, #160
+002A :		call _Fib__:
+002B :		sub.e r31, r31, #160				// expr `call Fib`
+002D :		ldw.e r2, r31, #64				// assign r2 = `t14`
+002F :		add r1, r2, r0				// expr `add t17, t14, t16`
+0030 :		mov r0, r1				// assign r0 = `t17`	// expr `retst 0, t17`
+0031 :		ret 				// expr `ret`
+	_AssertEql__:
+0032 :		ne r0, r1				// expr `ne act, exp`
+0033 :		c.jmp L19:				// expr `c.jmp L19:`
+	_L21:
+0034 :		jmp L20:				// expr `jmp L20:`
+	L19:
+0035 :		susp 				// expr `susp`
+	L20:
+0036 :		ret 				// expr `ret`

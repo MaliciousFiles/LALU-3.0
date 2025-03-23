@@ -10,7 +10,7 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/printstr.lpc', 'r') as f:
+with open('src/oldprog.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -986,7 +986,11 @@ class HLIR:
                         if var not in lvars[succ]:
                             for i,b in enumerate(body):
                                 if b.entry == succ:
-                                    body[i].body.insert(0, ('undecl', var, k[var]))
+                                    nline = ('undecl', var, k[var])
+                                    if nline not in body[i].body:
+                                        body[i].body.insert(0, nline)
+##                                    body[i].body.insert(0, ('undecl', var, k[var]))
+                                    
                                     break
                             else:
                                 bad

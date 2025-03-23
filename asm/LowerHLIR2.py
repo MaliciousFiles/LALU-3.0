@@ -49,24 +49,20 @@ class LLIR:
 
 def IsNative(var):
     return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.OpWidth() == 32 or var.kind.comptime)
-    
-##def SubReg(name):
-##    bitwidth = var.kind.OpWidth()
-##    words = WordSizeOf(name.kind)
-##    if words == 1:
-##        return [name]
-##    p = len(str(words-1))
-##    o = []
-##    for i in range(words):
-##        o.append(Var(name + '_' + str(i).zfill(p), Type(32 if i+1 < words else bitwidth % 32)))
-##    return o
 
 def SubRegs(var):
     return [SubReg(var, i) for i in range(WordSizeOf(var.kind))]
 
 def SubReg(var, i):
+    if var == None or var.kind == None:
+        return var
     if var.kind.comptime:
         return Var.FromVal(None, (var.name >> (32 * i)) % (1<<32) )
+    if var.name.endswith('.&'):
+        rootvar = Var(var.name[:-2], var.kind.Deref())
+        print(f'{rootvar=}')
+        subreg = SubReg(rootvar, i)
+        return Var(subreg.name+'.&', var.kind)
     bitwidth = var.kind.OpWidth()
     words = WordSizeOf(var.kind)
     assert i < words, f'Cannot take register index `{i}` of variable `{var}` with wordsize `{words}`'
@@ -207,6 +203,9 @@ def SliceFrom(nblock, dest, val, offset, width):
     return
 
 def ComplexCast(nblock, dest, val):
+    if not (val.kind.IsBasicInt() and dest.kind.IsBasicInt()):
+        Assg(nblock, dest, val)
+        return
     raise NotImplementedError
 
 
@@ -293,6 +292,9 @@ OPMAP = {
 }
 
 def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
+    S0 = SubReg(S0, 0)
+    S1 = SubReg(S1, 0)
+    S2 = SubReg(S2, 0)
     if op == 'breakpoint':      AddPent(nblock, op, D, S0, S1, S2)
     elif op[0]=='@':            AddPent(nblock, op[1:], D, S0, S1, S2)
     elif op == '+':             AddPent(nblock, 'add', D, S0, S1, S2)

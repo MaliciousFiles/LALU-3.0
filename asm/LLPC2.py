@@ -11,7 +11,7 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/oldprog.lpc', 'r') as f:
+with open('src/structs.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -399,7 +399,9 @@ def Rvalue(expr):
         elif data == 'addrexpr':
             le, _, _, = expr.children
             lhs = Rvalue(le)
-            return Var(f'{lhs}.&', lhs.kind.Addr())
+            nk = lhs.kind.Addr()
+            assert lhs.kind.numPtrs == 0
+            return Var(f'{lhs.name}.&', lhs.kind.Addr())
         elif data == 'breakpoint':
             inter.AddPent('breakpoint', None, None, None, None)
             return Var(f'NO_USE', NewTemp(Type()))
@@ -972,7 +974,7 @@ class HLIR:
                     for arg in args:
                         if type(arg.name) == str and arg.name[-1]!=':':
                             if arg.name[-2:] == '.&':
-                                arg = Var(arg.name[:-2], arg.kind)
+                                arg = Var(arg.name[:-2], arg.kind.Deref())
                             if arg not in ldict:
                                 ldict[arg] = ['pre', line[2]]
                             elif type(ldict[arg][1]) != str:
@@ -982,7 +984,7 @@ class HLIR:
                 else:
                     print(line)
                     err
-
+        print(f'{k=}')
         From = False
         for block in body[:]:
             if block.entry not in fto or fto[block.entry] == []:
@@ -1034,7 +1036,8 @@ class HLIR:
                 else:
                     for i,b in enumerate(block.body):
                         if b[0] == 'expr' and b[2] == life[1]:
-                            block.body.insert(i+1, ('undecl', var, k[var]))
+                            print(f'{var=}')
+                            block.body.insert(i+1, ('undecl', var, None))
                             break
                     else:
                         print(f'Unused variable `{var}`')
@@ -1163,15 +1166,24 @@ class Type:
             return Type(max(self.width, other.width), self.signed, 0)
     def Deref(self):
         assert self.numPtrs > 0 or self.arylen, f'Cannot dereference type `{self}`'
+        copy = Type.FromStr(str(self))
         if self.numPtrs > 0:
-            return Type(self.width, self.signed, self.arylen, self.numPtrs - 1)
+            copy.numPtrs -= 1
+##            return Type(self.width, self.signed, self.arylen, self.numPtrs - 1)
         elif self.arylen:
-            return Type(self.width, self.signed)
+            copy.arylen = None
+##            return Type(self.width, self.signed)
+        return copy
     def Addr(self):
         assert not self.comptime, f'Cannot take address of comptime variable `{self}`'
-        return Type(self.width, self.signed, self.numPtrs + 1)
+        copy = Type.FromStr(str(self))
+        copy.numPtrs += 1
+        return copy
+##        return Type(self.width, self.signed, self.arylen, self.numPtrs + 1)
     def Runtime(self):
         return Type(self.width, self.signed, self.numPtrs)
+    def IsBasicInt(self):
+        return not(self.numPtrs > 0 or self.comptime or self.isvoid or self.isbool or self.struct != None or self.arylen != None)
 
 def AlignOf(bitwidth):
     if bitwidth <= 32:
