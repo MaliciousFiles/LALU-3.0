@@ -1,4 +1,5 @@
-module pll_clock #(parameter frequency="50 MHz", parameter simulation=10) (input CLOCK_50, output clk);
+// to make it easy, in simulation there's two options: 50 MHz and 25 MHz. In the normal case, it's dictated by hte string
+module pll_clock #(parameter frequency="50 MHz", parameter IS_HALF_SIM = 0) (input CLOCK_50, output clk);
 `ifndef __ICARUS__
     altera_pll #(
     	.fractional_vco_multiplier("false"),
@@ -71,7 +72,7 @@ module pll_clock #(parameter frequency="50 MHz", parameter simulation=10) (input
      );
  `else
      reg clock = 0;
-     assign clk = clock;
-     always #simulation clock <= ~clock;
+     assign clk = IS_HALF_SIM ? clock : CLOCK_50;
+     always @(posedge CLOCK_50) clock <= ~clock;
  `endif
 endmodule

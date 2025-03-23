@@ -1,4 +1,5 @@
 module VGA (
+    input clk,
     input CLOCK_50,
 
     input charWr,
@@ -26,7 +27,7 @@ module VGA (
     parameter V_BP_END = V_BPORCH - 1;
     parameter V_END = V_VISIBLE + V_FPORCH + V_SYNC + V_BPORCH - 1;
 
-	pll_clock #("25.175644 MHz", 5) gen(.CLOCK_50(CLOCK_50), .clk(VGA_CLK));
+	pll_clock #("25.175644 MHz", 1) gen(.CLOCK_50(CLOCK_50), .clk(VGA_CLK));
 
     integer i;
     /*********************
@@ -282,7 +283,7 @@ module VGA (
     wire [10:0] readAddr = charX | charY << 6;
     wire [63:0] vramOut;
     RAM #(11, 64, 1) vram (
-        .clk(CLOCK_50),
+        .clk(clk),
 
         .address_a(wrAddr),
         .wren_a(charWr),

@@ -98,7 +98,7 @@ module LALU(input CLOCK_50,
      *       Clock       *
      *********************/
     wire clk;
-    pll_clock #("50 MHz", 10) pll (
+    pll_clock #("50 MHz") pll (
         .CLOCK_50(CLOCK_50),
         .clk(clk));
 
@@ -190,6 +190,7 @@ module LALU(input CLOCK_50,
     wire [5:0] charWrX;
     wire [4:0] charWrY;
     VGA vga (
+        .clk(clk),
         .CLOCK_50(CLOCK_50),
 
         .charWr(charWr),
