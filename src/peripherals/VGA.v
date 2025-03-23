@@ -26,7 +26,7 @@ module VGA (
     parameter V_BP_END = V_BPORCH - 1;
     parameter V_END = V_VISIBLE + V_FPORCH + V_SYNC + V_BPORCH - 1;
 
-	pll_clock #("25.175644 MHz", 5) gen(.CLOCK_50(CLOCK_50), .clk(VGA_CLK));
+	pll_clock #("25.175644 MHz", 1) gen(.CLOCK_50(CLOCK_50), .clk(VGA_CLK));
 
     integer i;
     /*********************
