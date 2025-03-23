@@ -147,7 +147,7 @@ PIPEEQUAL: "|="
 CARROTEQUAL: "^=" 
 LANGLEEE: "<<<"
 LANGLEE: "<<"
-LANGLE: /<(?![:=])/
+LANGLE.10: /<(?![:=<])/
 RANGLEEE: ">>"
 RANGLEE: ">>"
 RANGLE: ">"
