@@ -98,9 +98,9 @@ module LALU(input CLOCK_50,
      *       Clock       *
      *********************/
     wire clk;
-    pll_clk pll #("500 MHz", 1) (
-        .CLOCK_50(CLOCK_50)
-        .clk(clk))
+    pll_clock #("50 MHz", 1) pll (
+        .CLOCK_50(CLOCK_50),
+        .clk(clk));
 
     /*********************
      * Branch Predictor  *

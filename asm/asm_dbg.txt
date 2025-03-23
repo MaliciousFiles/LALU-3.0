@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 0000 :		mov.e r31, #1760			// Setup stack pointer
 	_Main__:
 0002 :		mov r0, #5				// expr `argst 0, 5`
@@ -54,3 +55,570 @@
 0035 :		susp 				// expr `susp`
 	L20:
 0036 :		ret 				// expr `ret`
+=======
+0000 :		mov     R28, #2
+0001 :		jmp main:
+	main:
+0005 :		mov.e   R0, #0xFFFFFFFF
+0007 :		mov     R1, #0x00000001
+0008 :		add.s   R2, R0, R1 // set carry to 1
+0009 :		radd    R30, #0, #0
+000A :		mov     R29, #1
+000B :		call    assert:
+000C :		mov.e   R0, #0xFFFFFFFF
+000E :		mov     R1, #0x00000001
+000F :		add.s   R2, R0, R1 // set carry to 1
+0010 :		rsub    R30, #10, #9
+0011 :		mov     R29, #2
+0012 :		call    assert:
+0013 :		csub    R30, #10, #8
+0014 :		mov     R29, #2
+0015 :		call    assert:
+0016 :		csub    R30, #8, #10
+0017 :		mov     R29, #8
+0018 :		call    assert:
+0019 :		mov.e   R0, #0x0559A04D
+001B :		mov.e   R1, #0x016A644D
+001D :		mul     R2, R0, R1
+001E :		ulmul   R3, R0, R1
+001F :		lumul   R4, R0, R1
+0020 :		uumul   R5, R0, R1
+0021 :		adds.s  R30, R2, R3, #16
+0022 :		radd    R5, R5, #0
+0023 :		adds.s  R30, R30, R4, #16
+0024 :		radd    R5, R5, #0
+0025 :		mov.e   R29, #0x4B754B29
+0027 :		call    assert:
+0028 :		mov.e   R0, #0x0559A04D
+002A :		mov.e   R1, #0x016A644D
+002C :		mul     R2, R0, R1
+002D :		ulmul   R3, R0, R1
+002E :		lumul   R4, R0, R1
+002F :		uumul   R5, R0, R1
+0030 :		add     R30, R5, R3
+0031 :		add     R30, R30, R4
+0032 :		mov.e   R29, #0x03029C81
+0034 :		call    assert:
+0035 :		mov.e   R0, #0xFFFFFFFF
+0037 :		abs     R30, R0
+0038 :		mov     R29, #1
+0039 :		call    assert:
+003A :		mov.e   R0, #0xFFFFFFFF // -1
+003C :		mov.e   R1, #0xFFFFFFFE // -2
+003E :		mov     R2, #0x1        //  1
+003F :		mov     R3, #0x2        //  2
+0040 :		umax    R30, R0, R1
+0041 :		mov     R29, R0
+0042 :		call    assert:
+0043 :		umax    R30, R2, R3
+0044 :		mov     R29, R3
+0045 :		call    assert:
+0046 :		umax    R30, R2, R1
+0047 :		mov     R29, R1
+0048 :		call    assert:
+0049 :		umin    R30, R1, R0
+004A :		mov     R29, R1
+004B :		call    assert:
+004C :		umin    R30, R3, R2
+004D :		mov     R29, R2
+004E :		call    assert:
+004F :		umin    R30, R1, R2
+0050 :		mov     R29, R2
+0051 :		call    assert:
+0052 :		smax    R30, R1, R0
+0053 :		mov     R29, R0
+0054 :		call    assert:
+0055 :		smax    R30, R3, R2
+0056 :		mov     R29, R3
+0057 :		call    assert:
+0058 :		smax    R30, R1, R2
+0059 :		mov     R29, R2
+005A :		call    assert:
+005B :		smin    R30, R0, R1
+005C :		mov     R29, R1
+005D :		call    assert:
+005E :		smin    R30, R2, R3
+005F :		mov     R29, R2
+0060 :		call    assert:
+0061 :		smin    R30, R2, R1
+0062 :		mov     R29, R1
+0063 :		call    assert:
+0064 :		log.e   R30, #0b1010111010101
+0066 :		mov     R29, #12
+0067 :		call    assert:
+0068 :		log     R30, #0
+0069 :		mov     R29, #0
+006A :		call    assert:
+006B :		ctz.e   R30, #0b10110100000
+006D :		mov     R29, #5
+006E :		call    assert:
+006F :		ctz     R30, #0
+0070 :		mov.e   R29, #32
+0072 :		call    assert:
+0073 :		ctz.e   R30, #0b101101000001
+0075 :		mov     R29, #0
+0076 :		call    assert:
+0077 :		pcnt.e  R30, #0b101101000001
+0079 :		mov     R29, #5
+007A :		call    assert:
+007B :		brvs.e  R30, #0b00000001010001010111010111000101
+007D :		mov.e   R29, #0b10100011101011101010001010000000
+007F :		call    assert:
+0080 :		srvs.e  R30, #0b10000001010001010111010111000101, #5
+0082 :		mov.e   R29, #0b00000000010101010101110111010100
+0084 :		call    assert:
+0085 :		vany.e  R30, #0b10000001010001010111010111000101, #5
+0087 :		mov.e   R29, #0b00000000000100001000010000100001
+0089 :		call    assert:
+008A :		exs.e   R30, #0b01010001010001010111010101000101, #10
+008C :		mov.e   R29, #0b11111111111111111111110101000101
+008E :		call    assert:
+008F :		lsb.e   R30, #0b00000001010001010111010101000000
+0091 :		mov.e   R29, #0b1000000
+0093 :		call    assert:
+0094 :		hsb.e   R30, #0b00000001010001010111010101000000
+0096 :		mov.e   R29, #0b1000000000000000000000000
+0098 :		call    assert:
+0099 :		mov.e   R5, #0b1010101011010100110
+009B :		st      R5, R5, #1, #13     // should set mem[R5] to 0b10110101001100000000
+009C :		ld      R30, R5, #4, #8
+009D :		mov.e   R29, #0b11010100
+009F :		call    assert:
+00A0 :		mov.e   R30, #0b00000001010101010111010101000000
+00A2 :		bsf     R30, R30, #7, #13
+00A3 :		mov.e   R29, #0b0101011101010
+00A5 :		call    assert:
+00A6 :		mov.e   R30, #0b00000001010001010111010101000000
+00A8 :		mov.e   R29, #0b01101010110001011110101010101011
+00AA :		bst     R30, R29, #2, #11
+00AB :		mov.e   R29, #0b00000001010001010110101010101100
+00AD :		call    assert:
+00AE :		mov.e   R30, #0b10101010111010110010101101010111
+00B0 :		vadd.e  R30, R30, #0b10101111101010001010101110101010, #5
+00B2 :		mov.e   R29, #0b00011000100000111101001011100001
+00B4 :		call    assert:
+00B5 :		mov.e   R30, #0b10101010111010110010101101010111
+00B7 :		vsub.e  R30, R30, #0b10101111101010001010101110101010, #5
+00B9 :		mov.e   R29, #0b00111101010000101000001110101101
+00BB :		call    assert:
+00BC :		mov.e   R30, #3923142388
+00BE :		add.e   R30, R30, #1272556588
+00C0 :		mov.e   R29, #0b00110101101100000001001100100000
+00C2 :		call    assert:
+00C3 :		radd    R30, #0, #0
+00C4 :		mov     R29, #1
+00C5 :		call    assert:
+00C6 :		of
+00C7 :		c.mov   R30, #1
+00C8 :		cn.mov  R30, #0
+00C9 :		mov     R29, #0
+00CA :		call    assert:
+00CB :		sub     R30, #0, #1
+00CC :		mov.e   R29, #0b11111111111111111111111111111111
+00CE :		call    assert:
+00CF :		radd    R30, #0, #0
+00D0 :		mov     R29, #1
+00D1 :		call    assert:
+00D2 :		of
+00D3 :		c.mov   R30, #1
+00D4 :		cn.mov  R30, #0
+00D5 :		mov     R29, #0
+00D6 :		call    assert:
+00D7 :		mov.e   R30, #38012384
+00D9 :		adds.e  R30, R30, #3480912, #10
+00DB :		mov.e   R29, #3602466272
+00DD :		call    assert:
+00DE :		mov     R30, #30
+00DF :		addrs.e R30, R30, #3480930212, #16
+00E1 :		mov.e   R29, #53144
+00E3 :		call    assert:
+00E4 :		csub.s  R30, #30, #15
+00E5 :		mov     R29, #15
+00E6 :		call    assert:
+00E7 :		radd    R30, #0, #0
+00E8 :		mov     R29, #0
+00E9 :		call    assert:
+00EA :		csub.s  R30, #4, #12
+00EB :		mov     R29, #4
+00EC :		call    assert:
+00ED :		radd    R30, #0, #0
+00EE :		mov     R29, #1
+00EF :		call    assert:
+00F0 :		abs.e   R30, #0b10101010111101010110111100010111
+00F2 :		mov.e   R29, #0b01010101000010101001000011101001
+00F4 :		call    assert:
+00F5 :		abs.e   R30, #0b01010101000010101001000011101001
+00F7 :		mov.e   R29, #0b01010101000010101001000011101001
+00F9 :		call    assert:
+00FA :		bsl.e   R30, #0b10101010111101010110111100010111, #12
+00FC :		mov.e   R29, #0b01010110111100010111000000000000
+00FE :		call    assert:
+00FF :		bsr.e   R30, #0b10101010111101010110111100010111, #12
+0101 :		mov.e   R29, #0b10101010111101010110
+0103 :		call    assert:
+0104 :		brl.e   R30, #0b10101010111101010110111100010111, #12
+0106 :		mov.e   R29, #0b01010110111100010111101010101111
+0108 :		call    assert:
+0109 :		brr.e   R30, #0b10101010111101010110111100010111, #12
+010B :		mov.e   R29, #0b11110001011110101010111101010110
+010D :		call    assert:
+010E :		any.e   R30, #0b10101010111101010110111100010111
+0110 :		mov     R29, #1
+0111 :		call    assert:
+0112 :		any     R30, #0
+0113 :		mov     R29, #0
+0114 :		call    assert:
+0115 :		mov.e   R30,      #0b11000010101111010100010101000010
+0117 :		bit.e   R30, R30, #0b10101010111101010110111100010111, #0b1010
+0119 :		mov.e   R29,      #0b11000010101111010100010101000010
+011B :		call    assert:
+011C :		mov.e   R5, #0b1010101011010100110
+011E :		stw     R5, R5, #0b11010     // should set mem[R5+1] to 0b1010101011010100110
+011F :		mov.e   R5, #0b1010101011010101011
+0121 :		ldw     R30, R5, #0b10101
+0122 :		mov.e   R29, #0b1010101011010100110
+0124 :		call    assert:
+0125 :		mov.e   R30, #0b1010101011010100110
+0127 :		mov.e   R29, #0b1010101011010100110
+0129 :		call    assert:
+012A :		mov     R30, #0
+012B :		jmp     after:
+	fn:
+012C :		mov     R30, #1
+012D :		ret
+	after:
+012E :		call    fn:
+012F :		mov     R29, #1
+0130 :		call    assert:
+0131 :		mov.e   R30, #0b10110101010001110111110
+0133 :		ugt.e   R30, #0b1010101011010100110
+0135 :		c.mov   R30, #1
+0136 :		cn.mov  R30, #0
+0137 :		mov     R29, #1
+0138 :		call    assert:
+0139 :		mov.e   R30, #0b10110101010001110111110
+013B :		ugt.e   R30, #0b11010101011010101010101010100110
+013D :		c.mov   R30, #1
+013E :		cn.mov  R30, #0
+013F :		mov     R29, #0
+0140 :		call    assert:
+0141 :		mov.e   R30, #0b11011010101001001010001110111110
+0143 :		ugt.e   R30, #0b11010101011010101010101010100110
+0145 :		c.mov   R30, #1
+0146 :		cn.mov  R30, #0
+0147 :		mov     R29, #1
+0148 :		call    assert:
+0149 :		mov.e   R30, #0b11011010101001001010001110111110
+014B :		ugt.e   R30, #0b11011010101001001010001110111110
+014D :		c.mov   R30, #1
+014E :		cn.mov  R30, #0
+014F :		mov     R29, #0
+0150 :		call    assert:
+0151 :		mov.e   R30, #0b10110101010001110111110
+0153 :		uge.e   R30, #0b1010101011010100110
+0155 :		c.mov   R30, #1
+0156 :		cn.mov  R30, #0
+0157 :		mov     R29, #1
+0158 :		call    assert:
+0159 :		mov.e   R30, #0b10110101010001110111110
+015B :		uge.e   R30, #0b11010101011010101010101010100110
+015D :		c.mov   R30, #1
+015E :		cn.mov  R30, #0
+015F :		mov     R29, #0
+0160 :		call    assert:
+0161 :		mov.e   R30, #0b11011010101001001010001110111110
+0163 :		uge.e   R30, #0b11010101011010101010101010100110
+0165 :		c.mov   R30, #1
+0166 :		cn.mov  R30, #0
+0167 :		mov     R29, #1
+0168 :		call    assert:
+0169 :		mov.e   R30, #0b11011010101001001010001110111110
+016B :		uge.e   R30, #0b11011010101001001010001110111110
+016D :		c.mov   R30, #1
+016E :		cn.mov  R30, #0
+016F :		mov     R29, #1
+0170 :		call    assert:
+0171 :		mov.e   R30, #0b10110101010001110111110
+0173 :		ult.e   R30, #0b1010101011010100110
+0175 :		c.mov   R30, #1
+0176 :		cn.mov  R30, #0
+0177 :		mov     R29, #0
+0178 :		call    assert:
+0179 :		mov.e   R30, #0b10110101010001110111110
+017B :		ult.e   R30, #0b11010101011010101010101010100110
+017D :		c.mov   R30, #1
+017E :		cn.mov  R30, #0
+017F :		mov     R29, #1
+0180 :		call    assert:
+0181 :		mov.e   R30, #0b11011010101001001010001110111110
+0183 :		ult.e   R30, #0b11010101011010101010101010100110
+0185 :		c.mov   R30, #1
+0186 :		cn.mov  R30, #0
+0187 :		mov     R29, #0
+0188 :		call    assert:
+0189 :		mov.e   R30, #0b11011010101001001010001110111110
+018B :		ult.e   R30, #0b11011010101001001010001110111110
+018D :		c.mov   R30, #1
+018E :		cn.mov  R30, #0
+018F :		mov     R29, #0
+0190 :		call    assert:
+0191 :		mov.e   R30, #0b10110101010001110111110
+0193 :		ule.e   R30, #0b1010101011010100110
+0195 :		c.mov   R30, #1
+0196 :		cn.mov  R30, #0
+0197 :		mov     R29, #0
+0198 :		call    assert:
+0199 :		mov.e   R30, #0b10110101010001110111110
+019B :		ule.e   R30, #0b11010101011010101010101010100110
+019D :		c.mov   R30, #1
+019E :		cn.mov  R30, #0
+019F :		mov     R29, #1
+01A0 :		call    assert:
+01A1 :		mov.e   R30, #0b11011010101001001010001110111110
+01A3 :		ule.e   R30, #0b11010101011010101010101010100110
+01A5 :		c.mov   R30, #1
+01A6 :		cn.mov  R30, #0
+01A7 :		mov     R29, #0
+01A8 :		call    assert:
+01A9 :		mov.e   R30, #0b11011010101001001010001110111110
+01AB :		ule.e   R30, #0b11011010101001001010001110111110
+01AD :		c.mov   R30, #1
+01AE :		cn.mov  R30, #0
+01AF :		mov     R29, #1
+01B0 :		call    assert:
+01B1 :		mov.e   R30, #0b10110101010001110111110
+01B3 :		sgt.e   R30, #0b1010101011010100110
+01B5 :		c.mov   R30, #1
+01B6 :		cn.mov  R30, #0
+01B7 :		mov     R29, #1
+01B8 :		call    assert:
+01B9 :		mov.e   R30, #0b10110101010001110111110
+01BB :		sgt.e   R30, #0b11010101011010101010101010100110
+01BD :		c.mov   R30, #1
+01BE :		cn.mov  R30, #0
+01BF :		mov     R29, #1
+01C0 :		call    assert:
+01C1 :		mov.e   R30, #0b11011010101001001010001110111110
+01C3 :		sgt.e   R30, #0b11010101011010101010101010100110
+01C5 :		c.mov   R30, #1
+01C6 :		cn.mov  R30, #0
+01C7 :		mov     R29, #1
+01C8 :		call    assert:
+01C9 :		mov.e   R30, #0b11011010101001001010001110111110
+01CB :		sgt.e   R30, #0b11011010101001001010001110111110
+01CD :		c.mov   R30, #1
+01CE :		cn.mov  R30, #0
+01CF :		mov     R29, #0
+01D0 :		call    assert:
+01D1 :		mov.e   R30, #0b10110101010001110111110
+01D3 :		sge.e   R30, #0b1010101011010100110
+01D5 :		c.mov   R30, #1
+01D6 :		cn.mov  R30, #0
+01D7 :		mov     R29, #1
+01D8 :		call    assert:
+01D9 :		mov.e   R30, #0b10110101010001110111110
+01DB :		sge.e   R30, #0b11010101011010101010101010100110
+01DD :		c.mov   R30, #1
+01DE :		cn.mov  R30, #0
+01DF :		mov     R29, #1
+01E0 :		call    assert:
+01E1 :		mov.e   R30, #0b11011010101001001010001110111110
+01E3 :		sge.e   R30, #0b11010101011010101010101010100110
+01E5 :		c.mov   R30, #1
+01E6 :		cn.mov  R30, #0
+01E7 :		mov     R29, #1
+01E8 :		call    assert:
+01E9 :		mov.e   R30, #0b11011010101001001010001110111110
+01EB :		sge.e   R30, #0b11011010101001001010001110111110
+01ED :		c.mov   R30, #1
+01EE :		cn.mov  R30, #0
+01EF :		mov     R29, #1
+01F0 :		call    assert:
+01F1 :		mov.e   R30, #0b10110101010001110111110
+01F3 :		slt.e   R30, #0b1010101011010100110
+01F5 :		c.mov   R30, #1
+01F6 :		cn.mov  R30, #0
+01F7 :		mov     R29, #0
+01F8 :		call    assert:
+01F9 :		mov.e   R30, #0b10110101010001110111110
+01FB :		slt.e   R30, #0b11010101011010101010101010100110
+01FD :		c.mov   R30, #1
+01FE :		cn.mov  R30, #0
+01FF :		mov     R29, #0
+0200 :		call    assert:
+0201 :		mov.e   R30, #0b11011010101001001010001110111110
+0203 :		slt.e   R30, #0b11010101011010101010101010100110
+0205 :		c.mov   R30, #1
+0206 :		cn.mov  R30, #0
+0207 :		mov     R29, #0
+0208 :		call    assert:
+0209 :		mov.e   R30, #0b11011010101001001010001110111110
+020B :		slt.e   R30, #0b11011010101001001010001110111110
+020D :		c.mov   R30, #1
+020E :		cn.mov  R30, #0
+020F :		mov     R29, #0
+0210 :		call    assert:
+0211 :		mov.e   R30, #0b10110101010001110111110
+0213 :		sle.e   R30, #0b1010101011010100110
+0215 :		c.mov   R30, #1
+0216 :		cn.mov  R30, #0
+0217 :		mov     R29, #0
+0218 :		call    assert:
+0219 :		mov.e   R30, #0b10110101010001110111110
+021B :		sle.e   R30, #0b11010101011010101010101010100110
+021D :		c.mov   R30, #1
+021E :		cn.mov  R30, #0
+021F :		mov     R29, #0
+0220 :		call    assert:
+0221 :		mov.e   R30, #0b11011010101001001010001110111110
+0223 :		sle.e   R30, #0b11010101011010101010101010100110
+0225 :		c.mov   R30, #1
+0226 :		cn.mov  R30, #0
+0227 :		mov     R29, #0
+0228 :		call    assert:
+0229 :		mov.e   R30, #0b11011010101001001010001110111110
+022B :		sle.e   R30, #0b11011010101001001010001110111110
+022D :		c.mov   R30, #1
+022E :		cn.mov  R30, #0
+022F :		mov     R29, #1
+0230 :		call    assert:
+0231 :		mov.e   R30, #0b10110101010001110111110
+0233 :		eq.e    R30, #0b10110101010001110111110
+0235 :		c.mov   R30, #1
+0236 :		cn.mov  R30, #0
+0237 :		mov     R29, #1
+0238 :		call    assert:
+0239 :		mov.e   R30, #0b10110101010001110111110
+023B :		eq.e    R30, #0b01010101111010101010010
+023D :		c.mov   R30, #1
+023E :		cn.mov  R30, #0
+023F :		mov     R29, #0
+0240 :		call    assert:
+0241 :		mov.e   R30, #0b10110101010001110111110
+0243 :		ne.e    R30, #0b10110101010001110111110
+0245 :		c.mov   R30, #1
+0246 :		cn.mov  R30, #0
+0247 :		mov     R29, #0
+0248 :		call    assert:
+0249 :		mov.e   R30, #0b10110101010001110111110
+024B :		ne.e    R30, #0b01010101111010101010010
+024D :		c.mov   R30, #1
+024E :		cn.mov  R30, #0
+024F :		mov     R29, #1
+0250 :		call    assert:
+0251 :		mov.e.s R30, #0b10000100110101010001111110111110
+0253 :		nf
+0254 :		c.mov   R30, #1
+0255 :		cn.mov  R30, #0
+0256 :		mov     R29, #1
+0257 :		call    assert:
+0258 :		mov.e.s R30, #0b00000100110101010001111110111110
+025A :		nf
+025B :		c.mov   R30, #1
+025C :		cn.mov  R30, #0
+025D :		mov     R29, #0
+025E :		call    assert:
+025F :		mov.s   R30, #0
+0260 :		zf
+0261 :		c.mov   R30, #1
+0262 :		cn.mov  R30, #0
+0263 :		mov     R29, #1
+0264 :		call    assert:
+0265 :		mov.s   R30, #1
+0266 :		zf
+0267 :		c.mov   R30, #1
+0268 :		cn.mov  R30, #0
+0269 :		mov     R29, #0
+026A :		call    assert:
+026B :		vlb     R30, #6
+026C :		mov.e   R29, #0b01000001000001000001000001000001
+026E :		call    assert:
+026F :		vhb     R30, #6
+0270 :		mov.e   R29, #0b00100000100000100000100000100000
+0272 :		call    assert:
+0273 :		dab.e   R30, #0b00100101011010100110
+0275 :		mov.e   R29, #0b00101000100111011001
+0277 :		call    assert:
+0278 :		mov.e   R30, #0x61460
+027A :		mov.e   R29, #0x4D6
+027C :		call    assert:
+	ex:
+027D :		jmp ex:
+	assert:
+027E :		add     R31, R31, #1
+027F :		ne      R30, R29
+0280 :		c.call  print_debug:
+0281 :		ret
+	print_debug:
+0282 :		bsl     R27, R28, #5
+0283 :		bsf.s   R28, R28, #0, #1
+0284 :		zf
+0285 :		c.add   R27, R27, #3
+0286 :		add     R28, R28, #1
+0287 :		mov.e   R15, I_MSG:
+0289 :		mov     R16, #0b00000001
+028A :		mov.e   R17, #0xf58484
+028C :		mov.e   R18, #0xf24141
+028E :		call    print_str:
+028F :		add     R27, R27, #1
+0290 :		mov     R15, R31
+0291 :		mov     R16, #0b00000000
+0292 :		mov.e   R17, #0xed1818
+0294 :		mov     R18, #0
+0295 :		mov     R19, #0
+0296 :		call    print_reg:
+0297 :		add     R27, R27, #2
+0298 :		mov.e   R15, V_MSG:
+029A :		mov     R16, #0b00000001
+029B :		mov.e   R17, #0xf58484
+029D :		mov.e   R18, #0xf24141
+029F :		call    print_str:
+02A0 :		add     R27, R27, #1
+02A1 :		mov     R15, R30
+02A2 :		mov     R16, #0b00000000
+02A3 :		mov.e   R17, #0xed1818
+02A5 :		mov     R18, #0
+02A6 :		mov     R19, #1
+02A7 :		call    print_reg:
+02A8 :		add     R27, R27, #2
+02A9 :		mov.e   R15, E_MSG:
+02AB :		mov     R16, #0b00000001
+02AC :		mov.e   R17, #0xbfbfbf
+02AE :		mov.e   R18, #0xf0f0f0
+02B0 :		call    print_str:
+02B1 :		add     R27, R27, #1
+02B2 :		mov     R15, R29
+02B3 :		mov     R16, #0b00000000
+02B4 :		mov.e   R17, #0xe6e6e6
+02B6 :		mov     R18, #0
+02B7 :		mov     R19, #1
+02B8 :		call    print_reg:
+02B9 :		ret
+	print_str:
+02BA :		lda     R13, R15, #8
+02BB :		add     R15, R15, #8
+02BC :		ne      R13, #0
+02BD :		c.adds  R13, R13, R16, #8
+02BE :		c.stchr R13, R27, R17, R18
+02BF :		c.add   R27, R27, #1
+02C0 :		c.jmp   print_str:
+02C1 :		ret
+	print_reg:
+02C2 :		eq      R19, #0
+02C3 :		c.log   R14, R15
+02C4 :		c.andn  R14, R14, #0b11
+02C5 :		cn.mov  R14, #28
+	loop:
+02C6 :		bsf     R13, R15, R14, #4
+02C7 :		sub     R14, R14, #4
+02C8 :		csub.s  R13, R13, #10
+02C9 :		cf
+02CA :		c.add.e R13, R13, #48
+02CC :		cn.add.e R13, R13, #65
+02CE :		adds    R13, R13, R16, #8
+02CF :		stchr   R13, R27, R17, R18
+02D0 :		add     R27, R27, #1
+02D1 :		sge     R14, #0
+02D2 :		c.jmp   loop:
+02D3 :		ret
+>>>>>>> Stashed changes

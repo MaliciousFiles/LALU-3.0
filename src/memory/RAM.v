@@ -1,7 +1,7 @@
 // DON'T INIT WITH THE SAME FILE; FREEZES IVERILOG
 module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, parameter initfile = "UNUSED", parameter TWO_CLK=0) (
     input                   clk,
-    input                   clk_b=0,
+    input                   clk_b,
 
     input [widthad-1:0]     address_a,
     input                   wren_a,
@@ -17,7 +17,7 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
 
     altsyncram ram (
         .clock0(clk),
-        .clock1(clk_b),
+        .clock1(TWO_CLK ? clk_b : 1'b1),
 
         .address_a(address_a),
         .wren_a(wren_a),
@@ -37,7 +37,6 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
         .addressstall_b(1'b0),
         .byteena_a(1'b1),
         .byteena_b(1'b1),
-        .clock1(1'b1),
         .clocken0(1'b1),
         .clocken1(1'b1),
         .clocken2(1'b1),
