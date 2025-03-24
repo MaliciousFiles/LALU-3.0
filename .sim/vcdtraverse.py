@@ -258,13 +258,14 @@ def dispcompvars():
         rootvar = None
         offset = 0
         for varname, varkind in vartypes.items():
+            if varkind.comptime: continue
             for i, subvar in enumerate(SubRegs(Var(varname, varkind))):
                 if subvar.name == var:
                     rootvar = varname
                     offset = 32 * i
                     if varname not in compvars:
                         compvars[varname] = [['?']*varkind.OpWidth(), varkind]
-                    
+        if not rootvar: continue
 
         if var in varlocs:
             addr = varlocs[var]

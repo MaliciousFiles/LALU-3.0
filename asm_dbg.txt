@@ -1,0 +1,39 @@
+0000 :		mov    R4, #0
+0001 :		mov    R3, #0b00000000
+0002 :		call   render_alphabet:
+0003 :		mov    R3, #0b00000001
+0004 :		call   render_alphabet:
+0005 :		mov    R3, #0b00000010
+0006 :		call   render_alphabet:
+0007 :		mov    R3, #0b00000100
+0008 :		call   render_alphabet:
+0009 :		mov    R3, #0b00001000
+000A :		call   render_alphabet:
+000B :		mov    R3, #0b00010000
+000C :		call   render_alphabet:
+000D :		mov.e  R3, #0b00100000
+000F :		call   render_alphabet:
+0010 :		mov    R3, #0b00000011
+0011 :		call   render_alphabet:
+0012 :		mov    R3, #0b00000101
+0013 :		call   render_alphabet:
+0014 :		mov    R3, #0b00001010
+0015 :		call   render_alphabet:
+0016 :		mov    R3, #0b00001111
+0017 :		call   render_alphabet:
+	ex:
+0018 :		jmp ex:
+	render_alphabet:
+0019 :		mov.e   R31, #91                // end char
+001B :		adds    R31, R31, R3, #8
+001C :		mov.e   R1, #65                 // start char
+001E :		adds    R1, R1, R3, #8
+001F :		bsl     R2, R4, #6              // start address
+	loop:
+0020 :		stchr.e R1, R2, #0x0, #0xFFFFFF
+0022 :		add     R1, R1, #1
+0023 :		add     R2, R2, #1
+0024 :		eq      R1, R31
+0025 :		c.add   R4, R4, #1
+0026 :		c.ret
+0027 :		jmp     loop:
