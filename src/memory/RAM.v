@@ -17,7 +17,7 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
 
     altsyncram ram (
         .clock0(clk),
-        .clock1(TWO_CLK ? clk_b : 1'b1),
+        .clock1(TWO_CLK ? clk_b : clk),
 
         .address_a(address_a),
         .wren_a(wren_a),
@@ -46,13 +46,13 @@ module RAM #(parameter widthad = 16, parameter width = 32, parameter MLAB = 0, p
     defparam
        ram.init_file = initfile,
 //        ram.lpm_hint = "ENABLE_RUNTIME_MOD=yes",
-       ram.address_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
-       ram.rdcontrol_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
-       ram.indata_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
-       ram.wrcontrol_wraddress_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
-       ram.byteena_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
-       ram.wrcontrol_wraddress_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
-       ram.indata_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.address_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.rdcontrol_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.indata_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.wrcontrol_wraddress_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.byteena_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.wrcontrol_wraddress_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
+//       ram.indata_reg_b = TWO_CLK ? "CLOCK1" : "CLOCK0",
        ram.clock_enable_input_a = "BYPASS",
        ram.clock_enable_input_b = "BYPASS",
        ram.clock_enable_output_a = "BYPASS",
