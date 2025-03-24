@@ -400,6 +400,7 @@ def Lower(hlir):
     llir = LLIR()
     llir.data = hlir.data
     comp = {}
+    assocs = {}
     for func in hlir.funcs:
         llir.NewFunc(func['name'], None, None)
         llir.func['args'] = []
@@ -408,7 +409,6 @@ def Lower(hlir):
                 llir.func['args'].append(subreg.name)
 ##        llir.func['args'] = args
         llir.func['ret'] = WordSizeOf(func['ret'])
-        assocs = {}
         for block in func['body']:
             nblock = Block(block.entry, block.From)
             for line in block.body:
