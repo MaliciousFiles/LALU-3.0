@@ -1,10 +1,26 @@
-0000 :		mov.e r31, #320			// Setup stack pointer
+0000 :		mov.e r31, #928			// Setup stack pointer
 	_Main__:
 breakpoint
-0002 :		add r29, r31, #0
-0003 :		mov r0, r29				// expr `mov xptr, x.&`
-0004 :		nop 				// expr `nop`
-0005 :		nop 				// expr `nop`
-0006 :		nop 				// expr `nop`
-0007 :		nop 				// expr `nop`
-0008 :		susp 				// expr `susp`
+0002 :		mov r30, #7
+0003 :		bst r0, r30, #0, #16				// expr `bst vec_0, 7, 0, 16`
+0004 :		stw r0, r31, #0				// memsave r0 => `vec_0`
+0005 :		mov r30, #8
+0006 :		bst r1, r30, #0, #0				// expr `bst vec_1, 8, 0, 0`
+0007 :		bsf r2, r0, #0, #16				// expr `bsf t2, vec_0, 0, 16`
+0008 :		stw r0, r31, #0				// memsave r0 => `vec_0`
+0009 :		stw.e r1, r31, #32				// memsave r1 => `vec_1`
+000B :		bst r0, r2, #16, #16				// expr `bst vec_0, t2, 16, 16`
+000C :		mov r2, r0				// expr `mov t3, vec_0`
+000D :		add.e r29, r31, #64
+000F :		mov r2, r29				// expr `mov ptr, node_0.&`
+0010 :		bst r3, r2, #0, #0				// expr `bst node_2, ptr, 0, 0`
+0011 :		stw.e r3, r31, #128				// memsave r3 => `node_2`
+0013 :		bst r2, r0, #0, #0				// expr `bst node_0, vec_0, 0, 0`
+0014 :		bst r4, r1, #0, #0				// expr `bst node_1, vec_1, 0, 0`
+breakpoint
+0015 :		nop 				// expr `nop`
+0016 :		nop 				// expr `nop`
+0017 :		nop 				// expr `nop`
+0018 :		nop 				// expr `nop`
+0019 :		nop 				// expr `nop`
+001A :		susp 				// expr `susp`

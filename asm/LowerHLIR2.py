@@ -1,11 +1,12 @@
 from math import log2
+from Statics import Var, Type
 
 log = lambda x:int(log2(x))
 IsPow2 = lambda x: type(x) == int and (x==x&-x)
 CeilDiv = lambda n, d: -(-n//d)
 
-Var = None
-Type = None
+##Var = None
+##Type = None
 
 FULLWIDTH = 0 #In assembly 0 is interpetted as 32 for bitwidth of reads, writes, slices, etc
 
@@ -146,7 +147,7 @@ def Store(nblock, val, array, offset):
         bits = 32 if bitwidth > 32 else bitwidth
         bitwidth -= 32
         
-        AddPent(nblock, 'st', SubReg(val, regid), array, Var(offset.name + regid, 'comp'), bits % 32)
+        AddPent(nblock, 'st', SubReg(val, regid), array, Var(offset.name + 32*regid, 'comp'), bits % 32)
         regid += 1
     return
     raise NotImplementedError
@@ -185,11 +186,11 @@ def SliceTo(nblock, dest, val, offset, width):
             eV = SubReg(val, i)
             if bitsleft > 32:
                 if aligned:
-                    AddPent(nblock, 'bst', eD, eV, 0, FULLWIDTH if bitsleft > 32 else (bitsleft % 32))
+                    AddPent(nblock, 'bst', eD, eV, bitoffset, FULLWIDTH if bitsleft > 32 else (bitsleft % 32))
                 else:
                     raise NotImplementedError
             else:
-                AddPent(nblock, 'bst', eD, eV, 0, bitsleft % 32)
+                AddPent(nblock, 'bst', eD, eV, bitoffset, bitsleft % 32)
         else:
             raise NotImplementedError
         i += 1
@@ -406,6 +407,7 @@ def Lower(hlir):
                 llir.func['args'].append(subreg.name)
 ##        llir.func['args'] = args
         llir.func['ret'] = WordSizeOf(func['ret'])
+        assocs = {}
         for block in func['body']:
             nblock = Block(block.entry, block.From)
             for line in block.body:
@@ -414,6 +416,7 @@ def Lower(hlir):
                     #ALLOCATIONS
                     if cmd == 'decl':
                         var = line[1]
+                        assocs[var.name] = var.kind
                         if var.kind.comptime:
                             comp[var.name] = None
                         elif var.kind.arylen:
@@ -512,7 +515,9 @@ def Lower(hlir):
 
             ConvertMeta(nblock)
             llir.func['body'].append(nblock)
-
+    with open('HLIR_typeinfo.txt', 'w') as f:
+        f.write(repr(assocs))
+        
     return llir
 
 def Init(caller):

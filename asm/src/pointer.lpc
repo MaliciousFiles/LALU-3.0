@@ -1,0 +1,48 @@
+fn Main() void {
+  BREAKPOINT;
+  
+  var x: u32 = 3;
+  var xptr = x.&;
+
+  BREAKPOINT;
+
+  xptr.* += 1;
+
+  BREAKPOINT;
+
+  var vec: Vec;
+  var vecptr = vec.&;
+
+  BREAKPOINT;
+
+  vecptr.* = 0;
+  xptr.* = 7;
+
+  BREAKPOINT;
+
+  var ft: u15 = 1;
+  var ftptr = ft.&;
+  ftptr.* = 6;
+
+  -x;
+  -xptr;
+  -vec;
+
+  //var str = "Hello world";
+  //-str;
+  
+
+  @nop();
+  @nop();
+  @nop();
+  @nop();
+  @susp();
+}
+
+
+//Non trivial struct for testing
+struct Vec {
+  x: u15,
+  y: u32,
+  z: u16,
+}

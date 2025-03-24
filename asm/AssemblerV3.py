@@ -500,7 +500,7 @@ def ParseFile(file):
 
     with open("asm_dbg.txt", 'w') as f:
         f.write(prnt)
-    with open('asm_breaks.txt', 'w') as f:
+    with open('asm_info.txt', 'w') as f:
         f.write(repr(breaks))
 
     return mem

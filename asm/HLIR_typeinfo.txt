@@ -1,0 +1,1 @@
+{'vec': Type.FromStr("Vec"), 't2': Type.FromStr("u16"), 't3': Type.FromStr("u8"), 'node': Type.FromStr("Node"), 'ptr': Type.FromStr("Node*")}

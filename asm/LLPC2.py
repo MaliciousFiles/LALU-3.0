@@ -4,14 +4,12 @@ import LowerLLIR3 as LLL
 import AssemblerV3 as ASM
 from math import log2
 import sys
+from Statics import Type, Var, NoVar, AlignOf
+import Statics
 
-PTRWIDTH = 32
-
-def RoundUp(x, k):
-    return -k*(-x//k)
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/pointer.lpc', 'r') as f:
+with open('src/structs.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
@@ -364,7 +362,7 @@ def Gen(tree, pre = True):
         elif data.type == 'RULE' and data.value == 'struct_decl':
             if not pre: return
             _, name, _, args, _, = tree.children
-            self = structs[name.children[0].value] = {'size': None, 'args': {}}
+            self = Statics.structs[name.children[0].value] = {'size': None, 'args': {}}
             for arg in args.children:
                 if type(arg) != Tree: continue
                 argname, _, argkind = arg.children
@@ -425,7 +423,8 @@ def Rvalue(expr):
             le, _, re, = expr.children
             lhs = Rvalue(le)
             field = re.children[0].value
-            idk = structs[str(lhs.kind)]['args'][field]
+            idk = Statics.structs[str(lhs.kind)]['args'][field]
+            print(Statics.structs[str(lhs.kind)]['args'], field, idk)
             off = idk['offset']
             width = idk['width']
             desttype = idk['type']
@@ -666,11 +665,13 @@ def Lvalue(expr):
             le, _, re, = expr.children
             lhs = Rvalue(le)
             field = re.children[0].value
-            idk = structs[str(lhs.kind)]['args'][field]
+            idk = Statics.structs[str(lhs.kind)]['args'][field]
+            print(Statics.structs[str(lhs.kind)]['args'], field, idk)
             off = idk['offset']
             width = idk['width']
             desttype = idk['type']
             tmp = f'{lhs.name}[{off}+:{width}]'
+            print(tmp)
 ##            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = off, S2 = width, origtype = lk, desttype = desttype)
             return Var(tmp, lhs.kind)
         elif data == 'derefexpr':
@@ -714,34 +715,7 @@ def NewLabel():
     tid += 1; ID = f'L{tid}'
     return ID
 
-class Var():
-    def __init__(self, name, kind):
-        object.__setattr__(self, 'name', name)
-        if type(kind) == str:
-            object.__setattr__(self, 'kind', Type.FromStr(kind))
-        else:
-            object.__setattr__(self, 'kind', kind)
-    def __hash__(self):
-        return hash(repr(self.__dict__))
-    def __eq__(self, other):
-        return hash(self) == hash(other)
-    def FromName(inter, name):
-        return Var(name, inter.Lookup(name))
-    def FromVal(inter, val):
-        if val == None: return Var(None, None)
-        if type(val) == int: return Var(val, Type(comptime = True))
-        if val.isnumeric(): return Var(int(val), Type(comptime = True))
-        return Var.FromName(inter, val)
-    def __repr__(self):
-        if self.name == self.kind == None: return f'NoVar'
-        pkind = str(self.kind) if type(self.kind) == Type else self.kind
-        return f'Var({self.name!r}, {pkind!r})'
-    def __setattr__(self, *args):
-        raise TypeError
-    def __delattr__(self, *args):
-        raise TypeError
 
-NoVar = Var(None, None)
 
 class HLIR:
     def __init__(self):
@@ -838,9 +812,9 @@ class HLIR:
         assert width.kind.comptime, f'Must use a comptime known width, not `{width}`. To use runtime use @bst'
 ##        width = int(width)
 ##        self.Use(ary)
-        EvictAliasFor(inter, tmp.kind)
+        EvictAliasFor(inter, ary.kind)
         self.AddPent('[:]=', ary, val, off, width)
-        InvalidateAliasFor(inter, tmp.kind)
+##        InvalidateAliasFor(inter, ary.kind)
     
     def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var):
 
@@ -877,6 +851,7 @@ class HLIR:
                 w = Var.FromVal(self, w)
                 assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
 ##                print(f'{l=}; {r=}, {w=}, {S0=}')
+                print(l, r, w, S0)
                 self.AddBitStore(l, r, w, S0)
             return
 
@@ -1098,127 +1073,7 @@ class HLIR:
         key = f's{len(self.data.keys())}:'
         self.data[key] = txt
         return key
-class Type:
-    def __init__(self, width = 32, signed = False, arylen = None, numPtrs = 0, comptime = False, isbool = False, isvoid = False, struct = None):
-        self.width = width if not struct else structs[struct]['size']
-        self.signed = signed
-        self.arylen = arylen
-        self.numPtrs = numPtrs
-        self.comptime = comptime
-        self.isbool = isbool
-        self.isvoid = isvoid
-        self.struct = struct
-    def __hash__(self):
-        return hash(repr(self))
-    def FromStr(txt):
-        self = Type()
-        if txt in structs:
-            return Type(struct = txt)
-        if txt.rstrip('*') in structs:
-            return Type(struct = txt.rstrip('*'), numPtrs = txt.count('*'))
-        if txt == 'void':
-            return Type(isvoid = True)
-        if txt == 'bool':
-            return Type(isbool = True)
-        if txt == 'comp':
-             return Type(comptime = True)
-        self.signed = txt[0]=='i'
-        self.numPtrs = txt.count('*')
-        txt = txt[:len(txt)-self.numPtrs]
-        if '[' in txt:
-            arylen = int(txt.split('[')[1][:-1])
-            self.arylen = arylen
-            txt = txt.split('[')[0]
-        self.width = int(txt[1:])
-        return self
-    def OpWidth(self):
-        if self.numPtrs: return PTRWIDTH
-##        if self.struct: return structs[self.struct]['size']
-        return self.width
-    def AsElementSizeOf(self):
-        return AlignOf(self.OpWidth())
-    def ElementSize(self):
-        return self.Deref().AsElementSizeOf()
-    def __repr__(self):
-        return f'Type.FromStr("{self}")'
-    def __str__(self):
-        if self.struct:
-            return self.struct + '*' * self.numPtrs
-        if self.isvoid:
-            return 'void'
-        if self.isbool:
-            return 'bool'
-        if self.comptime:
-            return 'comp'
-        else:
-            ary = f'[{self.arylen}]' if self.arylen else ''
-            return f'{"ui"[self.signed]}{self.width}{ary}{"*"*self.numPtrs}'
-    def CanCoerceTo(self, other):
-        if self.isvoid == other.isvoid == True:
-            return True
-        if self.isbool or other.isvoid:
-            return False
-        if self.comptime:
-            return True
-        if other.comptime:
-            return False
-        if self.arylen and other.numPtrs > 0:
-            return True
-        if self.numPtrs > 0:
-            if other.numPtrs > 0:
-                return other.numPtrs == self.numPtrs
-            else:
-                return False == other.signed and other.width >= PTRWIDTH
-        else:
-            return self.signed == other.signed and other.width >= self.width
-    def BitSameAs(self, other):
-        return self.CanCoerceTo(other) and other.CanCoerceTo(self)
-    def __eq__(self, other):
-        return repr(self) == repr(other)
-    def Common(self, other):
-        assert not self.isbool, 'Cannot take a common type of boolean and `{other}`'
-        
-        bc = self.comptime and other.comptime
-        if self.comptime:
-            return other
-        elif not bc and other.comptime:
-            return self
-        if self.numPtrs > 0:
-            if other.numPtrs > 0:
-                assert False, f'Cannot do math on two pointer types `{self}` and `{other}`'
-            else:
-                return self
-        else:
-            if other.numPtrs > 0:
-                return other
-            assert self.signed == other.signed, f'Cannot do math on different signs `{self}` and `{other}`'
-            return Type(max(self.width, other.width), self.signed, 0)
-    def Deref(self):
-        assert self.numPtrs > 0 or self.arylen, f'Cannot dereference type `{self}`'
-        copy = Type.FromStr(str(self))
-        if self.numPtrs > 0:
-            copy.numPtrs -= 1
-##            return Type(self.width, self.signed, self.arylen, self.numPtrs - 1)
-        elif self.arylen:
-            copy.arylen = None
-##            return Type(self.width, self.signed)
-        return copy
-    def Addr(self):
-        assert not self.comptime, f'Cannot take address of comptime variable `{self}`'
-        copy = Type.FromStr(str(self))
-        copy.numPtrs += 1
-        return copy
-##        return Type(self.width, self.signed, self.arylen, self.numPtrs + 1)
-    def Runtime(self):
-        return Type(self.width, self.signed, self.numPtrs)
-    def IsBasicInt(self):
-        return not(self.numPtrs > 0 or self.comptime or self.isvoid or self.isbool or self.struct != None or self.arylen != None)
 
-def AlignOf(bitwidth):
-    if bitwidth <= 32:
-        return 1<<int(log2(bitwidth-1)+1)
-    else:
-        return RoundUp(bitwidth, 32)
 
 class Block:
     def __init__(self, entry):
@@ -1232,11 +1087,10 @@ class Block:
         self.body.append(line)
 
 def ResolveTypes():
-    global structs
-    queue = list(structs.keys())
+    queue = list(Statics.structs.keys())
     while queue != []:
         n = queue[0]
-        if structs[n]['size']:
+        if Statics.structs[n]['size']:
             del queue[0]
             continue
         RecuSolveType(queue[0])
@@ -1244,11 +1098,11 @@ def ResolveTypes():
 
 def RecuSolveType(name, stk = ()):
 ##    print(f'Recu {name} from {stk}')
-    global structs
+
     assert name not in stk, f'Type `{name}` is self referential'
     stk = stk + (name,)
     
-    for argname, arg in structs[name]['args'].items():
+    for argname, arg in Statics.structs[name]['args'].items():
         kind = arg['type']
 ##        print(kind.children[0])
         if type(kind.children[0]) != Tree:
@@ -1261,94 +1115,95 @@ def RecuSolveType(name, stk = ()):
                 else:
                     o += child.value
             strk = o
-        if strk in structs and structs[strk]['size']:
-            width = structs[strk]['size']
-        elif strk in structs:
+        if strk in Statics.structs and Statics.structs[strk]['size']:
+            width = Statics.structs[strk]['size']
+        elif strk in Statics.structs:
             RecuSolveType(strk, stk)
-            width = structs[strk]['size']
+            width = Statics.structs[strk]['size']
             assert width != None, f'Recu failure'
         else:
             kind = Type.FromStr(strk)
             width = kind.OpWidth()
             assert width != None, f'Bad kind'
         align = AlignOf(width)
-        structs[name]['args'][argname]['type'] = Type.FromStr(strk)
-        structs[name]['args'][argname]['width'] = width
+        Statics.structs[name]['args'][argname]['type'] = Type.FromStr(strk)
+        Statics.structs[name]['args'][argname]['width'] = width
 ##        print(name, argname, width)
     PackArgs(name)
 
 def PackArgs(name):
-    global structs
+
     words = {}
     laddr = 0
-    for argname, arg in structs[name]['args'].items():
+    for argname, arg in Statics.structs[name]['args'].items():
 ##        print(argname, arg)
         width = arg['width']
         for addr, cw in words.items():
             if 32 - cw > width:
-                structs[name]['args'][argname]['offset'] = addr << 5 | cw
+                Statics.structs[name]['args'][argname]['offset'] = addr << 5 | cw
                 words[addr] += width
                 break
             elif 32-cw == width:
-                structs[name]['args'][argname]['offset'] = addr << 5 | cw
+                Statics.structs[name]['args'][argname]['offset'] = addr << 5 | cw
                 del words[addr]
                 break
         else:
             if width <= 32:
-                structs[name]['args'][argname]['offset'] = laddr << 5
+                Statics.structs[name]['args'][argname]['offset'] = laddr << 5
                 words[laddr] = width
                 if width == 32:
                     del words[laddr]
                 laddr += 1
             else:
-                structs[name]['args'][argname]['offset'] = laddr << 5
+                Statics.structs[name]['args'][argname]['offset'] = laddr << 5
                 laddr += -(-width//32)
-##            print(f"{structs[name]['args'][argname]['offset']=}")
+##            print(f"{Statics.structs[name]['args'][argname]['offset']=}")
 ##    print(words)
-    structs[name]['size'] = 32 * laddr
+    Statics.structs[name]['size'] = 32 * laddr
+    
 
 def EvictAliasFor(inter, kind):
-    print(f'{inter.envs!r}')
+##    print(f'{inter.envs!r}')
     for env in inter.envs[::-1]:
         for varname, varkind in env.items():
             if str(kind) == str(varkind):
                 inter.Evict(Var(varname, varkind))
-            elif str(varkind) in structs:
+            elif str(varkind) in Statics.structs:
                 cstk = []
-                for arg in structs[str(varkind)]['args'].values():
+                for arg in Statics.structs[str(varkind)]['args'].values():
                     cstk.append(arg)
                 while cstk:
-                    print(cstk)
+##                    print(cstk)
                     arg = cstk[0]
                     del cstk[0]
                     if str(arg['type']) == str(kind):
                         inter.EvictBits(Var(varname, varkind), arg['offset'], arg['width'])
-                    elif str(arg['type']) in structs:
-                        for carg in structs[str(arg['type'])]['args'].values():
+                    elif str(arg['type']) in Statics.structs:
+                        for carg in Statics.structs[str(arg['type'])]['args'].values():
                             carg['offset'] += arg['offset']
                             cstk.append(carg)
 
 def InvalidateAliasFor(inter, kind):
-    print(f'{inter.envs!r}')
+##    print(f'{inter.envs!r}')
     for env in inter.envs[::-1]:
         for varname, varkind in env.items():
             if str(kind) == str(varkind):
                 inter.Invalidate(Var(varname, varkind))
-            elif str(varkind) in structs:
+            elif str(varkind) in Statics.structs:
                 cstk = []
-                for arg in structs[str(varkind)]['args'].values():
+                for arg in Statics.structs[str(varkind)]['args'].values():
                     cstk.append(arg)
                 while cstk:
                     arg = cstk[0]
                     del cstk[0]
                     if str(arg['type']) == str(kind):
                         inter.InvalidateBits(Var(varname, varkind), arg['offset'], arg['width'])
-                    elif str(arg['type']) in structs:
-                        for carg in structs[str(arg['type'])]['args'].values():
+                    elif str(arg['type']) in Statics.structs:
+                        for carg in Statics.structs[str(arg['type'])]['args'].values():
                             carg['offset'] += arg['offset']
                             cstk.append(carg)
 
-structs = {}
+Statics.structs = {}
 syms = [{}]
 out = ''
 ind = 0
@@ -1369,6 +1224,9 @@ except Exception as e:
 
 print('\nOUT:')
 print(out)
+
+with open('struct_dump.txt', 'w') as f:
+    f.write(repr(Statics.structs))
 
 print('\nHLIR:')
 print(repr(inter))

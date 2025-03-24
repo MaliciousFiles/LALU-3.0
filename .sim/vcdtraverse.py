@@ -1,6 +1,11 @@
 import os
 import sys
 from bitarray import bitarray
+sys.path.insert(1, '../asm')
+from LowerHLIR2 import SubReg, SubRegs
+
+from Statics import Type, Var
+import Statics
 
 autoflush = True
 printbuf = []
@@ -8,8 +13,17 @@ printcol = 0
 printrow = 0
 breakpoints = []
 
-with open('../asm/asm_breaks.txt', 'r') as f:
+with open('../asm/asm_info.txt', 'r') as f:
     breakpoints = [x>>5 for x in eval(f.read())]
+
+states = {}
+with open('../asm/state_dump.txt', 'r') as f:
+    for line in f.read().splitlines():
+        idx, data = line.split(': ', maxsplit=1)
+        idx = int(idx, 16)
+        data = eval(data)
+        states[idx] = data
+
 
 simple = True
 
@@ -191,6 +205,116 @@ def fmtdbg(x):
             o.append(f'{hex(int(addr, 16)+1)[2:].upper().zfill(4)} :\t\tEXIMM')
     return '\n'.join(o)
 
+varlocs = {}
+
+def dispvars():
+    global varlocs
+    IP = vals['expectedIP']
+    stkPtr = vals['reg31']
+    if IP in states:
+        state = states[IP]
+    elif IP+1 in states:
+        state = states[IP+1]
+    else:
+        state = states[list(states.keys())[0]]
+    lvars = state['variables']
+    nvarlocs = {}
+    print()
+    for var, data in lvars.items():
+        if var in varlocs:
+            nvarlocs[var] = addr = varlocs[var]
+        else:
+            nvarlocs[var] = addr = stkPtr + data['offset']
+        width = data["width"]
+
+        regs = state['registers']
+        for i in range(29):
+            if regs[i] == var:
+                regstate = f'r{i}'.ljust(3)
+                value = vals[f'reg{i}']
+                break
+        else:
+            regstate = 'mem'
+            if all(memoryseen[addr:][:width]):
+                value = int(''.join([str(x) for x in memoryval[addr:][:width]])[::-1],2)
+            else:
+                value = '?'
+        print(f'{var.ljust(20)} @ ({hex(addr)[2:].upper().zfill(6)} +: {width}) ({regstate}) :: {value}')
+    varlocs = nvarlocs
+
+def dispcompvars():
+    IP = vals['expectedIP']
+    stkPtr = vals['reg31']
+    if IP in states:
+        state = states[IP]
+    elif IP+1 in states:
+        state = states[IP+1]
+    else:
+        state = states[list(states.keys())[0]]
+    lvars = state['variables']
+    print()
+    compvars = {}
+    for var, data in lvars.items():
+        rootvar = None
+        offset = 0
+        for varname, varkind in vartypes.items():
+            for i, subvar in enumerate(SubRegs(Var(varname, varkind))):
+                if subvar.name == var:
+                    rootvar = varname
+                    offset = 32 * i
+                    if varname not in compvars:
+                        compvars[varname] = [['?']*varkind.OpWidth(), varkind]
+                    
+
+        if var in varlocs:
+            addr = varlocs[var]
+        else:
+            addr = stkPtr + data['offset']
+        width = data["width"]
+
+        regs = state['registers']
+        for i in range(29):
+            if regs[i] == var:
+                regstate = f'r{i}'.ljust(3)
+                value = bin(vals[f'reg{i}'])[2:].zfill(width)[::-1]
+                break
+        else:
+            regstate = 'mem'
+            if all(memoryseen[addr:][:width]):
+                value = ''.join([str(x) for x in memoryval[addr:][:width]])[::-1]
+            else:
+                value = '?' * width
+##        print(rootvar, offset, width, value, ''.join(compvars[rootvar][0][offset:offset+width]))
+##        print(''.join(compvars[rootvar][0]))
+        compvars[rootvar][0][offset:offset+width] = list(value)
+##        print(''.join(compvars[rootvar][0]))
+##        compvars[rootvar][0][33:34] = 'a'
+
+##    print(compvars)
+
+    stk = []
+    for key, val in compvars.items():
+        stk.append((key, ''.join(val[0]), val[1]))
+
+##    print(stk)
+    while stk != []:
+        var = stk[0]
+        del stk[0]
+        if var[2].struct == None or var[2].numPtrs > 0:
+            if var[1].isnumeric():
+                val = int(var[1][::-1], 2)
+            else:
+                val = var[1][::-1]
+            print(var[0].ljust(20), val)
+        else:
+            for arg, data in structs[var[2].struct]['args'].items():
+##                print(var[0], var[1])
+                stk.append((f'{var[0]}.{arg}', var[1][data['offset']:][:data['width']], data['type']))
+##    print(compvars)
+            
+    
+    
+
 def revdict(d, v0):
     return [k for k,v in d.items() if v == v0][0]
 
@@ -257,9 +381,11 @@ def fulldisp():
     fmtregs()
     fmtflgs()
     dispmem()
+    dispvars()
     printcol = 70
     printrow = 12
     dispdbg()
+    dispcompvars()
     printcol = 0
     flushprint()
     autoflush = True
@@ -323,6 +449,17 @@ with open('Icarus Verilog-sim/LALU_tb.vcd' if os.path.exists('Icarus Verilog-sim
 with open('../asm/asm_dbg.txt', 'r') as f:
     dbg = f.read()
     dbg = fmtdbg(dbg)
+
+with open('../asm/struct_dump.txt', 'r') as f:
+    fr = f.read()
+    Statics.structs = structs = eval(fr)
+    Statics.structs = structs = eval(fr)
+
+with open('../asm/HLIR_typeinfo.txt', 'r') as f:
+    vartypes = eval(f.read())
+
+
+
 
 dumpidx = txt.find('$dumpvars')
 changeidx = txt[dumpidx:].find('\n$end\n')

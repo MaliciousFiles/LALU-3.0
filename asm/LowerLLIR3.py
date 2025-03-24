@@ -350,6 +350,10 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                 if len(args) == 4 and isinstance(args[0], int): # TODO: macros :(
                     comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[0]))
                     args[0] = f'r{SCRATCH_REGS[0]}'
+                #COPY PASTE go brrrrrrrr
+                if len(args) == 4 and isinstance(args[1], int): # TODO: macros :(
+                    comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[1]}', args[1]))
+                    args[1] = f'r{SCRATCH_REGS[1]}'
 
                 comp_state.add_assembly((op, preFlags + postFlags, *args))
 

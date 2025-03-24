@@ -2,7 +2,7 @@
 
 
 .CODE
-	mov.e r31, #1152			// Setup stack pointer
+	mov.e r31, #928			// Setup stack pointer
 
 //
 // Main
@@ -13,91 +13,56 @@
 // from :
 _Main__:
 	breakpoint 				// expr `breakpoint`
-	// decl `x`: u32
-	// assign r0 = `x`
-	mov r0, #3				// expr `mov x, 3`
-	// decl `xptr`: u32
-	// assign r1 = `xptr`
-	add r29, r31, #0
-	mov r1, r29				// expr `mov xptr, x.&`
-	breakpoint 				// expr `breakpoint`
-	// decl `t3`: u32
-	// decl `t4`: u32
-	// memsave `t1`
-	stw r0, r31, #0				// memsave r0 => `x`
-	// memsave `t2`
-	// memsave `t3`
-	// memsave `t4`
-	// assign r2 = `t4`
-	ldw r2, r1, #0				// expr `ldw t4, xptr, 0`
-	// assign r3 = `t3`
-	add r3, r2, #1				// expr `add t3, t4, 1`
-	// undecl `t4`
-	// memsave `t1`
-	stw r0, r31, #0				// memsave r0 => `x`
-	// memsave `t2`
-	stw.e r3, r31, #64				// memsave r3 => `t3`
-	// memsave `t4`
-	stw r1, #0, r3				// expr `stw xptr, 0, t3`	// regrst r0 (`x`) => None
-	// undecl `t3`
-	// regrst `t1`
-	// regrst `t2`
-	// regrst `t3`
-	// regrst `t4`
-	breakpoint 				// expr `breakpoint`
 	// decl `vec_0`: u32
 	// decl `vec_1`: u32
-	// decl `vecptr`: u32
-	// assign r0 = `vecptr`
+	// memsave `vec_0`
+	// memsave `vec_1`
+	// assign r0 = `vec_0`
+	mov r30, #7
+	bst r0, r30, #0, #16				// expr `bst vec_0, 7, 0, 16`
+	stw r0, r31, #0				// memsave r0 => `vec_0`
+	// memsave `vec_1`
+	// assign r1 = `vec_1`
+	mov r30, #8
+	bst r1, r30, #0, #0				// expr `bst vec_1, 8, 0, 0`
+	// decl `t2`: u16
+	// assign r2 = `t2`
+	bsf r2, r0, #0, #16				// expr `bsf t2, vec_0, 0, 16`
+	stw r0, r31, #0				// memsave r0 => `vec_0`
+	stw.e r1, r31, #32				// memsave r1 => `vec_1`
+	bst r0, r2, #16, #16				// expr `bst vec_0, t2, 16, 16`
+	// undecl `t2`
+	// decl `t3`: u8
+	// assign r2 = `t3`
+	mov r2, r0				// expr `mov t3, vec_0`
+	// undecl `t3`
+	// decl `node_0`: u32
+	// decl `node_1`: u32
+	// decl `node_2`: u32
+	// decl `ptr`: u32
+	// assign r2 = `ptr`
 	add.e r29, r31, #64
-	mov r0, r29				// expr `mov vecptr, vec_0.&`
-	breakpoint 				// expr `breakpoint`
-	// memsave `vec_0`
-	// memsave `vec_1`
-	mov r29, #0
-	st r29, r0, #0, #0				// expr `st 0, vecptr, 0, 0`
-	mov r29, #0
-	st r29, r0, #1, #0				// expr `st 0, vecptr, 1, 0`
-	// undecl `vecptr`
-	// regrst `vec_0`
-	// regrst `vec_1`
-	// memsave `t1`
-	// memsave `x`
-	// memsave `t2`
-	// memsave `t3`
-	// memsave `t4`
-	// memsave `t5`
-	// memsave `vec_1`
-	// memsave `t6`
-	stw r1, #0, #7				// expr `stw xptr, 0, 7`
-	// regrst `t1`
-	// regrst `x`
-	// regrst `t2`
-	// regrst `t3`
-	// regrst `t4`
-	// regrst `t5`
-	// regrst `vec_1`
-	// regrst `t6`
-	breakpoint 				// expr `breakpoint`
-	// decl `ft`: u15
-	// assign r0 = `ft`
-	mov r0, #1				// expr `mov ft, 1`
-	// decl `ftptr`: u32
-	// assign r2 = `ftptr`
-	add.e r29, r31, #128
-	mov r2, r29				// expr `mov ftptr, ft.&`
-	// undecl `ft`
-	// memsave `vec_0`
-	// memsave `ft`
-	mov r29, #6
-	st r29, r2, #0, #16				// expr `st 6, ftptr, 0, 16`
-	// undecl `ftptr`
-	// regrst `vec_0`
-	// regrst `ft`
-	// undecl `x`
-	// undecl `xptr`
+	mov r2, r29				// expr `mov ptr, node_0.&`
+	// memsave `node_0`
+	// memsave `node_1`
+	// memsave `node_2`
+	// assign r3 = `node_2`
+	bst r3, r2, #0, #0				// expr `bst node_2, ptr, 0, 0`
+	// undecl `ptr`
+	// memsave `node_0`
+	// memsave `node_1`
+	stw.e r3, r31, #128				// memsave r3 => `node_2`
+	// assign r2 = `node_0`
+	bst r2, r0, #0, #0				// expr `bst node_0, vec_0, 0, 0`
+	// assign r4 = `node_1`
+	bst r4, r1, #0, #0				// expr `bst node_1, vec_1, 0, 0`
 	// undecl `vec_0`
 	// undecl `vec_1`
+	breakpoint 				// expr `breakpoint`
+	// undecl `node_0`
+	// undecl `node_1`
+	// undecl `node_2`
+	nop 				// expr `nop`
 	nop 				// expr `nop`
 	nop 				// expr `nop`
 	nop 				// expr `nop`
