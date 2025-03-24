@@ -49,6 +49,7 @@ class LLIR:
         func['body'] = []
 
 def IsNative(var):
+    var = Var(var.name, Type.FromStr(str(var.kind)) if var.kind else var.kind)
     return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.IsBasicInt() or var.kind.numPtrs > 0 and var.kind.width == 32 or var.kind.comptime)
 
 def SubRegs(var):
@@ -480,6 +481,11 @@ def Lower(hlir):
                         elif all([IsNative(x) for x in [D, S0, S1, S2]]) or op == 'breakpoint':
                             Native(nblock, op, D, S0, S1, S2)
                         else:
+##                            for x in [D, S0, S1, S2]:
+##                                if x.kind != None:
+##                                    print(x, repr(x), vars(x.kind), IsNative(x))
+##                                else:
+##                                    print(x, IsNative(x))
                             assert op[0] != '@', f'Cannot perform instrincs on non 32 width instructions'
 
                             OpHandler = OPMAP[op]

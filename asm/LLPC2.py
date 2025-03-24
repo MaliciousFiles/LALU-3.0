@@ -9,7 +9,7 @@ import Statics
 
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/structs.lpc', 'r') as f:
+with open('src/mal.lpc', 'r') as f:
     txt = f.read()
     txt = txt.replace('\\"', '\x01')
     tree = parser.parse(txt)
