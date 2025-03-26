@@ -2,160 +2,184 @@ fn Main () 1 {
   _Main__:
     ('decl', 'x', 32)
     ('decl', 'place', 32)
-    ('expr', ('mov', 'place', 1, None, None), [])
+    ('expr', ('mov', 'place', 1, None, None))
     ('decl', 'chr', 32)
-  L3:
-    ('expr', ('ult', None, 'chr', 54, None), [])
-    ('expr', ('c.jmp', 'L5:', None, None, None), [])
-  _L8:
-    ('expr', ('jmp', 'L7:', None, None, None), [])
-  L7 <- _L8:
-    ('expr', ('ugt', None, 'chr', 63, None), [])
-    ('expr', ('c.jmp', 'L5:', None, None, None), [])
-  _L10:
-    ('expr', ('jmp', 'L6:', None, None, None), [])
-  L5 <- L3:
-    ('expr', ('jmp', 'L2:', None, None, None), [])
-  L6 <- _L10:
-    ('decl', 't13', 32)
-    ('expr', ('sub', 't13', 'chr', 53, None), [])
-    ('decl', 'temp', 32)
-    ('expr', ('mov', 'temp', 't13', None, None), [])
-    ('undecl', 't13')
-    ('expr', ('eq', None, 'temp', 10, None), [])
-    ('expr', ('c.jmp', 'L14:', None, None, None), [])
-  _L16:
-    ('expr', ('jmp', 'L15:', None, None, None), [])
-  L14 <- L6:
-    ('expr', ('mov', 'temp', 0, None, None), [])
-  L15:
-    ('decl', 't19', 32)
-    ('expr', ('mul', 't19', 'temp', 'place', None), [])
-    ('undecl', 'temp')
-    ('expr', ('add', 'x', 'x', 't19', None), [])
-    ('undecl', 't19')
-    ('expr', ('mul', 'place', 'place', 10, None), [])
   L2:
+    ('expr', ('ult', None, 'chr', 54, None))
+    ('expr', ('c.jmp', 'L4:', None, None, None))
+  _L7:
+    ('expr', ('jmp', 'L6:', None, None, None))
+  L6 <- _L7:
+    ('expr', ('ugt', None, 'chr', 63, None))
+    ('expr', ('c.jmp', 'L4:', None, None, None))
+  _L9:
+    ('expr', ('jmp', 'L5:', None, None, None))
+  L4 <- L2:
+    ('expr', ('jmp', 'L1:', None, None, None))
+  L5 <- _L9:
+    ('decl', 't12', 32)
+    ('expr', ('sub', 't12', 'chr', 53, None))
+    ('decl', 'u_temp', 32)
+    ('expr', ('mov', 'u_temp', 't12', None, None))
+    ('undecl', 't12')
+    ('expr', ('eq', None, 'u_temp', 10, None))
+    ('expr', ('c.jmp', 'L13:', None, None, None))
+  _L15:
+    ('expr', ('jmp', 'L14:', None, None, None))
+  L13 <- L5:
+    ('expr', ('mov', 'u_temp', 0, None, None))
+  L14:
+    ('decl', 't17', 32)
+    ('expr', ('mul', 't17', 'u_temp', 'place', None))
+    ('undecl', 'u_temp')
+    ('decl', 't18', 32)
+    ('expr', ('add', 't18', 'x', 't17', None))
+    ('undecl', 't17')
+    ('expr', ('mov', 'x', 't18', None, None))
+    ('undecl', 't18')
+    ('decl', 't19', 32)
+    ('expr', ('mul', 't19', 'place', 10, None))
+    ('expr', ('mov', 'place', 't19', None, None))
+    ('undecl', 't19')
+  L1:
     ('decl', 't20', 32)
-    ('expr', ('ldkey', 't20', None, None, None), [])
-    ('expr', ('mov', 'chr', 't20', None, None), [])
+    ('expr', ('ldkey', 't20', None, None, None))
+    ('expr', ('mov', 'chr', 't20', None, None))
     ('undecl', 't20')
-    ('expr', ('ne', None, 'chr', 51, None), [])
-    ('expr', ('c.jmp', 'L3:', None, None, None), [])
+    ('expr', ('ne', None, 'chr', 51, None))
+    ('expr', ('c.jmp', 'L2:', None, None, None))
   _L21:
     ('undecl', 'place')
     ('undecl', 'chr')
-    ('expr', ('jmp', 'L4:', None, None, None), [])
-  L4 <- _L21:
-    ('expr', ('breakpoint', None, None, None, None), [])
-    ('expr', ('argst', 0, 'x', None, None), [])
+    ('expr', ('jmp', 'L3:', None, None, None))
+  L3 <- _L21:
+    ('expr', ('breakpoint', None, None, None, None))
+    ('expr', ('argst', 0, 'x', None, None))
     ('undecl', 'x')
-    ('expr', ('call', 'Fac', None, None, None), [])
+    ('expr', ('call', 'Fac', None, None, None))
     ('decl', 't25', 32)
-    ('expr', ('retld', 't25', 0, None, None), [])
-    ('expr', ('argst', 0, 't25', None, None), [])
+    ('expr', ('retld', 't25', 0, None, None))
+    ('expr', ('argst', 0, 't25', None, None))
     ('undecl', 't25')
-    ('expr', ('call', 'Print', None, None, None), [])
-    ('expr', ('retld', 't26', 0, None, None), [])
+    ('expr', ('call', 'Print', None, None, None))
+    ('expr', ('retld', 't26', 0, None, None))
   L27:
-    ('expr', ('jmp', 'L28:', None, None, None), [])
+    ('expr', ('jmp', 'L28:', None, None, None))
   L28 <- L27:
-    ('expr', ('jmp', 'L27:', None, None, None), [])
+    ('expr', ('jmp', 'L27:', None, None, None))
 }
-fn Fac (n_0) 1 {
+fn Fac (n) 1 {
   _Fac__:
-    ('expr', ('argld', 'n', 0, None, None), [])
-    ('expr', ('eq', None, 'n', 1, None), [])
-    ('expr', ('c.jmp', 'L32:', None, None, None), [])
+    ('expr', ('argld', 'n', 0, None, None))
+    ('expr', ('eq', None, 'n', 1, None))
+    ('expr', ('c.jmp', 'L32:', None, None, None))
   _L34:
-    ('expr', ('jmp', 'L33:', None, None, None), [])
+    ('expr', ('jmp', 'L33:', None, None, None))
   L32 <- _Fac__:
     ('undecl', 'n')
-    ('expr', ('retst', 0, 1, None, None), [])
-    ('expr', ('ret', None, None, None, None), [])
+    ('expr', ('retst', 0, 1, None, None))
+    ('expr', ('ret', None, None, None, None))
   L33 <- _L34:
     ('decl', 't37', 32)
-    ('expr', ('sub', 't37', 'n', 1, None), [])
-    ('expr', ('argst', 0, 't37', None, None), [])
+    ('expr', ('sub', 't37', 'n', 1, None))
+    ('expr', ('argst', 0, 't37', None, None))
     ('undecl', 't37')
-    ('expr', ('call', 'Fac', None, None, None), [])
+    ('expr', ('call', 'Fac', None, None, None))
     ('decl', 't38', 32)
-    ('expr', ('retld', 't38', 0, None, None), [])
+    ('expr', ('retld', 't38', 0, None, None))
     ('decl', 't39', 32)
-    ('expr', ('mul', 't39', 'n', 't38', None), [])
+    ('expr', ('mul', 't39', 'n', 't38', None))
     ('undecl', 't38')
     ('undecl', 'n')
-    ('expr', ('retst', 0, 't39', None, None), [])
+    ('expr', ('retst', 0, 't39', None, None))
     ('undecl', 't39')
-    ('expr', ('ret', None, None, None, None), [])
+    ('expr', ('ret', None, None, None, None))
 }
-fn Print (x_0) 1 {
+fn Print (x) 1 {
   _Print__:
-    ('expr', ('argld', 'x', 0, None, None), [])
+    ('expr', ('argld', 'x', 0, None, None))
     ('decl', 'bcd', 32)
-    ('expr', ('mov', 'bcd', 0, None, None), [])
-    ('decl', '_', 32)
-    ('expr', ('mov', '_', 0, None, None), [])
-  L42:
-    ('expr', ('ult', None, '_', 32, None), [])
-    ('expr', ('c.jmp', 'L43:', None, None, None), [])
-  _L46:
+    ('expr', ('mov', 'bcd', 0, None, None))
+    ('decl', 'u___', 32)
+    ('expr', ('mov', 'u___', 0, None, None))
+  L41:
+    ('expr', ('ult', None, 'u___', 32, None))
+    ('expr', ('c.jmp', 'L42:', None, None, None))
+  _L44:
     ('undecl', 'x')
-    ('undecl', '_')
-    ('expr', ('jmp', 'L44:', None, None, None), [])
-  L43 <- L42:
-    ('decl', 't48', 32)
-    ('expr', ('dab', 't48', 'bcd', None, None), [])
-    ('expr', ('mov', 'bcd', 't48', None, None), [])
-    ('undecl', 't48')
-    ('expr', ('bsl', 'bcd', 'bcd', 1, None), [])
-    ('decl', 't52', 32)
-    ('expr', ('and', 't52', 'x', 2147483648, None), [])
-    ('expr', ('eq', None, 't52', 0, None), [])
-    ('undecl', 't52')
-    ('expr', ('c.jmp', 'L50:', None, None, None), [])
-  _L53:
+    ('undecl', 'u___')
+    ('expr', ('jmp', 'L43:', None, None, None))
+  L42 <- L41:
+    ('decl', 't46', 32)
+    ('expr', ('dab', 't46', 'bcd', None, None))
+    ('expr', ('mov', 'bcd', 't46', None, None))
+    ('undecl', 't46')
+    ('decl', 't47', 32)
+    ('expr', ('bsl', 't47', 'bcd', 1, None))
+    ('expr', ('mov', 'bcd', 't47', None, None))
+    ('undecl', 't47')
+    ('decl', 't51', 32)
+    ('expr', ('and', 't51', 'x', 2147483648, None))
+    ('expr', ('eq', None, 't51', 0, None))
+    ('undecl', 't51')
+    ('expr', ('c.jmp', 'L49:', None, None, None))
+  _L52:
+  L48:
+    ('decl', 't53', 32)
+    ('expr', ('or', 't53', 'bcd', 1, None))
+    ('expr', ('mov', 'bcd', 't53', None, None))
+    ('undecl', 't53')
   L49:
-    ('expr', ('or', 'bcd', 'bcd', 1, None), [])
-  L50:
-    ('expr', ('bsl', 'x', 'x', 1, None), [])
-    ('expr', ('add', '_', '_', 1, None), [])
-    ('expr', ('jmp', 'L42:', None, None, None), [])
-  L44 <- _L46:
+    ('decl', 't54', 32)
+    ('expr', ('bsl', 't54', 'x', 1, None))
+    ('expr', ('mov', 'x', 't54', None, None))
+    ('undecl', 't54')
+    ('decl', 't55', 32)
+    ('expr', ('add', 't55', 'u___', 1, None))
+    ('expr', ('mov', 'u___', 't55', None, None))
+    ('undecl', 't55')
+    ('expr', ('jmp', 'L41:', None, None, None))
+  L43 <- _L44:
     ('decl', 'idx', 32)
-    ('expr', ('mov', 'idx', 0, None, None), [])
-    ('decl', 't59', 32)
-    ('expr', ('log', 't59', 'bcd', None, None), [])
+    ('expr', ('mov', 'idx', 0, None, None))
     ('decl', 't60', 32)
-    ('expr', ('andn', 't60', 't59', 3, None), [])
-    ('undecl', 't59')
+    ('expr', ('log', 't60', 'bcd', None, None))
     ('decl', 't61', 32)
-    ('expr', ('mov', 't61', 't60', None, None), [])
+    ('expr', ('andn', 't61', 't60', 3, None))
     ('undecl', 't60')
-    ('decl', 'nibble', 32)
-    ('expr', ('mov', 'nibble', 't61', None, None), [])
+    ('decl', 't62', 32)
+    ('expr', ('mov', 't62', 't61', None, None))
     ('undecl', 't61')
-  L56:
-    ('expr', ('sge', None, 'nibble', 0, None), [])
-    ('expr', ('c.jmp', 'L57:', None, None, None), [])
-  _L62:
+    ('decl', 'nibble', 32)
+    ('expr', ('mov', 'nibble', 't62', None, None))
+    ('undecl', 't62')
+  L57:
+    ('expr', ('sge', None, 'nibble', 0, None))
+    ('expr', ('c.jmp', 'L58:', None, None, None))
+  _L63:
     ('undecl', 'idx')
     ('undecl', 'bcd')
     ('undecl', 'nibble')
-    ('expr', ('jmp', 'L58:', None, None, None), [])
-  L57 <- L56:
-    ('decl', 't64', 32)
-    ('expr', ('bsf', 't64', 'bcd', 'nibble', 4), [])
+    ('expr', ('jmp', 'L59:', None, None, None))
+  L58 <- L57:
     ('decl', 't65', 32)
-    ('expr', ('and', 't65', 't64', 15, None), [])
-    ('undecl', 't64')
+    ('expr', ('bsf', 't65', 'bcd', 'nibble', 4))
     ('decl', 't66', 32)
-    ('expr', ('add', 't66', 't65', 48, None), [])
+    ('expr', ('and', 't66', 't65', 15, None))
     ('undecl', 't65')
-    ('expr', ('stchr', 't66', 'idx', 4294967295, 0), [])
+    ('decl', 't67', 32)
+    ('expr', ('add', 't67', 't66', 48, None))
     ('undecl', 't66')
-    ('expr', ('add', 'idx', 'idx', 1, None), [])
-    ('expr', ('sub', 'nibble', 'nibble', 4, None), [])
-    ('expr', ('jmp', 'L56:', None, None, None), [])
-  L58 <- _L62:
+    ('expr', ('stchr', 't67', 'idx', 4294967295, 0))
+    ('undecl', 't67')
+    ('decl', 't68', 32)
+    ('expr', ('add', 't68', 'idx', 1, None))
+    ('expr', ('mov', 'idx', 't68', None, None))
+    ('undecl', 't68')
+    ('decl', 't69', 32)
+    ('expr', ('sub', 't69', 'nibble', 4, None))
+    ('expr', ('mov', 'nibble', 't69', None, None))
+    ('undecl', 't69')
+    ('expr', ('jmp', 'L57:', None, None, None))
+  L59 <- _L63:
 }

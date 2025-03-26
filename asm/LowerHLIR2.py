@@ -473,6 +473,8 @@ def Lower(hlir):
                     #EXPRESSIONS
                     elif cmd == 'expr':
                         op, D, S0, S1, S2 = line[1]
+                        if D not in assocs and D != None and D.kind != None:
+                            assocs[D.name] = D.kind
                         S0 = comp.get(S0, S0)
                         S1 = comp.get(S1, S1)
                         S2 = comp.get(S2, S2)

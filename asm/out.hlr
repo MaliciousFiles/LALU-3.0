@@ -1,249 +1,258 @@
 fn Main () void {
   _Main__:
-    ('decl', 'x', Type.FromStr("u32"), -1, 'src', 51)
-    ('decl', 'place', Type.FromStr("u32"), -1, 'src', 52)
-    ('decl', 't1', Type.FromStr("comp"), -1, 'src', 53)
-    ('expr', ('=', 't1', 1, None, None, 32), 1, 'src', 3)
-    ('expr', ('=<>', 'place', 't1', Type.FromStr("u32"), Type.FromStr("comp"), 32), 2, 'src', 4)
-    ('undecl', 't1', Type.FromStr("comp"), 'src', 58)
-    ('decl', 'chr', Type.FromStr("u32"), -1, 'src', 54)
-  None 
-    FALL: L3
-
-  L3:
-    ('expr', ('+<', None, 'chr', 54, None, 32), 4, 'src', 7)
-  ('c.jmp', 'L5') 
-    FALL: _L8
-
-  _L8:
-  ('goto', 'L7', 5) 
-    FALL: None
-
-  L7:
-    ('expr', ('+>', None, 'chr', 63, None, 32), 7, 'src', 9)
-  ('c.jmp', 'L5') 
-    FALL: _L10
-
-  _L10:
-  ('goto', 'L6', 8) 
-    FALL: None
-
-  L5:
-  ('goto', 'L2', 9) 
-    FALL: None
-
-  L6:
-    ('decl', 't13', Type.FromStr("u32"), -1, 'src', 13)
-    ('expr', ('-', 't13', 'chr', 53, None, 32), 10, 'src', 12)
-    ('decl', 'temp', Type.FromStr("u32"), -1, 'src', 22)
-    ('expr', ('=', 'temp', 't13', None, None, 32), 11, 'src', 15)
-    ('undecl', 't13', Type.FromStr("u32"), 'src', 59)
-    ('expr', ('==', None, 'temp', 10, None, 32), 13, 'src', 17)
-  ('c.jmp', 'L14') 
-    FALL: _L16
-
-  _L16:
-  ('goto', 'L15', 14) 
-    FALL: None
-
-  L14:
-    ('decl', 't18', Type.FromStr("comp"), -1, 'src', 18)
-    ('expr', ('=', 't18', 0, None, None, 32), 15, 'src', 19)
-    ('expr', ('=<>', 'temp', 't18', Type.FromStr("u32"), Type.FromStr("comp"), 32), 16, 'src', 20)
-    ('undecl', 't18', Type.FromStr("comp"), 'src', 60)
-  None 
-    FALL: L15
-
-  L15:
-    ('decl', 't19', Type.FromStr("u32"), -1, 'src', 26)
-    ('expr', ('*', 't19', 'temp', 'place', None, 32), 17, 'src', 24)
-    ('undecl', 'temp', Type.FromStr("u32"), 'src', 61)
-    ('expr', ('+', 'x', 'x', 't19', None, 32), 18, 'src', 27)
-    ('undecl', 't19', Type.FromStr("u32"), 'src', 62)
-    ('expr', ('*', 'place', 'place', 10, None, 32), 19, 'src', 29)
+    ('decl', Var('x', 'u32'), None, None, 'src', 0)
+    ('decl', Var('place', 'u32'), None, None, 'src', 1)
+    ('expr', ('=', Var('place', 'u32'), Var(1, 'comp'), NoVar, NoVar), 1, 'src', 2)
+    ('decl', Var('chr', 'u32'), None, None, 'src', 3)
   None 
     FALL: L2
 
   L2:
-    ('decl', 't20', Type.FromStr("u32"), -1, 'src', 55)
-    ('expr', ('@ldkey', 't20', None, None, None, 32), 20, 'src', 35)
-    ('expr', ('=', 'chr', 't20', None, None, 32), 21, 'src', 37)
-    ('undecl', 't20', Type.FromStr("u32"), 'src', 63)
-    ('expr', ('!=', None, 'chr', 51, None, 32), 23, 'src', 39)
-  ('c.jmp', 'L3') 
-    FALL: _L21
+    ('expr', ('+<', NoVar, Var('chr', 'u32'), Var(54, 'comp'), NoVar), 2, 'src', 4)
+  ('c.jmp', 'L4') 
+    FALL: _L7
 
-  _L21:
-    ('undecl', 'place', Type.FromStr("u32"), 'src', 64)
-    ('undecl', 'chr', Type.FromStr("u32"), 'src', 65)
-  ('goto', 'L4', 24) 
+  _L7:
+  ('goto', 'L6') 
+    FALL: None
+
+  L6:
+    ('expr', ('+>', NoVar, Var('chr', 'u32'), Var(63, 'comp'), NoVar), 3, 'src', 5)
+  ('c.jmp', 'L4') 
+    FALL: _L9
+
+  _L9:
+  ('goto', 'L5') 
     FALL: None
 
   L4:
-    ('expr', ('breakpoint', None, None, None, None, 32), 26, 'src', 40)
-    ('expr', ('argst', 0, 'x', None, None, 32), 27, 'src', 43)
-    ('undecl', 'x', Type.FromStr("u32"), 'src', 66)
-    ('expr', ('call', 'Fac', None, None, None, 32), 28, 'src', 44)
-    ('decl', 't25', Type.FromStr("u32"), -1, 'src', 57)
-    ('expr', ('retld', 't25', 0, None, None, 32), 29, 'src', 46)
-    ('expr', ('argst', 0, 't25', None, None, 32), 30, 'src', 48)
-    ('undecl', 't25', Type.FromStr("u32"), 'src', 67)
-    ('expr', ('call', 'Print', None, None, None, 32), 31, 'src', 49)
-    ('expr', ('retld', 't26', 0, None, None, 32), 32, 'src', 50)
+  ('goto', 'L1') 
+    FALL: None
+
+  L5:
+    ('decl', Var('t12', 'u32'), None, None, 'src', 6)
+    ('expr', ('-', Var('t12', 'u32'), Var('chr', 'u32'), Var(53, 'comp'), NoVar), 4, 'src', 7)
+    ('decl', Var('u_temp', 'u32'), None, None, 'src', 8)
+    ('expr', ('=', Var('u_temp', 'u32'), Var('t12', 'u32'), NoVar, NoVar), 5, 'src', 9)
+    ('undecl', Var('t12', 'u32'), None, 'src', 33)
+    ('expr', ('==', NoVar, Var('u_temp', 'u32'), Var(10, 'comp'), NoVar), 6, 'src', 10)
+  ('c.jmp', 'L13') 
+    FALL: _L15
+
+  _L15:
+  ('goto', 'L14') 
+    FALL: None
+
+  L13:
+    ('expr', ('=', Var('u_temp', 'u32'), Var(0, 'comp'), NoVar, NoVar), 7, 'src', 11)
+  None 
+    FALL: L14
+
+  L14:
+    ('decl', Var('t17', 'u32'), None, None, 'src', 12)
+    ('expr', ('*', Var('t17', 'u32'), Var('u_temp', 'u32'), Var('place', 'u32'), NoVar), 8, 'src', 13)
+    ('undecl', Var('u_temp', 'u32'), None, 'src', 34)
+    ('decl', Var('t18', 'u32'), None, None, 'src', 14)
+    ('expr', ('+', Var('t18', 'u32'), Var('x', 'u32'), Var('t17', 'u32'), NoVar), 9, 'src', 15)
+    ('undecl', Var('t17', 'u32'), None, 'src', 35)
+    ('expr', ('=', Var('x', 'u32'), Var('t18', 'u32'), NoVar, NoVar), 10, 'src', 16)
+    ('undecl', Var('t18', 'u32'), None, 'src', 36)
+    ('decl', Var('t19', 'u32'), None, None, 'src', 17)
+    ('expr', ('*', Var('t19', 'u32'), Var('place', 'u32'), Var(10, 'comp'), NoVar), 11, 'src', 18)
+    ('expr', ('=', Var('place', 'u32'), Var('t19', 'u32'), NoVar, NoVar), 12, 'src', 19)
+    ('undecl', Var('t19', 'u32'), None, 'src', 37)
+  None 
+    FALL: L1
+
+  L1:
+    ('decl', Var('t20', 'u32'), None, None, 'src', 20)
+    ('expr', ('@ldkey', Var('t20', 'u32'), NoVar, NoVar, NoVar), 13, 'src', 21)
+    ('expr', ('=', Var('chr', 'u32'), Var('t20', 'u32'), NoVar, NoVar), 14, 'src', 22)
+    ('undecl', Var('t20', 'u32'), None, 'src', 38)
+    ('expr', ('!=', NoVar, Var('chr', 'u32'), Var(51, 'comp'), NoVar), 15, 'src', 23)
+  ('c.jmp', 'L2') 
+    FALL: _L21
+
+  _L21:
+    ('undecl', Var('place', 'u32'), None, 'src', 39)
+    ('undecl', Var('chr', 'u32'), None, 'src', 40)
+  ('goto', 'L3') 
+    FALL: None
+
+  L3:
+    ('expr', ('breakpoint', NoVar, NoVar, NoVar, NoVar), 16, 'src', 24)
+    ('expr', ('argst', Var(0, 'comp'), Var('x', 'u32'), NoVar, NoVar), 17, 'src', 26)
+    ('undecl', Var('x', 'u32'), None, 'src', 41)
+    ('expr', ('call', Var('Fac', 'u32'), NoVar, NoVar, NoVar), 18, 'src', 27)
+    ('decl', Var('t25', 'u32'), None, None, 'src', 28)
+    ('expr', ('retld', Var('t25', 'u32'), Var(0, 'comp'), NoVar, NoVar), 19, 'src', 29)
+    ('expr', ('argst', Var(0, 'comp'), Var('t25', 'u32'), NoVar, NoVar), 20, 'src', 30)
+    ('undecl', Var('t25', 'u32'), None, 'src', 42)
+    ('expr', ('call', Var('Print', 'u32'), NoVar, NoVar, NoVar), 21, 'src', 31)
+    ('expr', ('retld', Var('t26', 'void'), Var(0, 'comp'), NoVar, NoVar), 22, 'src', 32)
   None 
     FALL: L27
 
   L27:
-  ('goto', 'L28', 33) 
+  ('goto', 'L28') 
     FALL: None
 
   L28:
-  ('goto', 'L27', 34) 
+  ('goto', 'L27') 
     FALL: None
 
 }
 fn Fac (n: u32) u32 {
   _Fac__:
-    ('expr', ('argld', 'n', 0, Type.FromStr("u32"), None, 32), 35, 'src', 68)
-    ('expr', ('==', None, 'n', 1, None, 32), 37, 'src', 69)
+    ('expr', ('argld', Var('n', 'u32'), Var(0, 'comp'), NoVar, NoVar), 23, 'src', 43)
+    ('expr', ('==', NoVar, Var('n', 'u32'), Var(1, 'comp'), NoVar), 24, 'src', 44)
   ('c.jmp', 'L32') 
     FALL: _L34
 
   _L34:
-  ('goto', 'L33', 38) 
+  ('goto', 'L33') 
     FALL: None
 
   L32:
-    ('undecl', 'n', Type.FromStr("u32"), 'src', 83)
-    ('expr', ('retst', 0, 1, None, None, 32), 40, 'src', 70)
-  ('return', 40) 
+    ('undecl', Var('n', 'u32'), NoVar, 'src', 55)
+    ('expr', ('retst', Var(0, 'comp'), Var(1, 'comp'), NoVar, NoVar), 25, 'src', 45)
+  ('return', 25) 
     FALL: None
 
   L33:
-    ('decl', 't37', Type.FromStr("u32"), -1, 'src', 73)
-    ('expr', ('-', 't37', 'n', 1, None, 32), 41, 'src', 72)
-    ('expr', ('argst', 0, 't37', None, None, 32), 42, 'src', 74)
-    ('undecl', 't37', Type.FromStr("u32"), 'src', 84)
-    ('expr', ('call', 'Fac', None, None, None, 32), 43, 'src', 75)
-    ('decl', 't38', Type.FromStr("u32"), -1, 'src', 78)
-    ('expr', ('retld', 't38', 0, None, None, 32), 44, 'src', 77)
-    ('decl', 't39', Type.FromStr("u32"), -1, 'src', 81)
-    ('expr', ('*', 't39', 'n', 't38', None, 32), 45, 'src', 80)
-    ('undecl', 't38', Type.FromStr("u32"), 'src', 85)
-    ('undecl', 'n', Type.FromStr("u32"), 'src', 86)
-    ('expr', ('retst', 0, 't39', None, None, 32), 47, 'src', 82)
-    ('undecl', 't39', Type.FromStr("u32"), 'src', 87)
-  ('return', 47) 
+    ('decl', Var('t37', 'u32'), None, None, 'src', 46)
+    ('expr', ('-', Var('t37', 'u32'), Var('n', 'u32'), Var(1, 'comp'), NoVar), 26, 'src', 47)
+    ('expr', ('argst', Var(0, 'comp'), Var('t37', 'u32'), NoVar, NoVar), 27, 'src', 48)
+    ('undecl', Var('t37', 'u32'), None, 'src', 56)
+    ('expr', ('call', Var('Fac', 'u32'), NoVar, NoVar, NoVar), 28, 'src', 49)
+    ('decl', Var('t38', 'u32'), None, None, 'src', 50)
+    ('expr', ('retld', Var('t38', 'u32'), Var(0, 'comp'), NoVar, NoVar), 29, 'src', 51)
+    ('decl', Var('t39', 'u32'), None, None, 'src', 52)
+    ('expr', ('*', Var('t39', 'u32'), Var('n', 'u32'), Var('t38', 'u32'), NoVar), 30, 'src', 53)
+    ('undecl', Var('t38', 'u32'), None, 'src', 57)
+    ('undecl', Var('n', 'u32'), None, 'src', 58)
+    ('expr', ('retst', Var(0, 'comp'), Var('t39', 'u32'), NoVar, NoVar), 31, 'src', 54)
+    ('undecl', Var('t39', 'u32'), None, 'src', 59)
+  ('return', 31) 
     FALL: None
 
 }
 fn Print (x: u32) void {
   _Print__:
-    ('expr', ('argld', 'x', 0, Type.FromStr("u32"), None, 32), 48, 'src', 88)
-    ('decl', 'bcd', Type.FromStr("u32"), -1, 'src', 176)
-    ('decl', 't41', Type.FromStr("comp"), -1, 'src', 177)
-    ('expr', ('=', 't41', 0, None, None, 32), 49, 'src', 91)
-    ('expr', ('=<>', 'bcd', 't41', Type.FromStr("u32"), Type.FromStr("comp"), 32), 50, 'src', 92)
-    ('undecl', 't41', Type.FromStr("comp"), 'src', 184)
-    ('decl', '_', Type.FromStr("u32"), -1, 'src', 131)
-    ('decl', 't45', Type.FromStr("comp"), -1, 'src', 132)
-    ('expr', ('=', 't45', 0, None, None, 32), 51, 'src', 95)
-    ('expr', ('=<>', '_', 't45', Type.FromStr("u32"), Type.FromStr("comp"), 32), 52, 'src', 96)
-    ('undecl', 't45', Type.FromStr("comp"), 'src', 185)
+    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comp'), NoVar, NoVar), 32, 'src', 60)
+    ('decl', Var('bcd', 'u32'), None, None, 'src', 61)
+    ('expr', ('=', Var('bcd', 'u32'), Var(0, 'comp'), NoVar, NoVar), 33, 'src', 62)
+    ('decl', Var('u___', 'u32'), None, None, 'src', 63)
+    ('expr', ('=', Var('u___', 'u32'), Var(0, 'comp'), NoVar, NoVar), 34, 'src', 64)
   None 
-    FALL: L42
+    FALL: L41
 
-  L42:
-    ('expr', ('+<', None, '_', 32, None, 32), 54, 'src', 98)
-  ('c.jmp', 'L43') 
-    FALL: _L46
+  L41:
+    ('expr', ('+<', NoVar, Var('u___', 'u32'), Var(32, 'comp'), NoVar), 35, 'src', 65)
+  ('c.jmp', 'L42') 
+    FALL: _L44
 
-  _L46:
-    ('undecl', 'x', Type.FromStr("u32"), 'src', 186)
-    ('undecl', '_', Type.FromStr("u32"), 'src', 187)
-  ('goto', 'L44', 55) 
+  _L44:
+    ('undecl', Var('x', 'u32'), NoVar, 'src', 111)
+    ('undecl', Var('u___', 'u32'), None, 'src', 112)
+  ('goto', 'L43') 
     FALL: None
 
-  L43:
-    ('decl', 't48', Type.FromStr("u32"), -1, 'src', 119)
-    ('expr', ('@dab', 't48', 'bcd', None, None, 32), 56, 'src', 101)
-    ('expr', ('=', 'bcd', 't48', None, None, 32), 57, 'src', 103)
-    ('undecl', 't48', Type.FromStr("u32"), 'src', 188)
-    ('expr', ('<<', 'bcd', 'bcd', 1, None, 32), 58, 'src', 105)
-    ('decl', 't51', Type.FromStr("comp"), -1, 'src', 120)
-    ('expr', ('<<', 't51', 1, 31, None, 32), 59, 'src', 107)
-    ('decl', 't52', Type.FromStr("u32"), -1, 'src', 121)
-    ('expr', ('&', 't52', 'x', 't51', None, 32), 60, 'src', 110)
-    ('undecl', 't51', Type.FromStr("comp"), 'src', 189)
-    ('expr', ('==', None, 't52', 0, None, 32), 61, 'src', 112)
-    ('undecl', 't52', Type.FromStr("u32"), 'src', 190)
-  ('c.jmp', 'L50') 
-    FALL: _L53
+  L42:
+    ('decl', Var('t46', 'u32'), None, None, 'src', 66)
+    ('expr', ('@dab', Var('t46', 'u32'), Var('bcd', 'u32'), NoVar, NoVar), 36, 'src', 67)
+    ('expr', ('=', Var('bcd', 'u32'), Var('t46', 'u32'), NoVar, NoVar), 37, 'src', 68)
+    ('undecl', Var('t46', 'u32'), None, 'src', 113)
+    ('decl', Var('t47', 'u32'), None, None, 'src', 69)
+    ('expr', ('<<', Var('t47', 'u32'), Var('bcd', 'u32'), Var(1, 'comp'), NoVar), 38, 'src', 70)
+    ('expr', ('=', Var('bcd', 'u32'), Var('t47', 'u32'), NoVar, NoVar), 39, 'src', 71)
+    ('undecl', Var('t47', 'u32'), None, 'src', 114)
+    ('decl', Var('t50', 'comp'), None, None, 'src', 72)
+    ('expr', ('<<', Var('t50', 'comp'), Var(1, 'comp'), Var(31, 'comp'), NoVar), 40, 'src', 73)
+    ('decl', Var('t51', 'u32'), None, -1, 'src', 76)
+    ('expr', ('&', Var('t51', 'u32'), Var('x', 'u32'), Var('t50', 'comp'), NoVar), 41, 'src', 75)
+    ('undecl', Var('t50', 'comp'), None, 'src', 115)
+    ('expr', ('==', NoVar, Var('t51', 'u32'), Var(0, 'comp'), NoVar), 42, 'src', 77)
+    ('undecl', Var('t51', 'u32'), None, 'src', 116)
+  ('c.jmp', 'L49') 
+    FALL: _L52
 
-  _L53:
+  _L52:
+  None 
+    FALL: L48
+
+  L48:
+    ('decl', Var('t53', 'u32'), None, None, 'src', 78)
+    ('expr', ('|', Var('t53', 'u32'), Var('bcd', 'u32'), Var(1, 'comp'), NoVar), 43, 'src', 79)
+    ('expr', ('=', Var('bcd', 'u32'), Var('t53', 'u32'), NoVar, NoVar), 44, 'src', 80)
+    ('undecl', Var('t53', 'u32'), None, 'src', 117)
   None 
     FALL: L49
 
   L49:
-    ('expr', ('|', 'bcd', 'bcd', 1, None, 32), 62, 'src', 114)
-  None 
-    FALL: L50
-
-  L50:
-    ('expr', ('<<', 'x', 'x', 1, None, 32), 63, 'src', 122)
-    ('expr', ('+', '_', '_', 1, None, 32), 64, 'src', 128)
-  ('goto', 'L42', 65) 
+    ('decl', Var('t54', 'u32'), None, None, 'src', 81)
+    ('expr', ('<<', Var('t54', 'u32'), Var('x', 'u32'), Var(1, 'comp'), NoVar), 45, 'src', 82)
+    ('expr', ('=', Var('x', 'u32'), Var('t54', 'u32'), NoVar, NoVar), 46, 'src', 83)
+    ('undecl', Var('t54', 'u32'), None, 'src', 118)
+    ('decl', Var('t55', 'u32'), None, None, 'src', 84)
+    ('expr', ('+', Var('t55', 'u32'), Var('u___', 'u32'), Var(1, 'comp'), NoVar), 47, 'src', 85)
+    ('expr', ('=', Var('u___', 'u32'), Var('t55', 'u32'), NoVar, NoVar), 48, 'src', 86)
+    ('undecl', Var('t55', 'u32'), None, 'src', 119)
+  ('goto', 'L41') 
     FALL: None
 
-  L44:
-    ('decl', 'idx', Type.FromStr("u32"), -1, 'src', 178)
-    ('decl', 't55', Type.FromStr("comp"), -1, 'src', 179)
-    ('expr', ('=', 't55', 0, None, None, 32), 66, 'src', 135)
-    ('expr', ('=<>', 'idx', 't55', Type.FromStr("u32"), Type.FromStr("comp"), 32), 67, 'src', 136)
-    ('undecl', 't55', Type.FromStr("comp"), 'src', 191)
-    ('decl', 't59', Type.FromStr("u32"), -1, 'src', 180)
-    ('expr', ('@log', 't59', 'bcd', None, None, 32), 68, 'src', 139)
-    ('decl', 't60', Type.FromStr("u32"), -1, 'src', 181)
-    ('expr', ('@andn', 't60', 't59', 3, None, 32), 69, 'src', 142)
-    ('undecl', 't59', Type.FromStr("u32"), 'src', 192)
-    ('decl', 't61', Type.FromStr("i32"), -1, 'src', 182)
-    ('expr', ('=<>', 't61', 't60', Type.FromStr("i32"), Type.FromStr("u32"), 32), 70, 'src', 145)
-    ('undecl', 't60', Type.FromStr("u32"), 'src', 193)
-    ('decl', 'nibble', Type.FromStr("i32"), -1, 'src', 183)
-    ('expr', ('=', 'nibble', 't61', None, None, 32), 71, 'src', 148)
-    ('undecl', 't61', Type.FromStr("i32"), 'src', 194)
+  L43:
+    ('decl', Var('idx', 'u32'), None, None, 'src', 87)
+    ('expr', ('=', Var('idx', 'u32'), Var(0, 'comp'), NoVar, NoVar), 49, 'src', 88)
+    ('decl', Var('t60', 'u32'), None, None, 'src', 89)
+    ('expr', ('@log', Var('t60', 'u32'), Var('bcd', 'u32'), NoVar, NoVar), 50, 'src', 90)
+    ('decl', Var('t61', 'u32'), None, None, 'src', 91)
+    ('expr', ('@andn', Var('t61', 'u32'), Var('t60', 'u32'), Var(3, 'comp'), NoVar), 51, 'src', 92)
+    ('undecl', Var('t60', 'u32'), None, 'src', 120)
+    ('decl', Var('t62', 'i32'), None, None, 'src', 93)
+    ('expr', ('=<>', Var('t62', 'i32'), Var('t61', 'u32'), NoVar, NoVar), 52, 'src', 94)
+    ('undecl', Var('t61', 'u32'), None, 'src', 121)
+    ('decl', Var('nibble', 'i32'), None, None, 'src', 95)
+    ('expr', ('=', Var('nibble', 'i32'), Var('t62', 'i32'), NoVar, NoVar), 53, 'src', 96)
+    ('undecl', Var('t62', 'i32'), None, 'src', 122)
   None 
-    FALL: L56
-
-  L56:
-    ('expr', ('->=', None, 'nibble', 0, None, 32), 73, 'src', 150)
-  ('c.jmp', 'L57') 
-    FALL: _L62
-
-  _L62:
-    ('undecl', 'idx', Type.FromStr("u32"), 'src', 195)
-    ('undecl', 'bcd', Type.FromStr("u32"), 'src', 196)
-    ('undecl', 'nibble', Type.FromStr("i32"), 'src', 197)
-  ('goto', 'L58', 74) 
-    FALL: None
+    FALL: L57
 
   L57:
-    ('decl', 't64', Type.FromStr("u32"), -1, 'src', 155)
-    ('expr', ('@bsf', 't64', 'bcd', 'nibble', 4, 32), 75, 'src', 154)
-    ('decl', 't65', Type.FromStr("u32"), -1, 'src', 158)
-    ('expr', ('&', 't65', 't64', 15, None, 32), 76, 'src', 157)
-    ('undecl', 't64', Type.FromStr("u32"), 'src', 198)
-    ('decl', 't66', Type.FromStr("u32"), -1, 'src', 162)
-    ('expr', ('+', 't66', 't65', 48, None, 32), 77, 'src', 160)
-    ('undecl', 't65', Type.FromStr("u32"), 'src', 199)
-    ('expr', ('@stchr', 't66', 'idx', 4294967295, 0, 32), 78, 'src', 163)
-    ('undecl', 't66', Type.FromStr("u32"), 'src', 200)
-    ('expr', ('+', 'idx', 'idx', 1, None, 32), 79, 'src', 165)
-    ('expr', ('-', 'nibble', 'nibble', 4, None, 32), 80, 'src', 175)
-  ('goto', 'L56', 81) 
+    ('expr', ('->=', NoVar, Var('nibble', 'i32'), Var(0, 'comp'), NoVar), 54, 'src', 97)
+  ('c.jmp', 'L58') 
+    FALL: _L63
+
+  _L63:
+    ('undecl', Var('idx', 'u32'), None, 'src', 123)
+    ('undecl', Var('bcd', 'u32'), None, 'src', 124)
+    ('undecl', Var('nibble', 'i32'), None, 'src', 125)
+  ('goto', 'L59') 
     FALL: None
 
   L58:
+    ('decl', Var('t65', 'u32'), None, None, 'src', 98)
+    ('expr', ('@bsf', Var('t65', 'u32'), Var('bcd', 'u32'), Var('nibble', 'i32'), Var(4, 'comp')), 55, 'src', 99)
+    ('decl', Var('t66', 'u32'), None, None, 'src', 100)
+    ('expr', ('&', Var('t66', 'u32'), Var('t65', 'u32'), Var(15, 'comp'), NoVar), 56, 'src', 101)
+    ('undecl', Var('t65', 'u32'), None, 'src', 126)
+    ('decl', Var('t67', 'u32'), None, None, 'src', 102)
+    ('expr', ('+', Var('t67', 'u32'), Var('t66', 'u32'), Var(48, 'comp'), NoVar), 57, 'src', 103)
+    ('undecl', Var('t66', 'u32'), None, 'src', 127)
+    ('expr', ('@stchr', Var('t67', 'u32'), Var('idx', 'u32'), Var(4294967295, 'comp'), Var(0, 'comp')), 58, 'src', 104)
+    ('undecl', Var('t67', 'u32'), None, 'src', 128)
+    ('decl', Var('t68', 'u32'), None, None, 'src', 105)
+    ('expr', ('+', Var('t68', 'u32'), Var('idx', 'u32'), Var(1, 'comp'), NoVar), 59, 'src', 106)
+    ('expr', ('=', Var('idx', 'u32'), Var('t68', 'u32'), NoVar, NoVar), 60, 'src', 107)
+    ('undecl', Var('t68', 'u32'), None, 'src', 129)
+    ('decl', Var('t69', 'i32'), None, None, 'src', 108)
+    ('expr', ('-', Var('t69', 'i32'), Var('nibble', 'i32'), Var(4, 'comp'), NoVar), 61, 'src', 109)
+    ('expr', ('=', Var('nibble', 'i32'), Var('t69', 'i32'), NoVar, NoVar), 62, 'src', 110)
+    ('undecl', Var('t69', 'i32'), None, 'src', 130)
+  ('goto', 'L57') 
+    FALL: None
+
+  L59:
   None 
     FALL: EOF
 
