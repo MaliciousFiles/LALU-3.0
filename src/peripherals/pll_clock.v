@@ -64,11 +64,11 @@ module pll_clock #(parameter frequency="50 MHz", parameter IS_HALF_SIM = 0) (inp
         .pll_subtype("General")
      ) altera_pll_i (
         .rst	(1'b0),
-        .outclk	(CLOCK_25),
+        .outclk	(clk),
         .locked	(),
         .fboutclk	( ),
         .fbclk	(1'b0),
-        .refclk	(clk)
+        .refclk	(CLOCK_50)
      );
  `else
      reg clock = 0;
