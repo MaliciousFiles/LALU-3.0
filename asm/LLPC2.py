@@ -9,10 +9,6 @@ import Statics
 
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
-with open('src/mal.lpc', 'r') as f:
-    txt = f.read()
-    txt = txt.replace('\\"', '\x01')
-    tree = parser.parse(txt)
 
 ##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
 usesRd = ['[]=', '[:]=', '@stchr']
@@ -39,6 +35,11 @@ def MapRawName(name):
 
 def TreeToName(tree):
     return MapRawName(tree.children[0].value)
+
+def TreeToKind(kind):
+    if type(kind.children[0]) == Tree:
+        return Type.FromStr(kind.children[0].value)
+    assert False, f'{kind}='
 
 def TrackLine(func):
     global inter, srcs
@@ -138,7 +139,8 @@ def Gen(tree, pre = True):
                     if type(arg) == Token:
                         continue
                     aname, _, akind = arg.children
-                    narg = Var(TreeToName(aname), Type.FromStr(akind.children[0].value))
+                    assert type(akind.children[0]) != Tree, f'{akind=}'
+                    narg = Var(TreeToName(aname), TreeToType(akind))
                     args.append(narg)
             ret = Type.FromStr(ret.children[0].value)
             funcs[name] = (args, ret)
@@ -1203,57 +1205,69 @@ def InvalidateAliasFor(inter, kind):
                             carg['offset'] += arg['offset']
                             cstk.append(carg)
 
-Statics.structs = {}
-syms = [{}]
-out = ''
-ind = 0
-tid = 0
-eid = 0
-srcs=[]
+def Compile(filepath, verbose = False):
+    global funcs, syms, ind, tid, eid, srcs, inter, tree
+    with open(filepath, 'r') as f:
+        txt = f.read()
+        txt = txt.replace('\\"', '\x01')
+        tree = parser.parse(txt)
 
-funcs = {}
-inter = HLIR()
+    Statics.structs = {}
+    syms = [{}]
+    out = ''
+    ind = 0
+    tid = 0
+    eid = 0
+    srcs=[]
 
-LHL.Init(sys.modules[__name__])
+    funcs = {}
+    inter = HLIR()
 
-try:
-    Gen(tree)
-except Exception as e:
-    print(e)
-    raise e
+    LHL.Init(sys.modules[__name__])
 
-print('\nOUT:')
-print(out)
+    try:
+        Gen(tree)
+    except Exception as e:
+        print(e)
+        raise e
 
-with open('struct_dump.txt', 'w') as f:
-    f.write(repr(Statics.structs))
+##    if verbose:
+##        print('\nOUT:')
+##        print(out)
 
-print('\nHLIR:')
-print(repr(inter))
-with open('out.hlr', 'w') as f:
-    f.write(repr(inter))
+    with open('struct_dump.txt', 'w') as f:
+        f.write(repr(Statics.structs))
 
-llir = LHL.Lower(inter)
+    if verbose:
+        print('\nHLIR:')
+        print(repr(inter))
+    with open('out.hlr', 'w') as f:
+        f.write(repr(inter))
 
-print('\nLLIR:')
-print(repr(llir))
-with open('out.llr', 'w') as f:
-    f.write(repr(llir))
+    llir = LHL.Lower(inter)
 
-asm = LLL.Lower(llir)
+    if verbose:
+        print('\nLLIR:')
+        print(repr(llir))
+    with open('out.llr', 'w') as f:
+        f.write(repr(llir))
 
-print('\nASM:')
-print(asm)
-with open('out.asm', 'w') as f:
-    f.write(asm)
+    asm = LLL.Lower(llir)
 
-program = ASM.ParseFile(asm)
+    if verbose:
+        print('\nASM:')
+        print(asm)
+    with open('out.asm', 'w') as f:
+        f.write(asm)
 
-mif = ASM.Mifify(program, 15)
-print('\nMIF:')
-print(mif)
-with open('out.mif', 'w') as f:
-    f.write(mif)
+    program = ASM.ParseFile(asm)
 
-with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
-    f.write(mif)
+    mif = ASM.Mifify(program, 15)
+    if verbose:
+        print('\nMIF:')
+        print(mif)
+    with open('out.mif', 'w') as f:
+        f.write(mif)
+
+    with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
+        f.write(mif)

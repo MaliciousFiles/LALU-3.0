@@ -1,0 +1,8 @@
+#include malloc
+
+fn Main() void {
+    var memory: Block[MALLOC_SIZE];
+    MemInit(memory);
+    
+    return;
+}

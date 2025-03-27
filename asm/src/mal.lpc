@@ -10,7 +10,6 @@ fn Main() void {
     x += temp * place;
     place *= 10;
   }
-  BREAKPOINT;
 
   Print(Fac(x));
 

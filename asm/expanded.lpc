@@ -1,0 +1,82 @@
+
+
+
+
+
+
+
+
+
+struct Block {
+  prevPtr: Block*,
+  size: u31,
+  isFree: u1,
+}
+
+fn MemInit(memory: Block*) void {
+  var nblock: Block;
+  nblock.prePtr = 0 ;
+  nblock.size = 0x8000 ;
+  nblock.isFree = 1 ;
+  memory[0] = nblock;
+}
+
+//Allocate `size` bits of data, may be given more
+fn Malloc(size: u32) u32 * {
+  var ENDPTR: Block* = memory + 0x8000 ;
+  var rsize: u32 = (size -1)>>(6 -1) ; //Round bits up to nearest 64 bit amt
+  
+  var hijack: Block* = 0 ;
+  var target: Block* = 0 ;
+
+  var doSplit: u1 = 0 ;
+
+  for (var blockptr: Block* = memory; blockptr != ENDPTR; blockptr = (blockptr + 1 + blockptr .*.size) ) {
+    if (blockptr.*.isFree == 0 ) continue;
+    
+    var bsize: u32 = blockptr.*.size; //Size of current free block
+    if (bsize == rsize) { //If size is an exact fit for desire amt
+      target = blockptr;
+      break; 
+    } else if (bsize == rsize + 1) { //Size of block is just 1 too large so not worth to split
+      hijack = blockptr;
+      //We need to keep searching in case we find something better
+    } else if (bsize > rsize + 1) { //We found a block bigger than what we need so we'll split it
+      doSplit = 1 ;
+      target = blockptr;
+      break; } 
+  } 
+  
+  if (doSplit == 0 ) {
+    if (target != 0 ) {
+      target.*.isFree = 0 ;
+      return (<u32 *>(target + 1)) ;
+    } else if (hijack != 0 ) {
+      hijack.*.isFree = 0 ;
+      return (<u32 *>(hijack + 1)) ;
+    } else {
+      return 0 ;
+    }
+  } else {
+    target.*.isFree = 0 ;
+    var oldsize: u32 = target.*.size;
+    var excess: u32 = oldsize - rsize - 1;
+    target.*.size = rsize;
+    
+    var newNext: Block* = (target + 1 + target .*.size) ;
+    newNext.*.isFree = 1 ;
+    newNext.*.size = excess;
+    newNext.*.prevPtr = target;
+    
+    var nextNext: Block* = (newNext + 1 + newNext .*.size) ;
+    if (nextNext != ENDPTR) nextNext.*.prevPtr = newNext; 
+    return (<u32 *>(target + 1)) ;
+  }
+}
+
+fn Main() void {
+    var memory: Block[0x8000 ];
+    MemInit(memory);
+    
+    return;
+}
