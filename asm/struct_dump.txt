@@ -1,1 +1,1 @@
-{}
+{'Vec': {'size': 64, 'args': {'x': {'offset': 0, 'width': 32, 'type': Type.FromStr("u32")}, 'y': {'offset': 32, 'width': 32, 'type': Type.FromStr("u32")}}}}

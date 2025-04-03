@@ -37,8 +37,21 @@ def TreeToName(tree):
     return MapRawName(tree.children[0].value)
 
 def TreeToKind(kind):
-    if type(kind.children[0]) == Tree:
-        return Type.FromStr(kind.children[0].value)
+    c = kind.children[0]
+    if type(c) == Tree:
+        if c.data.value == 'identtype':
+            r = c.children[0]
+            r = r.children[0].value if r else r
+            ps = c.children[1:-3]
+            a = c.children[-2]
+            a = a.children[0].value if a else a
+            a = f'[{a}]' if a else ''
+            print(r+'*'*len(ps)+a)
+            #pain
+            return Type.FromStr(r+'*'*len(ps)+a)
+        cry
+        return Type.FromStr(c.value)
+    return Type.FromStr(c.value)
     assert False, f'{kind}='
 
 def TrackLine(func):
@@ -97,7 +110,7 @@ def GetStrKind(kind):
 
 @logerror
 @TrackLine
-def Gen(tree, pre = True):
+def Gen(tree, pre = True, fn_pref = None):
     global out, ind, inter, funcs
     if type(tree) == Tree:
         data = tree.data
@@ -132,17 +145,22 @@ def Gen(tree, pre = True):
             Gen(tree.children[0], pre)
         elif data.type == 'RULE' and data.value == 'fn_decl':
             _, name, _, rargs, _, ret, body = tree.children
-            name = TreeToName(name)
+            if fn_pref != None:
+                name = MapRawName(fn_pref+'__'+name.children[0].value)
+            else:
+                name = TreeToName(name)
+            
             args = []
             if rargs:
                 for arg in rargs.children:
                     if type(arg) == Token:
                         continue
                     aname, _, akind = arg.children
-                    assert type(akind.children[0]) != Tree, f'{akind=}'
-                    narg = Var(TreeToName(aname), TreeToType(akind))
+                    #assert type(akind.children[0]) != Tree, f'{akind=}'
+                    narg = Var(TreeToName(aname), TreeToKind(akind))
                     args.append(narg)
-            ret = Type.FromStr(ret.children[0].value)
+            ret = TreeToKind(ret)
+            #ret = Type.FromStr(ret.children[0].value)
             funcs[name] = (args, ret)
             if not pre:
                 inter.NewFunc(name, args, ret)
@@ -362,14 +380,23 @@ def Gen(tree, pre = True):
             Gen(tree.children[0])
 
         elif data.type == 'RULE' and data.value == 'struct_decl':
-            if not pre: return
-            _, name, _, args, _, = tree.children
+            _, name, _, _args, _, = tree.children
+            fns = _args.children[1:-1]
+            args = _args.children[0]
+            assert _args.children[-1] == None
+            if not pre:
+                for fn in fns:
+                    Gen(fn, pre = pre, fn_pref = name.children[0].value)
+                return
             self = Statics.structs[name.children[0].value] = {'size': None, 'args': {}}
             for arg in args.children:
                 if type(arg) != Tree: continue
                 argname, _, argkind = arg.children
                 assert argname not in self['args']
                 self['args'][argname.children[0].value] = {'offset': None, 'width': None, 'type': argkind}
+            for fn in fns:
+                fn
+                Gen(fn, pre = pre, fn_pref = name.children[0].value)
             return
             
         else:
@@ -381,7 +408,7 @@ def Gen(tree, pre = True):
 @logerror
 @TrackLine
 def Rvalue(expr):
-    global inter
+    global inter, structs
     if type(expr) == Tree:
         data = expr.data
 
@@ -402,6 +429,35 @@ def Rvalue(expr):
             EvictAliasFor(inter, tmp.kind)
             inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = Var(0, 'comp'), S2 = None)
             return tmp
+        elif data == 'structinit':
+            k, _, args, _, = expr.children
+            kind = TreeToKind(k)
+            tmp = NewTemp(kind)
+            kind = str(kind)
+            if args:
+                nargs = []
+                for arg in args.children:
+                    if type(arg)==Tree:
+                        print('arg', arg.children[2])
+                        v = Rvalue(arg.children[2])
+                        nargs.append((arg.children[0].children[0].value, v))
+                args = nargs
+            else:
+                args = []
+            for i, (arg, val) in enumerate(args):
+                print('av:', arg, val)
+                field = arg
+                idk = Statics.structs[str(kind)]['args'][field]
+                print('`STATICS:`', field, idk)
+                off = idk['offset']
+                width = idk['width']
+                desttype = idk['type']
+                tmps = f'{tmp.name}[{off}+:{width}]'
+                print(f'Auto writing: `{tmp.name}.{field} = {val}`')
+                inter.AddPent(op = '=', D = Var(tmps, desttype), S0 = val, S1 = None, S2 = None)
+            return tmp
+        elif data == 'colonexpr':
+            colonerr
         elif data == 'addrexpr':
             le, _, _, = expr.children
             lhs = Rvalue(le)
@@ -426,7 +482,7 @@ def Rvalue(expr):
             lhs = Rvalue(le)
             field = re.children[0].value
             idk = Statics.structs[str(lhs.kind)]['args'][field]
-            print(Statics.structs[str(lhs.kind)]['args'], field, idk)
+            print('`STATICS:`',Statics.structs[str(lhs.kind)]['args'], field, idk)
             off = idk['offset']
             width = idk['width']
             desttype = idk['type']
@@ -435,7 +491,24 @@ def Rvalue(expr):
             return tmp
         elif data == 'callexpr':
             func, _, args, _ = expr.children
-            func = TreeToName(func)
+            if len(func.children) > 1:
+                assert func.data == 'colonexpr'
+                l, _, r = func.children
+                r = r.children[0].value
+                if type(l.children[0]) != Tree:
+                    l = l.children[0].value
+                    func = MapRawName(l+'__'+r)
+                else: 
+                    l = Rvalue(l)
+                    print('l is',l)
+                    func = MapRawName(str(l.kind).replace('*','')+'__'+r)
+                if l in Statics.structs:
+                    prearg = None
+                else:
+                    prearg = l
+            else:
+                func = TreeToName(func)
+
             if args:
                 nargs = []
                 for arg in args.children:
@@ -446,6 +519,8 @@ def Rvalue(expr):
                 args = nargs
             else:
                 args = []
+            if prearg:
+                args.insert(0, prearg)
             assert func in funcs, f'Cannot find function name `{func}`'
             funargs, funret = funcs[func]
             assert len(funargs) == len(args), f'Function `{func}` has arity `{len(funargs)}`, but was given `{len(args)}` args'
@@ -584,9 +659,10 @@ def Rvalue(expr):
             if len(op.children[0].value) >= 2:
                 op = op.children[0].value[:-1]
                 assert rhs.kind.CanCoerceTo(lhs.kind)
-                kind = lhs.kind.Common(rhs.kind)
-                tmp = NewTemp(kind)
                 rlhs = Rvalue(le)
+                kind = rlhs.kind.Common(rhs.kind)
+                tmp = NewTemp(kind)
+                print(f'op = {op}, D = {tmp}, S0 = {rlhs}, S1 = {rhs}, S2 = None')
                 inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None)
                 inter.AddPent(op = '=', D = lhs, S0 = tmp, S1 = None, S2 = None)
 ##                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None)
@@ -1206,7 +1282,7 @@ def InvalidateAliasFor(inter, kind):
                             cstk.append(carg)
 
 def Compile(filepath, verbose = False):
-    global funcs, syms, ind, tid, eid, srcs, inter, tree
+    global funcs, syms, ind, tid, eid, srcs, inter, tree, txt
     with open(filepath, 'r') as f:
         txt = f.read()
         txt = txt.replace('\\"', '\x01')

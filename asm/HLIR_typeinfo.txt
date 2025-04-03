@@ -1,1 +1,1 @@
-{}
+{'t1': Type.FromStr("Vec"), 0: Type.FromStr("comp"), 'self': Type.FromStr("Vec*"), 't3': Type.FromStr("Vec"), 't4': Type.FromStr("Vec"), 't5': Type.FromStr("u32"), 't6': Type.FromStr("u32"), 'u_Vec____Zero': Type.FromStr("u32"), 't7': Type.FromStr("Vec"), 'v': Type.FromStr("Vec"), 'u_Vec____AddXOne': Type.FromStr("u32"), 't8': Type.FromStr("void")}

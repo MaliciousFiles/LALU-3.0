@@ -1,3 +1,30 @@
-0000 :		mov.e r31, #96			// Setup stack pointer
+0000 :		mov.e r31, #1120			// Setup stack pointer
 	_Main__:
-0002 :		ret 				// expr `ret`
+0002 :		add r31, r31, #0
+0003 :		call _u_Vec____Zero__:
+0004 :		sub r31, r31, #0				// expr `call u_Vec____Zero`
+0005 :		mov r2, r0				// expr `mov v_0, t7_0`
+0006 :		mov r3, r1				// expr `mov v_1, t7_1`
+0007 :		add.e r0, r31, #32				// expr `argst 0, v_0.&`
+0009 :		add.e r31, r31, #192
+000B :		call _u_Vec____AddXOne__:
+000C :		sub.e r31, r31, #192				// expr `call u_Vec____AddXOne`
+	_u_Vec____Zero__:
+000E :		mov r30, #0
+000F :		bst r0, r30, #0, #0				// expr `bst t1_0, 0, 0, 0`
+0010 :		stw r0, r31, #0				// memsave r0 => `t1_0`
+0011 :		mov r30, #0
+0012 :		bst r1, r30, #0, #0				// expr `bst t1_1, 0, 0, 0`
+0013 :		ret 				// expr `ret`
+	_u_Vec____AddXOne__:
+0014 :		ld r1, r0, #0, #0				// expr `ld t3_0, self, 0, 0`
+0015 :		ld r2, r0, #1, #0				// expr `ld t3_1, self, 1, 0`
+0016 :		stw.e r1, r31, #32				// memsave r1 => `t3_0`
+0018 :		stw.e r2, r31, #64				// memsave r2 => `t3_1`
+001A :		ld r3, r0, #0, #0				// expr `ld t4_0, self, 0, 0`
+001B :		ld r4, r0, #1, #0				// expr `ld t4_1, self, 1, 0`
+001C :		bsf r0, r3, #0, #0				// expr `bsf t5, t4_0, 0, 0`
+001D :		add r3, r0, #1				// expr `add t6, t5, 1`
+001E :		stw.e r1, r31, #32				// memsave r1 => `t3_0`
+0020 :		stw.e r2, r31, #64				// memsave r2 => `t3_1`
+0022 :		bst r1, r3, #0, #0				// expr `bst t3_0, t6, 0, 0`

@@ -1,6 +1,55 @@
+fn u_Vec____Zero () Vec {
+  _u_Vec____Zero__:
+    ('decl', Var('t1', 'Vec'), None, None, 'src', 0)
+    ('memsave', Var('t1', 'Vec'), 'src', 1)
+    ('expr', ('[:]=', Var('t1', 'Vec'), Var(0, 'comp'), Var(0, 'comp'), Var(32, 'comp')), 2, 'src', 2)
+    ('memsave', Var('t1', 'Vec'), 'src', 3)
+    ('expr', ('[:]=', Var('t1', 'Vec'), Var(0, 'comp'), Var(32, 'comp'), Var(32, 'comp')), 4, 'src', 4)
+    ('expr', ('retst', Var(0, 'comp'), Var('t1', 'Vec'), NoVar, NoVar), 5, 'src', 5)
+    ('undecl', Var('t1', 'Vec'), None, 'src', 6)
+  ('return', 5) 
+    FALL: None
+
+}
+fn u_Vec____AddXOne (self: Vec*) void {
+  _u_Vec____AddXOne__:
+    ('expr', ('argld', Var('self', 'Vec*'), Var(0, 'comp'), NoVar, NoVar), 6, 'src', 7)
+    ('decl', Var('t3', 'Vec'), None, None, 'src', 8)
+    ('memsave', Var('t3', 'Vec'), 'src', 9)
+    ('expr', ('=[]', Var('t3', 'Vec'), Var('self', 'Vec*'), Var(0, 'comp'), NoVar), 7, 'src', 10)
+    ('decl', Var('t4', 'Vec'), None, None, 'src', 11)
+    ('memsave', Var('t3', 'Vec'), 'src', 12)
+    ('memsave', Var('t4', 'Vec'), 'src', 13)
+    ('expr', ('=[]', Var('t4', 'Vec'), Var('self', 'Vec*'), Var(0, 'comp'), NoVar), 8, 'src', 14)
+    ('undecl', Var('self', 'Vec*'), None, 'src', 22)
+    ('decl', Var('t5', 'u32'), None, None, 'src', 15)
+    ('expr', ('=[:]', Var('t5', 'u32'), Var('t4', 'Vec'), Var(0, 'comp'), Var(32, 'comp')), 9, 'src', 16)
+    ('undecl', Var('t4', 'Vec'), None, 'src', 23)
+    ('decl', Var('t6', 'u32'), None, None, 'src', 17)
+    ('expr', ('+', Var('t6', 'u32'), Var('t5', 'u32'), Var(1, 'comp'), NoVar), 10, 'src', 18)
+    ('undecl', Var('t5', 'u32'), None, 'src', 24)
+    ('memsave', Var('t3', 'Vec'), 'src', 19)
+    ('memsave', Var('t4', 'Vec'), 'src', 20)
+    ('expr', ('[:]=', Var('t3', 'Vec'), Var('t6', 'u32'), Var(0, 'comp'), Var(32, 'comp')), 12, 'src', 21)
+    ('undecl', Var('t6', 'u32'), None, 'src', 25)
+    ('undecl', Var('t3', 'Vec'), None, 'src', 26)
+  None 
+    FALL: EOF
+
+}
 fn Main () void {
   _Main__:
-  ('return', 0) 
-    FALL: None
+    ('expr', ('call', Var('u_Vec____Zero', 'u32'), NoVar, NoVar, NoVar), 13, 'src', 27)
+    ('decl', Var('t7', 'Vec'), None, None, 'src', 28)
+    ('expr', ('retld', Var('t7', 'Vec'), Var(0, 'comp'), NoVar, NoVar), 14, 'src', 29)
+    ('decl', Var('v', 'Vec'), None, None, 'src', 30)
+    ('expr', ('=', Var('v', 'Vec'), Var('t7', 'Vec'), NoVar, NoVar), 15, 'src', 31)
+    ('undecl', Var('t7', 'Vec'), None, 'src', 35)
+    ('expr', ('argst', Var(0, 'comp'), Var('v.&', 'Vec*'), NoVar, NoVar), 16, 'src', 32)
+    ('undecl', Var('v', 'Vec'), None, 'src', 36)
+    ('expr', ('call', Var('u_Vec____AddXOne', 'u32'), NoVar, NoVar, NoVar), 17, 'src', 33)
+    ('expr', ('retld', Var('t8', 'void'), Var(0, 'comp'), NoVar, NoVar), 18, 'src', 34)
+  None 
+    FALL: EOF
 
 }

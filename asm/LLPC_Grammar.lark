@@ -5,7 +5,8 @@ ex_decl: struct_decl
 
 //include_dir: INCLUDE ident
 
-struct_decl: STRUCT ident LCURLY args RCURLY
+struct_decl: STRUCT ident LCURLY struct_expr RCURLY
+struct_expr: args fn_decl* [struct_expr]
 
 fn_decl: FN ident LPAREN [args] RPAREN type stmt
 
@@ -52,6 +53,7 @@ expr: assgexpr
         | unaryop castexpr
 ?postexpr: primexpr
 	| AT ident LPAREN [argexprs] RPAREN -> intrinsic
+        | ident LCURLY [structassgs] RCURLY -> structinit
         | postexpr LBRACK expr PLUSCOLON expr RBRACK -> sliceexpr
         | postexpr LBRACK expr RBRACK -> indexpr
         | postexpr LPAREN [argexprs] RPAREN -> callexpr
@@ -59,6 +61,7 @@ expr: assgexpr
         | postexpr DOT AMPERSAND -> addrexpr
         | postexpr DOT QMARK -> denullexpr
         | postexpr DOT ident -> fieldexpr
+        | postexpr COLON ident -> colonexpr
 	| BREAKPOINT -> breakpoint
 ?primexpr: ident
         | constant
@@ -76,6 +79,9 @@ expr: assgexpr
 	| dostmt
 ?selstmt: ifelsestmt
 	| ifstmt
+
+structassgs: structassg (COMMA structassg)* COMMA?
+structassg: ident COLONEQUALS assgexpr
 
 whileelsestmt: WHILE LPAREN expr RPAREN stmt ELSE stmt
 whilestmt: WHILE LPAREN expr RPAREN stmt
@@ -175,6 +181,7 @@ TRUE: "true"
 FALSE: "false"
 STRUCT: "struct"
 INCLUDE: "#include"
+COLONEQUALS: ":="
 
 COMMENT: /\/\/[^\r\n]*/
 
