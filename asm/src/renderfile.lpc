@@ -1,0 +1,85 @@
+#define WHITE Color{r := 0xFF, g := 0xFF, b := 0xFF}
+#define BLACK Color{r := 0x00, g := 0x00, b := 0x00}
+#define range(name, low, high) (var name = low; name < high; name += 1)
+
+struct RenderState {
+  file: u8*,
+  lineHeads: u8* [24], //1 per line
+  topLeft: Pos,
+  curPos: Pos,
+  tick: u8, //6th bit is got for periodic cursor inversion
+  foreColor: Color,
+  backColor: Color,
+}
+
+struct Pos {
+  x: u32,
+  y: u32,
+}
+
+//Listed in reverse order to casting to a int puts it in RGB highest to lowest
+struct Color {
+  b: u8,
+  g: u8,
+  r: u8,
+}
+
+fn RenderState__Init(self: *RenderState) void {
+  self.*.topLeft = Pos{x := 0, y := 0};
+  self.*.curPos = Pos{x := 0, y := 0};
+  self.*.tick = 0;
+  self.*.foreColor = WHITE;
+  self.*.backColor = BLACK;
+}
+
+
+fn RenderState__Draw(self: *RenderState) void {
+  var latScroll = self.*.topLeft.y
+  
+  for (var row: u32 = 0; row < 24; row += 1) {
+    var linePtr = self.*.lineHeads[row];
+    
+    for (var col: u32 = 0; col < 64; col += 1) {
+      var char = linePtr[col + latScroll];
+      
+      if (char == '\n' or char == '\x00') {
+        for (; col < 64; col += 1) self:WriteChar('\x00', row, col);
+        break;
+      }
+      
+      self:WriteChar(char, row, col);
+    }
+  }
+  self.*.tick += 1;
+}
+
+fn RenderState__WriteChar(self: *RenderState, char: u7, row: u32, col: u32) void {
+  var fore = self.*.foreColor;
+  var back = self.*.backColor;
+  if (row == self.*.curPos.y 
+      and col == self.*.curPos.x 
+      and self.*.tick[5 +: 1] == 1) {
+    var tmp = fore;
+    fore = back;
+    back = tmp;
+  }
+  WriteCharFlaggedColored(char, row, col, 0, fore, back); 
+}
+
+fn RenderState__RecalcHeaders(self: *RenderState) void {
+  var fileIdx: u32 = 0;
+  for range(ptrIdx, 0, 24) {
+    var char = self.*.file[fileIdx];
+    
+    fileIdx += 1;
+  }
+}
+
+fn WriteCharFlaggedColored(char: u7, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
+  var pos = row << 5 + col;
+  var rd = flags << 7 + char;
+
+  @stchr(rd, pos, <u32>foreColor, <u32>backColor);
+}
+
+#undef range

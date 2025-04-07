@@ -1,0 +1,10 @@
+assume nonzero $x; //Equiv to `assume boolean x == 0;`
+assume boolean $x $> $y;
+assume uninit $x;
+assume init $x;
+assume unreachable;
+assume local likely;
+assume local unlikely;
+assume nonlocal $ptr;
+assume local atleastonce;
+assume unique $ptr;
