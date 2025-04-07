@@ -1,0 +1,17 @@
+struct Vec {
+  x: u32,
+  y: u32,
+
+  fn Zero() Vec {
+    return Vec {x := 0, y := 0};
+  }
+
+  fn AddXOne(self: Vec*) void { 
+    self.*.x += 1;
+  }
+}
+
+fn Main() void {
+  var v = Vec:Zero();
+  v.&:AddXOne();
+}

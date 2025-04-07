@@ -99,6 +99,9 @@ class Type:
             ary = f'[{self.arylen}]' if self.arylen else ''
             return f'{"ui"[self.signed]}{self.width}{ary}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
+        print('comps:', self.struct, other.struct)
+        if self.struct == other.struct != None:
+            return True
         if self.isvoid == other.isvoid == True:
             return True
         if self.isbool or other.isvoid:

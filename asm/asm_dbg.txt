@@ -1,116 +1,30 @@
-0000 :		mov.e r31, #3328			// Setup stack pointer
+0000 :		mov.e r31, #1120			// Setup stack pointer
 	_Main__:
-0002 :		mov r30, #1
-0003 :		mov r0, r30				// expr `mov place, 1`
-	L3:
-0004 :		ldw.e r1, r31, #64				// assign r1 = `chr`
-0006 :		ult.e r1, #54				// expr `ult chr, 54`
-0008 :		c.jmp L5:				// expr `c.jmp L5:`
-	_L8:
-0009 :		jmp L7:				// expr `jmp L7:`
-	L7:
-000A :		ugt.e r1, #63				// expr `ugt chr, 63`
-000C :		c.jmp L5:				// expr `c.jmp L5:`
-	_L10:
-000D :		jmp L6:				// expr `jmp L6:`
-	L5:
-000E :		jmp L2:				// expr `jmp L2:`
-	L6:
-000F :		sub.e r2, r1, #53				// expr `sub t13, chr, 53`
-0011 :		mov r3, r2				// expr `mov temp, t13`
-0012 :		eq r3, #10				// expr `eq temp, 10`
-0013 :		c.jmp L14:				// expr `c.jmp L14:`
-	_L16:
-0014 :		jmp L15:				// expr `jmp L15:`
-	L14:
-0015 :		mov r30, #0
-0016 :		mov r3, r30				// expr `mov temp, 0`
-	L15:
-0017 :		mul r2, r3, r0				// expr `mul t19, temp, place`
-0018 :		ldw r3, r31, #0				// assign r3 = `x`
-0019 :		add r3, r3, r2				// expr `add x, x, t19`
-001A :		mul r0, r0, #10				// expr `mul place, place, 10`
-001B :		stw r3, r31, #0
-	L2:
-001C :		ldkey r2				// expr `ldkey t20`
-001D :		mov r1, r2				// expr `mov chr, t20`
-001E :		ne.e r1, #51				// expr `ne chr, 51`
-0020 :		c.stw.e r1, r31, #64
-0022 :		c.jmp L3:				// expr `c.jmp L3:`
-	_L21:
-0023 :		jmp L4:				// expr `jmp L4:`
-	L4:
-breakpoint
-0024 :		ldw r0, r31, #0				// assign r0 = `x`	// expr `argst 0, x`
-0025 :		add.e r31, r31, #128
-0027 :		call _Fac__:
-0028 :		sub.e r31, r31, #128				// expr `call Fac`
-002A :		add.e r31, r31, #192
-002C :		call _Print__:
-002D :		sub.e r31, r31, #192				// expr `call Print`
-	L27:
-002F :		jmp L28:				// expr `jmp L28:`
-	L28:
-0030 :		jmp L27:				// expr `jmp L27:`
-	_Fac__:
-0031 :		eq r0, #1				// expr `eq n, 1`
-0032 :		c.jmp L32:				// expr `c.jmp L32:`
-	_L34:
-0033 :		jmp L33:				// expr `jmp L33:`
-	L32:
-0034 :		mov r0, #1				// expr `retst 0, 1`
-0035 :		ret 				// expr `ret`
-	L33:
-0036 :		sub r1, r0, #1				// expr `sub t37, n, 1`
-0037 :		stw r0, r31, #0				// clobbering r0 (`n`)
-0038 :		mov r0, r1				// assign r0 = `t37`	// expr `argst 0, t37`
-0039 :		add.e r31, r31, #64
-003B :		call _Fac__:
-003C :		sub.e r31, r31, #64				// expr `call Fac`
-003E :		ldw r2, r31, #0				// assign r2 = `n`
-003F :		mul r1, r2, r0				// expr `mul t39, n, t38`
-0040 :		mov r0, r1				// assign r0 = `t39`	// expr `retst 0, t39`
-0041 :		ret 				// expr `ret`
-	_Print__:
-0042 :		mov r30, #0
-0043 :		mov r1, r30				// expr `mov bcd, 0`
-0044 :		mov r30, #0
-0045 :		mov r2, r30				// expr `mov _, 0`
-	L42:
-0046 :		ult.e r2, #32				// expr `ult _, 32`
-0048 :		c.jmp L43:				// expr `c.jmp L43:`
-	_L46:
-0049 :		jmp L44:				// expr `jmp L44:`
-	L43:
-004A :		dab r3, r1				// expr `dab t48, bcd`
-004B :		mov r1, r3				// expr `mov bcd, t48`
-004C :		bsl r1, r1, #1				// expr `bsl bcd, bcd, 1`
-004D :		and.e r3, r0, #2147483648				// expr `and t52, x, 2147483648`
-004F :		eq r3, #0				// expr `eq t52, 0`
-0050 :		c.jmp L50:				// expr `c.jmp L50:`
-	L49:
-0051 :		or r1, r1, #1				// expr `or bcd, bcd, 1`
-	L50:
-0052 :		bsl r0, r0, #1				// expr `bsl x, x, 1`
-0053 :		add r2, r2, #1				// expr `add _, _, 1`
-0054 :		jmp L42:				// expr `jmp L42:`
-	L44:
-0055 :		mov r30, #0
-0056 :		mov r0, r30				// expr `mov idx, 0`
-0057 :		log r2, r1				// expr `log t59, bcd`
-0058 :		andn r3, r2, #3				// expr `andn t60, t59, 3`
-0059 :		mov r2, r3				// expr `mov t61, t60`
-005A :		mov r3, r2				// expr `mov nibble, t61`
-	L56:
-005B :		sge r3, #0				// expr `sge nibble, 0`
-005C :		c.jmp L57:				// expr `c.jmp L57:`
-	_L62:
-005D :		jmp L58:				// expr `jmp L58:`
-	L57:
-005E :		bsf r2, r1, r3, #4				// expr `bsf t64, bcd, nibble, 4`
-005F :		and r4, r2, #15				// expr `and t65, t64, 15`
-0060 :		add.e r2, r4, #48				// expr `add t66, t65, 48`
-0062 :		stchr.e r2, r0, #4294967295, #0				// expr `stchr t66, idx, 4294967295, 0`
-0064 :		add r0, r0, #1				// expr `add idx, idx, 1`
-0065 :		sub r3, r3, #4				// expr `sub nibble, nibble, 4`
-0066 :		jmp L56:				// expr `jmp L56:`
+0002 :		add r31, r31, #0
+0003 :		call _u_Vec____Zero__:
+0004 :		sub r31, r31, #0				// expr `call u_Vec____Zero`
+0005 :		mov r2, r0				// expr `mov v_0, t7_0`
+0006 :		mov r3, r1				// expr `mov v_1, t7_1`
+0007 :		add.e r0, r31, #32				// expr `argst 0, v_0.&`
+0009 :		add.e r31, r31, #192
+000B :		call _u_Vec____AddXOne__:
+000C :		sub.e r31, r31, #192				// expr `call u_Vec____AddXOne`
+	_u_Vec____Zero__:
+000E :		mov r30, #0
+000F :		bst r0, r30, #0, #0				// expr `bst t1_0, 0, 0, 0`
+0010 :		stw r0, r31, #0				// memsave r0 => `t1_0`
+0011 :		mov r30, #0
+0012 :		bst r1, r30, #0, #0				// expr `bst t1_1, 0, 0, 0`
+0013 :		ret 				// expr `ret`
+	_u_Vec____AddXOne__:
+0014 :		ld r1, r0, #0, #0				// expr `ld t3_0, self, 0, 0`
+0015 :		ld r2, r0, #1, #0				// expr `ld t3_1, self, 1, 0`
+0016 :		stw.e r1, r31, #32				// memsave r1 => `t3_0`
+0018 :		stw.e r2, r31, #64				// memsave r2 => `t3_1`
+001A :		ld r3, r0, #0, #0				// expr `ld t4_0, self, 0, 0`
+001B :		ld r4, r0, #1, #0				// expr `ld t4_1, self, 1, 0`
+001C :		bsf r0, r3, #0, #0				// expr `bsf t5, t4_0, 0, 0`
+001D :		add r3, r0, #1				// expr `add t6, t5, 1`
+001E :		stw.e r1, r31, #32				// memsave r1 => `t3_0`
+0020 :		stw.e r2, r31, #64				// memsave r2 => `t3_1`
+0022 :		bst r1, r3, #0, #0				// expr `bst t3_0, t6, 0, 0`

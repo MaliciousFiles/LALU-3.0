@@ -109,6 +109,8 @@ def PopLine(s, exp = True):
     return buf, s
 
 def Handle(s):
+    global reps
+    reps = [{}]
     o = ''
     while True:
 ##        print(f'k={k}')

@@ -382,6 +382,7 @@ def Lower(llir):
     for func in comp_state.functions.values():
         asm_out += f"\n//\n// {func.name}\n// args: {', '.join(func.args)}\n//\n"
         for block in func.blocks:
+            print(comp_state.entrance_states)
             entrance_state = comp_state.entrance_states[block.label]
             expected = {f"r{i}": entrance_state.registers[i].contained for i in range(NUM_REGS) if entrance_state.registers[i].contained is not None}
             asm_out += "\n"

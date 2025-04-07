@@ -154,7 +154,19 @@ def Store(nblock, val, array, offset):
     raise NotImplementedError
 
 def Load(nblock, res, array, offset):
-    raise NotImplementedError
+
+    opWidth = array.kind.ElementSize()
+    perOpWidth = 32 if opWidth >= 32 else opWidth #How many bits per read
+
+    bitwidth = res.kind.OpWidth()
+    regwidth = CeilDiv(bitwidth, 32)
+    for i in range(regwidth):
+        eD = SubReg(res, i)
+        if offset.kind.comptime:
+            AddPent(nblock, 'ld', eD, array, Var(offset.name+i, 'comp'), perOpWidth % 32)
+        else:
+            raise NotImplementedError
+    return
 
 #PRECONDITION:
 #If offset is runtime known, it must not cross word boundaries, meaning that if width > 32, then offset must be a multiple of 32
@@ -262,7 +274,7 @@ def ArgStore(nblock, dest, value):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
-        AddPent(nblock, 'argst', eS, Var.FromVal(None, dest.name+i), None, None)
+        AddPent(nblock, 'argst', Var.FromVal(None, dest.name+i), eS, None, None)
 
 def ArgLoad(nblock, value, dest):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
@@ -274,7 +286,7 @@ def RetStore(nblock, dest, value):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
-        AddPent(nblock, 'retst', eS, Var.FromVal(None, dest.name+i), None, None)
+        AddPent(nblock, 'retst', Var.FromVal(None, dest.name+i), eS, None, None)
 
 def RetLoad(nblock, value, dest):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
@@ -473,6 +485,8 @@ def Lower(hlir):
                     #EXPRESSIONS
                     elif cmd == 'expr':
                         op, D, S0, S1, S2 = line[1]
+                        if D not in assocs and D != None and D.kind != None:
+                            assocs[D.name] = D.kind
                         S0 = comp.get(S0, S0)
                         S1 = comp.get(S1, S1)
                         S2 = comp.get(S2, S2)
@@ -523,6 +537,11 @@ def Lower(hlir):
             llir.func['body'].append(nblock)
     with open('HLIR_typeinfo.txt', 'w') as f:
         f.write(repr(assocs))
+    for i, func in enumerate(llir.funcs):
+        if func['name'] == 'Main':
+            llir.funcs.insert(0, llir.funcs[i])
+            del llir.funcs[i+1]
+    print(llir.funcs)
         
     return llir
 
