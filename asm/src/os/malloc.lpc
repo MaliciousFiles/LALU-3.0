@@ -13,16 +13,16 @@ struct Block {
   isFree: u1,
 }
 
-fn MemInit(memory: Block*) void {
+fn Block__MemInit(memory: Block*) void {
   var nblock: Block;
-  nblock.prePtr = NULLPTR;
+  nblock.prevPtr = NULLPTR;
   nblock.size = MALLOC_SIZE;
   nblock.isFree = TRUE;
   memory[0] = nblock;
 }
 
 //Allocate `size` bits of data, may be given more
-fn Malloc(size: u32) any* {
+fn Block__Malloc(memory: Block*, size: u32) any* {
   var ENDPTR: Block* = memory + MALLOC_SIZE;
   var rsize: u32 = CEILDIV(size, 6); //Round bits up to nearest 64 bit amt
   

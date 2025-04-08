@@ -63,8 +63,8 @@ expr: assgexpr
         | postexpr DOT ident -> fieldexpr
         | postexpr COLON ident -> colonexpr
 	| BREAKPOINT -> breakpoint
-?primexpr: ident
-        | constant
+?primexpr: constant
+        | ident
         | string
         | LPAREN expr RPAREN
 ?jumpstmt: CONTINUE SEMICOLON -> continue
@@ -102,11 +102,11 @@ identtype: ident ASTERISK* [LBRACK constant RBRACK]
 type: INT | VOID | identtype
 string: /"([^\x00"]*\x01)*[^\x01"]*"/
 //string: /"[^"]*"/
-constant: char | hexint | decint
+constant: CHAR | hexint | decint
 
 decint: "0d" UD* | D UD*
 hexint: "0x" UH*
-char: /\'.\'/
+CHAR: /\'(?:.|(?:\\.)|(?:\\x..))\'/
 
 INT: /[ui][0-9]+(?: *)\**(\[[0-9]+\])?/
 

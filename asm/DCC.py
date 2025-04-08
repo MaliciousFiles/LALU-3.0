@@ -36,7 +36,7 @@ if __name__ == "__main__":
                     if ident not in imports:
                         imports.append(ident)
                         with open(f'{prepath}{ident}.lpc', 'r') as g:
-                            ncontents += g.read()+'\n'
+                            ncontents += f'\n//NEWFILEBEGIN `{prepath}{ident}.lpc`\n'+g.read()+'\n//NEWFILEEND `{prepath}{ident}.lpc`\n'
                             run = True
 ##                            print(ncontents)
                 else:
@@ -65,6 +65,6 @@ if __name__ == "__main__":
             LLPC.Compile(fName)
             print(f'Compiled Successfully')
         except Exception as e:
-            print(f'Unexpected assembler crash')
+            print(f'\nUnexpected assembler crash')
             print(e)
             print(traceback.format_exc())

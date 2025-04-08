@@ -67,11 +67,17 @@ class Type:
             self.signed = txt[0]=='i'
             self.numPtrs = txt.count('*')
             txt = txt[:len(txt)-self.numPtrs]
+            np = None
             if '[' in txt:
                 arylen = int(txt.split('[')[1][:-1])
                 self.arylen = arylen
                 txt = txt.split('[')[0]
+                if '*' in txt:
+                    np = txt.count('*')
+                    txt = txt.rstrip('*')
             self.width = int(txt[1:])
+            if np:
+                self.numPtrs = np
             return self
         except:
             print(otxt)
@@ -164,6 +170,7 @@ class Type:
 
 
 def AlignOf(bitwidth):
+    if bitwidth == 1: return 1
     if bitwidth <= 32:
         return 1<<int(log2(bitwidth-1)+1)
     else:

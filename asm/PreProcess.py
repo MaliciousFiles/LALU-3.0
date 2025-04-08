@@ -32,6 +32,10 @@ def Expand(sbuf, s):
     if sbuf[2][0] == '#' and sbuf[3][0] == 'POPREP':
         reps = reps[:-1]
         return sbuf[:-2], s
+    if sbuf[2][0] == '#' and sbuf[3][0] == 'undef':
+        (name, ws), s = PopToken(s)
+        del reps[0][name]
+        return sbuf[:-2], '\n'+s
     if sbuf[0][0] == '#' and sbuf[1][0] == 'define':
         name = sbuf[2][0]
         if sbuf[3][0] == '(':
@@ -48,8 +52,11 @@ def Expand(sbuf, s):
             reps[0][name] = (args, ''.join([x+y for x, y in l])[:-1])
             return [], '\n'+s
         else:
-            reps[0][name] = ((), sbuf[3][0])
-            return [], s
+            s = sbuf[3][0] + sbuf[3][1] + s
+            l, s = PopLine(s, exp=False)
+            reps[0][name] = ((), ''.join([x+y for x, y in l]))
+            #reps[0][name] = ((), sbuf[3][0])
+            return [], '\n'+s
 
     if sbuf[1][0] == '#' and sbuf[2][0] == 'define': return sbuf, s
     for scope in reps[::-1]:

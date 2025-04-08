@@ -1,6 +1,6 @@
-
-
-
+#define WHITE Color{r := 0xFF, g := 0xFF, b := 0xFF}
+#define BLACK Color{r := 0x00, g := 0x00, b := 0x00}
+#define range(name, low, high) (var name = low; name < high; name += 1)
 
 struct RenderState {
   file: u8*,
@@ -28,20 +28,18 @@ fn RenderState__Init(self: RenderState*) void {
   self.*.topLeft = Pos{x := 0, y := 0};
   self.*.curPos = Pos{x := 0, y := 0};
   self.*.tick = 0;
-  self.*.foreColor = Color{r := 0xFF, g := 0xFF, b := 0xFF}
- ;
-  self.*.backColor = Color{r := 0x00, g := 0x00, b := 0x00}
- ;
+  self.*.foreColor = WHITE;
+  self.*.backColor = BLACK;
 }
 
 
 fn RenderState__Draw(self: RenderState*) void {
   var latScroll = self.*.topLeft.y;
   
-  for (var row = 0 ; row < 24 ; row += 1) {
+  for range(row, 0, 24) {
     var linePtr = self.*.lineHeads[row];
     
-    for (var col = 0 ; col < 64 ; col += 1) {
+    for range(col, 0, 64) {
       var char = linePtr[col + latScroll];
       
       if (char == '\n' or char == '\x00') {
@@ -70,7 +68,7 @@ fn RenderState__WriteChar(self: RenderState*, char: u7, row: u32, col: u32) void
 
 fn RenderState__RecalcHeaders(self: RenderState*) void {
   var fileIdx: u32 = 0;
-  for (var ptrIdx = 0 ; ptrIdx < 24 ; ptrIdx += 1) {
+  for range(ptrIdx, 0, 24) {
     var char = self.*.file[fileIdx];
     
     fileIdx += 1;
@@ -84,5 +82,4 @@ fn WriteCharFlaggedColored(char: u7, row: u32, col: u32, flags: u8, foreColor: C
   @stchr(rd, pos, <u32>foreColor, <u32>backColor);
 }
 
-
-
+#undef range
