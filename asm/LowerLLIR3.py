@@ -9,6 +9,8 @@ def RoundUp(x, k):
     return -k*(-x//k)
 
 def AlignOf(bitwidth):
+    if bitwidth == 1:
+        return 1
     if bitwidth <= 32:
         return 1<<int(log2(bitwidth-1)+1)
     else:
@@ -383,6 +385,9 @@ def Lower(llir):
         asm_out += f"\n//\n// {func.name}\n// args: {', '.join(func.args)}\n//\n"
         for block in func.blocks:
             print(comp_state.entrance_states)
+            if block.label not in comp_state.entrance_states:
+                if block.label[:2] == '_u': print(f'WARNING: Unused function `{block.label}`')
+                continue
             entrance_state = comp_state.entrance_states[block.label]
             expected = {f"r{i}": entrance_state.registers[i].contained for i in range(NUM_REGS) if entrance_state.registers[i].contained is not None}
             asm_out += "\n"
@@ -405,7 +410,7 @@ def Lower(llir):
                 instr = block.assembly[i]
 
                 pre = ('cn.' if 'n' in instr[1] else 'c.') if 'c' in instr[1] else ''
-                post = ('.s' if 's' in instr[1] else '') + ('.e' if any((isinstance(arg, int) and arg >= 32) or arg in llir.data for arg in instr[2:]) else '')
+                post = ('.s' if 's' in instr[1] else '') + ('.e' if any((isinstance(arg, int) and arg >= 31) or arg in llir.data for arg in instr[2:]) else '')
                 # TODO: if multiple eximms, use scratch
 
                 asm_out += f"\t{pre}{instr[0]}{post} {', '.join([('#' if isinstance(arg, int) else '')+str(arg) for arg in instr[2:] if arg is not None])}{comment if comment.strip() else ''}\n"

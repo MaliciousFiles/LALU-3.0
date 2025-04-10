@@ -1,30 +1,432 @@
-0000 :		mov.e r31, #1120			// Setup stack pointer
+0000 :		mov.e r31, #21216			// Setup stack pointer
 	_Main__:
-0002 :		add r31, r31, #0
-0003 :		call _u_Vec____Zero__:
-0004 :		sub r31, r31, #0				// expr `call u_Vec____Zero`
-0005 :		mov r2, r0				// expr `mov v_0, t7_0`
-0006 :		mov r3, r1				// expr `mov v_1, t7_1`
-0007 :		add.e r0, r31, #32				// expr `argst 0, v_0.&`
-0009 :		add.e r31, r31, #192
-000B :		call _u_Vec____AddXOne__:
-000C :		sub.e r31, r31, #192				// expr `call u_Vec____AddXOne`
-	_u_Vec____Zero__:
-000E :		mov r30, #0
-000F :		bst r0, r30, #0, #0				// expr `bst t1_0, 0, 0, 0`
-0010 :		stw r0, r31, #0				// memsave r0 => `t1_0`
-0011 :		mov r30, #0
-0012 :		bst r1, r30, #0, #0				// expr `bst t1_1, 0, 0, 0`
+0002 :		add.e r31, r31, #64
+0004 :		call _u_Block____MemInit__:
+0005 :		sub.e r31, r31, #64				// expr `call u_Block____MemInit`
+0007 :		add r0, r31, #0				// expr `argst 0, rs_0.&`
+0008 :		add.e r31, r31, #352
+000A :		call _u_RenderState____Init__:
+000B :		sub.e r31, r31, #352				// expr `call u_RenderState____Init`
+000D :		add r0, r31, #0				// expr `argst 0, rs_0.&`
+000E :		add.e r31, r31, #352
+0010 :		call _u_RenderState____Draw__:
+0011 :		sub.e r31, r31, #352				// expr `call u_RenderState____Draw`
 0013 :		ret 				// expr `ret`
-	_u_Vec____AddXOne__:
-0014 :		ld r1, r0, #0, #0				// expr `ld t3_0, self, 0, 0`
-0015 :		ld r2, r0, #1, #0				// expr `ld t3_1, self, 1, 0`
-0016 :		stw.e r1, r31, #32				// memsave r1 => `t3_0`
-0018 :		stw.e r2, r31, #64				// memsave r2 => `t3_1`
-001A :		ld r3, r0, #0, #0				// expr `ld t4_0, self, 0, 0`
-001B :		ld r4, r0, #1, #0				// expr `ld t4_1, self, 1, 0`
-001C :		bsf r0, r3, #0, #0				// expr `bsf t5, t4_0, 0, 0`
-001D :		add r3, r0, #1				// expr `add t6, t5, 1`
-001E :		stw.e r1, r31, #32				// memsave r1 => `t3_0`
-0020 :		stw.e r2, r31, #64				// memsave r2 => `t3_1`
-0022 :		bst r1, r3, #0, #0				// expr `bst t3_0, t6, 0, 0`
+	_u_Block____MemInit__:
+0014 :		mov r30, #0
+0015 :		bst r1, r30, #0, #0				// expr `bst nblock_0, 0, 0, 0`
+0016 :		stw.e r1, r31, #32				// memsave r1 => `nblock_0`
+0018 :		mov.e r30, #32768
+001A :		bst.e r2, r30, #0, #31				// expr `bst nblock_1, 32768, 0, 31`
+001C :		stw.e r1, r31, #32				// memsave r1 => `nblock_0`
+001E :		stw.e r2, r31, #64				// memsave r2 => `nblock_1`
+0020 :		mov r30, #1
+0021 :		bst.e r2, r30, #31, #1				// expr `bst nblock_1, 1, 31, 1`
+0023 :		mov r30, #0
+0024 :		mul.e r3, r30, #32				// expr `mul t1, 0, 32`
+0026 :		stw.e r1, r31, #32				// memsave r1 => `nblock_0`
+0028 :		stw.e r2, r31, #64				// memsave r2 => `nblock_1`
+002A :		mov r30, #0
+002B :		mov r4, r30				// expr `mov t_hl0, 0`
+002C :		st r1, r0, r4, #0				// expr `st nblock_0, memory, t_hl0, 0`
+002D :		add.e r4, r4, #32				// expr `add t_hl0, t_hl0, 32`
+002F :		st r2, r0, r4, #0				// expr `st nblock_1, memory, t_hl0, 0`
+0030 :		add.e r4, r4, #32				// expr `add t_hl0, t_hl0, 32`
+	_u_RenderState____Init__:
+0032 :		ld r1, r0, #0, #0				// expr `ld t98_0, self, 0, 0`
+0033 :		ld.e r2, r0, #32, #0				// expr `ld t98_1, self, 32, 0`
+0035 :		ld.e r3, r0, #64, #0				// expr `ld t98_2, self, 64, 0`
+0037 :		ld.e r4, r0, #96, #0				// expr `ld t98_3, self, 96, 0`
+0039 :		ld.e r5, r0, #128, #0				// expr `ld t98_4, self, 128, 0`
+003B :		ld.e r6, r0, #160, #0				// expr `ld t98_5, self, 160, 0`
+003D :		ld.e r7, r0, #192, #0				// expr `ld t98_6, self, 192, 0`
+003F :		ld.e r8, r0, #224, #0				// expr `ld t98_7, self, 224, 0`
+0041 :		ld.e r9, r0, #256, #0				// expr `ld t98_8, self, 256, 0`
+0043 :		stw.e r3, r31, #96				// memsave r3 => `t98_2`
+0045 :		stw.e r4, r31, #128				// memsave r4 => `t98_3`
+0047 :		stw.e r5, r31, #160				// memsave r5 => `t98_4`
+0049 :		stw.e r6, r31, #192				// memsave r6 => `t98_5`
+004B :		mov r30, #0
+004C :		bst r10, r30, #0, #0				// expr `bst t99_0, 0, 0, 0`
+004D :		stw.e r3, r31, #96				// memsave r3 => `t98_2`
+004F :		stw.e r4, r31, #128				// memsave r4 => `t98_3`
+0051 :		stw.e r5, r31, #160				// memsave r5 => `t98_4`
+0053 :		stw.e r6, r31, #192				// memsave r6 => `t98_5`
+0055 :		stw.e r10, r31, #320				// memsave r10 => `t99_0`
+0057 :		mov r30, #0
+0058 :		bst r11, r30, #0, #0				// expr `bst t99_1, 0, 0, 0`
+0059 :		stw.e r1, r31, #32				// memsave r1 => `t98_0`
+005B :		stw.e r2, r31, #64				// memsave r2 => `t98_1`
+005D :		stw.e r3, r31, #96				// memsave r3 => `t98_2`
+005F :		stw.e r4, r31, #128				// memsave r4 => `t98_3`
+0061 :		stw.e r5, r31, #160				// memsave r5 => `t98_4`
+0063 :		stw.e r6, r31, #192				// memsave r6 => `t98_5`
+0065 :		stw.e r7, r31, #224				// memsave r7 => `t98_6`
+0067 :		stw.e r8, r31, #256				// memsave r8 => `t98_7`
+0069 :		stw.e r9, r31, #288				// memsave r9 => `t98_8`
+006B :		bst r3, r10, #0, #0				// expr `bst t98_2, t99_0, 0, 0`
+006C :		bst r4, r11, #0, #0				// expr `bst t98_3, t99_1, 0, 0`
+006D :		ld r1, r0, #0, #0				// expr `ld t100_0, self, 0, 0`
+006E :		ld.e r2, r0, #32, #0				// expr `ld t100_1, self, 32, 0`
+0070 :		ld.e r3, r0, #64, #0				// expr `ld t100_2, self, 64, 0`
+0072 :		ld.e r4, r0, #96, #0				// expr `ld t100_3, self, 96, 0`
+0074 :		ld.e r5, r0, #128, #0				// expr `ld t100_4, self, 128, 0`
+0076 :		ld.e r6, r0, #160, #0				// expr `ld t100_5, self, 160, 0`
+0078 :		ld.e r7, r0, #192, #0				// expr `ld t100_6, self, 192, 0`
+007A :		ld.e r8, r0, #224, #0				// expr `ld t100_7, self, 224, 0`
+007C :		ld.e r9, r0, #256, #0				// expr `ld t100_8, self, 256, 0`
+007E :		stw.e r3, r31, #96				// memsave r3 => `t100_2`
+0080 :		stw.e r4, r31, #128				// memsave r4 => `t100_3`
+0082 :		stw.e r5, r31, #160				// memsave r5 => `t100_4`
+0084 :		stw.e r6, r31, #192				// memsave r6 => `t100_5`
+0086 :		mov r30, #0
+0087 :		bst r10, r30, #0, #0				// expr `bst t101_0, 0, 0, 0`
+0088 :		stw.e r3, r31, #96				// memsave r3 => `t100_2`
+008A :		stw.e r4, r31, #128				// memsave r4 => `t100_3`
+008C :		stw.e r5, r31, #160				// memsave r5 => `t100_4`
+008E :		stw.e r6, r31, #192				// memsave r6 => `t100_5`
+0090 :		stw.e r10, r31, #320				// memsave r10 => `t101_0`
+0092 :		mov r30, #0
+0093 :		bst r11, r30, #0, #0				// expr `bst t101_1, 0, 0, 0`
+0094 :		stw.e r1, r31, #32				// memsave r1 => `t100_0`
+0096 :		stw.e r2, r31, #64				// memsave r2 => `t100_1`
+0098 :		stw.e r3, r31, #96				// memsave r3 => `t100_2`
+009A :		stw.e r4, r31, #128				// memsave r4 => `t100_3`
+009C :		stw.e r5, r31, #160				// memsave r5 => `t100_4`
+009E :		stw.e r6, r31, #192				// memsave r6 => `t100_5`
+00A0 :		stw.e r7, r31, #224				// memsave r7 => `t100_6`
+00A2 :		stw.e r8, r31, #256				// memsave r8 => `t100_7`
+00A4 :		stw.e r9, r31, #288				// memsave r9 => `t100_8`
+00A6 :		bst r5, r10, #0, #0				// expr `bst t100_4, t101_0, 0, 0`
+00A7 :		bst r6, r11, #0, #0				// expr `bst t100_5, t101_1, 0, 0`
+00A8 :		ld r1, r0, #0, #0				// expr `ld t102_0, self, 0, 0`
+00A9 :		ld.e r2, r0, #32, #0				// expr `ld t102_1, self, 32, 0`
+00AB :		ld.e r3, r0, #64, #0				// expr `ld t102_2, self, 64, 0`
+00AD :		ld.e r4, r0, #96, #0				// expr `ld t102_3, self, 96, 0`
+00AF :		ld.e r5, r0, #128, #0				// expr `ld t102_4, self, 128, 0`
+00B1 :		ld.e r6, r0, #160, #0				// expr `ld t102_5, self, 160, 0`
+00B3 :		ld.e r7, r0, #192, #0				// expr `ld t102_6, self, 192, 0`
+00B5 :		ld.e r8, r0, #224, #0				// expr `ld t102_7, self, 224, 0`
+00B7 :		ld.e r9, r0, #256, #0				// expr `ld t102_8, self, 256, 0`
+00B9 :		stw.e r1, r31, #32				// memsave r1 => `t102_0`
+00BB :		stw.e r2, r31, #64				// memsave r2 => `t102_1`
+00BD :		stw.e r3, r31, #96				// memsave r3 => `t102_2`
+00BF :		stw.e r4, r31, #128				// memsave r4 => `t102_3`
+00C1 :		stw.e r5, r31, #160				// memsave r5 => `t102_4`
+00C3 :		stw.e r6, r31, #192				// memsave r6 => `t102_5`
+00C5 :		stw.e r7, r31, #224				// memsave r7 => `t102_6`
+00C7 :		stw.e r8, r31, #256				// memsave r8 => `t102_7`
+00C9 :		stw.e r9, r31, #288				// memsave r9 => `t102_8`
+00CB :		mov r30, #0
+00CC :		bst r7, r30, #0, #8				// expr `bst t102_6, 0, 0, 8`
+00CD :		ld r1, r0, #0, #0				// expr `ld t103_0, self, 0, 0`
+00CE :		ld.e r2, r0, #32, #0				// expr `ld t103_1, self, 32, 0`
+00D0 :		ld.e r3, r0, #64, #0				// expr `ld t103_2, self, 64, 0`
+00D2 :		ld.e r4, r0, #96, #0				// expr `ld t103_3, self, 96, 0`
+00D4 :		ld.e r5, r0, #128, #0				// expr `ld t103_4, self, 128, 0`
+00D6 :		ld.e r6, r0, #160, #0				// expr `ld t103_5, self, 160, 0`
+00D8 :		ld.e r7, r0, #192, #0				// expr `ld t103_6, self, 192, 0`
+00DA :		ld.e r8, r0, #224, #0				// expr `ld t103_7, self, 224, 0`
+00DC :		ld.e r9, r0, #256, #0				// expr `ld t103_8, self, 256, 0`
+00DE :		stw.e r8, r31, #256				// memsave r8 => `t103_7`
+00E0 :		stw.e r9, r31, #288				// memsave r9 => `t103_8`
+00E2 :		mov.e r30, #255
+00E4 :		bst r10, r30, #16, #8				// expr `bst t104, 255, 16, 8`
+00E5 :		stw.e r8, r31, #256				// memsave r8 => `t103_7`
+00E7 :		stw.e r9, r31, #288				// memsave r9 => `t103_8`
+00E9 :		stw.e r10, r31, #320				// memsave r10 => `t104`
+00EB :		mov.e r30, #255
+00ED :		bst r10, r30, #8, #8				// expr `bst t104, 255, 8, 8`
+00EE :		stw.e r8, r31, #256				// memsave r8 => `t103_7`
+00F0 :		stw.e r9, r31, #288				// memsave r9 => `t103_8`
+00F2 :		stw.e r10, r31, #320				// memsave r10 => `t104`
+00F4 :		mov.e r30, #255
+00F6 :		bst r10, r30, #0, #8				// expr `bst t104, 255, 0, 8`
+00F7 :		stw.e r1, r31, #32				// memsave r1 => `t103_0`
+00F9 :		stw.e r2, r31, #64				// memsave r2 => `t103_1`
+00FB :		stw.e r3, r31, #96				// memsave r3 => `t103_2`
+00FD :		stw.e r4, r31, #128				// memsave r4 => `t103_3`
+00FF :		stw.e r5, r31, #160				// memsave r5 => `t103_4`
+0101 :		stw.e r6, r31, #192				// memsave r6 => `t103_5`
+0103 :		stw.e r7, r31, #224				// memsave r7 => `t103_6`
+0105 :		stw.e r8, r31, #256				// memsave r8 => `t103_7`
+0107 :		stw.e r9, r31, #288				// memsave r9 => `t103_8`
+0109 :		bst r8, r10, #0, #0				// expr `bst t103_7, t104, 0, 0`
+010A :		ld r1, r0, #0, #0				// expr `ld t105_0, self, 0, 0`
+010B :		ld.e r2, r0, #32, #0				// expr `ld t105_1, self, 32, 0`
+010D :		ld.e r3, r0, #64, #0				// expr `ld t105_2, self, 64, 0`
+010F :		ld.e r4, r0, #96, #0				// expr `ld t105_3, self, 96, 0`
+0111 :		ld.e r5, r0, #128, #0				// expr `ld t105_4, self, 128, 0`
+0113 :		ld.e r6, r0, #160, #0				// expr `ld t105_5, self, 160, 0`
+0115 :		ld.e r7, r0, #192, #0				// expr `ld t105_6, self, 192, 0`
+0117 :		ld.e r8, r0, #224, #0				// expr `ld t105_7, self, 224, 0`
+0119 :		ld.e r9, r0, #256, #0				// expr `ld t105_8, self, 256, 0`
+011B :		stw.e r8, r31, #256				// memsave r8 => `t105_7`
+011D :		stw.e r9, r31, #288				// memsave r9 => `t105_8`
+011F :		mov r30, #0
+0120 :		bst r0, r30, #16, #8				// expr `bst t106, 0, 16, 8`
+0121 :		stw.e r8, r31, #256				// memsave r8 => `t105_7`
+0123 :		stw.e r9, r31, #288				// memsave r9 => `t105_8`
+0125 :		stw r0, r31, #0				// memsave r0 => `t106`
+0126 :		mov r30, #0
+0127 :		bst r0, r30, #8, #8				// expr `bst t106, 0, 8, 8`
+0128 :		stw.e r8, r31, #256				// memsave r8 => `t105_7`
+012A :		stw.e r9, r31, #288				// memsave r9 => `t105_8`
+012C :		stw r0, r31, #0				// memsave r0 => `t106`
+012D :		mov r30, #0
+012E :		bst r0, r30, #0, #8				// expr `bst t106, 0, 0, 8`
+012F :		stw.e r1, r31, #32				// memsave r1 => `t105_0`
+0131 :		stw.e r2, r31, #64				// memsave r2 => `t105_1`
+0133 :		stw.e r3, r31, #96				// memsave r3 => `t105_2`
+0135 :		stw.e r4, r31, #128				// memsave r4 => `t105_3`
+0137 :		stw.e r5, r31, #160				// memsave r5 => `t105_4`
+0139 :		stw.e r6, r31, #192				// memsave r6 => `t105_5`
+013B :		stw.e r7, r31, #224				// memsave r7 => `t105_6`
+013D :		stw.e r8, r31, #256				// memsave r8 => `t105_7`
+013F :		stw.e r9, r31, #288				// memsave r9 => `t105_8`
+0141 :		bst r9, r0, #0, #0				// expr `bst t105_8, t106, 0, 0`
+	_u_RenderState____Draw__:
+0142 :		ld r1, r0, #0, #0				// expr `ld t107_0, self, 0, 0`
+0143 :		ld.e r2, r0, #32, #0				// expr `ld t107_1, self, 32, 0`
+0145 :		ld.e r3, r0, #64, #0				// expr `ld t107_2, self, 64, 0`
+0147 :		ld.e r4, r0, #96, #0				// expr `ld t107_3, self, 96, 0`
+0149 :		ld.e r5, r0, #128, #0				// expr `ld t107_4, self, 128, 0`
+014B :		ld.e r6, r0, #160, #0				// expr `ld t107_5, self, 160, 0`
+014D :		ld.e r7, r0, #192, #0				// expr `ld t107_6, self, 192, 0`
+014F :		ld.e r8, r0, #224, #0				// expr `ld t107_7, self, 224, 0`
+0151 :		ld.e r9, r0, #256, #0				// expr `ld t107_8, self, 256, 0`
+0153 :		bsf r10, r3, #0, #0				// expr `bsf t108_0, t107_2, 0, 0`
+0154 :		bsf r11, r4, #0, #0				// expr `bsf t108_1, t107_3, 0, 0`
+0155 :		bsf r1, r11, #0, #0				// expr `bsf t109, t108_1, 0, 0`
+0156 :		mov r2, r1				// expr `mov latScroll, t109`
+0157 :		mov r30, #0
+0158 :		mov r1, r30				// expr `mov row, 0`
+	L110:
+0159 :		ult r1, #24				// expr `ult row, 24`
+015A :		c.jmp L111:				// expr `c.jmp L111:`
+	_L113:
+015B :		jmp L112:				// expr `jmp L112:`
+	L111:
+015C :		ld r3, r0, #0, #0				// expr `ld t115_0, self, 0, 0`
+015D :		ld.e r4, r0, #32, #0				// expr `ld t115_1, self, 32, 0`
+015F :		ld.e r5, r0, #64, #0				// expr `ld t115_2, self, 64, 0`
+0161 :		ld.e r6, r0, #96, #0				// expr `ld t115_3, self, 96, 0`
+0163 :		ld.e r7, r0, #128, #0				// expr `ld t115_4, self, 128, 0`
+0165 :		ld.e r8, r0, #160, #0				// expr `ld t115_5, self, 160, 0`
+0167 :		ld.e r9, r0, #192, #0				// expr `ld t115_6, self, 192, 0`
+0169 :		ld.e r10, r0, #224, #0				// expr `ld t115_7, self, 224, 0`
+016B :		ld.e r11, r0, #256, #0				// expr `ld t115_8, self, 256, 0`
+016D :		bsf r12, r4, #0, #0				// expr `bsf t116, t115_1, 0, 0`
+016E :		mul.e r3, r1, #32				// expr `mul t117, row, 32`
+0170 :		ldw r4, r12, r3				// expr `ldw t118, t116, t117`
+0171 :		mov r3, r4				// expr `mov linePtr, t118`
+0172 :		mov r30, #0
+0173 :		mov r4, r30				// expr `mov col, 0`
+	L119:
+0174 :		ult.e r4, #64				// expr `ult col, 64`
+0176 :		c.jmp L120:				// expr `c.jmp L120:`
+	_L122:
+0177 :		jmp L121:				// expr `jmp L121:`
+	L120:
+0178 :		add r5, r4, r2				// expr `add t124, col, latScroll`
+0179 :		mul.e r6, r5, #32				// expr `mul t125, t124, 32`
+017B :		ldw r5, r3, r6				// expr `ldw t126, linePtr, t125`
+017C :		mov r6, r5				// expr `mov char, t126`
+017D :		eq r6, #10				// expr `eq char, 10`
+017E :		c.jmp L127:				// expr `c.jmp L127:`
+	_L130:
+017F :		jmp L129:				// expr `jmp L129:`
+	L129:
+0180 :		eq r6, #0				// expr `eq char, 0`
+0181 :		c.jmp L127:				// expr `c.jmp L127:`
+	_L132:
+0182 :		jmp L128:				// expr `jmp L128:`
+	L134:
+0183 :		ult.e r4, #64				// expr `ult col, 64`
+0185 :		c.jmp L135:				// expr `c.jmp L135:`
+	_L137:
+0186 :		jmp L136:				// expr `jmp L136:`
+	L135:
+0187 :		stw.e r1, r31, #32
+0189 :		mov r1, #0				// expr `argst 1, 0`
+018A :		stw.e r2, r31, #64				// clobbering r2 (`latScroll`)
+018C :		ldw.e r2, r31, #32				// assign r2 = `row`	// expr `argst 2, row`
+018E :		mov r3, r4				// assign r3 = `col`	// expr `argst 3, col`
+018F :		stw r0, r31, #0
+0190 :		stw.e r2, r31, #32
+0192 :		stw.e r3, r31, #128
+0194 :		stw.e r4, r31, #128
+0196 :		add.e r31, r31, #1088
+0198 :		call _u_RenderState____WriteChar__:
+0199 :		sub.e r31, r31, #1088				// expr `call u_RenderState____WriteChar`
+019B :		ldw.e r1, r31, #128				// assign r1 = `col`
+019D :		add r0, r1, #1				// expr `add t140, col, 1`
+019E :		mov r1, r0				// expr `mov col, t140`
+019F :		ldw r0, r31, #0
+01A0 :		stw.e r1, r31, #128
+01A2 :		ldw.e r2, r31, #64
+01A4 :		ldw.e r4, r31, #128
+01A6 :		jmp L134:				// expr `jmp L134:`
+	L136:
+01A7 :		jmp L121:				// expr `jmp L121:`
+	L128:
+01A8 :		stw.e r1, r31, #32				// clobbering r1 (`row`)
+01AA :		mov r1, r6				// assign r1 = `char`	// expr `argst 1, char`
+01AB :		stw.e r2, r31, #64				// clobbering r2 (`latScroll`)
+01AD :		ldw.e r2, r31, #32				// assign r2 = `row`	// expr `argst 2, row`
+01AF :		stw.e r3, r31, #96				// clobbering r3 (`linePtr`)
+01B1 :		mov r3, r4				// assign r3 = `col`	// expr `argst 3, col`
+01B2 :		stw r0, r31, #0
+01B3 :		stw.e r2, r31, #32
+01B5 :		stw.e r3, r31, #128
+01B7 :		stw.e r4, r31, #128
+01B9 :		add.e r31, r31, #1088
+01BB :		call _u_RenderState____WriteChar__:
+01BC :		sub.e r31, r31, #1088				// expr `call u_RenderState____WriteChar`
+01BE :		ldw.e r1, r31, #128				// assign r1 = `col`
+01C0 :		add r0, r1, #1				// expr `add t144, col, 1`
+01C1 :		mov r1, r0				// expr `mov col, t144`
+01C2 :		ldw r0, r31, #0
+01C3 :		stw.e r1, r31, #128
+01C5 :		ldw.e r2, r31, #64
+01C7 :		ldw.e r3, r31, #96
+01C9 :		ldw.e r4, r31, #128
+01CB :		jmp L119:				// expr `jmp L119:`
+	L121:
+01CC :		add r3, r1, #1				// expr `add t146, row, 1`
+01CD :		mov r1, r3				// expr `mov row, t146`
+01CE :		jmp L110:				// expr `jmp L110:`
+	L112:
+01CF :		ld r1, r0, #0, #0				// expr `ld t148_0, self, 0, 0`
+01D0 :		ld.e r2, r0, #32, #0				// expr `ld t148_1, self, 32, 0`
+01D2 :		ld.e r3, r0, #64, #0				// expr `ld t148_2, self, 64, 0`
+01D4 :		ld.e r4, r0, #96, #0				// expr `ld t148_3, self, 96, 0`
+01D6 :		ld.e r5, r0, #128, #0				// expr `ld t148_4, self, 128, 0`
+01D8 :		ld.e r6, r0, #160, #0				// expr `ld t148_5, self, 160, 0`
+01DA :		ld.e r7, r0, #192, #0				// expr `ld t148_6, self, 192, 0`
+01DC :		ld.e r8, r0, #224, #0				// expr `ld t148_7, self, 224, 0`
+01DE :		ld.e r9, r0, #256, #0				// expr `ld t148_8, self, 256, 0`
+01E0 :		stw.e r1, r31, #32				// memsave r1 => `t148_0`
+01E2 :		stw.e r2, r31, #64				// memsave r2 => `t148_1`
+01E4 :		stw.e r3, r31, #96				// memsave r3 => `t148_2`
+01E6 :		stw.e r4, r31, #128				// memsave r4 => `t148_3`
+01E8 :		stw.e r5, r31, #160				// memsave r5 => `t148_4`
+01EA :		stw.e r6, r31, #192				// memsave r6 => `t148_5`
+01EC :		stw.e r7, r31, #224				// memsave r7 => `t148_6`
+01EE :		stw.e r8, r31, #256				// memsave r8 => `t148_7`
+01F0 :		stw.e r9, r31, #288				// memsave r9 => `t148_8`
+01F2 :		ld r10, r0, #0, #0				// expr `ld t149_0, self, 0, 0`
+01F3 :		ld.e r11, r0, #32, #0				// expr `ld t149_1, self, 32, 0`
+01F5 :		ld.e r12, r0, #64, #0				// expr `ld t149_2, self, 64, 0`
+01F7 :		ld.e r13, r0, #96, #0				// expr `ld t149_3, self, 96, 0`
+01F9 :		ld.e r14, r0, #128, #0				// expr `ld t149_4, self, 128, 0`
+01FB :		ld.e r15, r0, #160, #0				// expr `ld t149_5, self, 160, 0`
+01FD :		ld.e r16, r0, #192, #0				// expr `ld t149_6, self, 192, 0`
+01FF :		ld.e r17, r0, #224, #0				// expr `ld t149_7, self, 224, 0`
+0201 :		ld.e r18, r0, #256, #0				// expr `ld t149_8, self, 256, 0`
+0203 :		bsf r0, r16, #0, #8				// expr `bsf t150, t149_6, 0, 8`
+0204 :		add r10, r0, #1				// expr `add t151, t150, 1`
+0205 :		stw.e r1, r31, #32				// memsave r1 => `t148_0`
+0207 :		stw.e r2, r31, #64				// memsave r2 => `t148_1`
+0209 :		stw.e r3, r31, #96				// memsave r3 => `t148_2`
+020B :		stw.e r4, r31, #128				// memsave r4 => `t148_3`
+020D :		stw.e r5, r31, #160				// memsave r5 => `t148_4`
+020F :		stw.e r6, r31, #192				// memsave r6 => `t148_5`
+0211 :		stw.e r7, r31, #224				// memsave r7 => `t148_6`
+0213 :		stw.e r8, r31, #256				// memsave r8 => `t148_7`
+0215 :		stw.e r9, r31, #288				// memsave r9 => `t148_8`
+0217 :		bst r7, r10, #0, #8				// expr `bst t148_6, t151, 0, 8`
+	_u_RenderState____WriteChar__:
+0218 :		ld r4, r0, #0, #0				// expr `ld t152_0, self, 0, 0`
+0219 :		ld.e r5, r0, #32, #0				// expr `ld t152_1, self, 32, 0`
+021B :		ld.e r6, r0, #64, #0				// expr `ld t152_2, self, 64, 0`
+021D :		ld.e r7, r0, #96, #0				// expr `ld t152_3, self, 96, 0`
+021F :		ld.e r8, r0, #128, #0				// expr `ld t152_4, self, 128, 0`
+0221 :		ld.e r9, r0, #160, #0				// expr `ld t152_5, self, 160, 0`
+0223 :		ld.e r10, r0, #192, #0				// expr `ld t152_6, self, 192, 0`
+0225 :		ld.e r11, r0, #224, #0				// expr `ld t152_7, self, 224, 0`
+0227 :		ld.e r12, r0, #256, #0				// expr `ld t152_8, self, 256, 0`
+0229 :		bsf r13, r11, #0, #0				// expr `bsf t153, t152_7, 0, 0`
+022A :		mov r4, r13				// expr `mov fore, t153`
+022B :		ld r5, r0, #0, #0				// expr `ld t154_0, self, 0, 0`
+022C :		ld.e r6, r0, #32, #0				// expr `ld t154_1, self, 32, 0`
+022E :		ld.e r7, r0, #64, #0				// expr `ld t154_2, self, 64, 0`
+0230 :		ld.e r8, r0, #96, #0				// expr `ld t154_3, self, 96, 0`
+0232 :		ld.e r9, r0, #128, #0				// expr `ld t154_4, self, 128, 0`
+0234 :		ld.e r10, r0, #160, #0				// expr `ld t154_5, self, 160, 0`
+0236 :		ld.e r11, r0, #192, #0				// expr `ld t154_6, self, 192, 0`
+0238 :		ld.e r12, r0, #224, #0				// expr `ld t154_7, self, 224, 0`
+023A :		ld.e r13, r0, #256, #0				// expr `ld t154_8, self, 256, 0`
+023C :		bsf r14, r13, #0, #0				// expr `bsf t155, t154_8, 0, 0`
+023D :		mov r5, r14				// expr `mov back, t155`
+023E :		ld r6, r0, #0, #0				// expr `ld t160_0, self, 0, 0`
+023F :		ld.e r7, r0, #32, #0				// expr `ld t160_1, self, 32, 0`
+0241 :		ld.e r8, r0, #64, #0				// expr `ld t160_2, self, 64, 0`
+0243 :		ld.e r9, r0, #96, #0				// expr `ld t160_3, self, 96, 0`
+0245 :		ld.e r10, r0, #128, #0				// expr `ld t160_4, self, 128, 0`
+0247 :		ld.e r11, r0, #160, #0				// expr `ld t160_5, self, 160, 0`
+0249 :		ld.e r12, r0, #192, #0				// expr `ld t160_6, self, 192, 0`
+024B :		ld.e r13, r0, #224, #0				// expr `ld t160_7, self, 224, 0`
+024D :		ld.e r14, r0, #256, #0				// expr `ld t160_8, self, 256, 0`
+024F :		bsf r15, r10, #0, #0				// expr `bsf t161_0, t160_4, 0, 0`
+0250 :		bsf r16, r11, #0, #0				// expr `bsf t161_1, t160_5, 0, 0`
+0251 :		bsf r6, r16, #0, #0				// expr `bsf t162, t161_1, 0, 0`
+0252 :		eq r2, r6				// expr `eq row, t162`
+0253 :		c.jmp L159:				// expr `c.jmp L159:`
+	_L163:
+0254 :		jmp L157:				// expr `jmp L157:`
+	L159:
+0255 :		ld r6, r0, #0, #0				// expr `ld t165_0, self, 0, 0`
+0256 :		ld.e r7, r0, #32, #0				// expr `ld t165_1, self, 32, 0`
+0258 :		ld.e r8, r0, #64, #0				// expr `ld t165_2, self, 64, 0`
+025A :		ld.e r9, r0, #96, #0				// expr `ld t165_3, self, 96, 0`
+025C :		ld.e r10, r0, #128, #0				// expr `ld t165_4, self, 128, 0`
+025E :		ld.e r11, r0, #160, #0				// expr `ld t165_5, self, 160, 0`
+0260 :		ld.e r12, r0, #192, #0				// expr `ld t165_6, self, 192, 0`
+0262 :		ld.e r13, r0, #224, #0				// expr `ld t165_7, self, 224, 0`
+0264 :		ld.e r14, r0, #256, #0				// expr `ld t165_8, self, 256, 0`
+0266 :		bsf r15, r10, #0, #0				// expr `bsf t166_0, t165_4, 0, 0`
+0267 :		bsf r16, r11, #0, #0				// expr `bsf t166_1, t165_5, 0, 0`
+0268 :		bsf r6, r15, #0, #0				// expr `bsf t167, t166_0, 0, 0`
+0269 :		eq r3, r6				// expr `eq col, t167`
+026A :		c.jmp L158:				// expr `c.jmp L158:`
+	_L168:
+026B :		jmp L157:				// expr `jmp L157:`
+	L158:
+026C :		ld r6, r0, #0, #0				// expr `ld t170_0, self, 0, 0`
+026D :		ld.e r7, r0, #32, #0				// expr `ld t170_1, self, 32, 0`
+026F :		ld.e r8, r0, #64, #0				// expr `ld t170_2, self, 64, 0`
+0271 :		ld.e r9, r0, #96, #0				// expr `ld t170_3, self, 96, 0`
+0273 :		ld.e r10, r0, #128, #0				// expr `ld t170_4, self, 128, 0`
+0275 :		ld.e r11, r0, #160, #0				// expr `ld t170_5, self, 160, 0`
+0277 :		ld.e r12, r0, #192, #0				// expr `ld t170_6, self, 192, 0`
+0279 :		ld.e r13, r0, #224, #0				// expr `ld t170_7, self, 224, 0`
+027B :		ld.e r14, r0, #256, #0				// expr `ld t170_8, self, 256, 0`
+027D :		bsf r0, r12, #0, #8				// expr `bsf t171, t170_6, 0, 8`
+027E :		bsf r6, r0, #5, #1				// expr `bsf t172, t171, 5, 1`
+027F :		eq r6, #1				// expr `eq t172, 1`
+0280 :		c.jmp L156:				// expr `c.jmp L156:`
+	_L173:
+0281 :		jmp L157:				// expr `jmp L157:`
+	L156:
+0282 :		mov r0, r4				// expr `mov u_tmp, fore`
+0283 :		mov r4, r5				// expr `mov fore, back`
+0284 :		mov r5, r0				// expr `mov back, u_tmp`
+	L157:
+0285 :		mov r0, r1				// assign r0 = `char`	// expr `argst 0, char`
+0286 :		mov r1, r2				// assign r1 = `row`	// expr `argst 1, row`
+0287 :		mov r2, r3				// assign r2 = `col`	// expr `argst 2, col`
+0288 :		mov r3, #0				// expr `argst 3, 0`
+0289 :		add.e r31, r31, #1216
+028B :		call _WriteCharFlaggedColored__:
+028C :		sub.e r31, r31, #1216				// expr `call WriteCharFlaggedColored`
+	_WriteCharFlaggedColored__:
+028E :		bsl r6, r1, #5				// expr `bsl t188, row, 5`
+028F :		add r1, r6, r2				// expr `add t189, t188, col`
+0290 :		mov r2, r1				// expr `mov pos, t189`
+0291 :		bsl r1, r3, #7				// expr `bsl t190, flags, 7`
+0292 :		add r3, r1, r0				// expr `add t191, t190, char`
+0293 :		mov r0, r3				// expr `mov rd, t191`
+0294 :		mov r1, r4				// expr `mov t192, foreColor`
+0295 :		mov r3, r5				// expr `mov t193, backColor`
+0296 :		stchr r0, r2, r1, r3				// expr `stchr rd, pos, t192, t193`

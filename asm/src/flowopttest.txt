@@ -1,0 +1,8 @@
+fn HSB(x: u32) u32 {
+  var bit: u32;
+  assume atleastonce;
+  for (var tbit: u32 = 1; tbit != 0; tbit <<= 1) {
+    if (x & tbit != 0) bit = tbit;
+  }
+  return bit;
+}

@@ -4,7 +4,7 @@ import LowerLLIR3 as LLL
 import AssemblerV3 as ASM
 from math import log2
 import sys
-from Statics import Type, Var, NoVar, AlignOf
+from Statics import Type, Var, NoVar, AlignOf, Void, Comp, Int
 import Statics
 
 
@@ -37,25 +37,28 @@ def TreeToName(tree):
     return MapRawName(tree.children[0].value)
 
 def TreeToKind(kind):
-    c = kind.children[0]
-    if type(c) == Tree:
-        if c.data.value == 'identtype':
-            r = c.children[0]
-            r = r.children[0].value if r else r
-            ps = c.children[1:-3]
-            a = c.children[-2]
-            a = ''.join([x.value for x in a.children[0].children]) if a else a
-            a = f'[{a}]' if a else ''
-            print('Calling Type.FromStr::',r+'*'*len(ps)+a)
-            #pain
-            return Type.FromStr(r+'*'*len(ps)+a)
-        cry
-        return Type.FromStr(c.value)
-    print('plain Calling Type.FromStr::',c.value)
-    k = Type.FromStr(c.value)
-    assert str(k) == c.value, f'Bad kind `{c.value=}` results in `{k=}`'
-    return k
-    assert False, f'{kind}='
+    start = kind.meta.start_pos
+    end = kind.meta.end_pos
+    return Type(txt[start:end])
+##    c = kind.children[0]
+##    if type(c) == Tree:
+##        if c.data.value == 'identtype':
+##            r = c.children[0]
+##            r = r.children[0].value if r else r
+##            ps = c.children[1:-3]
+##            a = c.children[-2]
+##            a = ''.join([x.value for x in a.children[0].children]) if a else a
+##            a = f'[{a}]' if a else ''
+##            print('Calling Type.FromStr::',r+'*'*len(ps)+a)
+##            #pain
+##            return Type.FromStr(r+'*'*len(ps)+a)
+##        cry
+##        return Type.FromStr(c.value)
+##    print('plain Calling Type.FromStr::',c.value)
+##    k = Type.FromStr(c.value)
+##    assert str(k) == c.value, f'Bad kind `{c.value=}` results in `{k=}`'
+##    return k
+##    assert False, f'{kind}='
 
 def TrackLine(func):
     global inter, srcs
@@ -192,9 +195,10 @@ def Gen(tree, pre = True, fn_pref = None):
                 return
         elif data.type == 'RULE' and data.value == 'declstmt':
             _, name, _, kind, _, = tree.children
-            kind = GetStrKind(kind)
+            kind = TreeToKind(kind)
             name = TreeToName(name)
-            inter.Decl(name, Type.FromStr(kind))
+            assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime type'
+            inter.Decl(name, kind)
         elif data.type == 'RULE' and data.value == 'declexpr':
             _, name, _, kind, _, expr, _, = tree.children
             rhs = Rvalue(expr.children[0])
@@ -206,6 +210,7 @@ def Gen(tree, pre = True, fn_pref = None):
             assert rhs.kind.CanCoerceTo(kind), f'Type `{rhs.kind}` cannot coerce into type `{kind}`'
             inter.Decl(name, kind)
             assert rhs.kind.CanCoerceTo(kind)
+            assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime val `{rhs.name}`'
             inter.AddPent(op = '=', D = Var(name, kind), S0 = rhs, S1 = None, S2 = None)
         elif data.type == 'RULE' and data.value == 'exprstmt':
             expr, _, = tree.children
@@ -447,7 +452,7 @@ def Rvalue(expr):
             lhs = Rvalue(le)
             tmp = NewTemp(lhs.kind.Deref())
             EvictAliasFor(inter, tmp.kind)
-            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = Var(0, 'comp'), S2 = None)
+            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = Var(0, 'comptime'), S2 = None)
             return tmp
         elif data == 'structinit':
             k, _, args, _, = expr.children
@@ -482,7 +487,7 @@ def Rvalue(expr):
             le, _, _, = expr.children
             lhs = Rvalue(le)
             nk = lhs.kind.Addr()
-            assert lhs.kind.numPtrs == 0
+            #assert type(lhs.kind.body) in [Statics.Pointer, Statics.C_Array], f'{lhs!r}'
             return Var(f'{lhs.name}.&', lhs.kind.Addr())
         elif data == 'breakpoint':
             inter.AddPent('breakpoint', None, None, None, None)
@@ -493,7 +498,7 @@ def Rvalue(expr):
             rv = Rvalue(root)
             wv = Rvalue(width)
             assert wv.kind.comptime
-            tmp = NewTemp(Type(wv.name))
+            tmp = NewTemp(Type(Statics.Int(wv.name, False)))
             EvictAliasFor(inter, tmp.kind)
             inter.AddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = rv, S2 = wv)
             return tmp
@@ -590,10 +595,10 @@ def Rvalue(expr):
                 return tmp
         elif data == 'true':
             inter.Jump(inter.trues[-1])
-            return Var(None, Type(isbool = True))
+            return Var(None, Type(Statics.Bool()))
         elif data == 'false':
             inter.Jump(inter.falses[-1])
-            return Var(None, Type(isbool = True))
+            return Var(None, Type(Statics.Bool()))
         elif type(data) == str:
             print(data)
             print(expr)
@@ -605,9 +610,9 @@ def Rvalue(expr):
 ##            kind = inter.Lookup(ident)
 ##            return ident, kind
         elif data.value == 'decint':
-            return Var(int(''.join([x for x in expr.children]).replace('_', '')), Type(comptime = True))
+            return Var(int(''.join([x for x in expr.children]).replace('_', '')), Type(Comp()))
         elif data.value == 'hexint':
-            return Var(int(''.join([x for x in expr.children]).replace('_', ''), 16), Type(comptime = True))
+            return Var(int(''.join([x for x in expr.children]).replace('_', ''), 16), Type(Comp()))
         elif data.value == 'landexpr':
             lhs, _, rhs = expr.children
             lbl = NewLabel()
@@ -616,7 +621,7 @@ def Rvalue(expr):
             inter.AddLabel(lbl)
             del inter.trues[-1]
             Rvalue(rhs)
-            return Var(None, Type(isbool = True))
+            return Var(None, Type(Statics.Bool()))
         elif data.value == 'lorexpr':
             lhs, _, rhs = expr.children
             lbl = NewLabel()
@@ -625,7 +630,7 @@ def Rvalue(expr):
             inter.AddLabel(lbl)
             del inter.falses[-1]
             Rvalue(rhs)
-            return Var(None, Type(isbool = True))
+            return Var(None, Type(Statics.Bool()))
         elif data.value == 'addexpr':
             le, op, re = expr.children
             lhs = Rvalue(le)
@@ -675,11 +680,16 @@ def Rvalue(expr):
             op = op.children[0].value
             assert lhs.kind.CanCoerceTo(rhs.kind) or rhs.kind.CanCoerceTo(lhs.kind), f'Cannot do comparison on uncoerceable types `{lhs.kind}` and `{rhs.kind}`'
             if op in ['>', '>=', '<=', '<']:
-                inter.IfJump(lhs, '+-'[lhs.kind.signed]+op, rhs, inter.trues[-1])
+                if type(lhs.kind.body) == Int:
+                    signed = lhs.kind.signed
+                elif type(rhs.kind.body) == Int:
+                    signed = rhs.kind.signed
+                else: assert False, f'Comparison of non-numbers {lhs}({type(lhs.kind.body)}) and {rhs}({type(rhs.kind.body)})'
+                inter.IfJump(lhs, '+-'[signed]+op, rhs, inter.trues[-1])
             else:
                 inter.IfJump(lhs, op, rhs, inter.trues[-1])
             inter.Jump(inter.falses[-1])
-            return Var(None, Type(isbool = True))
+            return Var(None, Type(Statics.Bool()))
         elif data.value == 'assgexpr':
             le, op, re = expr.children
             lhs = Lvalue(le)
@@ -719,10 +729,10 @@ def Rvalue(expr):
             inter.trues[-1], inter.falses[-1] = inter.falses[-1], inter.trues[-1]
 ##            print(inter.trues)
             rhs, rk = Rvalue(re)
-            return None, Type(isbool = True)
+            return None, Type(Statics.Bool())
         elif data.value == 'castexpr':
             le, re, = expr.children
-            lk = Type.FromStr(le.children[0].value)
+            lk = TreeToKind(le)
             rhs = Rvalue(re)
             tmp = NewTemp(lk)
             inter.AddPent(op = '=<>', D = tmp, S0 = rhs, S1 = None, S2 = None)
@@ -742,7 +752,7 @@ def Rvalue(expr):
             print(expr)
             bad
     elif type(expr) != str and expr.type == 'CHAR':
-        return Var(ord(eval(expr.value)), Type(comptime = True))
+        return Var(ord(eval(expr.value)), Type(Comp()))
     else:
         print(f'Bad rvalue expression isnt tree nor CHAR: `{expr}`')
         err
@@ -781,7 +791,7 @@ def Lvalue(expr):
             tmp = f'{lhs.name}[{off}+:{width}]'
             print(tmp)
 ##            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = off, S2 = width, origtype = lk, desttype = desttype)
-            return Var(tmp, lhs.kind)
+            return Var(tmp, desttype)
         elif data == 'derefexpr':
             le, _, _, = expr.children
             lhs = Rvalue(le)
@@ -890,7 +900,7 @@ class HLIR:
                     als.append(name)
         return als
     def Decl(self, name, kind):
-        if kind.isvoid:
+        if type(kind) == Statics.Void:
             return
         self.Register(name, kind)
         self.body.Addline(('decl', Var(name, kind), None, None))
@@ -1004,7 +1014,7 @@ class HLIR:
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
         self.Use(cond)
-        self.AddPent('==', None, cond, Var(0, 'comp'), None)
+        self.AddPent('==', None, cond, Var(0, 'comptime'), None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
