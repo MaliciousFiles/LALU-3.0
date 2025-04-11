@@ -1,6 +1,6 @@
 #define WHITE Color{r := 0xFF, g := 0xFF, b := 0xFF}
 #define BLACK Color{r := 0x00, g := 0x00, b := 0x00}
-#define range(name, low, high) (var name = low; name < high; name += 1)
+#define range(name, low, high) (var name: u32 = low; name < high; name += 1)
 
 struct RenderState {
   file: u8*,
