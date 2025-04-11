@@ -6,27 +6,13 @@ from math import log2
 import sys
 from Statics import Type, Var, NoVar, AlignOf, Void, Comp, Int
 import Statics
+import LLOptimizer
 
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 
-##voidret = ['+>', '+>=', '+<', '+<=', '->', '->=', '-<', '-<=', '==', '!=']
 usesRd = ['[]=', '[:]=', '@stchr']
 nullret = ['@susp', '@rstkey', '@stchr', '@nop']
-
-def Write(txt):
-    global out
-    out += '  '*ind + txt
-def WriteLine(txt):
-    global out
-    out += '  '*ind + txt + '\n'
-
-def Indent():
-    global ind
-    ind += 1
-def Dendent():
-    global ind
-    ind -= 1
 
 def MapRawName(name):
     if '_' in name or name[0] in 'Lt':
@@ -40,25 +26,6 @@ def TreeToKind(kind):
     start = kind.meta.start_pos
     end = kind.meta.end_pos
     return Type(txt[start:end])
-##    c = kind.children[0]
-##    if type(c) == Tree:
-##        if c.data.value == 'identtype':
-##            r = c.children[0]
-##            r = r.children[0].value if r else r
-##            ps = c.children[1:-3]
-##            a = c.children[-2]
-##            a = ''.join([x.value for x in a.children[0].children]) if a else a
-##            a = f'[{a}]' if a else ''
-##            print('Calling Type.FromStr::',r+'*'*len(ps)+a)
-##            #pain
-##            return Type.FromStr(r+'*'*len(ps)+a)
-##        cry
-##        return Type.FromStr(c.value)
-##    print('plain Calling Type.FromStr::',c.value)
-##    k = Type.FromStr(c.value)
-##    assert str(k) == c.value, f'Bad kind `{c.value=}` results in `{k=}`'
-##    return k
-##    assert False, f'{kind}='
 
 def TrackLine(func):
     global inter, srcs
@@ -132,7 +99,7 @@ def GetStrKind(kind):
 @logerror
 @TrackLine
 def Gen(tree, pre = True, fn_pref = None):
-    #print(f'STRUCTS IS {Statics.structs}')
+    
     global out, ind, inter, funcs
     if type(tree) == Tree:
         data = tree.data
@@ -150,15 +117,16 @@ def Gen(tree, pre = True, fn_pref = None):
             _, expr, _, = tree.children
             inter.Return(Rvalue(expr.children[0]))
         elif type(data) == str:
-            print(data)
-            print(expr)
-            err
+            assert False, f'Cannot generate shortnamed tree of name {data=}; {expr=}'
+##            print(data)
+##            print(expr)
+##            err
         
         elif data.type == 'RULE' and data.value == 'start':
             bds = []
             for child in tree.children:
                 Gen(child)
-##            print('PREPROCESS END')
+
             ResolveTypes()
             for child in tree.children:
                 Gen(child, pre = False)
@@ -178,11 +146,9 @@ def Gen(tree, pre = True, fn_pref = None):
                     if type(arg) == Token:
                         continue
                     aname, _, akind = arg.children
-                    #assert type(akind.children[0]) != Tree, f'{akind=}'
                     narg = Var(TreeToName(aname), TreeToKind(akind))
                     args.append(narg)
             ret = TreeToKind(ret)
-            #ret = Type.FromStr(ret.children[0].value)
             funcs[name] = (args, ret)
             if not pre:
                 inter.NewFunc(name, args, ret)
@@ -193,6 +159,8 @@ def Gen(tree, pre = True, fn_pref = None):
                 inter.EndFunc()
             else:
                 return
+        elif data.type == 'RULE' and data.value == 'assumestmt':
+            GenAssume(inter, tree.children[1])
         elif data.type == 'RULE' and data.value == 'declstmt':
             _, name, _, kind, _, = tree.children
             kind = TreeToKind(kind)
@@ -322,7 +290,7 @@ def Gen(tree, pre = True, fn_pref = None):
             inter.PushLoopLabels(pre, post)
             Gen(preexpr.children[0])
             inter.AddLabel(pre)
-            cond, _ = Rvalue(cond.children[0])
+            cond = Rvalue(cond.children[0])
             assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
@@ -353,7 +321,6 @@ def Gen(tree, pre = True, fn_pref = None):
             assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
             inter.trues = []; inter.falses = []
             if cond and cond.name:
-                print(f'cj {cond=}')
                 inter.CJump(cond, post)
             inter.AddLabel(inner)
             inter.NewEnv()
@@ -424,15 +391,15 @@ def Gen(tree, pre = True, fn_pref = None):
             return
             
         else:
-            print(tree)
-            assert False, f'Uh oh'
+##            print(tree)
+            assert False, f'Unknown branch {tree=}'
     else:
-        assert False, f'Bad'
+        assert False, f'Tried to generate non tree `{tree}`'
 
 @logerror
 @TrackLine
 def Rvalue(expr):
-    #print(f'rv STRUCTS IS {Statics.structs}')
+    
     global inter, structs
     if type(expr) == Tree:
         data = expr.data
@@ -463,22 +430,22 @@ def Rvalue(expr):
                 nargs = []
                 for arg in args.children:
                     if type(arg)==Tree:
-                        print('arg', arg.children[2])
+                        
                         v = Rvalue(arg.children[2])
                         nargs.append((arg.children[0].children[0].value, v))
                 args = nargs
             else:
                 args = []
             for i, (arg, val) in enumerate(args):
-                print('av:', arg, val)
+                
                 field = arg
                 idk = dict(Statics.structs[str(kind)]['args'][field])
-                print('`STATICS:`', field, idk)
+                
                 off = idk['offset']
                 width = idk['width']
                 desttype = idk['type']
                 tmps = f'{tmp.name}[{off}+:{width}]'
-                print(f'Auto writing: `{tmp.name}.{field} = {val}`')
+                
                 inter.AddPent(op = '=', D = Var(tmps, desttype), S0 = val, S1 = None, S2 = None)
             return tmp
         elif data == 'colonexpr':
@@ -507,7 +474,7 @@ def Rvalue(expr):
             lhs = Rvalue(le)
             field = re.children[0].value
             idk = Statics.structs[str(lhs.kind)]['args'][field]
-            print('`STATICS:`',Statics.structs[str(lhs.kind)]['args'], field, idk)
+            
             off = idk['offset']
             width = idk['width']
             desttype = idk['type']
@@ -532,7 +499,7 @@ def Rvalue(expr):
                         func = MapRawName(str(inter.Lookup(l)).replace('*','').split('[')[0]+'__'+r)
                 else: 
                     l = Rvalue(l)
-                    print('l is',l)
+                    
                     func = MapRawName(str(l.kind).replace('*','')+'__'+r)
                     prearg = l
 ##                if l in Statics.structs:
@@ -580,7 +547,7 @@ def Rvalue(expr):
                 args = nargs
             else:
                 args = []
-##            print(f'Int f: {name=}')
+
             if name in usesRd:
                 assert len(args) <= 4, f'Intrinsic function takes 4 arguments'
                 args += [None]*4
@@ -700,7 +667,7 @@ def Rvalue(expr):
                 rlhs = Rvalue(le)
                 kind = rlhs.kind.Common(rhs.kind)
                 tmp = NewTemp(kind)
-                print(f'op = {op}, D = {tmp}, S0 = {rlhs}, S1 = {rhs}, S2 = None')
+                
                 inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None)
                 inter.AddPent(op = '=', D = lhs, S0 = tmp, S1 = None, S2 = None)
 ##                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None)
@@ -725,9 +692,9 @@ def Rvalue(expr):
                 assert False, f'Bad unary: `{op}`'
         elif data.value == 'lunaryexpr':
             _, re = expr.children
-##            print(inter.trues)
+
             inter.trues[-1], inter.falses[-1] = inter.falses[-1], inter.trues[-1]
-##            print(inter.trues)
+
             rhs, rk = Rvalue(re)
             return None, Type(Statics.Bool())
         elif data.value == 'castexpr':
@@ -784,12 +751,12 @@ def Lvalue(expr):
             lhs = Rvalue(le)
             field = re.children[0].value
             idk = Statics.structs[str(lhs.kind)]['args'][field]
-            print(Statics.structs[str(lhs.kind)]['args'], field, idk)
+            
             off = idk['offset']
             width = idk['width']
             desttype = idk['type']
             tmp = f'{lhs.name}[{off}+:{width}]'
-            print(tmp)
+            
 ##            inter.CastAddPent(op = '=[:]', D = tmp, S0 = lhs, S1 = off, S2 = width, origtype = lk, desttype = desttype)
             return Var(tmp, desttype)
         elif data == 'derefexpr':
@@ -877,10 +844,10 @@ class HLIR:
     def PopEnv(self):
         for env in self.envs[:-1]:
             for var in env:
-##                print(f'Extend variable `{var}`')
+
                 self.PreUse(var)
         for var in self.envs[-1]:
-##            print(f'End of var `{var}`')
+
             pass
         del self.envs[-1]
 
@@ -935,7 +902,7 @@ class HLIR:
 ##        InvalidateAliasFor(inter, ary.kind)
     
     def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var):
-        #print(f'ap STRUCTS IS {Statics.structs}')
+        
         D = D if D else Var.FromVal(self, None)
         S0 = S0 if S0 else Var.FromVal(self, None)
         S1 = S1 if S1 else Var.FromVal(self, None)
@@ -951,9 +918,9 @@ class HLIR:
         if type(D.name) == str and '[' in D.name:
             if op == '=<>':
                 tmp = NewTemp(S1.kind)
-                print(f'cap STRUCTS IS {Statics.structs}')
+                
                 self.AddPent('=<>', tmp, S0, S1, S2)
-                print(f'cap STRUCTS IS {Statics.structs}')
+                
                 S0 = tmp
                 S2 = Var.FromVal(None)
                 op = '='
@@ -970,11 +937,11 @@ class HLIR:
                 r = Var.FromVal(self, r)
                 w = Var.FromVal(self, w)
                 assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
-##                print(f'{l=}; {r=}, {w=}, {S0=}')
-                print(l, r, w, S0)
+
+                
                 self.AddBitStore(l, r, w, S0)
             return
-        print(f'ap: {op=}; {D=}; {S0=}; {S1=}; {S2=}')
+        
         self.body.Addline(('expr', (op, D, S0, S1, S2), eid))
     def AddLabel(self, lbl):
         self.body.fall = lbl
@@ -993,23 +960,13 @@ class HLIR:
         self.body = Block(lbl)
         self.func['body'].append(self.body)
     def IfJump(self, lhs, op, rhs, lbl):
-##        global WordSizeOf
-##        WordSizeOf += 1
-##        self.Use(lhs)
-##        self.Use(rhs)
         self.AddPent(op, None, lhs, rhs, None)
         self.body.exit = ('c.jmp', (lbl))
-##        self.body.exit = ('if', (lhs, op, rhs, lbl), WordSizeOf)
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def IfFalseJump(self, lhs, op, rhs, lbl):
-##        global WordSizeOf
-##        WordSizeOf += 1
-##        self.Use(lhs)
-##        self.Use(rhs)
         self.AddPent(op, None, lhs, rhs, None)
         self.body.exit = ('cn.jmp', (lbl))
-##        self.body.exit = ('ifFalse', (lhs, op, rhs, lbl), WordSizeOf)
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def CJump(self, cond, lbl):
@@ -1019,8 +976,6 @@ class HLIR:
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
     def Jump(self, lbl):
-##        global WordSizeOf
-##        WordSizeOf += 1
         self.body.exit = ('goto', (lbl))
         self.body.exloc = lbl
         self.body.fall = None
@@ -1030,12 +985,8 @@ class HLIR:
     def PopLoopLabels(self, pre, post):
         del self.loops[-1]
     def Return(self, *args):
-##        global WordSizeOf
-##        WordSizeOf += 1
         for arg in args:
-##            print(arg.kind, self.func['ret'])
             assert arg.kind.CanCoerceTo(self.func['ret']), f'Cannot coerce type `{arg.kind}` to `{self.func["ret"]}`'
-##            self.Use(arg)
         if len(args) == 0:
             assert Type.FromStr('void').CanCoerceTo(self.func['ret']), f'Cannot return without value for function with return type `{self.func["ret"]}`'
         for i, arg in enumerate(args):
@@ -1053,9 +1004,8 @@ class HLIR:
             for i, line in enumerate(block.body):
                 if line[0] == 'decl' and line[1] == name:
                     self.func['body'][j].body[i] = line[:3] + (-1,)
-##                    self.func['body'][j].body[i] = line[:3] + (eid,)
     def EndFunc(self):
-##        print('END OF FUNCTION BEGIN')
+
         body = self.func['body']
         lvars = {}
         ito = {}
@@ -1063,7 +1013,7 @@ class HLIR:
         fto = {}
         k = {}
         fto[f'_{self.func["name"]}__'] = ['Entry']
-##        print(self)
+
         for block in body:
             ldict = lvars[block.entry] = {}
             if block.exloc != None:
@@ -1082,15 +1032,15 @@ class HLIR:
                     if line[1][0] in ['call']:
                         continue
                     if line[1][0] == 'argld':
-##                        print(f'Popped var `{line[1][1]}`')
+
                         ldict[line[1][1]] = [i, None]
                         k[line[1][1]] = line[1][3]
-##                        print(f'{ldict=}')
+
                     if line[1][0] in usesRd:
                         args = line[1][1:][:4]
                     else:
                         args = line[1][2:][:3]
-##                        print(f'{args=}')
+
                     for arg in args:
                         if type(arg.name) == str and arg.name[-1]!=':':
                             if arg.name[-2:] == '.&':
@@ -1101,32 +1051,24 @@ class HLIR:
                                 ldict[arg][1] = line[2]
                             else:
                                 pass
-##                                print(f'{arg} already maps to {ldict[arg][1]}')
-                elif line[0] in ['regrst', 'memsave', 'regrstbit', 'memsavebit']: pass
-                else:
-                    print(line)
-                    err
-##        print(f'{k=}')
+
+                elif line[0] in ['regrst', 'memsave', 'regrstbit', 'memsavebit', 'unreachable']: pass
+                else: assert False, f'Unknown command `{line[0]}` of `{line}`'
+##                    print(line)
+##                    err
+
         From = False
         for block in body[:]:
             if block.entry not in fto or fto[block.entry] == []:
                 if block.entry not in ito or ito[block.entry] == []:
-##                    print(f'{block.entry=} is unreachable')
                     self.func['body'].remove(block)
                     if block.fall != 'EOF' and block.fall != None:
-##                        print(f'Revoke fall {block.fall=}')
                         ito[block.fall].remove(block.entry)
                         fto[block.fall].remove(block.entry)
                 else:
                     block.From = ito[block.entry][0]
-##                    print(f'{block.entry=} is start of spine')
-                    
-##        print(lvars)
-##        print('BEGIN ITERATION')
-##        print(to, ito)
         run = True
         while run:
-##            print(lvars)
             run = False
             for block in body:
                 ldict = lvars[block.entry]
@@ -1140,7 +1082,6 @@ class HLIR:
                             if lvars[precur][var][1] != 'post':
                                 lvars[precur][var][1] = 'post'
                                 run = True
-##        print(lvars)
         for block in body:
             ldict = lvars[block.entry]
             for var, life in ldict.items():
@@ -1158,23 +1099,20 @@ class HLIR:
                 else:
                     for i,b in enumerate(block.body):
                         if b[0] == 'expr' and b[2] == life[1]:
-##                            print(f'{var=}')
+
                             block.body.insert(i+1, ('undecl', var, None))
                             break
                     else:
-##                        print(f'Unused variable `{var}`')
                         r = 0
                         for i,b in enumerate(block.body):
                             if b[0] == 'expr' and b[1][1] == var:
                                 if b[1][0] in nullret:
-##                                    print(f'Fix line `{b}`')
                                     l = list(b)
                                     li = list(l[1])
                                     li[1] = NoVar
                                     l[1] = li
                                     block.body[i] = tuple(l)
                                 else:
-##                                    print(f'Purge line `{b}`')
                                     idx = block.body.index(b)
                                     r = i - idx
                                     assert block.body[i-r] == b, f'Ummm, desync internally tried to delete wrong expr\n`{block.body[i-r]}`\nInstead Of:\n`{b}`'
@@ -1217,28 +1155,11 @@ def ResolveTypes():
         del queue[0]
 
 def RecuSolveType(name, stk = ()):
-##    print(f'Recu {name} from {stk}')
-
     assert name not in stk, f'Type `{name}` is self referential'
     stk = stk + (name,)
-    
     for argname, arg in Statics.structs[name]['args'].items():
-        print(argname, arg, arg['type'])
         kind = arg['type']
-##        print(kind.children[0])
         strk = str(TreeToKind(kind))
-        print('Strk is', strk, 'called from', kind, 'which is now', TreeToKind(kind))
-##        if type(kind.children[0]) != Tree:
-##            strk = TreeToKind(kind)
-##            #strk = kind.children[0].value
-##        else:
-##            o = ''
-##            for child in kind.children[0].children:
-##                if type(child) == Tree:
-##                    o += child.children[0].value
-##                else:
-##                    o += child.value
-##            strk = o
         if strk in Statics.structs and Statics.structs[strk]['size']:
             width = Statics.structs[strk]['size']
         elif strk in Statics.structs:
@@ -1252,46 +1173,38 @@ def RecuSolveType(name, stk = ()):
         align = AlignOf(width)
         Statics.structs[name]['args'][argname]['type'] = Type.FromStr(strk)
         Statics.structs[name]['args'][argname]['width'] = width
-##        print(name, argname, width)
     PackArgs(name)
 
 def PackArgs(name):
-
     words = {}
     laddr = 0
     for argname, arg in Statics.structs[name]['args'].items():
-##        print(argname, arg)
         width = arg['width']
         for addr, cw in words.items():
-            if 32 - cw > width:
-                print(f'Pack `{argname}` of `{name}` with offset `{addr << 5 | cw}`')
+            if 32 - cw > width:                
                 Statics.structs[name]['args'][argname]['offset'] = addr << 5 | cw
                 words[addr] += width
                 break
-            elif 32-cw == width:
-                print(f'Pack `{argname}` of `{name}` with offset `{addr << 5 | cw}`')
+            elif 32-cw == width:                
                 Statics.structs[name]['args'][argname]['offset'] = addr << 5 | cw
                 del words[addr]
                 break
         else:
-            if width <= 32:
-                print(f'Pack `{argname}` of `{name}` with offset `{laddr << 5}`')
+            if width <= 32:                
                 Statics.structs[name]['args'][argname]['offset'] = laddr << 5
                 words[laddr] = width
                 if width == 32:
                     del words[laddr]
                 laddr += 1
             else:
-                print(f'Pack `{argname}` of `{name}` with offset `{laddr << 5}`')
                 Statics.structs[name]['args'][argname]['offset'] = laddr << 5
                 laddr += -(-width//32)
-##            print(f"{Statics.structs[name]['args'][argname]['offset']=}")
-    print(f'Packing struct `{name}` with ', words)
+
+    
     Statics.structs[name]['size'] = 32 * laddr
     
 
 def EvictAliasFor(inter, kind):
-##    print(f'{inter.envs!r}')
     for env in inter.envs[::-1]:
         for varname, varkind in env.items():
             if str(kind) == str(varkind):
@@ -1301,7 +1214,6 @@ def EvictAliasFor(inter, kind):
                 for arg in Statics.structs[str(varkind)]['args'].values():
                     cstk.append(arg)
                 while cstk:
-##                    print(cstk)
                     arg = cstk[0]
                     del cstk[0]
                     if str(arg['type']) == str(kind):
@@ -1313,7 +1225,6 @@ def EvictAliasFor(inter, kind):
                             cstk.append(carg)
 
 def InvalidateAliasFor(inter, kind):
-##    print(f'{inter.envs!r}')
     for env in inter.envs[::-1]:
         for varname, varkind in env.items():
             if str(kind) == str(varkind):
@@ -1331,6 +1242,15 @@ def InvalidateAliasFor(inter, kind):
                         for carg in Statics.structs[str(arg['type'])]['args'].values():
                             carg['offset'] += arg['offset']
                             cstk.append(carg)
+
+def GenAssume(inter, tree):
+    data = tree.data
+    if data == 'assumeunreachable':
+        inter.body.Addline(('unreachable',None))
+        return
+    assert False, str(tree.pretty())
+
+
 
 def Compile(filepath, verbose = False):
     global funcs, syms, ind, tid, eid, srcs, inter, tree, txt
@@ -1355,12 +1275,8 @@ def Compile(filepath, verbose = False):
     try:
         Gen(tree)
     except Exception as e:
-        #print(e)
+        
         raise e
-
-##    if verbose:
-##        print('\nOUT:')
-##        print(out)
 
     with open('struct_dump.txt', 'w') as f:
         f.write(repr(Statics.structs))
@@ -1375,6 +1291,14 @@ def Compile(filepath, verbose = False):
 
     if verbose:
         print('\nLLIR:')
+        print(repr(llir))
+    with open('out.llr', 'w') as f:
+        f.write(repr(llir))
+
+    LLOptimizer.Optimize(llir)
+
+    if verbose:
+        print('\nOptimized LLIR:')
         print(repr(llir))
     with open('out.llr', 'w') as f:
         f.write(repr(llir))

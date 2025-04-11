@@ -1,176 +1,25 @@
-
-//NEWFILEBEGIN `src/os/malloc.lpc`
-#define MALLOC_SIZE 	0x8000
-#define CEILDIV(n, d) 	(n-1)>>(d-1)
-#define TO_NEXT(ptr) 	(ptr + 1 + ptr.*.size)
-#define TO_DATA(ptr)	(<any*>(ptr + 1))
-#define NULLPTR 	0
-#define TRUE 		1
-#define FALSE 		0
-
-struct Block {
-  prevPtr: Block*,
-  size: u31,
-  isFree: u1,
+fn HSB(x: u32) u32 {
+  var bit: u32;
+  //assume atleastonce;
+  for (var tbit: u32 = 1; tbit != 0; tbit <<= 1) {
+    if (x & tbit != 0) bit = tbit;
+  }
+  return bit;
 }
 
-fn Block__MemInit(memory: Block*) void {
-  var nblock: Block;
-  nblock.prevPtr = NULLPTR;
-  nblock.size = MALLOC_SIZE;
-  nblock.isFree = TRUE;
-  memory[0] = nblock;
-}
+fn Main() u32 {
+  var x: u32;
+  var magic = HSB(7); //4
+  if (magic == 4) {
+    x = 3;
+  }
 
-//Allocate `size` bits of data, may be given more
-fn Block__Malloc(memory: Block*, size: u31) any* {
-  var ENDPTR: Block* = memory + MALLOC_SIZE;
-  var rsize: u31 = <u31>CEILDIV(size, 6); //Round bits up to nearest 64 bit amt
-  
-  var hijack: Block* = NULLPTR;
-  var target: Block* = NULLPTR;
-
-  var doSplit: u1 = FALSE;
-
-  for (var blockptr: Block* = memory; blockptr != ENDPTR; blockptr = TO_NEXT(blockptr)) {
-    if (blockptr.*.isFree == FALSE) continue;
-    
-    var bsize: u31 = blockptr.*.size; //Size of current free block
-    if (bsize == rsize) { //If size is an exact fit for desire amt
-      target = blockptr;
-      break; 
-    } else if (bsize == rsize + 1) { //Size of block is just 1 too large so not worth to split
-      hijack = blockptr;
-      //We need to keep searching in case we find something better
-    } else if (bsize > rsize + 1) { //We found a block bigger than what we need so we'll split it
-      doSplit = TRUE;
-      target = blockptr;
-      break; } 
-  } 
-  
-  if (doSplit == FALSE) {
-    if (target != NULLPTR) {
-      target.*.isFree = FALSE;
-      return TO_DATA(target);
-    } else if (hijack != NULLPTR) {
-      hijack.*.isFree = FALSE;
-      return TO_DATA(hijack);
-    } else {
-      return NULLPTR;
+  for (var i: u32 = 0; i < 1000; i += 1) {
+    if (i > x) {
+      x = i;
+      break;
     }
-  } else {
-    target.*.isFree = FALSE;
-    var oldsize: u31 = target.*.size;
-    var excess: u31 = oldsize - rsize - 1;
-    target.*.size = rsize;
-    
-    var newNext: Block* = TO_NEXT(target);
-    newNext.*.isFree = TRUE;
-    newNext.*.size = excess;
-    newNext.*.prevPtr = target;
-    
-    var nextNext: Block* = TO_NEXT(newNext);
-    if (nextNext != ENDPTR) nextNext.*.prevPtr = newNext; 
-    return TO_DATA(target);
-  }
-}
-//NEWFILEEND `{prepath}{ident}.lpc`
+  } else assume unreachable;
 
-//NEWFILEBEGIN `src/os/renderfile.lpc`
-#define WHITE Color{r := 0xFF, g := 0xFF, b := 0xFF}
-#define BLACK Color{r := 0x00, g := 0x00, b := 0x00}
-#define range(name, low, high) (var name: u32 = low; name < high; name += 1)
-
-struct RenderState {
-  file: u8*,
-  lineHeads: u8*[24], //1 per line
-  topLeft: Pos,
-  curPos: Pos,
-  tick: u8, //6th bit is got for periodic cursor inversion
-  foreColor: Color,
-  backColor: Color,
-}
-
-struct Pos {
-  x: u32,
-  y: u32,
-}
-
-//Listed in reverse order to casting to a int puts it in RGB highest to lowest
-struct Color {
-  b: u8,
-  g: u8,
-  r: u8,
-}
-
-fn RenderState__Init(self: RenderState*) void {
-  self.*.topLeft = Pos{x := 0, y := 0};
-  self.*.curPos = Pos{x := 0, y := 0};
-  self.*.tick = 0;
-  self.*.foreColor = WHITE;
-  self.*.backColor = BLACK;
-}
-
-
-fn RenderState__Draw(self: RenderState*) void {
-  var latScroll = self.*.topLeft.y;
-  
-  for range(row, 0, 24) {
-    var linePtr = self.*.lineHeads[row];
-    
-    for range(col, 0, 64) {
-      var char = linePtr[col + latScroll];
-      
-      if (char == '\n' or char == '\x00') {
-        for (; col < 64; col += 1) {self:WriteChar('\x00', row, col);}
-        break;
-      }
-      
-      self:WriteChar(char, row, col);
-    }
-  }
-  self.*.tick += 1;
-}
-
-fn RenderState__WriteChar(self: RenderState*, char: u7, row: u32, col: u32) void {
-  var fore = self.*.foreColor;
-  var back = self.*.backColor;
-  if (row == self.*.curPos.y 
-      and col == self.*.curPos.x 
-      and self.*.tick[5 +: 1] == 1) {
-    var tmp = fore;
-    fore = back;
-    back = tmp;
-  }
-  WriteCharFlaggedColored(char, row, col, 0, fore, back); 
-}
-
-fn RenderState__RecalcHeaders(self: RenderState*) void {
-  var fileIdx: u32 = 0;
-  for range(ptrIdx, 0, 24) {
-    var char = self.*.file[fileIdx];
-    
-    fileIdx += 1;
-  }
-}
-
-fn WriteCharFlaggedColored(char: u7, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
-  var pos = row << 5 + col;
-  var rd = flags << 7 + char;
-
-  @stchr(rd, pos, <u32>foreColor, <u32>backColor);
-}
-
-#undef range
-//NEWFILEEND `{prepath}{ident}.lpc`
-
-fn Main() void {
-    var memory: Block[MALLOC_SIZE];
-    memory:MemInit();
-
-    var rs: RenderState;
-    rs.&:Init();
-    rs.&:Draw();
-    
-    return;
+  return x;
 }

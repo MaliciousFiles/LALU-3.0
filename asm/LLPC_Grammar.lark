@@ -17,6 +17,10 @@ stmt: blockstmt
     | jumpstmt
     | iterstmt
     | selstmt
+    | assumestmt
+
+assumestmt: ASSUME assumptionbody SEMICOLON
+assumptionbody: "unreachable" -> assumeunreachable
 
 blockstmt: LCURLY stmt* RCURLY
 encexprsmt: [expr] [SEMICOLON]
@@ -182,6 +186,7 @@ FALSE: "false"
 STRUCT: "struct"
 INCLUDE: "#include"
 COLONEQUALS: ":="
+ASSUME: "assume"
 
 COMMENT: /\/\/[^\r\n]*/
 

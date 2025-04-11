@@ -384,7 +384,7 @@ def Lower(llir):
     for func in comp_state.functions.values():
         asm_out += f"\n//\n// {func.name}\n// args: {', '.join(func.args)}\n//\n"
         for block in func.blocks:
-            print(comp_state.entrance_states)
+            #print(comp_state.entrance_states)
             if block.label not in comp_state.entrance_states:
                 if block.label[:2] == '_u': print(f'WARNING: Unused function `{block.label}`')
                 continue
