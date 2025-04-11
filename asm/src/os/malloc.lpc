@@ -1,0 +1,74 @@
+#define MALLOC_SIZE 	0x8000
+#define CEILDIV(n, d) 	(n-1)>>(d-1)
+#define TO_NEXT(ptr) 	(ptr + 1 + ptr.*.size)
+#define TO_DATA(ptr)	(<any*>(ptr + 1))
+#define NULLPTR 	0
+#define TRUE 		1
+#define FALSE 		0
+
+struct Block {
+  prevPtr: Block*,
+  size: u31,
+  isFree: u1,
+}
+
+fn Block__MemInit(memory: Block*) void {
+  var nblock: Block;
+  nblock.prevPtr = NULLPTR;
+  nblock.size = MALLOC_SIZE;
+  nblock.isFree = TRUE;
+  memory[0] = nblock;
+}
+
+//Allocate `size` bits of data, may be given more
+fn Block__Malloc(memory: Block*, size: u31) any* {
+  var ENDPTR: Block* = memory + MALLOC_SIZE;
+  var rsize: u31 = <u31>CEILDIV(size, 6); //Round bits up to nearest 64 bit amt
+  
+  var hijack: Block* = NULLPTR;
+  var target: Block* = NULLPTR;
+
+  var doSplit: u1 = FALSE;
+
+  for (var blockptr: Block* = memory; blockptr != ENDPTR; blockptr = TO_NEXT(blockptr)) {
+    if (blockptr.*.isFree == FALSE) continue;
+    
+    var bsize: u31 = blockptr.*.size; //Size of current free block
+    if (bsize == rsize) { //If size is an exact fit for desire amt
+      target = blockptr;
+      break; 
+    } else if (bsize == rsize + 1) { //Size of block is just 1 too large so not worth to split
+      hijack = blockptr;
+      //We need to keep searching in case we find something better
+    } else if (bsize > rsize + 1) { //We found a block bigger than what we need so we'll split it
+      doSplit = TRUE;
+      target = blockptr;
+      break; } 
+  } 
+  
+  if (doSplit == FALSE) {
+    if (target != NULLPTR) {
+      target.*.isFree = FALSE;
+      return TO_DATA(target);
+    } else if (hijack != NULLPTR) {
+      hijack.*.isFree = FALSE;
+      return TO_DATA(hijack);
+    } else {
+      return NULLPTR;
+    }
+  } else {
+    target.*.isFree = FALSE;
+    var oldsize: u31 = target.*.size;
+    var excess: u31 = oldsize - rsize - 1;
+    target.*.size = rsize;
+    
+    var newNext: Block* = TO_NEXT(target);
+    newNext.*.isFree = TRUE;
+    newNext.*.size = excess;
+    newNext.*.prevPtr = target;
+    
+    var nextNext: Block* = TO_NEXT(newNext);
+    if (nextNext != ENDPTR) nextNext.*.prevPtr = newNext; 
+    return TO_DATA(target);
+  }
+}

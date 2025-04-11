@@ -1,5 +1,5 @@
 from math import log2
-from Statics import Var, Type
+from Statics import Var, Type, Pointer, Int, C_Array
 
 log = lambda x:int(log2(x))
 IsPow2 = lambda x: type(x) == int and (x==x&-x)
@@ -11,6 +11,13 @@ CeilDiv = lambda n, d: -(-n//d)
 FULLWIDTH = 0 #In assembly 0 is interpetted as 32 for bitwidth of reads, writes, slices, etc
 
 ALLOW_COMPTIME_KNOWN_UNALIGNED_IO = False
+
+hltempnum = 0
+
+def NewTemp():
+    global hltempnum
+    hltempnum += 1
+    return Var(f't_hl{hltempnum-1}', Type(Int(32, False)))
 
 class Block:
     def __init__(self, entry, From):
@@ -50,7 +57,7 @@ class LLIR:
 
 def IsNative(var):
     var = Var(var.name, Type.FromStr(str(var.kind)) if var.kind else var.kind)
-    return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.IsBasicInt() or var.kind.numPtrs > 0 and var.kind.width == 32 or var.kind.comptime)
+    return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.IsBasicInt() or type(var.kind.body) in [Pointer, C_Array] or var.kind.comptime)
 
 def SubRegs(var):
     return [SubReg(var, i) for i in range(WordSizeOf(var.kind))]
@@ -75,15 +82,10 @@ def SubReg(var, i):
     assert i < words, f'Cannot take register index `{i}` of variable `{var}` with wordsize `{words}`'
     p = len(str(words-1))
     ename = var.name + ('_' + str(i).zfill(p) if words > 1 else '')
-    return Var(ename, Type(32 if i+1 < words else bitwidth - 32*i))
+    return Var(ename, Type(Int(32 if i+1 < words else bitwidth - 32*i, False)))
 
 def WordSizeOf(kind):
-    if kind == 'void':
-        return 0
-    if kind.numPtrs > 0:
-        return 1
-    else:
-        return CeilDiv(kind.OpWidth(), 32)
+    return CeilDiv(kind.OpWidth(), 32)
 
 def AddPent(block, op, D, S0, S1, S2, mods = []):
     block.Addline(('expr', (op, D, S0, S1, S2), mods))
@@ -141,20 +143,50 @@ def Inv(nblock, res, x):
     raise NotImplementedError
 
 def Store(nblock, val, array, offset):
-    assert offset.kind.comptime, f'Offset must be comptime known'
-    bitwidth = array.kind.ElementSize()
-    regid = 0
-    while bitwidth > 0:
-        bits = 32 if bitwidth > 32 else bitwidth
-        bitwidth -= 32
+    if offset.kind.comptime:
+        assert offset.kind.comptime, f'Offset must be comptime known, not `{offset!r}`'
+        bitwidth = array.kind.ElementSize()
+        regid = 0
+        while bitwidth > 0:
+            bits = 32 if bitwidth > 32 else bitwidth
+            bitwidth -= 32
+            
+            AddPent(nblock, 'st', SubReg(val, regid), array, Var(offset.name + 32*regid, 'comptime'), bits % 32)
+            regid += 1
+        return
+    else:
+        tmp = NewTemp()
+        print(f'Temp is `{tmp!r}`')
+        #assert False, f'Val is: `{val!r}`, {SubReg(val, 0)=}, {tmp=}'
+        bitwidth = array.kind.ElementSize()
+        regid = 0
+        nblock.Addline(('decl', tmp, 32))
+        AddPent(nblock, 'mov', tmp, Var(0, 'comptime'), None, None)
+        while bitwidth > 0:
+            bits = 32 if bitwidth > 32 else bitwidth
+            bitwidth -= 32
+            AddPent(nblock, 'st', SubReg(val, regid), array, tmp, bits % 32)
+            AddPent(nblock, 'add', tmp, tmp, Var(32, 'comptime'), None)
+            regid += 1
+        nblock.Addline(('undecl', tmp))
+        return
         
-        AddPent(nblock, 'st', SubReg(val, regid), array, Var(offset.name + 32*regid, 'comp'), bits % 32)
-        regid += 1
-    return
     raise NotImplementedError
 
 def Load(nblock, res, array, offset):
-    raise NotImplementedError
+
+    opWidth = array.kind.ElementSize()
+    perOpWidth = 32 if opWidth >= 32 else opWidth #How many bits per read
+
+    bitwidth = res.kind.OpWidth()
+    regwidth = CeilDiv(bitwidth, 32)
+    for i in range(regwidth):
+        eD = SubReg(res, i)
+        if offset.kind.comptime:
+            AddPent(nblock, 'ld', eD, array, Var(offset.name+32*i, 'comptime'), perOpWidth % 32)
+        else:
+            raise NotImplementedError
+    return
 
 #PRECONDITION:
 #If offset is runtime known, it must not cross word boundaries, meaning that if width > 32, then offset must be a multiple of 32
@@ -262,7 +294,7 @@ def ArgStore(nblock, dest, value):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
-        AddPent(nblock, 'argst', eS, Var.FromVal(None, dest.name+i), None, None)
+        AddPent(nblock, 'argst', Var.FromVal(None, dest.name+i), eS, None, None)
 
 def ArgLoad(nblock, value, dest):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
@@ -274,7 +306,7 @@ def RetStore(nblock, dest, value):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
-        AddPent(nblock, 'retst', eS, Var.FromVal(None, dest.name+i), None, None)
+        AddPent(nblock, 'retst', Var.FromVal(None, dest.name+i), eS, None, None)
 
 def RetLoad(nblock, value, dest):
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
@@ -324,8 +356,8 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
     elif op == '=':             AddPent(nblock, 'mov', D, S0, S1, S2)
     elif op == '[]=':           AddPent(nblock, 'stw', D, S0, S1, S2)
     elif op == '=[]':           AddPent(nblock, 'ldw', D, S0, S1, S2)
-    elif op == '[:]=':          AddPent(nblock, 'bst', D, S0, S1, S2 % 32)
-    elif op == '=[:]':          AddPent(nblock, 'bsf', D, S0, S1, S2 % 32)
+    elif op == '[:]=':          AddPent(nblock, 'bst', D, S0, S1, Var(S2.name % 32, S2.kind))
+    elif op == '=[:]':          AddPent(nblock, 'bsf', D, S0, S1, Var(S2.name % 32, S2.kind))
     elif op == '<<':            AddPent(nblock, 'bsl', D, S0, S1, S2)
     elif op == '>>':            AddPent(nblock, 'bsr', D, S0, S1, S2)
     elif op == 'argst':         AddPent(nblock, 'argst', D, S0, S1, S2)
@@ -376,16 +408,27 @@ def Comptime(comp, op, D, S0, S1, S2):
     else:
         assert op != '<<<' and op != '>>>', f'Cannot perform bit rotation on unsized compile time integers'
         assert False, f'Cannot lower comptime operand `{op}`'
-    comp[D] = Var(comp[D], 'comp')
+    comp[D] = Var(comp[D], 'comptime')
 
 def ConvertMeta(block):
     nbody = []
     for line in block.body:
         if line[0] == 'expr':
             nbody.append(('expr', (line[1][0], *[arg.name if type(arg)==Var else arg for arg in line[1][1:]])))
+            #nbody.append(('expr', (line[1][0], *[arg.name if type(arg)==Var else (lambda :(print(f'AHHHHH {arg!r}({type(arg)})')==...) or arg)() for arg in line[1][1:]])))
+            if not( 'Var' not in str(repr(nbody[-1]))):
+                print(f'{line!r} and arg {nbody[-1][1][3]!r} has type {type(nbody[-1][1][3])}')
+                for arg in line[1][1:]:
+                    print(f'Arg is {arg!r} has type({type(arg)}) == Var ({type(arg)==Var}) thus `{arg.name if type(arg)==Var else arg}` ({"name" if type(arg)==Var else "raw"}`)\n')
+                assert False
+            print(f'AHHHHH `{nbody[-1]!r}`')
         elif line[0] == 'decl':
             var = line[1]
             nbody.append(('decl', var.name, var.kind.OpWidth()))
+        elif line[0] == 'alloc':
+            #alloc name count size
+            varname = line[1]
+            nbody.append(('alloc', varname, line[2], line[3]))
         elif line[0] in ['undecl', 'regrst', 'memsave']:
             var = line[1]
             nbody.append((line[0], var.name))
@@ -420,8 +463,8 @@ def Lower(hlir):
                         assocs[var.name] = var.kind
                         if var.kind.comptime:
                             comp[var.name] = None
-                        elif var.kind.arylen:
-                            nblock.Addline(('alloc', var.name, var.kind.arylen, var.kind.OpWidth()))
+                        elif type(var.kind.body) == C_Array:
+                            nblock.Addline(('alloc', var.name, var.kind.count, var.kind.ElementSize()))
                         else:
                             ws = WordSizeOf(var.kind)
                             for i in range(ws):
@@ -473,6 +516,8 @@ def Lower(hlir):
                     #EXPRESSIONS
                     elif cmd == 'expr':
                         op, D, S0, S1, S2 = line[1]
+                        if D not in assocs and D != None and D.kind != None:
+                            assocs[D.name] = D.kind
                         S0 = comp.get(S0, S0)
                         S1 = comp.get(S1, S1)
                         S2 = comp.get(S2, S2)
@@ -523,6 +568,11 @@ def Lower(hlir):
             llir.func['body'].append(nblock)
     with open('HLIR_typeinfo.txt', 'w') as f:
         f.write(repr(assocs))
+    for i, func in enumerate(llir.funcs):
+        if func['name'] == 'Main':
+            llir.funcs.insert(0, llir.funcs[i])
+            del llir.funcs[i+1]
+    print(llir.funcs)
         
     return llir
 

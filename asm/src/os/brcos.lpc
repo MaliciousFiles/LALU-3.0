@@ -1,0 +1,13 @@
+#include malloc
+#include renderfile
+
+fn Main() void {
+    var memory: Block[MALLOC_SIZE];
+    memory:MemInit();
+
+    var rs: RenderState;
+    rs.&:Init();
+    rs.&:Draw();
+    
+    return;
+}

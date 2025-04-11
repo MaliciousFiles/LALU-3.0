@@ -1,0 +1,197 @@
+
+//NEWFILEBEGIN `src/os/malloc.lpc`
+
+
+
+
+
+
+
+
+struct Block {
+  prevPtr: Block*,
+  size: u31,
+  isFree: u1,
+}
+
+fn Block__MemInit(memory: Block*) void {
+  var nblock: Block;
+  nblock.prevPtr = 0
+ ;
+  nblock.size = 0x8000
+ ;
+  nblock.isFree = 1
+ ;
+  memory[0] = nblock;
+}
+
+//Allocate `size` bits of data, may be given more
+fn Block__Malloc(memory: Block*, size: u31) any* {
+  var ENDPTR: Block* = memory + 0x8000
+ ;
+  var rsize: u31 = <u31>(size -1)>>(6 -1) ; //Round bits up to nearest 64 bit amt
+  
+  var hijack: Block* = 0
+ ;
+  var target: Block* = 0
+ ;
+
+  var doSplit: u1 = 0
+ ;
+
+  for (var blockptr: Block* = memory; blockptr != ENDPTR; blockptr = (blockptr + 1 + blockptr .*.size) ) {
+    if (blockptr.*.isFree == 0
+ ) continue;
+    
+    var bsize: u31 = blockptr.*.size; //Size of current free block
+    if (bsize == rsize) { //If size is an exact fit for desire amt
+      target = blockptr;
+      break; 
+    } else if (bsize == rsize + 1) { //Size of block is just 1 too large so not worth to split
+      hijack = blockptr;
+      //We need to keep searching in case we find something better
+    } else if (bsize > rsize + 1) { //We found a block bigger than what we need so we'll split it
+      doSplit = 1
+ ;
+      target = blockptr;
+      break; } 
+  } 
+  
+  if (doSplit == 0
+ ) {
+    if (target != 0
+ ) {
+      target.*.isFree = 0
+ ;
+      return (<any*>(target + 1)) ;
+    } else if (hijack != 0
+ ) {
+      hijack.*.isFree = 0
+ ;
+      return (<any*>(hijack + 1)) ;
+    } else {
+      return 0
+ ;
+    }
+  } else {
+    target.*.isFree = 0
+ ;
+    var oldsize: u31 = target.*.size;
+    var excess: u31 = oldsize - rsize - 1;
+    target.*.size = rsize;
+    
+    var newNext: Block* = (target + 1 + target .*.size) ;
+    newNext.*.isFree = 1
+ ;
+    newNext.*.size = excess;
+    newNext.*.prevPtr = target;
+    
+    var nextNext: Block* = (newNext + 1 + newNext .*.size) ;
+    if (nextNext != ENDPTR) nextNext.*.prevPtr = newNext; 
+    return (<any*>(target + 1)) ;
+  }
+}
+//NEWFILEEND `{prepath}{ident}.lpc`
+
+//NEWFILEBEGIN `src/os/renderfile.lpc`
+
+
+
+
+struct RenderState {
+  file: u8*,
+  lineHeads: u8*[24], //1 per line
+  topLeft: Pos,
+  curPos: Pos,
+  tick: u8, //6th bit is got for periodic cursor inversion
+  foreColor: Color,
+  backColor: Color,
+}
+
+struct Pos {
+  x: u32,
+  y: u32,
+}
+
+//Listed in reverse order to casting to a int puts it in RGB highest to lowest
+struct Color {
+  b: u8,
+  g: u8,
+  r: u8,
+}
+
+fn RenderState__Init(self: RenderState*) void {
+  self.*.topLeft = Pos{x := 0, y := 0};
+  self.*.curPos = Pos{x := 0, y := 0};
+  self.*.tick = 0;
+  self.*.foreColor = Color{r := 0xFF, g := 0xFF, b := 0xFF}
+ ;
+  self.*.backColor = Color{r := 0x00, g := 0x00, b := 0x00}
+ ;
+}
+
+
+fn RenderState__Draw(self: RenderState*) void {
+  var latScroll = self.*.topLeft.y;
+  
+  for (var row : u32 = 0 ; row < 24 ; row += 1) {
+    var linePtr = self.*.lineHeads[row];
+    
+    for (var col : u32 = 0 ; col < 64 ; col += 1) {
+      var char = linePtr[col + latScroll];
+      
+      if (char == '\n' or char == '\x00') {
+        for (; col < 64; col += 1) {self:WriteChar('\x00', row, col);}
+        break;
+      }
+      
+      self:WriteChar(char, row, col);
+    }
+  }
+  self.*.tick += 1;
+}
+
+fn RenderState__WriteChar(self: RenderState*, char: u7, row: u32, col: u32) void {
+  var fore = self.*.foreColor;
+  var back = self.*.backColor;
+  if (row == self.*.curPos.y 
+      and col == self.*.curPos.x 
+      and self.*.tick[5 +: 1] == 1) {
+    var tmp = fore;
+    fore = back;
+    back = tmp;
+  }
+  WriteCharFlaggedColored(char, row, col, 0, fore, back); 
+}
+
+fn RenderState__RecalcHeaders(self: RenderState*) void {
+  var fileIdx: u32 = 0;
+  for (var ptrIdx : u32 = 0 ; ptrIdx < 24 ; ptrIdx += 1) {
+    var char = self.*.file[fileIdx];
+    
+    fileIdx += 1;
+  }
+}
+
+fn WriteCharFlaggedColored(char: u7, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
+  var pos = row << 5 + col;
+  var rd = flags << 7 + char;
+
+  @stchr(rd, pos, <u32>foreColor, <u32>backColor);
+}
+
+
+
+//NEWFILEEND `{prepath}{ident}.lpc`
+
+fn Main() void {
+    var memory: Block[0x8000
+ ];
+    memory:MemInit();
+
+    var rs: RenderState;
+    rs.&:Init();
+    rs.&:Draw();
+    
+    return;
+}

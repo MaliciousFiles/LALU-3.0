@@ -2,7 +2,8 @@ module LALU(input CLOCK_50,
     inout PS2_CLK, inout PS2_DAT,
     output [7:0] VGA_R, output [7:0] VGA_G, output [7:0] VGA_B,
     output VGA_CLK, output VGA_SYNC_N, output VGA_BLANK_N, output VGA_HS, output VGA_VS,
-    output suspended);
+    output [12:0] HPS_DDR3_ADDR, output [2:0] HPS_DDR3_BA, output HPS_DDR3_CAS_N, output HPS_DDR3_CKE, output HPS_DDR3_CK_N, output HPS_DDR3_CK_P, output HPS_DDR3_CS_N, output HPS_DDR3_DM, inout [7:0] HPS_DDR3_DQ, inout HPS_DDR3_DQS_N, inout HPS_DDR3_DQS_P, output HPS_DDR3_ODT, output HPS_DDR3_RAS_N, output HPS_DDR3_RESET_N, input HPS_DDR3_RZQ, output HPS_DDR3_WE_N,
+	 output suspended);
     // Formats
     parameter TRIP	            = 2'b00;
     parameter WB_TRIP			= 3'b000;
@@ -100,7 +101,7 @@ module LALU(input CLOCK_50,
     wire clk;
     pll_clock #("50 MHz") pll (
         .CLOCK_50(CLOCK_50),
-//        .clk(clk));
+        .clk(clk));
 
     /*********************
      * Branch Predictor  *
@@ -119,6 +120,23 @@ module LALU(input CLOCK_50,
     /*********************
      *      Memory       *
      *********************/
+	 wire fsDel, fsRden, fsWren;
+	 wire [31:0] fsFilename, fsAddress, fsData, fsQ;
+	 filesystem fs(
+			.CLOCK_50(CLOCK_50),
+			
+			.del(fsDel),
+			.rden(fsRden),
+			.wren(fsWren),
+			
+			.filename(fsFilename),
+			.address(fsAddress),
+			.data(fsData),
+			
+			.q(fsQ),
+			
+			.HPS_DDR3_ADDR(HPS_DDR3_ADDR), .HPS_DDR3_BA(HPS_DDR3_BA), .HPS_DDR3_CAS_N(HPS_DDR3_CAS_N), .HPS_DDR3_CKE(HPS_DDR3_CKE), .HPS_DDR3_CK_N(HPS_DDR3_CK_N), .HPS_DDR3_CK_P(HPS_DDR3_CK_P), .HPS_DDR3_CS_N(HPS_DDR3_CS_N), .HPS_DDR3_DM(HPS_DDR3_DM), .HPS_DDR3_DQ(HPS_DDR3_DQ), .HPS_DDR3_DQS_N(HPS_DDR3_DQS_N), .HPS_DDR3_DQS_P(HPS_DDR3_DQS_P), .HPS_DDR3_ODT(HPS_DDR3_ODT), .HPS_DDR3_RAS_N(HPS_DDR3_RAS_N), .HPS_DDR3_RESET_N(HPS_DDR3_RESET_N), .HPS_DDR3_RZQ(HPS_DDR3_RZQ), .HPS_DDR3_WE_N(HPS_DDR3_WE_N));
+	  
     wire [15:0] fetchAddress;
     wire [31:0] fetchOutput;
 

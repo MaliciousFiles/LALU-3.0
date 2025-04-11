@@ -6,3 +6,8 @@ simulation/
 c5_pin_model_dump.txt
 *.bak
 RAM.mif
+<<<<<<< HEAD
+asm/__pycache__/
+asm/*.txt
+asm/out.*
+asm/src/*.txt

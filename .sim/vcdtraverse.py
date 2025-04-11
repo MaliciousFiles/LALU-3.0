@@ -265,7 +265,7 @@ def dispcompvars():
                     offset = 32 * i
                     if varname not in compvars:
                         compvars[varname] = [['?']*varkind.OpWidth(), varkind]
-        if not rootvar: continue
+        if not rootvar: continue                    
 
         if var in varlocs:
             addr = varlocs[var]
@@ -337,6 +337,12 @@ def dispdbg():
         else:
             pref = (('F' if F == addr else '') + ('D' if D == addr else '') + ('E' if E == addr else '') + ('e' if e == addr and e != E else '')).ljust(3)
         print(f'{pref} | '+line)
+##    if E-1 >= 0 and dbg.splitlines()[E-1].startswith('\t_') and dbg.splitlines()[E-1].endswith('__:'):
+##        callstk.append(dbg.splitlines()[E-1][2:-3])
+    if ':\t\tcall _' in dbg.splitlines()[E]:
+        callstk.append(dbg.splitlines()[E].split(':\t\tcall _')[1].split('__:')[0])
+    if ':\t\tret' in dbg.splitlines()[E]:
+        del callstk[-1]
 
 def getmeminfo():
     wordaddr = vals['memAccessAddress']
@@ -381,6 +387,7 @@ def fulldisp():
     autoflush = False
     fmtregs()
     fmtflgs()
+    print(f'Call Stack: {callstk}')
     dispmem()
     dispvars()
     printcol = 70
@@ -504,6 +511,7 @@ os.system('color')
 memmin = 0
 memmax = 0
 memscrollto(0)
+callstk = ['Main']
 
 print('Begin read')
 lineid = 0
