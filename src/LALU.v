@@ -120,8 +120,8 @@ module LALU(input CLOCK_50,
     /*********************
      *      Memory       *
      *********************/
-	 wire fsDel, fsRden, fsWren;
-	 wire [31:0] fsFilename, fsAddress, fsData, fsQ;
+	 reg fsDel, fsRden, fsWren;
+	 reg [31:0] fsFilename, fsAddress, fsData`ifdef __ICARUS__; wire [31:0]`endif fsQ;
 	 filesystem fs(
 			.CLOCK_50(CLOCK_50),
 			

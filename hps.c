@@ -92,7 +92,10 @@ int main() {
             }
 
             if (*deleteFile) {
-            	remove(name);
+                if (fp != NULL) {
+                    fclose(fp);
+                    remove(name);
+                }
             	fp = NULL;
             	*readData = 0;
             }
