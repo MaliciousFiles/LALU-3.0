@@ -1,1 +1,0 @@
-{'x': Type('u32'), 'bit': Type('u32'), 'u_tbit': Type('u32'), 't8': Type('u32'), 't11': Type('u32'), 0: Type('comptime'), 'HSB': Type('u32'), 't14': Type('u32'), 'magic': Type('u32'), 'i': Type('u32'), 't30': Type('u32')}
