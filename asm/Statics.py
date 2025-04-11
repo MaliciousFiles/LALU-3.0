@@ -67,11 +67,17 @@ class Type:
             self.signed = txt[0]=='i'
             self.numPtrs = txt.count('*')
             txt = txt[:len(txt)-self.numPtrs]
+            np = None
             if '[' in txt:
                 arylen = int(txt.split('[')[1][:-1])
                 self.arylen = arylen
                 txt = txt.split('[')[0]
+                if '*' in txt:
+                    np = txt.count('*')
+                    txt = txt.rstrip('*')
             self.width = int(txt[1:])
+            if np:
+                self.numPtrs = np
             return self
         except:
             print(otxt)
@@ -99,6 +105,9 @@ class Type:
             ary = f'[{self.arylen}]' if self.arylen else ''
             return f'{"ui"[self.signed]}{self.width}{ary}{"*"*self.numPtrs}'
     def CanCoerceTo(self, other):
+        print('comps:', self.struct, other.struct)
+        if self.struct == other.struct != None:
+            return True
         if self.isvoid == other.isvoid == True:
             return True
         if self.isbool or other.isvoid:
@@ -161,6 +170,7 @@ class Type:
 
 
 def AlignOf(bitwidth):
+    if bitwidth == 1: return 1
     if bitwidth <= 32:
         return 1<<int(log2(bitwidth-1)+1)
     else:

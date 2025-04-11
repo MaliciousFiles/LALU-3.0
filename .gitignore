@@ -16,3 +16,7 @@ asm/out.llr
 asm/out.mif
 asm/state_dump.txt
 asm/struct_dump.txt
+asm/assumptions.txt
+asm/premacro.txt
+asm/src/malloc.lpc.txt
+asm/src/renderfile.txt
