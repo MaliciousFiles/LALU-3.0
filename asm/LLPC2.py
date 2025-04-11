@@ -4,6 +4,8 @@ import LowerLLIR3 as LLL
 import AssemblerV3 as ASM
 from math import log2
 import sys
+import os
+import pyperclip
 from Statics import Type, Var, NoVar, AlignOf, Void, Comp, Int
 import Statics
 import LLOptimizer
@@ -1320,5 +1322,8 @@ def Compile(filepath, verbose = False):
     with open('out.mif', 'w') as f:
         f.write(mif)
 
-    with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
-        f.write(mif)
+    if os.path.exists('../.sim/Icarus Verilog-sim/RAM.mif'):
+        with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
+            f.write(mif)
+    else:
+        pyperclip.copy(mif)
