@@ -395,7 +395,18 @@ def Lower(llir):
                 asm_out += f"// expecting `{k}` = `{v}`\n"
 
             vars = {v.offset//32: k for k,v in entrance_state.variables.items()}
-            asm_out += f"// stack is [{', '.join(f"`{vars[i]}`" if i in vars else "empty" for i in range(max(vars.keys())+1)) if len(vars) > 0 else ''}]\n"
+
+            stack = []
+            emptyCount = 0
+            if len(vars) > 0:
+                for i in range(max(vars.keys())+1):
+                    if i in vars:
+                        if emptyCount != 0: stack.append(f"empty x{emptyCount}")
+                        stack.append(f"`{vars[i]}`")
+                    else:
+                        emptyCount += 1
+            asm_out += f"// stack is [{', '.join(stack)}]\n"
+
             asm_out += f"// from {block.compiled_from}:\n"
             asm_out += f"{block.label}:\n"
 
