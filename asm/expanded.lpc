@@ -10,9 +10,11 @@ fn HSB(x: u32) u32 {
 fn Main() u32 {
   var x: u32;
   var magic = HSB(7); //4
+  var ary: u16[2];
   if (magic == 4) {
     x = 3;
   }
+  ary[0] = 0;
 
   for (var i: u32 = 0; i < 1000; i += 1) {
     if (i > x) {
@@ -21,5 +23,5 @@ fn Main() u32 {
     }
   } else assume unreachable;
 
-  return x;
+  return x + ary[1];
 }

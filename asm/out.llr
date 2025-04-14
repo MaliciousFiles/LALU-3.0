@@ -8,6 +8,7 @@ fn Main () 1 {
     ('decl', 'magic', 32)
     ('expr', ('mov', 'magic', 't14', None, None))
     ('undecl', 't14')
+    ('alloc', 'ary', 2, 16)
     ('expr', ('eq', None, 'magic', 4, None))
     ('undecl', 'magic')
     ('expr', ('c.jmp', 'L15:', None, None, None))
@@ -16,34 +17,49 @@ fn Main () 1 {
   L15 <- _Main__:
     ('expr', ('mov', 'x', 3, None, None))
   L16:
+    ('decl', 't19', 32)
+    ('expr', ('mul', 't19', 0, 32, None))
+    ('expr', ('stw', 0, 'ary', 't19', None))
+    ('undecl', 't19')
     ('decl', 'i', 32)
     ('expr', ('mov', 'i', 0, None, None))
-  L19:
+  L20:
     ('expr', ('ult', None, 'i', 1000, None))
-    ('expr', ('c.jmp', 'L20:', None, None, None))
-  _L23:
+    ('expr', ('c.jmp', 'L21:', None, None, None))
+  _L24:
     ('undecl', 'i')
-    ('expr', ('jmp', 'L22:', None, None, None))
-  L20 <- L19:
+    ('expr', ('jmp', 'L23:', None, None, None))
+  L21 <- L20:
     ('expr', ('ugt', None, 'i', 'x', None))
-    ('expr', ('c.jmp', 'L25:', None, None, None))
-  _L27:
-    ('expr', ('jmp', 'L26:', None, None, None))
-  L25 <- L20:
+    ('expr', ('c.jmp', 'L26:', None, None, None))
+  _L28:
+    ('expr', ('jmp', 'L27:', None, None, None))
+  L26 <- L21:
     ('expr', ('mov', 'x', 'i', None, None))
     ('undecl', 'i')
-    ('expr', ('jmp', 'L21:', None, None, None))
-  L26 <- _L27:
-    ('decl', 't30', 32)
-    ('expr', ('add', 't30', 'i', 1, None))
-    ('expr', ('mov', 'i', 't30', None, None))
-    ('undecl', 't30')
-    ('expr', ('jmp', 'L19:', None, None, None))
-  L22 <- _L23:
+    ('expr', ('jmp', 'L22:', None, None, None))
+  L27 <- _L28:
+    ('decl', 't31', 32)
+    ('expr', ('add', 't31', 'i', 1, None))
+    ('expr', ('mov', 'i', 't31', None, None))
+    ('undecl', 't31')
+    ('expr', ('jmp', 'L20:', None, None, None))
+  L23 <- _L24:
     ('unreachable',)
-  L21:
-    ('expr', ('retst', 0, 'x', None, None))
+  L22:
+    ('decl', 't33', 32)
+    ('expr', ('mul', 't33', 1, 32, None))
+    ('decl', 't34', 16)
+    ('memsave', 't34')
+    ('expr', ('ldw', 't34', 'ary', 't33', None))
+    ('undecl', 'ary')
+    ('undecl', 't33')
+    ('decl', 't35', 32)
+    ('expr', ('add', 't35', 'x', 't34', None))
     ('undecl', 'x')
+    ('undecl', 't34')
+    ('expr', ('retst', 0, 't35', None, None))
+    ('undecl', 't35')
     ('expr', ('ret', None, None, None, None))
 }
 fn HSB (x) 1 {
