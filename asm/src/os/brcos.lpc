@@ -8,6 +8,8 @@ fn Main() void {
     var rs: RenderState;
     rs.&:Init();
     rs.&:Draw();
+
+    while (true) {}
     
     return;
 }

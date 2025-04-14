@@ -18,6 +18,7 @@ fn Block__MemInit(memory: Block*) void {
   nblock.size = MALLOC_SIZE;
   nblock.isFree = TRUE;
   memory[0] = nblock;
+  return;
 }
 
 //Allocate `size` bits of data, may be given more

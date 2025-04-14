@@ -1,143 +1,1040 @@
-fn HSB (x: u32) u32 {
-  _HSB__:
-    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 1, 'src', 0)
-    ('decl', Var('bit', 'u32'), None, None, 'src', 1)
-    ('decl', Var('u_tbit', 'u32'), None, None, 'src', 2)
-    ('expr', ('=', Var('u_tbit', 'u32'), Var(1, 'comptime'), NoVar, NoVar), 2, 'src', 3)
-  None 
-    FALL: L1
-
-  L1:
-    ('expr', ('!=', NoVar, Var('u_tbit', 'u32'), Var(0, 'comptime'), NoVar), 3, 'src', 4)
-  ('c.jmp', 'L2') 
-    FALL: _L4
-
-  _L4:
-    ('undecl', Var('x', 'u32'), NoVar, 'src', 13)
-    ('undecl', Var('u_tbit', 'u32'), None, 'src', 14)
-  ('goto', 'L3') 
-    FALL: None
-
-  L2:
-    ('decl', Var('t8', 'u32'), None, None, 'src', 5)
-    ('expr', ('&', Var('t8', 'u32'), Var('x', 'u32'), Var('u_tbit', 'u32'), NoVar), 4, 'src', 6)
-    ('expr', ('!=', NoVar, Var('t8', 'u32'), Var(0, 'comptime'), NoVar), 5, 'src', 7)
-    ('undecl', Var('t8', 'u32'), None, 'src', 15)
-  ('c.jmp', 'L6') 
-    FALL: _L9
-
-  _L9:
-  ('goto', 'L7') 
-    FALL: None
-
-  L6:
-    ('expr', ('=', Var('bit', 'u32'), Var('u_tbit', 'u32'), NoVar, NoVar), 6, 'src', 8)
-  None 
-    FALL: L7
-
-  L7:
-    ('decl', Var('t11', 'u32'), None, None, 'src', 9)
-    ('expr', ('<<', Var('t11', 'u32'), Var('u_tbit', 'u32'), Var(1, 'comptime'), NoVar), 7, 'src', 10)
-    ('expr', ('=', Var('u_tbit', 'u32'), Var('t11', 'u32'), NoVar, NoVar), 8, 'src', 11)
-    ('undecl', Var('t11', 'u32'), None, 'src', 16)
-  ('goto', 'L1') 
-    FALL: None
-
-  L3:
-    ('expr', ('retst', Var(0, 'comptime'), Var('bit', 'u32'), NoVar, NoVar), 9, 'src', 12)
-    ('undecl', Var('bit', 'u32'), None, 'src', 17)
-  ('return', 9) 
+fn u_Block____MemInit (memory: Block*) void {
+  _u_Block____MemInit__:
+    ('expr', ('argld', Var('memory', 'Block*'), Var(0, 'comptime'), NoVar, NoVar), 1, 'src', 0)
+    ('decl', Var('nblock', 'Block'), None, None, 'src', 1)
+    ('memsave', Var('nblock', 'Block'), 'src', 2)
+    ('expr', ('[:]=', Var('nblock', 'Block'), Var(0, 'comptime'), Var(0, 'comptime'), Var(32, 'comptime')), 3, 'src', 3)
+    ('memsave', Var('nblock', 'Block'), 'src', 4)
+    ('expr', ('[:]=', Var('nblock', 'Block'), Var(32768, 'comptime'), Var(32, 'comptime'), Var(31, 'comptime')), 5, 'src', 5)
+    ('memsave', Var('nblock', 'Block'), 'src', 6)
+    ('expr', ('[:]=', Var('nblock', 'Block'), Var(1, 'comptime'), Var(63, 'comptime'), Var(1, 'comptime')), 7, 'src', 7)
+    ('decl', Var('t1', 'u32'), None, None, 'src', 8)
+    ('expr', ('*', Var('t1', 'u32'), Var(0, 'comptime'), Var(32, 'comptime'), NoVar), 8, 'src', 9)
+    ('memsave', Var('nblock', 'Block'), 'src', 10)
+    ('expr', ('[]=', Var('nblock', 'Block'), Var('memory', 'Block*'), Var('t1', 'u32'), NoVar), 10, 'src', 11)
+    ('undecl', Var('t1', 'u32'), None, 'src', 13)
+    ('undecl', Var('nblock', 'Block'), None, 'src', 14)
+    ('undecl', Var('memory', 'Block*'), None, 'src', 15)
+    ('regrst', Var('nblock', 'Block'), 'src', 12)
+  ('return', 10) 
     FALL: None
 
 }
-fn Main () u32 {
-  _Main__:
-    ('decl', Var('x', 'u32'), None, None, 'src', 18)
-    ('expr', ('argst', Var(0, 'comptime'), Var(7, 'comptime'), NoVar, NoVar), 10, 'src', 19)
-    ('expr', ('call', Var('HSB', 'u32'), NoVar, NoVar, NoVar), 11, 'src', 20)
-    ('decl', Var('t14', 'u32'), None, None, 'src', 21)
-    ('expr', ('retld', Var('t14', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 12, 'src', 22)
-    ('decl', Var('magic', 'u32'), None, None, 'src', 23)
-    ('expr', ('=', Var('magic', 'u32'), Var('t14', 'u32'), NoVar, NoVar), 13, 'src', 24)
-    ('undecl', Var('t14', 'u32'), None, 'src', 48)
-    ('decl', Var('ary', 'u16[2]'), None, None, 'src', 25)
-    ('expr', ('==', NoVar, Var('magic', 'u32'), Var(4, 'comptime'), NoVar), 14, 'src', 26)
-    ('undecl', Var('magic', 'u32'), None, 'src', 49)
-  ('c.jmp', 'L15') 
+fn u_Block____Malloc (memory: Block*, size: u31) any* {
+  _u_Block____Malloc__:
+    ('expr', ('argld', Var('memory', 'Block*'), Var(0, 'comptime'), NoVar, NoVar), 11, 'src', 16)
+    ('expr', ('argld', Var('size', 'u31'), Var(1, 'comptime'), NoVar, NoVar), 12, 'src', 17)
+    ('decl', Var('t3', 'Block*'), None, None, 'src', 18)
+    ('expr', ('+', Var('t3', 'Block*'), Var('memory', 'Block*'), Var(32768, 'comptime'), NoVar), 13, 'src', 19)
+    ('decl', Var('ENDPTR', 'Block*'), None, None, 'src', 20)
+    ('expr', ('=', Var('ENDPTR', 'Block*'), Var('t3', 'Block*'), NoVar, NoVar), 14, 'src', 21)
+    ('undecl', Var('t3', 'Block*'), None, 'src', 232)
+    ('decl', Var('t4', 'u31'), None, None, 'src', 22)
+    ('expr', ('-', Var('t4', 'u31'), Var('size', 'u31'), Var(1, 'comptime'), NoVar), 15, 'src', 23)
+    ('undecl', Var('size', 'u31'), None, 'src', 233)
+    ('decl', Var('t5', 'u31'), None, None, 'src', 24)
+    ('expr', ('=<>', Var('t5', 'u31'), Var('t4', 'u31'), NoVar, NoVar), 16, 'src', 25)
+    ('undecl', Var('t4', 'u31'), None, 'src', 234)
+    ('decl', Var('t6', 'comptime'), None, None, 'src', 26)
+    ('expr', ('-', Var('t6', 'comptime'), Var(6, 'comptime'), Var(1, 'comptime'), NoVar), 17, 'src', 27)
+    ('decl', Var('t7', 'u31'), None, None, 'src', 28)
+    ('expr', ('>>', Var('t7', 'u31'), Var('t5', 'u31'), Var('t6', 'comptime'), NoVar), 18, 'src', 29)
+    ('undecl', Var('t6', 'comptime'), None, 'src', 235)
+    ('undecl', Var('t5', 'u31'), None, 'src', 236)
+    ('decl', Var('rsize', 'u31'), None, None, 'src', 30)
+    ('expr', ('=', Var('rsize', 'u31'), Var('t7', 'u31'), NoVar, NoVar), 19, 'src', 31)
+    ('undecl', Var('t7', 'u31'), None, 'src', 237)
+    ('decl', Var('hijack', 'Block*'), None, None, 'src', 32)
+    ('expr', ('=', Var('hijack', 'Block*'), Var(0, 'comptime'), NoVar, NoVar), 20, 'src', 33)
+    ('decl', Var('u_target', 'Block*'), None, None, 'src', 34)
+    ('expr', ('=', Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar, NoVar), 21, 'src', 35)
+    ('decl', Var('doSplit', 'u1'), None, None, 'src', 36)
+    ('expr', ('=', Var('doSplit', 'u1'), Var(0, 'comptime'), NoVar, NoVar), 22, 'src', 37)
+    ('decl', Var('blockptr', 'Block*'), None, None, 'src', 38)
+    ('expr', ('=', Var('blockptr', 'Block*'), Var('memory', 'Block*'), NoVar, NoVar), 23, 'src', 39)
+    ('undecl', Var('memory', 'Block*'), None, 'src', 238)
+  None 
+    FALL: L8
+
+  L8:
+    ('expr', ('!=', NoVar, Var('blockptr', 'Block*'), Var('ENDPTR', 'Block*'), NoVar), 24, 'src', 40)
+  ('c.jmp', 'L9') 
+    FALL: _L11
+
+  _L11:
+    ('undecl', Var('blockptr', 'Block*'), None, 'src', 239)
+  ('goto', 'L10') 
+    FALL: None
+
+  L9:
+    ('decl', Var('t15', 'Block'), None, None, 'src', 41)
+    ('memsave', Var('t15', 'Block'), 'src', 42)
+    ('expr', ('=[]', Var('t15', 'Block'), Var('blockptr', 'Block*'), Var(0, 'comptime'), NoVar), 25, 'src', 43)
+    ('decl', Var('t16', 'u1'), None, None, 'src', 44)
+    ('expr', ('=[:]', Var('t16', 'u1'), Var('t15', 'Block'), Var(63, 'comptime'), Var(1, 'comptime')), 26, 'src', 45)
+    ('undecl', Var('t15', 'Block'), None, 'src', 240)
+    ('expr', ('==', NoVar, Var('t16', 'u1'), Var(0, 'comptime'), NoVar), 27, 'src', 46)
+    ('undecl', Var('t16', 'u1'), None, 'src', 241)
+  ('c.jmp', 'L13') 
     FALL: _L17
 
   _L17:
-  ('goto', 'L16') 
+  ('goto', 'L14') 
     FALL: None
 
-  L15:
-    ('expr', ('=', Var('x', 'u32'), Var(3, 'comptime'), NoVar, NoVar), 15, 'src', 27)
-  None 
-    FALL: L16
+  L13:
+  ('goto', 'L8') 
+    FALL: None
 
-  L16:
-    ('decl', Var('t19', 'u32'), None, None, 'src', 28)
-    ('expr', ('*', Var('t19', 'u32'), Var(0, 'comptime'), Var(32, 'comptime'), NoVar), 16, 'src', 29)
-    ('expr', ('[]=', Var(0, 'comptime'), Var('ary', 'u16[2]'), Var('t19', 'u32'), NoVar), 18, 'src', 30)
-    ('undecl', Var('t19', 'u32'), None, 'src', 50)
-    ('decl', Var('i', 'u32'), None, None, 'src', 31)
-    ('expr', ('=', Var('i', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 19, 'src', 32)
-  None 
-    FALL: L20
+  L14:
+    ('decl', Var('t20', 'Block'), None, None, 'src', 47)
+    ('memsave', Var('t15', 'Block'), 'src', 48)
+    ('memsave', Var('t20', 'Block'), 'src', 49)
+    ('expr', ('=[]', Var('t20', 'Block'), Var('blockptr', 'Block*'), Var(0, 'comptime'), NoVar), 28, 'src', 50)
+    ('decl', Var('t21', 'u31'), None, None, 'src', 51)
+    ('expr', ('=[:]', Var('t21', 'u31'), Var('t20', 'Block'), Var(32, 'comptime'), Var(31, 'comptime')), 29, 'src', 52)
+    ('undecl', Var('t20', 'Block'), None, 'src', 242)
+    ('decl', Var('bsize', 'u31'), None, None, 'src', 53)
+    ('expr', ('=', Var('bsize', 'u31'), Var('t21', 'u31'), NoVar, NoVar), 30, 'src', 54)
+    ('undecl', Var('t21', 'u31'), None, 'src', 243)
+    ('expr', ('==', NoVar, Var('bsize', 'u31'), Var('rsize', 'u31'), NoVar), 31, 'src', 55)
+  ('c.jmp', 'L22') 
+    FALL: _L25
 
-  L20:
-    ('expr', ('+<', NoVar, Var('i', 'u32'), Var(1000, 'comptime'), NoVar), 20, 'src', 33)
-  ('c.jmp', 'L21') 
-    FALL: _L24
-
-  _L24:
-    ('undecl', Var('i', 'u32'), None, 'src', 51)
+  _L25:
   ('goto', 'L23') 
     FALL: None
 
-  L21:
-    ('expr', ('+>', NoVar, Var('i', 'u32'), Var('x', 'u32'), NoVar), 21, 'src', 34)
-  ('c.jmp', 'L26') 
-    FALL: _L28
-
-  _L28:
-  ('goto', 'L27') 
-    FALL: None
-
-  L26:
-    ('expr', ('=', Var('x', 'u32'), Var('i', 'u32'), NoVar, NoVar), 22, 'src', 35)
-    ('undecl', Var('i', 'u32'), None, 'src', 52)
-  ('goto', 'L22') 
-    FALL: None
-
-  L27:
-    ('decl', Var('t31', 'u32'), None, None, 'src', 36)
-    ('expr', ('+', Var('t31', 'u32'), Var('i', 'u32'), Var(1, 'comptime'), NoVar), 23, 'src', 37)
-    ('expr', ('=', Var('i', 'u32'), Var('t31', 'u32'), NoVar, NoVar), 24, 'src', 38)
-    ('undecl', Var('t31', 'u32'), None, 'src', 53)
-  ('goto', 'L20') 
+  L22:
+    ('undecl', Var('bsize', 'u31'), None, 'src', 244)
+    ('expr', ('=', Var('u_target', 'Block*'), Var('blockptr', 'Block*'), NoVar, NoVar), 32, 'src', 56)
+    ('undecl', Var('blockptr', 'Block*'), None, 'src', 245)
+  ('goto', 'L10') 
     FALL: None
 
   L23:
-    ('unreachable', None, 'src', 39)
-  None 
-    FALL: L22
+    ('decl', Var('t32', 'u31'), None, None, 'src', 57)
+    ('expr', ('+', Var('t32', 'u31'), Var('rsize', 'u31'), Var(1, 'comptime'), NoVar), 33, 'src', 58)
+    ('expr', ('==', NoVar, Var('bsize', 'u31'), Var('t32', 'u31'), NoVar), 34, 'src', 59)
+    ('undecl', Var('t32', 'u31'), None, 'src', 246)
+  ('c.jmp', 'L29') 
+    FALL: _L33
 
-  L22:
-    ('decl', Var('t33', 'u32'), None, None, 'src', 40)
-    ('expr', ('*', Var('t33', 'u32'), Var(1, 'comptime'), Var(32, 'comptime'), NoVar), 25, 'src', 41)
-    ('decl', Var('t34', 'u16'), None, None, 'src', 42)
-    ('memsave', Var('t34', 'u16'), 'src', 43)
-    ('expr', ('=[]', Var('t34', 'u16'), Var('ary', 'u16[2]'), Var('t33', 'u32'), NoVar), 26, 'src', 44)
-    ('undecl', Var('ary', 'u16[2]'), None, 'src', 54)
-    ('undecl', Var('t33', 'u32'), None, 'src', 55)
-    ('decl', Var('t35', 'u32'), None, None, 'src', 45)
-    ('expr', ('+', Var('t35', 'u32'), Var('x', 'u32'), Var('t34', 'u16'), NoVar), 27, 'src', 46)
-    ('undecl', Var('x', 'u32'), None, 'src', 56)
-    ('undecl', Var('t34', 'u16'), None, 'src', 57)
-    ('expr', ('retst', Var(0, 'comptime'), Var('t35', 'u32'), NoVar, NoVar), 28, 'src', 47)
-    ('undecl', Var('t35', 'u32'), None, 'src', 58)
-  ('return', 28) 
+  _L33:
+  ('goto', 'L30') 
+    FALL: None
+
+  L29:
+    ('undecl', Var('bsize', 'u31'), None, 'src', 247)
+    ('expr', ('=', Var('hijack', 'Block*'), Var('blockptr', 'Block*'), NoVar, NoVar), 35, 'src', 60)
+  ('goto', 'L31') 
+    FALL: None
+
+  L30:
+    ('decl', Var('t38', 'u31'), None, None, 'src', 61)
+    ('expr', ('+', Var('t38', 'u31'), Var('rsize', 'u31'), Var(1, 'comptime'), NoVar), 36, 'src', 62)
+    ('expr', ('+>', NoVar, Var('bsize', 'u31'), Var('t38', 'u31'), NoVar), 37, 'src', 63)
+    ('undecl', Var('bsize', 'u31'), None, 'src', 248)
+    ('undecl', Var('t38', 'u31'), None, 'src', 249)
+  ('c.jmp', 'L36') 
+    FALL: _L39
+
+  _L39:
+  ('goto', 'L37') 
+    FALL: None
+
+  L36:
+    ('expr', ('=', Var('doSplit', 'u1'), Var(1, 'comptime'), NoVar, NoVar), 38, 'src', 64)
+    ('expr', ('=', Var('u_target', 'Block*'), Var('blockptr', 'Block*'), NoVar, NoVar), 39, 'src', 65)
+    ('undecl', Var('blockptr', 'Block*'), None, 'src', 250)
+  ('goto', 'L10') 
+    FALL: None
+
+  L37:
+  None 
+    FALL: L31
+
+  L31:
+  None 
+    FALL: L24
+
+  L24:
+    ('decl', Var('t42', 'Block*'), None, None, 'src', 66)
+    ('expr', ('+', Var('t42', 'Block*'), Var('blockptr', 'Block*'), Var(1, 'comptime'), NoVar), 40, 'src', 67)
+    ('decl', Var('t43', 'Block'), None, None, 'src', 68)
+    ('memsave', Var('t43', 'Block'), 'src', 69)
+    ('expr', ('=[]', Var('t43', 'Block'), Var('blockptr', 'Block*'), Var(0, 'comptime'), NoVar), 41, 'src', 70)
+    ('decl', Var('t44', 'u31'), None, None, 'src', 71)
+    ('expr', ('=[:]', Var('t44', 'u31'), Var('t43', 'Block'), Var(32, 'comptime'), Var(31, 'comptime')), 42, 'src', 72)
+    ('undecl', Var('t43', 'Block'), None, 'src', 251)
+    ('decl', Var('t45', 'Block*'), None, None, 'src', 73)
+    ('expr', ('+', Var('t45', 'Block*'), Var('t42', 'Block*'), Var('t44', 'u31'), NoVar), 43, 'src', 74)
+    ('undecl', Var('t44', 'u31'), None, 'src', 252)
+    ('undecl', Var('t42', 'Block*'), None, 'src', 253)
+    ('expr', ('=', Var('blockptr', 'Block*'), Var('t45', 'Block*'), NoVar, NoVar), 44, 'src', 75)
+    ('undecl', Var('t45', 'Block*'), None, 'src', 254)
+  ('goto', 'L8') 
+    FALL: None
+
+  L10:
+    ('expr', ('==', NoVar, Var('doSplit', 'u1'), Var(0, 'comptime'), NoVar), 45, 'src', 76)
+    ('undecl', Var('doSplit', 'u1'), None, 'src', 255)
+  ('c.jmp', 'L47') 
+    FALL: _L50
+
+  _L50:
+    ('undecl', Var('hijack', 'Block*'), None, 'src', 256)
+  ('goto', 'L48') 
+    FALL: None
+
+  L47:
+    ('undecl', Var('ENDPTR', 'Block*'), None, 'src', 257)
+    ('undecl', Var('rsize', 'u31'), None, 'src', 258)
+    ('expr', ('!=', NoVar, Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar), 46, 'src', 77)
+  ('c.jmp', 'L52') 
+    FALL: _L55
+
+  _L55:
+    ('undecl', Var('u_target', 'Block*'), None, 'src', 259)
+  ('goto', 'L53') 
+    FALL: None
+
+  L52:
+    ('undecl', Var('hijack', 'Block*'), None, 'src', 260)
+    ('decl', Var('t57', 'Block'), None, None, 'src', 78)
+    ('memsave', Var('t57', 'Block'), 'src', 79)
+    ('expr', ('=[]', Var('t57', 'Block'), Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar), 47, 'src', 80)
+    ('memsave', Var('t57', 'Block'), 'src', 81)
+    ('expr', ('[:]=', Var('t57', 'Block'), Var(0, 'comptime'), Var(63, 'comptime'), Var(1, 'comptime')), 49, 'src', 82)
+    ('undecl', Var('t57', 'Block'), None, 'src', 261)
+    ('decl', Var('t58', 'Block*'), None, None, 'src', 83)
+    ('expr', ('+', Var('t58', 'Block*'), Var('u_target', 'Block*'), Var(1, 'comptime'), NoVar), 50, 'src', 84)
+    ('undecl', Var('u_target', 'Block*'), None, 'src', 262)
+    ('decl', Var('t59', 'any*'), None, None, 'src', 85)
+    ('expr', ('=<>', Var('t59', 'any*'), Var('t58', 'Block*'), NoVar, NoVar), 51, 'src', 86)
+    ('undecl', Var('t58', 'Block*'), None, 'src', 263)
+    ('expr', ('retst', Var(0, 'comptime'), Var('t59', 'any*'), NoVar, NoVar), 52, 'src', 87)
+    ('undecl', Var('t59', 'any*'), None, 'src', 264)
+  ('return', 52) 
+    FALL: None
+
+  L53:
+    ('expr', ('!=', NoVar, Var('hijack', 'Block*'), Var(0, 'comptime'), NoVar), 53, 'src', 88)
+  ('c.jmp', 'L62') 
+    FALL: _L65
+
+  _L65:
+    ('undecl', Var('hijack', 'Block*'), None, 'src', 265)
+  ('goto', 'L63') 
+    FALL: None
+
+  L62:
+    ('decl', Var('t67', 'Block'), None, None, 'src', 89)
+    ('memsave', Var('t67', 'Block'), 'src', 90)
+    ('expr', ('=[]', Var('t67', 'Block'), Var('hijack', 'Block*'), Var(0, 'comptime'), NoVar), 54, 'src', 91)
+    ('memsave', Var('t67', 'Block'), 'src', 92)
+    ('expr', ('[:]=', Var('t67', 'Block'), Var(0, 'comptime'), Var(63, 'comptime'), Var(1, 'comptime')), 56, 'src', 93)
+    ('undecl', Var('t67', 'Block'), None, 'src', 266)
+    ('decl', Var('t68', 'Block*'), None, None, 'src', 94)
+    ('expr', ('+', Var('t68', 'Block*'), Var('hijack', 'Block*'), Var(1, 'comptime'), NoVar), 57, 'src', 95)
+    ('undecl', Var('hijack', 'Block*'), None, 'src', 267)
+    ('decl', Var('t69', 'any*'), None, None, 'src', 96)
+    ('expr', ('=<>', Var('t69', 'any*'), Var('t68', 'Block*'), NoVar, NoVar), 58, 'src', 97)
+    ('undecl', Var('t68', 'Block*'), None, 'src', 268)
+    ('expr', ('retst', Var(0, 'comptime'), Var('t69', 'any*'), NoVar, NoVar), 59, 'src', 98)
+    ('undecl', Var('t69', 'any*'), None, 'src', 269)
+  ('return', 59) 
+    FALL: None
+
+  L63:
+    ('expr', ('retst', Var(0, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 60, 'src', 99)
+  ('return', 60) 
+    FALL: None
+
+  L64:
+  None 
+    FALL: L54
+
+  L54:
+  ('goto', 'L49') 
+    FALL: None
+
+  L48:
+    ('decl', Var('t74', 'Block'), None, None, 'src', 100)
+    ('memsave', Var('t74', 'Block'), 'src', 101)
+    ('expr', ('=[]', Var('t74', 'Block'), Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar), 61, 'src', 102)
+    ('memsave', Var('t74', 'Block'), 'src', 103)
+    ('expr', ('[:]=', Var('t74', 'Block'), Var(0, 'comptime'), Var(63, 'comptime'), Var(1, 'comptime')), 63, 'src', 104)
+    ('undecl', Var('t74', 'Block'), None, 'src', 270)
+    ('decl', Var('t75', 'Block'), None, None, 'src', 105)
+    ('memsave', Var('t74', 'Block'), 'src', 106)
+    ('memsave', Var('t75', 'Block'), 'src', 107)
+    ('expr', ('=[]', Var('t75', 'Block'), Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar), 64, 'src', 108)
+    ('decl', Var('t76', 'u31'), None, None, 'src', 109)
+    ('expr', ('=[:]', Var('t76', 'u31'), Var('t75', 'Block'), Var(32, 'comptime'), Var(31, 'comptime')), 65, 'src', 110)
+    ('undecl', Var('t75', 'Block'), None, 'src', 271)
+    ('decl', Var('oldsize', 'u31'), None, None, 'src', 111)
+    ('expr', ('=', Var('oldsize', 'u31'), Var('t76', 'u31'), NoVar, NoVar), 66, 'src', 112)
+    ('undecl', Var('t76', 'u31'), None, 'src', 272)
+    ('decl', Var('t77', 'u31'), None, None, 'src', 113)
+    ('expr', ('-', Var('t77', 'u31'), Var('oldsize', 'u31'), Var('rsize', 'u31'), NoVar), 67, 'src', 114)
+    ('undecl', Var('oldsize', 'u31'), None, 'src', 273)
+    ('decl', Var('t78', 'u31'), None, None, 'src', 115)
+    ('expr', ('-', Var('t78', 'u31'), Var('t77', 'u31'), Var(1, 'comptime'), NoVar), 68, 'src', 116)
+    ('undecl', Var('t77', 'u31'), None, 'src', 274)
+    ('decl', Var('excess', 'u31'), None, None, 'src', 117)
+    ('expr', ('=', Var('excess', 'u31'), Var('t78', 'u31'), NoVar, NoVar), 69, 'src', 118)
+    ('undecl', Var('t78', 'u31'), None, 'src', 275)
+    ('decl', Var('t79', 'Block'), None, None, 'src', 119)
+    ('memsave', Var('t74', 'Block'), 'src', 120)
+    ('memsave', Var('t75', 'Block'), 'src', 121)
+    ('memsave', Var('t79', 'Block'), 'src', 122)
+    ('expr', ('=[]', Var('t79', 'Block'), Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar), 70, 'src', 123)
+    ('memsave', Var('t74', 'Block'), 'src', 124)
+    ('memsave', Var('t75', 'Block'), 'src', 125)
+    ('memsave', Var('t79', 'Block'), 'src', 126)
+    ('expr', ('[:]=', Var('t79', 'Block'), Var('rsize', 'u31'), Var(32, 'comptime'), Var(31, 'comptime')), 72, 'src', 127)
+    ('undecl', Var('t79', 'Block'), None, 'src', 276)
+    ('undecl', Var('rsize', 'u31'), None, 'src', 277)
+    ('decl', Var('t80', 'Block*'), None, None, 'src', 128)
+    ('expr', ('+', Var('t80', 'Block*'), Var('u_target', 'Block*'), Var(1, 'comptime'), NoVar), 73, 'src', 129)
+    ('decl', Var('t81', 'Block'), None, None, 'src', 130)
+    ('memsave', Var('t74', 'Block'), 'src', 131)
+    ('memsave', Var('t75', 'Block'), 'src', 132)
+    ('memsave', Var('t79', 'Block'), 'src', 133)
+    ('memsave', Var('t81', 'Block'), 'src', 134)
+    ('expr', ('=[]', Var('t81', 'Block'), Var('u_target', 'Block*'), Var(0, 'comptime'), NoVar), 74, 'src', 135)
+    ('decl', Var('t82', 'u31'), None, None, 'src', 136)
+    ('expr', ('=[:]', Var('t82', 'u31'), Var('t81', 'Block'), Var(32, 'comptime'), Var(31, 'comptime')), 75, 'src', 137)
+    ('undecl', Var('t81', 'Block'), None, 'src', 278)
+    ('decl', Var('t83', 'Block*'), None, None, 'src', 138)
+    ('expr', ('+', Var('t83', 'Block*'), Var('t80', 'Block*'), Var('t82', 'u31'), NoVar), 76, 'src', 139)
+    ('undecl', Var('t82', 'u31'), None, 'src', 279)
+    ('undecl', Var('t80', 'Block*'), None, 'src', 280)
+    ('decl', Var('newNext', 'Block*'), None, None, 'src', 140)
+    ('expr', ('=', Var('newNext', 'Block*'), Var('t83', 'Block*'), NoVar, NoVar), 77, 'src', 141)
+    ('undecl', Var('t83', 'Block*'), None, 'src', 281)
+    ('decl', Var('t84', 'Block'), None, None, 'src', 142)
+    ('memsave', Var('t74', 'Block'), 'src', 143)
+    ('memsave', Var('t75', 'Block'), 'src', 144)
+    ('memsave', Var('t79', 'Block'), 'src', 145)
+    ('memsave', Var('t81', 'Block'), 'src', 146)
+    ('memsave', Var('t84', 'Block'), 'src', 147)
+    ('expr', ('=[]', Var('t84', 'Block'), Var('newNext', 'Block*'), Var(0, 'comptime'), NoVar), 78, 'src', 148)
+    ('memsave', Var('t74', 'Block'), 'src', 149)
+    ('memsave', Var('t75', 'Block'), 'src', 150)
+    ('memsave', Var('t79', 'Block'), 'src', 151)
+    ('memsave', Var('t81', 'Block'), 'src', 152)
+    ('memsave', Var('t84', 'Block'), 'src', 153)
+    ('expr', ('[:]=', Var('t84', 'Block'), Var(1, 'comptime'), Var(63, 'comptime'), Var(1, 'comptime')), 80, 'src', 154)
+    ('undecl', Var('t84', 'Block'), None, 'src', 282)
+    ('decl', Var('t85', 'Block'), None, None, 'src', 155)
+    ('memsave', Var('t74', 'Block'), 'src', 156)
+    ('memsave', Var('t75', 'Block'), 'src', 157)
+    ('memsave', Var('t79', 'Block'), 'src', 158)
+    ('memsave', Var('t81', 'Block'), 'src', 159)
+    ('memsave', Var('t84', 'Block'), 'src', 160)
+    ('memsave', Var('t85', 'Block'), 'src', 161)
+    ('expr', ('=[]', Var('t85', 'Block'), Var('newNext', 'Block*'), Var(0, 'comptime'), NoVar), 81, 'src', 162)
+    ('memsave', Var('t74', 'Block'), 'src', 163)
+    ('memsave', Var('t75', 'Block'), 'src', 164)
+    ('memsave', Var('t79', 'Block'), 'src', 165)
+    ('memsave', Var('t81', 'Block'), 'src', 166)
+    ('memsave', Var('t84', 'Block'), 'src', 167)
+    ('memsave', Var('t85', 'Block'), 'src', 168)
+    ('expr', ('[:]=', Var('t85', 'Block'), Var('excess', 'u31'), Var(32, 'comptime'), Var(31, 'comptime')), 83, 'src', 169)
+    ('undecl', Var('t85', 'Block'), None, 'src', 283)
+    ('undecl', Var('excess', 'u31'), None, 'src', 284)
+    ('decl', Var('t86', 'Block'), None, None, 'src', 170)
+    ('memsave', Var('t74', 'Block'), 'src', 171)
+    ('memsave', Var('t75', 'Block'), 'src', 172)
+    ('memsave', Var('t79', 'Block'), 'src', 173)
+    ('memsave', Var('t81', 'Block'), 'src', 174)
+    ('memsave', Var('t84', 'Block'), 'src', 175)
+    ('memsave', Var('t85', 'Block'), 'src', 176)
+    ('memsave', Var('t86', 'Block'), 'src', 177)
+    ('expr', ('=[]', Var('t86', 'Block'), Var('newNext', 'Block*'), Var(0, 'comptime'), NoVar), 84, 'src', 178)
+    ('memsave', Var('t74', 'Block'), 'src', 179)
+    ('memsave', Var('t75', 'Block'), 'src', 180)
+    ('memsave', Var('t79', 'Block'), 'src', 181)
+    ('memsave', Var('t81', 'Block'), 'src', 182)
+    ('memsave', Var('t84', 'Block'), 'src', 183)
+    ('memsave', Var('t85', 'Block'), 'src', 184)
+    ('memsave', Var('t86', 'Block'), 'src', 185)
+    ('expr', ('[:]=', Var('t86', 'Block'), Var('u_target', 'Block*'), Var(0, 'comptime'), Var(32, 'comptime')), 86, 'src', 186)
+    ('undecl', Var('t86', 'Block'), None, 'src', 285)
+    ('decl', Var('t87', 'Block*'), None, None, 'src', 187)
+    ('expr', ('+', Var('t87', 'Block*'), Var('newNext', 'Block*'), Var(1, 'comptime'), NoVar), 87, 'src', 188)
+    ('decl', Var('t88', 'Block'), None, None, 'src', 189)
+    ('memsave', Var('t74', 'Block'), 'src', 190)
+    ('memsave', Var('t75', 'Block'), 'src', 191)
+    ('memsave', Var('t79', 'Block'), 'src', 192)
+    ('memsave', Var('t81', 'Block'), 'src', 193)
+    ('memsave', Var('t84', 'Block'), 'src', 194)
+    ('memsave', Var('t85', 'Block'), 'src', 195)
+    ('memsave', Var('t86', 'Block'), 'src', 196)
+    ('memsave', Var('t88', 'Block'), 'src', 197)
+    ('expr', ('=[]', Var('t88', 'Block'), Var('newNext', 'Block*'), Var(0, 'comptime'), NoVar), 88, 'src', 198)
+    ('decl', Var('t89', 'u31'), None, None, 'src', 199)
+    ('expr', ('=[:]', Var('t89', 'u31'), Var('t88', 'Block'), Var(32, 'comptime'), Var(31, 'comptime')), 89, 'src', 200)
+    ('undecl', Var('t88', 'Block'), None, 'src', 286)
+    ('decl', Var('t90', 'Block*'), None, None, 'src', 201)
+    ('expr', ('+', Var('t90', 'Block*'), Var('t87', 'Block*'), Var('t89', 'u31'), NoVar), 90, 'src', 202)
+    ('undecl', Var('t89', 'u31'), None, 'src', 287)
+    ('undecl', Var('t87', 'Block*'), None, 'src', 288)
+    ('decl', Var('nextNext', 'Block*'), None, None, 'src', 203)
+    ('expr', ('=', Var('nextNext', 'Block*'), Var('t90', 'Block*'), NoVar, NoVar), 91, 'src', 204)
+    ('undecl', Var('t90', 'Block*'), None, 'src', 289)
+    ('expr', ('!=', NoVar, Var('nextNext', 'Block*'), Var('ENDPTR', 'Block*'), NoVar), 92, 'src', 205)
+    ('undecl', Var('ENDPTR', 'Block*'), None, 'src', 290)
+  ('c.jmp', 'L91') 
+    FALL: _L93
+
+  _L93:
+    ('undecl', Var('nextNext', 'Block*'), None, 'src', 291)
+    ('undecl', Var('newNext', 'Block*'), None, 'src', 292)
+  ('goto', 'L92') 
+    FALL: None
+
+  L91:
+    ('decl', Var('t95', 'Block'), None, None, 'src', 206)
+    ('memsave', Var('t74', 'Block'), 'src', 207)
+    ('memsave', Var('t75', 'Block'), 'src', 208)
+    ('memsave', Var('t79', 'Block'), 'src', 209)
+    ('memsave', Var('t81', 'Block'), 'src', 210)
+    ('memsave', Var('t84', 'Block'), 'src', 211)
+    ('memsave', Var('t85', 'Block'), 'src', 212)
+    ('memsave', Var('t86', 'Block'), 'src', 213)
+    ('memsave', Var('t88', 'Block'), 'src', 214)
+    ('memsave', Var('t95', 'Block'), 'src', 215)
+    ('expr', ('=[]', Var('t95', 'Block'), Var('nextNext', 'Block*'), Var(0, 'comptime'), NoVar), 93, 'src', 216)
+    ('undecl', Var('nextNext', 'Block*'), None, 'src', 293)
+    ('memsave', Var('t74', 'Block'), 'src', 217)
+    ('memsave', Var('t75', 'Block'), 'src', 218)
+    ('memsave', Var('t79', 'Block'), 'src', 219)
+    ('memsave', Var('t81', 'Block'), 'src', 220)
+    ('memsave', Var('t84', 'Block'), 'src', 221)
+    ('memsave', Var('t85', 'Block'), 'src', 222)
+    ('memsave', Var('t86', 'Block'), 'src', 223)
+    ('memsave', Var('t88', 'Block'), 'src', 224)
+    ('memsave', Var('t95', 'Block'), 'src', 225)
+    ('expr', ('[:]=', Var('t95', 'Block'), Var('newNext', 'Block*'), Var(0, 'comptime'), Var(32, 'comptime')), 95, 'src', 226)
+    ('undecl', Var('newNext', 'Block*'), None, 'src', 294)
+    ('undecl', Var('t95', 'Block'), None, 'src', 295)
+  None 
+    FALL: L92
+
+  L92:
+    ('decl', Var('t96', 'Block*'), None, None, 'src', 227)
+    ('expr', ('+', Var('t96', 'Block*'), Var('u_target', 'Block*'), Var(1, 'comptime'), NoVar), 96, 'src', 228)
+    ('undecl', Var('u_target', 'Block*'), None, 'src', 296)
+    ('decl', Var('t97', 'any*'), None, None, 'src', 229)
+    ('expr', ('=<>', Var('t97', 'any*'), Var('t96', 'Block*'), NoVar, NoVar), 97, 'src', 230)
+    ('undecl', Var('t96', 'Block*'), None, 'src', 297)
+    ('expr', ('retst', Var(0, 'comptime'), Var('t97', 'any*'), NoVar, NoVar), 98, 'src', 231)
+    ('undecl', Var('t97', 'any*'), None, 'src', 298)
+  ('return', 98) 
+    FALL: None
+
+  L49:
+  None 
+    FALL: EOF
+
+}
+fn u_RenderState____Init (self: RenderState*) void {
+  _u_RenderState____Init__:
+    ('expr', ('argld', Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar, NoVar), 99, 'src', 299)
+    ('decl', Var('t99', 'RenderState'), None, None, 'src', 300)
+    ('memsave', Var('t99', 'RenderState'), 'src', 301)
+    ('expr', ('=[]', Var('t99', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 100, 'src', 302)
+    ('decl', Var('t100', 'Pos'), None, None, 'src', 303)
+    ('memsavebit', Var('t99', 'RenderState'), 64, 64, 'src', 304)
+    ('memsavebit', Var('t99', 'RenderState'), 128, 64, 'src', 305)
+    ('memsave', Var('t100', 'Pos'), 'src', 306)
+    ('expr', ('[:]=', Var('t100', 'Pos'), Var(0, 'comptime'), Var(0, 'comptime'), Var(32, 'comptime')), 102, 'src', 307)
+    ('memsavebit', Var('t99', 'RenderState'), 64, 64, 'src', 308)
+    ('memsavebit', Var('t99', 'RenderState'), 128, 64, 'src', 309)
+    ('memsave', Var('t100', 'Pos'), 'src', 310)
+    ('expr', ('[:]=', Var('t100', 'Pos'), Var(0, 'comptime'), Var(32, 'comptime'), Var(32, 'comptime')), 104, 'src', 311)
+    ('memsave', Var('t99', 'RenderState'), 'src', 312)
+    ('expr', ('[:]=', Var('t99', 'RenderState'), Var('t100', 'Pos'), Var(64, 'comptime'), Var(64, 'comptime')), 106, 'src', 313)
+    ('undecl', Var('t100', 'Pos'), None, 'src', 440)
+    ('undecl', Var('t99', 'RenderState'), None, 'src', 441)
+    ('decl', Var('t101', 'RenderState'), None, None, 'src', 314)
+    ('memsave', Var('t99', 'RenderState'), 'src', 315)
+    ('memsave', Var('t101', 'RenderState'), 'src', 316)
+    ('expr', ('=[]', Var('t101', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 107, 'src', 317)
+    ('decl', Var('t102', 'Pos'), None, None, 'src', 318)
+    ('memsavebit', Var('t99', 'RenderState'), 64, 64, 'src', 319)
+    ('memsavebit', Var('t99', 'RenderState'), 128, 64, 'src', 320)
+    ('memsave', Var('t100', 'Pos'), 'src', 321)
+    ('memsavebit', Var('t101', 'RenderState'), 64, 64, 'src', 322)
+    ('memsavebit', Var('t101', 'RenderState'), 128, 64, 'src', 323)
+    ('memsave', Var('t102', 'Pos'), 'src', 324)
+    ('expr', ('[:]=', Var('t102', 'Pos'), Var(0, 'comptime'), Var(0, 'comptime'), Var(32, 'comptime')), 109, 'src', 325)
+    ('memsavebit', Var('t99', 'RenderState'), 64, 64, 'src', 326)
+    ('memsavebit', Var('t99', 'RenderState'), 128, 64, 'src', 327)
+    ('memsave', Var('t100', 'Pos'), 'src', 328)
+    ('memsavebit', Var('t101', 'RenderState'), 64, 64, 'src', 329)
+    ('memsavebit', Var('t101', 'RenderState'), 128, 64, 'src', 330)
+    ('memsave', Var('t102', 'Pos'), 'src', 331)
+    ('expr', ('[:]=', Var('t102', 'Pos'), Var(0, 'comptime'), Var(32, 'comptime'), Var(32, 'comptime')), 111, 'src', 332)
+    ('memsave', Var('t99', 'RenderState'), 'src', 333)
+    ('memsave', Var('t101', 'RenderState'), 'src', 334)
+    ('expr', ('[:]=', Var('t101', 'RenderState'), Var('t102', 'Pos'), Var(128, 'comptime'), Var(64, 'comptime')), 113, 'src', 335)
+    ('undecl', Var('t102', 'Pos'), None, 'src', 442)
+    ('undecl', Var('t101', 'RenderState'), None, 'src', 443)
+    ('decl', Var('t103', 'RenderState'), None, None, 'src', 336)
+    ('memsave', Var('t99', 'RenderState'), 'src', 337)
+    ('memsave', Var('t101', 'RenderState'), 'src', 338)
+    ('memsave', Var('t103', 'RenderState'), 'src', 339)
+    ('expr', ('=[]', Var('t103', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 114, 'src', 340)
+    ('memsave', Var('t99', 'RenderState'), 'src', 341)
+    ('memsave', Var('t101', 'RenderState'), 'src', 342)
+    ('memsave', Var('t103', 'RenderState'), 'src', 343)
+    ('expr', ('[:]=', Var('t103', 'RenderState'), Var(0, 'comptime'), Var(192, 'comptime'), Var(8, 'comptime')), 116, 'src', 344)
+    ('undecl', Var('t103', 'RenderState'), None, 'src', 444)
+    ('decl', Var('t104', 'RenderState'), None, None, 'src', 345)
+    ('memsave', Var('t99', 'RenderState'), 'src', 346)
+    ('memsave', Var('t101', 'RenderState'), 'src', 347)
+    ('memsave', Var('t103', 'RenderState'), 'src', 348)
+    ('memsave', Var('t104', 'RenderState'), 'src', 349)
+    ('expr', ('=[]', Var('t104', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 117, 'src', 350)
+    ('decl', Var('t105', 'Color'), None, None, 'src', 351)
+    ('memsavebit', Var('t99', 'RenderState'), 224, 32, 'src', 352)
+    ('memsavebit', Var('t99', 'RenderState'), 256, 32, 'src', 353)
+    ('memsavebit', Var('t101', 'RenderState'), 224, 32, 'src', 354)
+    ('memsavebit', Var('t101', 'RenderState'), 256, 32, 'src', 355)
+    ('memsavebit', Var('t103', 'RenderState'), 224, 32, 'src', 356)
+    ('memsavebit', Var('t103', 'RenderState'), 256, 32, 'src', 357)
+    ('memsavebit', Var('t104', 'RenderState'), 224, 32, 'src', 358)
+    ('memsavebit', Var('t104', 'RenderState'), 256, 32, 'src', 359)
+    ('memsave', Var('t105', 'Color'), 'src', 360)
+    ('expr', ('[:]=', Var('t105', 'Color'), Var(255, 'comptime'), Var(16, 'comptime'), Var(8, 'comptime')), 119, 'src', 361)
+    ('memsavebit', Var('t99', 'RenderState'), 224, 32, 'src', 362)
+    ('memsavebit', Var('t99', 'RenderState'), 256, 32, 'src', 363)
+    ('memsavebit', Var('t101', 'RenderState'), 224, 32, 'src', 364)
+    ('memsavebit', Var('t101', 'RenderState'), 256, 32, 'src', 365)
+    ('memsavebit', Var('t103', 'RenderState'), 224, 32, 'src', 366)
+    ('memsavebit', Var('t103', 'RenderState'), 256, 32, 'src', 367)
+    ('memsavebit', Var('t104', 'RenderState'), 224, 32, 'src', 368)
+    ('memsavebit', Var('t104', 'RenderState'), 256, 32, 'src', 369)
+    ('memsave', Var('t105', 'Color'), 'src', 370)
+    ('expr', ('[:]=', Var('t105', 'Color'), Var(255, 'comptime'), Var(8, 'comptime'), Var(8, 'comptime')), 121, 'src', 371)
+    ('memsavebit', Var('t99', 'RenderState'), 224, 32, 'src', 372)
+    ('memsavebit', Var('t99', 'RenderState'), 256, 32, 'src', 373)
+    ('memsavebit', Var('t101', 'RenderState'), 224, 32, 'src', 374)
+    ('memsavebit', Var('t101', 'RenderState'), 256, 32, 'src', 375)
+    ('memsavebit', Var('t103', 'RenderState'), 224, 32, 'src', 376)
+    ('memsavebit', Var('t103', 'RenderState'), 256, 32, 'src', 377)
+    ('memsavebit', Var('t104', 'RenderState'), 224, 32, 'src', 378)
+    ('memsavebit', Var('t104', 'RenderState'), 256, 32, 'src', 379)
+    ('memsave', Var('t105', 'Color'), 'src', 380)
+    ('expr', ('[:]=', Var('t105', 'Color'), Var(255, 'comptime'), Var(0, 'comptime'), Var(8, 'comptime')), 123, 'src', 381)
+    ('memsave', Var('t99', 'RenderState'), 'src', 382)
+    ('memsave', Var('t101', 'RenderState'), 'src', 383)
+    ('memsave', Var('t103', 'RenderState'), 'src', 384)
+    ('memsave', Var('t104', 'RenderState'), 'src', 385)
+    ('expr', ('[:]=', Var('t104', 'RenderState'), Var('t105', 'Color'), Var(224, 'comptime'), Var(32, 'comptime')), 125, 'src', 386)
+    ('undecl', Var('t105', 'Color'), None, 'src', 445)
+    ('undecl', Var('t104', 'RenderState'), None, 'src', 446)
+    ('decl', Var('t106', 'RenderState'), None, None, 'src', 387)
+    ('memsave', Var('t99', 'RenderState'), 'src', 388)
+    ('memsave', Var('t101', 'RenderState'), 'src', 389)
+    ('memsave', Var('t103', 'RenderState'), 'src', 390)
+    ('memsave', Var('t104', 'RenderState'), 'src', 391)
+    ('memsave', Var('t106', 'RenderState'), 'src', 392)
+    ('expr', ('=[]', Var('t106', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 126, 'src', 393)
+    ('undecl', Var('self', 'RenderState*'), None, 'src', 447)
+    ('decl', Var('t107', 'Color'), None, None, 'src', 394)
+    ('memsavebit', Var('t99', 'RenderState'), 224, 32, 'src', 395)
+    ('memsavebit', Var('t99', 'RenderState'), 256, 32, 'src', 396)
+    ('memsavebit', Var('t101', 'RenderState'), 224, 32, 'src', 397)
+    ('memsavebit', Var('t101', 'RenderState'), 256, 32, 'src', 398)
+    ('memsavebit', Var('t103', 'RenderState'), 224, 32, 'src', 399)
+    ('memsavebit', Var('t103', 'RenderState'), 256, 32, 'src', 400)
+    ('memsavebit', Var('t104', 'RenderState'), 224, 32, 'src', 401)
+    ('memsavebit', Var('t104', 'RenderState'), 256, 32, 'src', 402)
+    ('memsave', Var('t105', 'Color'), 'src', 403)
+    ('memsavebit', Var('t106', 'RenderState'), 224, 32, 'src', 404)
+    ('memsavebit', Var('t106', 'RenderState'), 256, 32, 'src', 405)
+    ('memsave', Var('t107', 'Color'), 'src', 406)
+    ('expr', ('[:]=', Var('t107', 'Color'), Var(0, 'comptime'), Var(16, 'comptime'), Var(8, 'comptime')), 128, 'src', 407)
+    ('memsavebit', Var('t99', 'RenderState'), 224, 32, 'src', 408)
+    ('memsavebit', Var('t99', 'RenderState'), 256, 32, 'src', 409)
+    ('memsavebit', Var('t101', 'RenderState'), 224, 32, 'src', 410)
+    ('memsavebit', Var('t101', 'RenderState'), 256, 32, 'src', 411)
+    ('memsavebit', Var('t103', 'RenderState'), 224, 32, 'src', 412)
+    ('memsavebit', Var('t103', 'RenderState'), 256, 32, 'src', 413)
+    ('memsavebit', Var('t104', 'RenderState'), 224, 32, 'src', 414)
+    ('memsavebit', Var('t104', 'RenderState'), 256, 32, 'src', 415)
+    ('memsave', Var('t105', 'Color'), 'src', 416)
+    ('memsavebit', Var('t106', 'RenderState'), 224, 32, 'src', 417)
+    ('memsavebit', Var('t106', 'RenderState'), 256, 32, 'src', 418)
+    ('memsave', Var('t107', 'Color'), 'src', 419)
+    ('expr', ('[:]=', Var('t107', 'Color'), Var(0, 'comptime'), Var(8, 'comptime'), Var(8, 'comptime')), 130, 'src', 420)
+    ('memsavebit', Var('t99', 'RenderState'), 224, 32, 'src', 421)
+    ('memsavebit', Var('t99', 'RenderState'), 256, 32, 'src', 422)
+    ('memsavebit', Var('t101', 'RenderState'), 224, 32, 'src', 423)
+    ('memsavebit', Var('t101', 'RenderState'), 256, 32, 'src', 424)
+    ('memsavebit', Var('t103', 'RenderState'), 224, 32, 'src', 425)
+    ('memsavebit', Var('t103', 'RenderState'), 256, 32, 'src', 426)
+    ('memsavebit', Var('t104', 'RenderState'), 224, 32, 'src', 427)
+    ('memsavebit', Var('t104', 'RenderState'), 256, 32, 'src', 428)
+    ('memsave', Var('t105', 'Color'), 'src', 429)
+    ('memsavebit', Var('t106', 'RenderState'), 224, 32, 'src', 430)
+    ('memsavebit', Var('t106', 'RenderState'), 256, 32, 'src', 431)
+    ('memsave', Var('t107', 'Color'), 'src', 432)
+    ('expr', ('[:]=', Var('t107', 'Color'), Var(0, 'comptime'), Var(0, 'comptime'), Var(8, 'comptime')), 132, 'src', 433)
+    ('memsave', Var('t99', 'RenderState'), 'src', 434)
+    ('memsave', Var('t101', 'RenderState'), 'src', 435)
+    ('memsave', Var('t103', 'RenderState'), 'src', 436)
+    ('memsave', Var('t104', 'RenderState'), 'src', 437)
+    ('memsave', Var('t106', 'RenderState'), 'src', 438)
+    ('expr', ('[:]=', Var('t106', 'RenderState'), Var('t107', 'Color'), Var(256, 'comptime'), Var(32, 'comptime')), 134, 'src', 439)
+    ('undecl', Var('t107', 'Color'), None, 'src', 448)
+    ('undecl', Var('t106', 'RenderState'), None, 'src', 449)
+  ('return', 134) 
+    FALL: None
+
+}
+fn u_RenderState____Draw (self: RenderState*) void {
+  _u_RenderState____Draw__:
+    ('expr', ('argld', Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar, NoVar), 135, 'src', 450)
+    ('decl', Var('t109', 'RenderState'), None, None, 'src', 451)
+    ('memsave', Var('t109', 'RenderState'), 'src', 452)
+    ('expr', ('=[]', Var('t109', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 136, 'src', 453)
+    ('decl', Var('t110', 'Pos'), None, None, 'src', 454)
+    ('expr', ('=[:]', Var('t110', 'Pos'), Var('t109', 'RenderState'), Var(64, 'comptime'), Var(64, 'comptime')), 137, 'src', 455)
+    ('undecl', Var('t109', 'RenderState'), None, 'src', 547)
+    ('decl', Var('t111', 'u32'), None, None, 'src', 456)
+    ('expr', ('=[:]', Var('t111', 'u32'), Var('t110', 'Pos'), Var(32, 'comptime'), Var(32, 'comptime')), 138, 'src', 457)
+    ('undecl', Var('t110', 'Pos'), None, 'src', 548)
+    ('decl', Var('latScroll', 'u32'), None, None, 'src', 458)
+    ('expr', ('=', Var('latScroll', 'u32'), Var('t111', 'u32'), NoVar, NoVar), 139, 'src', 459)
+    ('undecl', Var('t111', 'u32'), None, 'src', 549)
+    ('decl', Var('row', 'u32'), None, None, 'src', 460)
+    ('expr', ('=', Var('row', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 140, 'src', 461)
+  None 
+    FALL: L112
+
+  L112:
+    ('expr', ('+<', NoVar, Var('row', 'u32'), Var(24, 'comptime'), NoVar), 141, 'src', 462)
+  ('c.jmp', 'L113') 
+    FALL: _L115
+
+  _L115:
+    ('undecl', Var('latScroll', 'u32'), None, 'src', 550)
+    ('undecl', Var('row', 'u32'), None, 'src', 551)
+  ('goto', 'L114') 
+    FALL: None
+
+  L113:
+    ('decl', Var('t117', 'RenderState'), None, None, 'src', 463)
+    ('memsave', Var('t117', 'RenderState'), 'src', 464)
+    ('memsave', Var('t109', 'RenderState'), 'src', 465)
+    ('expr', ('=[]', Var('t117', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 142, 'src', 466)
+    ('decl', Var('t118', 'u8*[24]'), None, None, 'src', 467)
+    ('expr', ('=[:]', Var('t118', 'u8*[24]'), Var('t117', 'RenderState'), Var(32, 'comptime'), Var(32, 'comptime')), 143, 'src', 468)
+    ('undecl', Var('t117', 'RenderState'), None, 'src', 552)
+    ('decl', Var('t119', 'u32'), None, None, 'src', 469)
+    ('expr', ('*', Var('t119', 'u32'), Var('row', 'u32'), Var(32, 'comptime'), NoVar), 144, 'src', 470)
+    ('decl', Var('t120', 'u8*'), None, None, 'src', 471)
+    ('memsavebit', Var('t117', 'RenderState'), 0, 32, 'src', 472)
+    ('memsave', Var('t120', 'u8*'), 'src', 473)
+    ('memsavebit', Var('t109', 'RenderState'), 0, 32, 'src', 474)
+    ('expr', ('=[]', Var('t120', 'u8*'), Var('t118', 'u8*[24]'), Var('t119', 'u32'), NoVar), 145, 'src', 475)
+    ('undecl', Var('t119', 'u32'), None, 'src', 553)
+    ('undecl', Var('t118', 'u8*[24]'), None, 'src', 554)
+    ('decl', Var('linePtr', 'u8*'), None, None, 'src', 476)
+    ('expr', ('=', Var('linePtr', 'u8*'), Var('t120', 'u8*'), NoVar, NoVar), 146, 'src', 477)
+    ('undecl', Var('t120', 'u8*'), None, 'src', 555)
+    ('decl', Var('col', 'u32'), None, None, 'src', 478)
+    ('expr', ('=', Var('col', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 147, 'src', 479)
+  None 
+    FALL: L121
+
+  L121:
+    ('expr', ('+<', NoVar, Var('col', 'u32'), Var(64, 'comptime'), NoVar), 148, 'src', 480)
+  ('c.jmp', 'L122') 
+    FALL: _L124
+
+  _L124:
+    ('undecl', Var('linePtr', 'u8*'), None, 'src', 556)
+    ('undecl', Var('col', 'u32'), None, 'src', 557)
+  ('goto', 'L123') 
+    FALL: None
+
+  L122:
+    ('decl', Var('t126', 'u32'), None, None, 'src', 481)
+    ('expr', ('+', Var('t126', 'u32'), Var('col', 'u32'), Var('latScroll', 'u32'), NoVar), 149, 'src', 482)
+    ('decl', Var('t127', 'u32'), None, None, 'src', 483)
+    ('expr', ('*', Var('t127', 'u32'), Var('t126', 'u32'), Var(32, 'comptime'), NoVar), 150, 'src', 484)
+    ('undecl', Var('t126', 'u32'), None, 'src', 558)
+    ('decl', Var('t128', 'u8'), None, None, 'src', 485)
+    ('memsave', Var('t128', 'u8'), 'src', 486)
+    ('memsavebit', Var('t117', 'RenderState'), 192, 8, 'src', 487)
+    ('memsavebit', Var('t117', 'RenderState'), 224, 8, 'src', 488)
+    ('memsavebit', Var('t117', 'RenderState'), 232, 8, 'src', 489)
+    ('memsavebit', Var('t117', 'RenderState'), 240, 8, 'src', 490)
+    ('memsavebit', Var('t117', 'RenderState'), 256, 8, 'src', 491)
+    ('memsavebit', Var('t117', 'RenderState'), 264, 8, 'src', 492)
+    ('memsavebit', Var('t117', 'RenderState'), 272, 8, 'src', 493)
+    ('memsavebit', Var('t109', 'RenderState'), 192, 8, 'src', 494)
+    ('memsavebit', Var('t109', 'RenderState'), 224, 8, 'src', 495)
+    ('memsavebit', Var('t109', 'RenderState'), 232, 8, 'src', 496)
+    ('memsavebit', Var('t109', 'RenderState'), 240, 8, 'src', 497)
+    ('memsavebit', Var('t109', 'RenderState'), 256, 8, 'src', 498)
+    ('memsavebit', Var('t109', 'RenderState'), 264, 8, 'src', 499)
+    ('memsavebit', Var('t109', 'RenderState'), 272, 8, 'src', 500)
+    ('expr', ('=[]', Var('t128', 'u8'), Var('linePtr', 'u8*'), Var('t127', 'u32'), NoVar), 151, 'src', 501)
+    ('undecl', Var('t127', 'u32'), None, 'src', 559)
+    ('decl', Var('char', 'u8'), None, None, 'src', 502)
+    ('expr', ('=', Var('char', 'u8'), Var('t128', 'u8'), NoVar, NoVar), 152, 'src', 503)
+    ('undecl', Var('t128', 'u8'), None, 'src', 560)
+    ('expr', ('==', NoVar, Var('char', 'u8'), Var(10, 'comptime'), NoVar), 153, 'src', 504)
+  ('c.jmp', 'L129') 
+    FALL: _L132
+
+  _L132:
+  ('goto', 'L131') 
+    FALL: None
+
+  L131:
+    ('expr', ('==', NoVar, Var('char', 'u8'), Var(0, 'comptime'), NoVar), 154, 'src', 505)
+  ('c.jmp', 'L129') 
+    FALL: _L134
+
+  _L134:
+  ('goto', 'L130') 
+    FALL: None
+
+  L129:
+    ('undecl', Var('char', 'u8'), None, 'src', 561)
+    ('undecl', Var('linePtr', 'u8*'), None, 'src', 562)
+  None 
+    FALL: L136
+
+  L136:
+    ('expr', ('+<', NoVar, Var('col', 'u32'), Var(64, 'comptime'), NoVar), 155, 'src', 506)
+  ('c.jmp', 'L137') 
+    FALL: _L139
+
+  _L139:
+    ('undecl', Var('col', 'u32'), None, 'src', 563)
+  ('goto', 'L138') 
+    FALL: None
+
+  L137:
+    ('expr', ('argst', Var(0, 'comptime'), Var('self', 'RenderState*'), NoVar, NoVar), 156, 'src', 507)
+    ('expr', ('argst', Var(1, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 157, 'src', 508)
+    ('expr', ('argst', Var(2, 'comptime'), Var('row', 'u32'), NoVar, NoVar), 158, 'src', 509)
+    ('expr', ('argst', Var(3, 'comptime'), Var('col', 'u32'), NoVar, NoVar), 159, 'src', 510)
+    ('expr', ('call', Var('u_RenderState____WriteChar', 'u32'), NoVar, NoVar, NoVar), 160, 'src', 511)
+    ('decl', Var('t142', 'u32'), None, None, 'src', 514)
+    ('expr', ('+', Var('t142', 'u32'), Var('col', 'u32'), Var(1, 'comptime'), NoVar), 162, 'src', 515)
+    ('expr', ('=', Var('col', 'u32'), Var('t142', 'u32'), NoVar, NoVar), 163, 'src', 516)
+    ('undecl', Var('t142', 'u32'), None, 'src', 564)
+  ('goto', 'L136') 
+    FALL: None
+
+  L138:
+  ('goto', 'L123') 
+    FALL: None
+
+  L130:
+    ('expr', ('argst', Var(0, 'comptime'), Var('self', 'RenderState*'), NoVar, NoVar), 164, 'src', 517)
+    ('expr', ('argst', Var(1, 'comptime'), Var('char', 'u8'), NoVar, NoVar), 165, 'src', 518)
+    ('undecl', Var('char', 'u8'), None, 'src', 565)
+    ('expr', ('argst', Var(2, 'comptime'), Var('row', 'u32'), NoVar, NoVar), 166, 'src', 519)
+    ('expr', ('argst', Var(3, 'comptime'), Var('col', 'u32'), NoVar, NoVar), 167, 'src', 520)
+    ('expr', ('call', Var('u_RenderState____WriteChar', 'u32'), NoVar, NoVar, NoVar), 168, 'src', 521)
+    ('decl', Var('t146', 'u32'), None, None, 'src', 524)
+    ('expr', ('+', Var('t146', 'u32'), Var('col', 'u32'), Var(1, 'comptime'), NoVar), 170, 'src', 525)
+    ('expr', ('=', Var('col', 'u32'), Var('t146', 'u32'), NoVar, NoVar), 171, 'src', 526)
+    ('undecl', Var('t146', 'u32'), None, 'src', 566)
+  ('goto', 'L121') 
+    FALL: None
+
+  L123:
+    ('decl', Var('t148', 'u32'), None, None, 'src', 527)
+    ('expr', ('+', Var('t148', 'u32'), Var('row', 'u32'), Var(1, 'comptime'), NoVar), 172, 'src', 528)
+    ('expr', ('=', Var('row', 'u32'), Var('t148', 'u32'), NoVar, NoVar), 173, 'src', 529)
+    ('undecl', Var('t148', 'u32'), None, 'src', 567)
+  ('goto', 'L112') 
+    FALL: None
+
+  L114:
+    ('decl', Var('t150', 'RenderState'), None, None, 'src', 530)
+    ('memsave', Var('t109', 'RenderState'), 'src', 531)
+    ('memsave', Var('t150', 'RenderState'), 'src', 532)
+    ('expr', ('=[]', Var('t150', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 174, 'src', 533)
+    ('decl', Var('t151', 'RenderState'), None, None, 'src', 534)
+    ('memsave', Var('t109', 'RenderState'), 'src', 535)
+    ('memsave', Var('t150', 'RenderState'), 'src', 536)
+    ('memsave', Var('t151', 'RenderState'), 'src', 537)
+    ('expr', ('=[]', Var('t151', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 175, 'src', 538)
+    ('undecl', Var('self', 'RenderState*'), None, 'src', 568)
+    ('decl', Var('t152', 'u8'), None, None, 'src', 539)
+    ('expr', ('=[:]', Var('t152', 'u8'), Var('t151', 'RenderState'), Var(192, 'comptime'), Var(8, 'comptime')), 176, 'src', 540)
+    ('undecl', Var('t151', 'RenderState'), None, 'src', 569)
+    ('decl', Var('t153', 'u8'), None, None, 'src', 541)
+    ('expr', ('+', Var('t153', 'u8'), Var('t152', 'u8'), Var(1, 'comptime'), NoVar), 177, 'src', 542)
+    ('undecl', Var('t152', 'u8'), None, 'src', 570)
+    ('memsave', Var('t109', 'RenderState'), 'src', 543)
+    ('memsave', Var('t150', 'RenderState'), 'src', 544)
+    ('memsave', Var('t151', 'RenderState'), 'src', 545)
+    ('expr', ('[:]=', Var('t150', 'RenderState'), Var('t153', 'u8'), Var(192, 'comptime'), Var(8, 'comptime')), 179, 'src', 546)
+    ('undecl', Var('t153', 'u8'), None, 'src', 571)
+    ('undecl', Var('t150', 'RenderState'), None, 'src', 572)
+  ('return', 179) 
+    FALL: None
+
+}
+fn u_RenderState____WriteChar (self: RenderState*, char: u7, row: u32, col: u32) void {
+  _u_RenderState____WriteChar__:
+    ('expr', ('argld', Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar, NoVar), 180, 'src', 573)
+    ('expr', ('argld', Var('char', 'u7'), Var(1, 'comptime'), NoVar, NoVar), 181, 'src', 574)
+    ('expr', ('argld', Var('row', 'u32'), Var(2, 'comptime'), NoVar, NoVar), 182, 'src', 575)
+    ('expr', ('argld', Var('col', 'u32'), Var(3, 'comptime'), NoVar, NoVar), 183, 'src', 576)
+    ('decl', Var('t155', 'RenderState'), None, None, 'src', 577)
+    ('memsave', Var('t155', 'RenderState'), 'src', 578)
+    ('expr', ('=[]', Var('t155', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 184, 'src', 579)
+    ('decl', Var('t156', 'Color'), None, None, 'src', 580)
+    ('expr', ('=[:]', Var('t156', 'Color'), Var('t155', 'RenderState'), Var(224, 'comptime'), Var(32, 'comptime')), 185, 'src', 581)
+    ('undecl', Var('t155', 'RenderState'), None, 'src', 639)
+    ('decl', Var('fore', 'Color'), None, None, 'src', 582)
+    ('expr', ('=', Var('fore', 'Color'), Var('t156', 'Color'), NoVar, NoVar), 186, 'src', 583)
+    ('undecl', Var('t156', 'Color'), None, 'src', 640)
+    ('decl', Var('t157', 'RenderState'), None, None, 'src', 584)
+    ('memsave', Var('t155', 'RenderState'), 'src', 585)
+    ('memsave', Var('t157', 'RenderState'), 'src', 586)
+    ('expr', ('=[]', Var('t157', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 187, 'src', 587)
+    ('decl', Var('t158', 'Color'), None, None, 'src', 588)
+    ('expr', ('=[:]', Var('t158', 'Color'), Var('t157', 'RenderState'), Var(256, 'comptime'), Var(32, 'comptime')), 188, 'src', 589)
+    ('undecl', Var('t157', 'RenderState'), None, 'src', 641)
+    ('decl', Var('back', 'Color'), None, None, 'src', 590)
+    ('expr', ('=', Var('back', 'Color'), Var('t158', 'Color'), NoVar, NoVar), 189, 'src', 591)
+    ('undecl', Var('t158', 'Color'), None, 'src', 642)
+    ('decl', Var('t163', 'RenderState'), None, None, 'src', 592)
+    ('memsave', Var('t155', 'RenderState'), 'src', 593)
+    ('memsave', Var('t157', 'RenderState'), 'src', 594)
+    ('memsave', Var('t163', 'RenderState'), 'src', 595)
+    ('expr', ('=[]', Var('t163', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 190, 'src', 596)
+    ('decl', Var('t164', 'Pos'), None, None, 'src', 597)
+    ('expr', ('=[:]', Var('t164', 'Pos'), Var('t163', 'RenderState'), Var(128, 'comptime'), Var(64, 'comptime')), 191, 'src', 598)
+    ('undecl', Var('t163', 'RenderState'), None, 'src', 643)
+    ('decl', Var('t165', 'u32'), None, None, 'src', 599)
+    ('expr', ('=[:]', Var('t165', 'u32'), Var('t164', 'Pos'), Var(32, 'comptime'), Var(32, 'comptime')), 192, 'src', 600)
+    ('undecl', Var('t164', 'Pos'), None, 'src', 644)
+    ('expr', ('==', NoVar, Var('row', 'u32'), Var('t165', 'u32'), NoVar), 193, 'src', 601)
+    ('undecl', Var('t165', 'u32'), None, 'src', 645)
+  ('c.jmp', 'L162') 
+    FALL: _L166
+
+  _L166:
+    ('undecl', Var('self', 'RenderState*'), NoVar, 'src', 646)
+  ('goto', 'L160') 
+    FALL: None
+
+  L162:
+    ('decl', Var('t168', 'RenderState'), None, None, 'src', 602)
+    ('memsave', Var('t155', 'RenderState'), 'src', 603)
+    ('memsave', Var('t157', 'RenderState'), 'src', 604)
+    ('memsave', Var('t163', 'RenderState'), 'src', 605)
+    ('memsave', Var('t168', 'RenderState'), 'src', 606)
+    ('expr', ('=[]', Var('t168', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 194, 'src', 607)
+    ('decl', Var('t169', 'Pos'), None, None, 'src', 608)
+    ('expr', ('=[:]', Var('t169', 'Pos'), Var('t168', 'RenderState'), Var(128, 'comptime'), Var(64, 'comptime')), 195, 'src', 609)
+    ('undecl', Var('t168', 'RenderState'), None, 'src', 647)
+    ('decl', Var('t170', 'u32'), None, None, 'src', 610)
+    ('expr', ('=[:]', Var('t170', 'u32'), Var('t169', 'Pos'), Var(0, 'comptime'), Var(32, 'comptime')), 196, 'src', 611)
+    ('undecl', Var('t169', 'Pos'), None, 'src', 648)
+    ('expr', ('==', NoVar, Var('col', 'u32'), Var('t170', 'u32'), NoVar), 197, 'src', 612)
+    ('undecl', Var('t170', 'u32'), None, 'src', 649)
+  ('c.jmp', 'L161') 
+    FALL: _L171
+
+  _L171:
+    ('undecl', Var('self', 'RenderState*'), NoVar, 'src', 650)
+  ('goto', 'L160') 
+    FALL: None
+
+  L161:
+    ('decl', Var('t173', 'RenderState'), None, None, 'src', 613)
+    ('memsave', Var('t155', 'RenderState'), 'src', 614)
+    ('memsave', Var('t157', 'RenderState'), 'src', 615)
+    ('memsave', Var('t163', 'RenderState'), 'src', 616)
+    ('memsave', Var('t168', 'RenderState'), 'src', 617)
+    ('memsave', Var('t173', 'RenderState'), 'src', 618)
+    ('expr', ('=[]', Var('t173', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 198, 'src', 619)
+    ('undecl', Var('self', 'RenderState*'), None, 'src', 651)
+    ('decl', Var('t174', 'u8'), None, None, 'src', 620)
+    ('expr', ('=[:]', Var('t174', 'u8'), Var('t173', 'RenderState'), Var(192, 'comptime'), Var(8, 'comptime')), 199, 'src', 621)
+    ('undecl', Var('t173', 'RenderState'), None, 'src', 652)
+    ('decl', Var('t175', 'u1'), None, None, 'src', 622)
+    ('memsave', Var('t175', 'u1'), 'src', 623)
+    ('expr', ('=[:]', Var('t175', 'u1'), Var('t174', 'u8'), Var(5, 'comptime'), Var(1, 'comptime')), 200, 'src', 624)
+    ('undecl', Var('t174', 'u8'), None, 'src', 653)
+    ('expr', ('==', NoVar, Var('t175', 'u1'), Var(1, 'comptime'), NoVar), 201, 'src', 625)
+    ('undecl', Var('t175', 'u1'), None, 'src', 654)
+  ('c.jmp', 'L159') 
+    FALL: _L176
+
+  _L176:
+  ('goto', 'L160') 
+    FALL: None
+
+  L159:
+    ('decl', Var('u_tmp', 'Color'), None, None, 'src', 626)
+    ('expr', ('=', Var('u_tmp', 'Color'), Var('fore', 'Color'), NoVar, NoVar), 202, 'src', 627)
+    ('expr', ('=', Var('fore', 'Color'), Var('back', 'Color'), NoVar, NoVar), 203, 'src', 628)
+    ('expr', ('=', Var('back', 'Color'), Var('u_tmp', 'Color'), NoVar, NoVar), 204, 'src', 629)
+    ('undecl', Var('u_tmp', 'Color'), None, 'src', 655)
+  None 
+    FALL: L160
+
+  L160:
+    ('expr', ('argst', Var(0, 'comptime'), Var('char', 'u7'), NoVar, NoVar), 205, 'src', 630)
+    ('undecl', Var('char', 'u7'), None, 'src', 656)
+    ('expr', ('argst', Var(1, 'comptime'), Var('row', 'u32'), NoVar, NoVar), 206, 'src', 631)
+    ('undecl', Var('row', 'u32'), None, 'src', 657)
+    ('expr', ('argst', Var(2, 'comptime'), Var('col', 'u32'), NoVar, NoVar), 207, 'src', 632)
+    ('undecl', Var('col', 'u32'), None, 'src', 658)
+    ('expr', ('argst', Var(3, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 208, 'src', 633)
+    ('expr', ('argst', Var(4, 'comptime'), Var('fore', 'Color'), NoVar, NoVar), 209, 'src', 634)
+    ('undecl', Var('fore', 'Color'), None, 'src', 659)
+    ('expr', ('argst', Var(5, 'comptime'), Var('back', 'Color'), NoVar, NoVar), 210, 'src', 635)
+    ('undecl', Var('back', 'Color'), None, 'src', 660)
+    ('expr', ('call', Var('WriteCharFlaggedColored', 'u32'), NoVar, NoVar, NoVar), 211, 'src', 636)
+  ('return', 212) 
+    FALL: None
+
+}
+fn u_RenderState____RecalcHeaders (self: RenderState*) void {
+  _u_RenderState____RecalcHeaders__:
+    ('expr', ('argld', Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar, NoVar), 213, 'src', 661)
+    ('decl', Var('fileIdx', 'u32'), None, None, 'src', 662)
+    ('expr', ('=', Var('fileIdx', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 214, 'src', 663)
+    ('decl', Var('ptrIdx', 'u32'), None, None, 'src', 664)
+    ('expr', ('=', Var('ptrIdx', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 215, 'src', 665)
+  None 
+    FALL: L180
+
+  L180:
+    ('expr', ('+<', NoVar, Var('ptrIdx', 'u32'), Var(24, 'comptime'), NoVar), 216, 'src', 666)
+  ('c.jmp', 'L181') 
+    FALL: _L183
+
+  _L183:
+    ('undecl', Var('fileIdx', 'u32'), None, 'src', 692)
+    ('undecl', Var('self', 'RenderState*'), NoVar, 'src', 693)
+    ('undecl', Var('ptrIdx', 'u32'), None, 'src', 694)
+  ('goto', 'L182') 
+    FALL: None
+
+  L181:
+    ('decl', Var('t185', 'RenderState'), None, None, 'src', 667)
+    ('memsave', Var('t185', 'RenderState'), 'src', 668)
+    ('expr', ('=[]', Var('t185', 'RenderState'), Var('self', 'RenderState*'), Var(0, 'comptime'), NoVar), 217, 'src', 669)
+    ('decl', Var('t186', 'u8*'), None, None, 'src', 670)
+    ('expr', ('=[:]', Var('t186', 'u8*'), Var('t185', 'RenderState'), Var(0, 'comptime'), Var(32, 'comptime')), 218, 'src', 671)
+    ('undecl', Var('t185', 'RenderState'), None, 'src', 695)
+    ('decl', Var('t187', 'u32'), None, None, 'src', 672)
+    ('expr', ('*', Var('t187', 'u32'), Var('fileIdx', 'u32'), Var(32, 'comptime'), NoVar), 219, 'src', 673)
+    ('decl', Var('t188', 'u8'), None, None, 'src', 674)
+    ('memsavebit', Var('t185', 'RenderState'), 192, 8, 'src', 675)
+    ('memsavebit', Var('t185', 'RenderState'), 224, 8, 'src', 676)
+    ('memsavebit', Var('t185', 'RenderState'), 232, 8, 'src', 677)
+    ('memsavebit', Var('t185', 'RenderState'), 240, 8, 'src', 678)
+    ('memsavebit', Var('t185', 'RenderState'), 256, 8, 'src', 679)
+    ('memsavebit', Var('t185', 'RenderState'), 264, 8, 'src', 680)
+    ('memsavebit', Var('t185', 'RenderState'), 272, 8, 'src', 681)
+    ('memsave', Var('t188', 'u8'), 'src', 682)
+    ('expr', ('=[]', Var('t188', 'u8'), Var('t186', 'u8*'), Var('t187', 'u32'), NoVar), 220, 'src', 683)
+    ('undecl', Var('t187', 'u32'), None, 'src', 696)
+    ('undecl', Var('t186', 'u8*'), None, 'src', 697)
+    ('undecl', Var('t188', 'u8'), None, 'src', 698)
+    ('decl', Var('t189', 'u32'), None, None, 'src', 686)
+    ('expr', ('+', Var('t189', 'u32'), Var('fileIdx', 'u32'), Var(1, 'comptime'), NoVar), 222, 'src', 687)
+    ('expr', ('=', Var('fileIdx', 'u32'), Var('t189', 'u32'), NoVar, NoVar), 223, 'src', 688)
+    ('undecl', Var('t189', 'u32'), None, 'src', 699)
+    ('decl', Var('t190', 'u32'), None, None, 'src', 689)
+    ('expr', ('+', Var('t190', 'u32'), Var('ptrIdx', 'u32'), Var(1, 'comptime'), NoVar), 224, 'src', 690)
+    ('expr', ('=', Var('ptrIdx', 'u32'), Var('t190', 'u32'), NoVar, NoVar), 225, 'src', 691)
+    ('undecl', Var('t190', 'u32'), None, 'src', 700)
+  ('goto', 'L180') 
+    FALL: None
+
+  L182:
+  ('return', 225) 
+    FALL: None
+
+}
+fn WriteCharFlaggedColored (char: u7, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
+  _WriteCharFlaggedColored__:
+    ('expr', ('argld', Var('char', 'u7'), Var(0, 'comptime'), NoVar, NoVar), 226, 'src', 701)
+    ('expr', ('argld', Var('row', 'u32'), Var(1, 'comptime'), NoVar, NoVar), 227, 'src', 702)
+    ('expr', ('argld', Var('col', 'u32'), Var(2, 'comptime'), NoVar, NoVar), 228, 'src', 703)
+    ('expr', ('argld', Var('flags', 'u8'), Var(3, 'comptime'), NoVar, NoVar), 229, 'src', 704)
+    ('expr', ('argld', Var('foreColor', 'Color'), Var(4, 'comptime'), NoVar, NoVar), 230, 'src', 705)
+    ('expr', ('argld', Var('backColor', 'Color'), Var(5, 'comptime'), NoVar, NoVar), 231, 'src', 706)
+    ('decl', Var('t193', 'u32'), None, None, 'src', 707)
+    ('expr', ('<<', Var('t193', 'u32'), Var('row', 'u32'), Var(5, 'comptime'), NoVar), 232, 'src', 708)
+    ('undecl', Var('row', 'u32'), None, 'src', 724)
+    ('decl', Var('t194', 'u32'), None, None, 'src', 709)
+    ('expr', ('+', Var('t194', 'u32'), Var('t193', 'u32'), Var('col', 'u32'), NoVar), 233, 'src', 710)
+    ('undecl', Var('t193', 'u32'), None, 'src', 725)
+    ('undecl', Var('col', 'u32'), None, 'src', 726)
+    ('decl', Var('pos', 'u32'), None, None, 'src', 711)
+    ('expr', ('=', Var('pos', 'u32'), Var('t194', 'u32'), NoVar, NoVar), 234, 'src', 712)
+    ('undecl', Var('t194', 'u32'), None, 'src', 727)
+    ('decl', Var('t195', 'u8'), None, None, 'src', 713)
+    ('expr', ('<<', Var('t195', 'u8'), Var('flags', 'u8'), Var(7, 'comptime'), NoVar), 235, 'src', 714)
+    ('undecl', Var('flags', 'u8'), None, 'src', 728)
+    ('decl', Var('t196', 'u8'), None, None, 'src', 715)
+    ('expr', ('+', Var('t196', 'u8'), Var('t195', 'u8'), Var('char', 'u7'), NoVar), 236, 'src', 716)
+    ('undecl', Var('t195', 'u8'), None, 'src', 729)
+    ('undecl', Var('char', 'u7'), None, 'src', 730)
+    ('decl', Var('rd', 'u8'), None, None, 'src', 717)
+    ('expr', ('=', Var('rd', 'u8'), Var('t196', 'u8'), NoVar, NoVar), 237, 'src', 718)
+    ('undecl', Var('t196', 'u8'), None, 'src', 731)
+    ('decl', Var('t197', 'u32'), None, None, 'src', 719)
+    ('expr', ('=<>', Var('t197', 'u32'), Var('foreColor', 'Color'), NoVar, NoVar), 238, 'src', 720)
+    ('undecl', Var('foreColor', 'Color'), None, 'src', 732)
+    ('decl', Var('t198', 'u32'), None, None, 'src', 721)
+    ('expr', ('=<>', Var('t198', 'u32'), Var('backColor', 'Color'), NoVar, NoVar), 239, 'src', 722)
+    ('undecl', Var('backColor', 'Color'), None, 'src', 733)
+    ('expr', ('@stchr', Var('rd', 'u8'), Var('pos', 'u32'), Var('t197', 'u32'), Var('t198', 'u32')), 240, 'src', 723)
+    ('undecl', Var('t198', 'u32'), None, 'src', 734)
+    ('undecl', Var('t197', 'u32'), None, 'src', 735)
+    ('undecl', Var('rd', 'u8'), None, 'src', 736)
+    ('undecl', Var('pos', 'u32'), None, 'src', 737)
+  ('return', 240) 
+    FALL: None
+
+}
+fn Main () void {
+  _Main__:
+    ('decl', Var('memory', 'Block[32768]'), None, None, 'src', 738)
+    ('expr', ('argst', Var(0, 'comptime'), Var('memory', 'Block[32768]'), NoVar, NoVar), 241, 'src', 739)
+    ('undecl', Var('memory', 'Block[32768]'), None, 'src', 752)
+    ('expr', ('call', Var('u_Block____MemInit', 'u32'), NoVar, NoVar, NoVar), 242, 'src', 740)
+    ('decl', Var('rs', 'RenderState'), None, None, 'src', 743)
+    ('expr', ('argst', Var(0, 'comptime'), Var('rs.&', 'RenderState*'), NoVar, NoVar), 244, 'src', 744)
+    ('expr', ('call', Var('u_RenderState____Init', 'u32'), NoVar, NoVar, NoVar), 245, 'src', 745)
+    ('expr', ('argst', Var(0, 'comptime'), Var('rs.&', 'RenderState*'), NoVar, NoVar), 247, 'src', 748)
+    ('undecl', Var('rs', 'RenderState'), None, 'src', 753)
+    ('expr', ('call', Var('u_RenderState____Draw', 'u32'), NoVar, NoVar, NoVar), 248, 'src', 749)
+  None 
+    FALL: L203
+
+  L203:
+  ('goto', 'L204') 
+    FALL: None
+
+  L204:
+  ('goto', 'L203') 
     FALL: None
 
 }

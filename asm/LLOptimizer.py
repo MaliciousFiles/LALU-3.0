@@ -9,6 +9,7 @@ ExpScaleUp = .5
 jumps = ['jmp', 'c.jmp', 'cn.jmp']
 usesRd = ['st', 'bst', 'stchr']
 funcRenumId = 0
+NOASSERT = False
 
 class BlockSet:
     def __init__(self, blocks):
@@ -19,7 +20,11 @@ class BlockSet:
         self.ids = {}
 
     def __repr__(self):
-        return '\n'.join([repr(x) for x in self.blocks])
+        global NOASSERT
+        NOASSERT += 1
+        ret =  '\n'.join([repr(x) for x in self.blocks])
+        NOASSERT -= 1
+        return ret
 
     def UpdateDominators(self):
         self.dom = {}
@@ -98,6 +103,14 @@ class BlockSet:
         while didOpt:
             didOpt = False
 
+
+            for block in self.blocks[1:]:
+                if len(block.Preds()) == 0:
+                    del self.blocks[self.blocks.index(block)]
+                    didOpt = True
+##                else:
+##                    print(f'{block.label} has {block.Preds()}')
+
             #Replace jumps to empty blocks with their destination
             for block in self.blocks:
                 if block.exit[0] in jumps:
@@ -105,10 +118,17 @@ class BlockSet:
                     succblock = self.ByName(succ)
                     if succblock.IsEffEmpty():
                         block.exit = list(block.exit)
-                        block.exit[1] = succblock.Succs()[0]
+##                        assert succblock.Succs() not in [(None,), ()], f'{block.label} -> {succblock.label} {succblock.Succs()=}\n{self}'
+                        succ = succblock.Succs()
+                        if succ == ():
+                            block.exit = ('ret',)
+                            didOpt = True
+                        else:
+                            if succ[0] != block.exit[1]: didOpt = True
+                            block.exit[1] = succ[0]
                         block.exit = tuple(block.exit)
                         block.body += succblock.body
-                        didOpt = True
+##                        didOpt = True
 
             #Replace empty block fall throughs with the destination
             for i, block in enumerate(self.blocks):
@@ -161,7 +181,7 @@ class BlockSet:
                     continue
                 if line[0] != 'expr': continue
                 for arg in line[3]:
-                    if type(arg) == str:
+                    if type(arg) == str and not arg.endswith('.&'):
                         life = block.localvars[arg] = block.localvars.get(arg, ['pre', 'loc'])
         do = True
         while do:
@@ -201,7 +221,7 @@ class BlockSet:
                 dest = line[2]
                 args = line[3]
                 for j, arg in enumerate(args):
-                    if type(arg) == int: continue
+                    if type(arg) == int or arg.endswith('.&'): continue
                     self.ids[arg] = self.ids.get(arg, 0)
                     line[3][j] = f'{self.ids[arg]}_{arg}'
                 if type(dest) == int or dest == None: continue
@@ -263,6 +283,7 @@ class BlockSet:
         for block in self.blocks:
             for line in block.body:
                 if line[0] != 'expr': continue
+                if line[1] == 'call': continue
                 if type(line[2]) == str: writes.add(line[2])
                 for arg in line[3]:
                     if type(arg) == str and arg != line[2]: reads.add(arg)
@@ -337,7 +358,40 @@ class BlockSet:
         print('New Iter')
         for k,v in values.items():
             print(f'{str(k).ljust(20)}{v}')
-     
+
+    def FromSSA(self):
+        for block in self.blocks:
+            for line in block.body[:]:
+                if line[0] != 'expr': continue
+                idx = block.body.index(line)
+                for j, arg in enumerate(line[3]):
+                    if type(arg) == str and not arg.endswith('.&'):
+                        line[3][j] = arg.split('_', maxsplit=1)[1]
+                if type(line[2]) == str:
+                    line[2] = line[2].split('_', maxsplit=1)[1]
+                if line[1] == 'phi' or line[1] == 'mov' and line[2] == line[3][0]:
+                    del block.body[idx]
+                    continue
+
+    def PruneUnreachable(self):
+        do = True
+        while do:
+            do = False
+            unreaches = set()
+            for block in self.blocks:
+                 for line in block.body:
+                     if line[0] == 'unreachable':
+                         unreaches.add(block.label)
+                         break
+            for block in self.blocks:
+                if block.exit[0] in ['c.jmp', 'cn.jmp'] and block.exit[1] in unreaches:
+                    block.exit = ('FALL',)
+                elif block.exit[0] in ['FALL'] and block.FallThru() in unreaches:
+                    unreaches.add(block.label)
+                    do = True
+        for block in unreaches:
+            idx = [i for i,x in enumerate(self.blocks) if x.label == block][0]
+            del self.blocks[idx]
 
 class Block:
     def __init__(self, parent: BlockSet, unoptBlock: LHL.Block):
@@ -361,11 +415,11 @@ class Block:
                     self.body[i] = ('expr', line[1][0], line[1][1], tuple([x for x in line[1][2:] if x != None]))
 
         while True:
-            for i, line in enumerate(self.body):
+            for line in self.body[:]:
                 if line[0] == 'undecl':
-                    del self.body[i]
-                    continue
+                    del self.body[self.body.index(line)]
             break
+        for line in self.body: assert line[0] != 'undecl'
 
     def __repr__(self):
         return self.label + f' -> {self.Succs()} <- J{self.JumpPreds()} + N{self.NatPreds()}:\n' \
@@ -384,10 +438,13 @@ class Block:
         return tuple([x for x in self.Preds() if x not in jp])
 
     def Preds(self):
+        global NOASSERT
         preds = []
         for block in self.parent.blocks:
+            NOASSERT += 1
             if self.label in block.Succs():
                 preds.append(block.label)
+            NOASSERT -= 1
         return tuple(preds)
 
     def FallThru(self):
@@ -396,15 +453,18 @@ class Block:
         return self.parent.blocks[idx+1].label
 
     def Succs(self):
+        global NOASSERT
         if self.exit[0] == 'ret':
             return ()
         if self.exit[0] == 'FALL':
-            return (self.FallThru(),)
+            ret =  (self.FallThru(),)
+            assert ret[0] != None or NOASSERT, (''*(NOASSERT := NOASSERT + 1) + f'CENSURE: Block {self.label} implicitly returns of function {self.parent.blocks[0].label}. Printed below\n\n\n{self.parent}')
+            return ret
         elif self.exit[0] in ['c.jmp', 'cn.jmp']:
             return (self.exit[1], self.FallThru())
         elif self.exit[0] == 'jmp':
             return (self.exit[1],)
-        else: assert False, f'Unreachable'
+        else: assert False, f'Unreachable, exit is `{self.exit!r}`'
 
     def JumpSuccs(self):
         fall = self.FallThru()
@@ -597,19 +657,24 @@ class IntRange:
 
     #True case, False case
     def cmp(self, op, other):
-        negops = ['gt', 'ge', 'ne']
-        posops = ['le', 'lt', 'eq']
+        negops = ['le', 'ge', 'ne']
+        posops = ['gt', 'lt', 'eq']
         if op in negops:
-            return self.cmp(posops[negops.index(op)], other][::-1]
+            return self.cmp(posops[negops.index(op)], other[::-1])
         if type(other) == Symbolic:
             return [self, self]
+        if op == 'gt':
+            self, other = other, self
+            op = 'lt'
         if op == 'lt':
             tlow = self.low
             thigh = other.high-1
-            flow =
-            fhigh = 
+            flow = other.low
+            fhigh = self.high
             return [IntRange(self.bits, tlow, thigh),
                     IntRange(self.bits, flow, fhigh)]
+        elif op == 'eq':
+            pass
 
     def __add__(self, other):
         if type(other) == IntRange:
@@ -640,22 +705,37 @@ def Optimize(llir: LHL.LLIR) -> None:
         for block in func['body']:
             body.blocks.append(Block(body, block))
         body.Renumber()
+##        print(repr(body))
         body.ForwardJumps()
         body.Renumber()
+
+##        print(repr(body))
 
         
         body.ToSSA()
         body.MovForward()
         body.ElimWritesWithoutRead()
-        body.PropPotValues()
+        #body.PropPotValues()
+
+##        print(repr(body))
         
-        print(repr(body))
+        body.FromSSA()
+        
+##        print(repr(body))
+
+        body.PruneUnreachable()
+##
+##        print(repr(body))
         
 ##        assert False
 
     funcRenumId = 0
+    optlr = ''
     for func in newfuncs:
         func.GlobalRenumber()
+        optlr += repr(func)+'\n'
+    with open(f'out_opt.llr', 'w') as f:
+        f.write(optlr)
 ##        print(repr(func))
 
 
