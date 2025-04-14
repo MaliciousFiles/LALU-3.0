@@ -1,0 +1,143 @@
+fn HSB (x: u32) u32 {
+  _HSB__:
+    ('expr', ('argld', Var('x', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 1, 'src', 0)
+    ('decl', Var('bit', 'u32'), None, None, 'src', 1)
+    ('decl', Var('u_tbit', 'u32'), None, None, 'src', 2)
+    ('expr', ('=', Var('u_tbit', 'u32'), Var(1, 'comptime'), NoVar, NoVar), 2, 'src', 3)
+  None 
+    FALL: L1
+
+  L1:
+    ('expr', ('!=', NoVar, Var('u_tbit', 'u32'), Var(0, 'comptime'), NoVar), 3, 'src', 4)
+  ('c.jmp', 'L2') 
+    FALL: _L4
+
+  _L4:
+    ('undecl', Var('x', 'u32'), NoVar, 'src', 13)
+    ('undecl', Var('u_tbit', 'u32'), None, 'src', 14)
+  ('goto', 'L3') 
+    FALL: None
+
+  L2:
+    ('decl', Var('t8', 'u32'), None, None, 'src', 5)
+    ('expr', ('&', Var('t8', 'u32'), Var('x', 'u32'), Var('u_tbit', 'u32'), NoVar), 4, 'src', 6)
+    ('expr', ('!=', NoVar, Var('t8', 'u32'), Var(0, 'comptime'), NoVar), 5, 'src', 7)
+    ('undecl', Var('t8', 'u32'), None, 'src', 15)
+  ('c.jmp', 'L6') 
+    FALL: _L9
+
+  _L9:
+  ('goto', 'L7') 
+    FALL: None
+
+  L6:
+    ('expr', ('=', Var('bit', 'u32'), Var('u_tbit', 'u32'), NoVar, NoVar), 6, 'src', 8)
+  None 
+    FALL: L7
+
+  L7:
+    ('decl', Var('t11', 'u32'), None, None, 'src', 9)
+    ('expr', ('<<', Var('t11', 'u32'), Var('u_tbit', 'u32'), Var(1, 'comptime'), NoVar), 7, 'src', 10)
+    ('expr', ('=', Var('u_tbit', 'u32'), Var('t11', 'u32'), NoVar, NoVar), 8, 'src', 11)
+    ('undecl', Var('t11', 'u32'), None, 'src', 16)
+  ('goto', 'L1') 
+    FALL: None
+
+  L3:
+    ('expr', ('retst', Var(0, 'comptime'), Var('bit', 'u32'), NoVar, NoVar), 9, 'src', 12)
+    ('undecl', Var('bit', 'u32'), None, 'src', 17)
+  ('return', 9) 
+    FALL: None
+
+}
+fn Main () u32 {
+  _Main__:
+    ('decl', Var('x', 'u32'), None, None, 'src', 18)
+    ('expr', ('argst', Var(0, 'comptime'), Var(7, 'comptime'), NoVar, NoVar), 10, 'src', 19)
+    ('expr', ('call', Var('HSB', 'u32'), NoVar, NoVar, NoVar), 11, 'src', 20)
+    ('decl', Var('t14', 'u32'), None, None, 'src', 21)
+    ('expr', ('retld', Var('t14', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 12, 'src', 22)
+    ('decl', Var('magic', 'u32'), None, None, 'src', 23)
+    ('expr', ('=', Var('magic', 'u32'), Var('t14', 'u32'), NoVar, NoVar), 13, 'src', 24)
+    ('undecl', Var('t14', 'u32'), None, 'src', 48)
+    ('decl', Var('ary', 'u16[2]'), None, None, 'src', 25)
+    ('expr', ('==', NoVar, Var('magic', 'u32'), Var(4, 'comptime'), NoVar), 14, 'src', 26)
+    ('undecl', Var('magic', 'u32'), None, 'src', 49)
+  ('c.jmp', 'L15') 
+    FALL: _L17
+
+  _L17:
+  ('goto', 'L16') 
+    FALL: None
+
+  L15:
+    ('expr', ('=', Var('x', 'u32'), Var(3, 'comptime'), NoVar, NoVar), 15, 'src', 27)
+  None 
+    FALL: L16
+
+  L16:
+    ('decl', Var('t19', 'u32'), None, None, 'src', 28)
+    ('expr', ('*', Var('t19', 'u32'), Var(0, 'comptime'), Var(32, 'comptime'), NoVar), 16, 'src', 29)
+    ('expr', ('[]=', Var(0, 'comptime'), Var('ary', 'u16[2]'), Var('t19', 'u32'), NoVar), 18, 'src', 30)
+    ('undecl', Var('t19', 'u32'), None, 'src', 50)
+    ('decl', Var('i', 'u32'), None, None, 'src', 31)
+    ('expr', ('=', Var('i', 'u32'), Var(0, 'comptime'), NoVar, NoVar), 19, 'src', 32)
+  None 
+    FALL: L20
+
+  L20:
+    ('expr', ('+<', NoVar, Var('i', 'u32'), Var(1000, 'comptime'), NoVar), 20, 'src', 33)
+  ('c.jmp', 'L21') 
+    FALL: _L24
+
+  _L24:
+    ('undecl', Var('i', 'u32'), None, 'src', 51)
+  ('goto', 'L23') 
+    FALL: None
+
+  L21:
+    ('expr', ('+>', NoVar, Var('i', 'u32'), Var('x', 'u32'), NoVar), 21, 'src', 34)
+  ('c.jmp', 'L26') 
+    FALL: _L28
+
+  _L28:
+  ('goto', 'L27') 
+    FALL: None
+
+  L26:
+    ('expr', ('=', Var('x', 'u32'), Var('i', 'u32'), NoVar, NoVar), 22, 'src', 35)
+    ('undecl', Var('i', 'u32'), None, 'src', 52)
+  ('goto', 'L22') 
+    FALL: None
+
+  L27:
+    ('decl', Var('t31', 'u32'), None, None, 'src', 36)
+    ('expr', ('+', Var('t31', 'u32'), Var('i', 'u32'), Var(1, 'comptime'), NoVar), 23, 'src', 37)
+    ('expr', ('=', Var('i', 'u32'), Var('t31', 'u32'), NoVar, NoVar), 24, 'src', 38)
+    ('undecl', Var('t31', 'u32'), None, 'src', 53)
+  ('goto', 'L20') 
+    FALL: None
+
+  L23:
+    ('unreachable', None, 'src', 39)
+  None 
+    FALL: L22
+
+  L22:
+    ('decl', Var('t33', 'u32'), None, None, 'src', 40)
+    ('expr', ('*', Var('t33', 'u32'), Var(1, 'comptime'), Var(32, 'comptime'), NoVar), 25, 'src', 41)
+    ('decl', Var('t34', 'u16'), None, None, 'src', 42)
+    ('memsave', Var('t34', 'u16'), 'src', 43)
+    ('expr', ('=[]', Var('t34', 'u16'), Var('ary', 'u16[2]'), Var('t33', 'u32'), NoVar), 26, 'src', 44)
+    ('undecl', Var('ary', 'u16[2]'), None, 'src', 54)
+    ('undecl', Var('t33', 'u32'), None, 'src', 55)
+    ('decl', Var('t35', 'u32'), None, None, 'src', 45)
+    ('expr', ('+', Var('t35', 'u32'), Var('x', 'u32'), Var('t34', 'u16'), NoVar), 27, 'src', 46)
+    ('undecl', Var('x', 'u32'), None, 'src', 56)
+    ('undecl', Var('t34', 'u16'), None, 'src', 57)
+    ('expr', ('retst', Var(0, 'comptime'), Var('t35', 'u32'), NoVar, NoVar), 28, 'src', 47)
+    ('undecl', Var('t35', 'u32'), None, 'src', 58)
+  ('return', 28) 
+    FALL: None
+
+}

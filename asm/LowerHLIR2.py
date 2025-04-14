@@ -74,7 +74,7 @@ def SubReg(var, i):
         return Var.FromVal(None, (val >> (32 * i)) % (1<<32) )
     if var.name.endswith('.&'):
         rootvar = Var(var.name[:-2], var.kind.Deref())
-        print(f'{rootvar=}')
+        #print(f'{rootvar=}')
         subreg = SubReg(rootvar, i)
         return Var(subreg.name+'.&', var.kind)
     bitwidth = var.kind.OpWidth()
@@ -156,7 +156,7 @@ def Store(nblock, val, array, offset):
         return
     else:
         tmp = NewTemp()
-        print(f'Temp is `{tmp!r}`')
+        #print(f'Temp is `{tmp!r}`')
         #assert False, f'Val is: `{val!r}`, {SubReg(val, 0)=}, {tmp=}'
         bitwidth = array.kind.ElementSize()
         regid = 0
@@ -415,13 +415,11 @@ def ConvertMeta(block):
     for line in block.body:
         if line[0] == 'expr':
             nbody.append(('expr', (line[1][0], *[arg.name if type(arg)==Var else arg for arg in line[1][1:]])))
-            #nbody.append(('expr', (line[1][0], *[arg.name if type(arg)==Var else (lambda :(print(f'AHHHHH {arg!r}({type(arg)})')==...) or arg)() for arg in line[1][1:]])))
             if not( 'Var' not in str(repr(nbody[-1]))):
                 print(f'{line!r} and arg {nbody[-1][1][3]!r} has type {type(nbody[-1][1][3])}')
                 for arg in line[1][1:]:
                     print(f'Arg is {arg!r} has type({type(arg)}) == Var ({type(arg)==Var}) thus `{arg.name if type(arg)==Var else arg}` ({"name" if type(arg)==Var else "raw"}`)\n')
                 assert False
-            print(f'AHHHHH `{nbody[-1]!r}`')
         elif line[0] == 'decl':
             var = line[1]
             nbody.append(('decl', var.name, var.kind.OpWidth()))
@@ -432,8 +430,8 @@ def ConvertMeta(block):
         elif line[0] in ['undecl', 'regrst', 'memsave']:
             var = line[1]
             nbody.append((line[0], var.name))
-##        elif line[0] in ['regrst', 'memsave']:
-##            nbody.append(line)
+        elif line[0] in ['unreachable']:
+            nbody.append(line)
         else:
             assert False, f'Unreachable: Uncompiled control word `{line[0]}` from line `{line}`'
     block.body = nbody
@@ -450,7 +448,6 @@ def Lower(hlir):
         for var in func['args']:
             for subreg in SubRegs(var):
                 llir.func['args'].append(subreg.name)
-##        llir.func['args'] = args
         llir.func['ret'] = WordSizeOf(func['ret'])
         for block in func['body']:
             nblock = Block(block.entry, block.From)
@@ -526,11 +523,6 @@ def Lower(hlir):
                         elif all([IsNative(x) for x in [D, S0, S1, S2]]) or op == 'breakpoint':
                             Native(nblock, op, D, S0, S1, S2)
                         else:
-##                            for x in [D, S0, S1, S2]:
-##                                if x.kind != None:
-##                                    print(x, repr(x), vars(x.kind), IsNative(x))
-##                                else:
-##                                    print(x, IsNative(x))
                             assert op[0] != '@', f'Cannot perform instrincs on non 32 width instructions'
 
                             OpHandler = OPMAP[op]
@@ -541,6 +533,10 @@ def Lower(hlir):
                             except NotImplementedError:
                                 print(f'Compiling line:\n{line}')
                                 raise NotImplementedError(f'HLIR -> LLIR does not currently support operation `{op}` with args: {D=}; {S0=}; {S1=}; {S2=}')
+
+                    #UNREACHABLE
+                    elif cmd == 'unreachable':
+                        nblock.Addline(('unreachable',))
                     else:
                         assert False, f'Bad Command `{cmd}`'
                 except Exception as err:
@@ -572,7 +568,7 @@ def Lower(hlir):
         if func['name'] == 'Main':
             llir.funcs.insert(0, llir.funcs[i])
             del llir.funcs[i+1]
-    print(llir.funcs)
+    #print(llir.funcs)
         
     return llir
 
