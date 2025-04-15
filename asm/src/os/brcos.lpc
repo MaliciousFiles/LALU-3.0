@@ -7,7 +7,12 @@ fn Main() void {
 
     var rs: RenderState;
     rs.&:Init();
+
+    rs.file = "Hello World!";
+
     rs.&:Draw();
+
+    WriteCharFlaggedColored('A', 0, 0, 0, 0xFFFFFF, 0x000000);
 
     while (true) {}
     

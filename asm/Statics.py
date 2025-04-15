@@ -328,6 +328,7 @@ class Type:
             return True
         if skind == Pointer:
             if okind == Pointer:
+                return True
                 return self.Deref().CanCoerceTo(other.Deref())
             elif okind == Int:
                 return not other.body.signed and other.body.width >= PTRWIDTH
@@ -371,7 +372,7 @@ class Type:
                 else:
                     ret.body.quaf = 'const'
             return ret
-        else: assert False, f'Unreferenceable type `{self!r}`'
+        else: assert False, f'Cannot dereference type `{self!r}`'
     def Addr(self):
         assert self.body.refable, f'Cannot take reference of non-refable type {self!r}'
         return Type(Pointer(self.body))

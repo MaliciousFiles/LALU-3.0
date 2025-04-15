@@ -15,6 +15,16 @@ fn Main () 0 {
     ('decl', 'rs_8', 32)
     ('expr', ('argst', 0, 'rs_0.&', None, None))
     ('expr', ('call', 'u_RenderState____Init', None, None, None))
+    ('memsave', 'rs_0')
+    ('memsave', 'rs_1')
+    ('memsave', 'rs_2')
+    ('memsave', 'rs_3')
+    ('memsave', 'rs_4')
+    ('memsave', 'rs_5')
+    ('memsave', 'rs_6')
+    ('memsave', 'rs_7')
+    ('memsave', 'rs_8')
+    ('expr', ('bst', 'rs_0', 's0:', 0, 0))
     ('expr', ('argst', 0, 'rs_0.&', None, None))
     ('undecl', 'rs_0')
     ('undecl', 'rs_1')
@@ -26,10 +36,17 @@ fn Main () 0 {
     ('undecl', 'rs_7')
     ('undecl', 'rs_8')
     ('expr', ('call', 'u_RenderState____Draw', None, None, None))
-  L203:
+    ('expr', ('argst', 0, 65, None, None))
+    ('expr', ('argst', 1, 0, None, None))
+    ('expr', ('argst', 2, 0, None, None))
+    ('expr', ('argst', 3, 0, None, None))
+    ('expr', ('argst', 4, 16777215, None, None))
+    ('expr', ('argst', 5, 0, None, None))
+    ('expr', ('call', 'WriteCharFlaggedColored', None, None, None))
+  L204:
+    ('expr', ('jmp', 'L205:', None, None, None))
+  L205 <- L204:
     ('expr', ('jmp', 'L204:', None, None, None))
-  L204 <- L203:
-    ('expr', ('jmp', 'L203:', None, None, None))
 }
 fn u_Block____MemInit (memory) 0 {
   _u_Block____MemInit__:

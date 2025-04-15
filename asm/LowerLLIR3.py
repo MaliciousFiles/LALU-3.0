@@ -1,5 +1,5 @@
 from copy import deepcopy as copy
-from math import log2
+from math import log2, ceil
 
 NUM_REGS = 29
 SCRATCH_REGS = [29, 30]
@@ -349,10 +349,10 @@ def CompileBlock(comp_state: CompilerState, block: Block):
                     state.registers[args[1]].contained = args[0]
             else:
                 args = [state.use_var(arg, comp_state) if isinstance(arg, str) else arg for arg in args]
-                if len(args) == 4 and isinstance(args[0], int): # TODO: macros :(
+                if len(args) == 4 and (isinstance(args[0], int) or args[0] and args[0][-1] == ":"): # TODO: macros :(
                     comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[0]}', args[0]))
                     args[0] = f'r{SCRATCH_REGS[0]}'
-                if len(args) == 4 and isinstance(args[1], int): # TODO: macros :(
+                if len(args) == 4 and (isinstance(args[1], int) or args[1] and args[1][-1] == ":"): # TODO: macros :(
                     comp_state.add_assembly(('mov', preFlags, f'r{SCRATCH_REGS[1]}', args[1]))
                     args[1] = f'r{SCRATCH_REGS[1]}'
 
@@ -378,7 +378,7 @@ def Lower(llir):
         CompileBlock(comp_state, comp_state.blocks[block])
 
     # expects data to be {label: (value, words)}
-    addr = 2 + sum(v[1] for v in llir.data.values()) # one for setting up the stack pointer, and one to point to the address immediately after
+    addr = 2 + sum(ceil((len(v.value)+1)/4) for v in llir.data.values()) # one for setting up the stack pointer, and one to point to the address immediately after
     asm_out = ""
     state_dump_out = ""
     for func in comp_state.functions.values():
@@ -445,7 +445,7 @@ def Lower(llir):
         f.write(state_dump_out)
 
     return f""".DATA
-{'\n'.join(f'\t{k} {v[0]}' for k,v in llir.data.items())}
+{'\n'.join(f'\t{k} {v.value}' for k,v in llir.data.items())}
 
 .CODE
 {asm_out}

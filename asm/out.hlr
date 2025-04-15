@@ -1018,23 +1018,32 @@ fn Main () void {
   _Main__:
     ('decl', Var('memory', 'Block[32768]'), None, None, 'src', 738)
     ('expr', ('argst', Var(0, 'comptime'), Var('memory', 'Block[32768]'), NoVar, NoVar), 241, 'src', 739)
-    ('undecl', Var('memory', 'Block[32768]'), None, 'src', 752)
+    ('undecl', Var('memory', 'Block[32768]'), None, 'src', 763)
     ('expr', ('call', Var('u_Block____MemInit', 'u32'), NoVar, NoVar, NoVar), 242, 'src', 740)
     ('decl', Var('rs', 'RenderState'), None, None, 'src', 743)
     ('expr', ('argst', Var(0, 'comptime'), Var('rs.&', 'RenderState*'), NoVar, NoVar), 244, 'src', 744)
     ('expr', ('call', Var('u_RenderState____Init', 'u32'), NoVar, NoVar, NoVar), 245, 'src', 745)
-    ('expr', ('argst', Var(0, 'comptime'), Var('rs.&', 'RenderState*'), NoVar, NoVar), 247, 'src', 748)
-    ('undecl', Var('rs', 'RenderState'), None, 'src', 753)
-    ('expr', ('call', Var('u_RenderState____Draw', 'u32'), NoVar, NoVar, NoVar), 248, 'src', 749)
+    ('memsave', Var('rs', 'RenderState'), 'src', 748)
+    ('expr', ('[:]=', Var('rs', 'RenderState'), Var('s0:', 'u32*'), Var(0, 'comptime'), Var(32, 'comptime')), 248, 'src', 749)
+    ('expr', ('argst', Var(0, 'comptime'), Var('rs.&', 'RenderState*'), NoVar, NoVar), 249, 'src', 750)
+    ('undecl', Var('rs', 'RenderState'), None, 'src', 764)
+    ('expr', ('call', Var('u_RenderState____Draw', 'u32'), NoVar, NoVar, NoVar), 250, 'src', 751)
+    ('expr', ('argst', Var(0, 'comptime'), Var(65, 'comptime'), NoVar, NoVar), 252, 'src', 754)
+    ('expr', ('argst', Var(1, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 253, 'src', 755)
+    ('expr', ('argst', Var(2, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 254, 'src', 756)
+    ('expr', ('argst', Var(3, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 255, 'src', 757)
+    ('expr', ('argst', Var(4, 'comptime'), Var(16777215, 'comptime'), NoVar, NoVar), 256, 'src', 758)
+    ('expr', ('argst', Var(5, 'comptime'), Var(0, 'comptime'), NoVar, NoVar), 257, 'src', 759)
+    ('expr', ('call', Var('WriteCharFlaggedColored', 'u32'), NoVar, NoVar, NoVar), 258, 'src', 760)
   None 
-    FALL: L203
-
-  L203:
-  ('goto', 'L204') 
-    FALL: None
+    FALL: L204
 
   L204:
-  ('goto', 'L203') 
+  ('goto', 'L205') 
+    FALL: None
+
+  L205:
+  ('goto', 'L204') 
     FALL: None
 
 }

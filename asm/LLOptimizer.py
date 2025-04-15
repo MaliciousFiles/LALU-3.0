@@ -7,9 +7,14 @@ MaxOptions = 4
 ExpScaleUp = .5
 
 jumps = ['jmp', 'c.jmp', 'cn.jmp']
-usesRd = ['st', 'bst', 'stchr']
+usesRd = ['st', 'stchr']
+depsGlobal = ['glcd']
+modsRd = ['bst']
+memReads = ['ld', 'lda', 'ldw']
+memWrites = ['st', 'sta', 'stw']
 funcRenumId = 0
 NOASSERT = False
+globalticker = 0
 
 class BlockSet:
     def __init__(self, blocks):
@@ -108,8 +113,6 @@ class BlockSet:
                 if len(block.Preds()) == 0:
                     del self.blocks[self.blocks.index(block)]
                     didOpt = True
-##                else:
-##                    print(f'{block.label} has {block.Preds()}')
 
             #Replace jumps to empty blocks with their destination
             for block in self.blocks:
@@ -181,8 +184,9 @@ class BlockSet:
                     continue
                 if line[0] != 'expr': continue
                 for arg in line[3]:
-                    if type(arg) == str and not arg.endswith('.&'):
-                        life = block.localvars[arg] = block.localvars.get(arg, ['pre', 'loc'])
+                    if type(arg) == str:
+                        pre = 'pre' if block.label != self.blocks[0].label else 'loc'
+                        life = block.localvars[arg] = block.localvars.get(arg, [pre, 'loc'])
         do = True
         while do:
             do = False
@@ -191,7 +195,8 @@ class BlockSet:
                     predblock = self.ByName(pred)
                     for var, life in block.localvars.items():
                         if life[0] != 'pre': continue
-                        prelife = predblock.localvars[var] = predblock.localvars.get(var, ['pre', 'loc'])
+                        pre = 'pre' if block.label != self.blocks[0].label else 'loc'
+                        prelife = predblock.localvars[var] = predblock.localvars.get(var, [pre, 'loc'])
 ##                        print(f'Local variable `{var}` of `{block.label}` has life in predecessor block `{pred}` of `{prelife}`')
                         if prelife[1] != 'post':
                             prelife[1] = 'post'
@@ -215,13 +220,14 @@ class BlockSet:
                 for var, life in block.localvars.items():
                     if life[0] != 'pre': continue
                     block.body.insert(0, ['expr', '..mov', var, []])
-            for i, line in enumerate(block.body):
+            for line in block.body[:]:
+                i = block.body.index(line)
                 line = block.body[i] = list([list(x) if type(x) == tuple else x for x in line])
                 if line[0] != 'expr': continue
                 dest = line[2]
                 args = line[3]
                 for j, arg in enumerate(args):
-                    if type(arg) == int or arg.endswith('.&'): continue
+                    if type(arg) == int: continue
                     self.ids[arg] = self.ids.get(arg, 0)
                     line[3][j] = f'{self.ids[arg]}_{arg}'
                 if type(dest) == int or dest == None: continue
@@ -280,19 +286,24 @@ class BlockSet:
         #Expects SSA, and as such a read of own self write is illegal and illdefined
         writes = set()
         reads = set()
+        decls = set()
+        names = set()
         for block in self.blocks:
             for line in block.body:
+                if line[0] == 'decl': decls.add(line[1])
                 if line[0] != 'expr': continue
                 if line[1] == 'call': continue
                 if type(line[2]) == str: writes.add(line[2])
                 for arg in line[3]:
-                    if type(arg) == str and arg != line[2]: reads.add(arg)
+                    if type(arg) == str and arg != line[2]:
+                        reads.add(arg)
+                        names.add(arg.split('_', maxsplit=1)[1])
         diff = writes - reads
         do = True
         while do:
             do = False
             for block in self.blocks:
-                for line in block.body:
+                for line in block.body[:]:
                     idx = block.body.index(line)
                     if line[0] != 'expr' or line[2] not in diff:
                         if line[0] == 'expr' and line[1] == 'mov' and line[2] == line[3][0]:
@@ -302,6 +313,26 @@ class BlockSet:
                     assert block.body[idx] == line
                     del block.body[idx]
                     do = True
+        print(f'Needless declares: `{decls-names}`')
+        #Declarations without read
+        for decl in decls - names:
+            for block in self.blocks:
+                for line in block.body[:]:
+                    if not(line[0] == 'decl' and line[1] == decl): continue
+                    idx = block.body.index(line)
+                    del block.body[idx]
+
+    def ComputeRefables(self):
+        for block in self.blocks:
+            block.refs=set()
+            for line in block.body:
+                if line[0]=='expr' and line[1]=='addr':
+                    arg = line[3][0]
+                    if arg[0].isnumeric():
+                        arg = arg.split('_', maxsplit=1)[1]
+                    if arg[-1].isnumeric():
+                        arg = arg[::-1].split('_', maxsplit=1)[1][::-1]
+                    block.refs.add(arg)
 
     def PropPotValues(self):
         def ValueOf(ident: str|int) -> ValueOption:
@@ -319,14 +350,18 @@ class BlockSet:
             if maxiter == 0: assert False, f'Optimization loop failed to terminate after 100 iters'
             oldvalues = values.copy()
             for block in self.blocks:
-                for line in block.body:
+                for line in block.body[:]:
                     if line[0] == 'decl':
                         values[f'0_{line[1]}'] = ValueOption(line[2], None, True)
                     elif line[0] == 'alloc':
                         values[f'0_{line[1]}'] = ValueOption(32, line[1])
                     elif line[0] == 'expr':
+##                        print(f'EXPR {line}')
                         dest = line[2]
                         if type(dest) != str: continue
+##                            if type(dest) == int and line[1] == 'call_use':
+##                                pass
+##                            else: continue
                         args = [ValueOf(x) for x in line[3]]
                         if line[1] == 'mov':
                             values[dest] = args[0]
@@ -339,6 +374,34 @@ class BlockSet:
                                 res = res.MergeWith(arg)
                             else:
                                 values[dest] = res
+                        elif line[1] == 'addr':
+                            values[dest] = ValueOption(32, line[3][0].rstrip('.&'))
+##                        elif line[1] == 'call_use':
+####                            print('CALL_USE')
+##                            i = block.body.index(line)
+##                            
+##                            potrefs = set()
+##                            for arg in args:
+##                                for pot in arg.opts:
+##                                    if type(pot) != Symbolic: continue
+##                                    arg = pot.symbol
+##                                    if arg[0].isnumeric():
+##                                        arg = arg.split('_', maxsplit=1)[1]
+##                                    if arg[-1].isnumeric():
+##                                        arg = arg[::-1].split('_', maxsplit=1)[1][::-1]
+##                                    potrefs.add(arg)
+####                            print(i, potrefs, line)
+##                                
+##                            for var in block.localvars:
+##                                if var[-1].isnumeric():
+##                                    varref = var[::-1].split('_', maxsplit=1)[1][::-1]
+##                                else:
+##                                    varref = var
+##                                if varref in potrefs:
+##                                    newline = ('expr', 'maywrite', var, ())
+####                                    print(f'{var} ({varref}) <= {args[0]!s}')
+####                                    if newline not in block.body:
+####                                        block.body.insert(i+1, newline)
                         elif line[1] == 'add':
                             if any(x == None for x in args): continue
                             values[dest] = args[0] + args[1]
@@ -365,11 +428,11 @@ class BlockSet:
                 if line[0] != 'expr': continue
                 idx = block.body.index(line)
                 for j, arg in enumerate(line[3]):
-                    if type(arg) == str and not arg.endswith('.&'):
+                    if type(arg) == str:
                         line[3][j] = arg.split('_', maxsplit=1)[1]
                 if type(line[2]) == str:
                     line[2] = line[2].split('_', maxsplit=1)[1]
-                if line[1] == 'phi' or line[1] == 'mov' and line[2] == line[3][0]:
+                if line[1] in ['phi'] or line[1] == 'mov' and line[2] == line[3][0]:
                     del block.body[idx]
                     continue
 
@@ -393,12 +456,17 @@ class BlockSet:
             idx = [i for i,x in enumerate(self.blocks) if x.label == block][0]
             del self.blocks[idx]
 
+
+
+
 class Block:
     def __init__(self, parent: BlockSet, unoptBlock: LHL.Block):
+        global globalticker
         self.label = unoptBlock.entry
         self.body = unoptBlock.body[:]
         self.parent = parent
         self.localvars = {}
+        self.refs = {}
         if len(self.body) > 0 and self.body[-1][0] == 'expr' and self.body[-1][1][0] in ['jmp', 'c.jmp', 'ret']:
             self.exit = self.body[-1][1]
             del self.body[-1]
@@ -407,22 +475,38 @@ class Block:
         if ('unreachable',) in self.body:
             self.exit = ('ret',)
 
-        for i, line in enumerate(self.body):
+        for line in self.body[:]:
+            i = self.body.index(line)
             if line[0] == 'expr':
-                if line[1][0] in usesRd:
-                    self.body[i] = ('expr', line[1][0], None, tuple([x for x in line[1][1:] if x != None]))
+                if line[1][0] in usesRd+modsRd:
+                    if line[1][0] in modsRd:
+                        self.body[i] = ('expr', line[1][0], line[1][1], tuple([x for x in line[1][1:] if x != None]))
+                    else:
+                        self.body[i] = ('expr', line[1][0], None, tuple([x for x in line[1][1:] if x != None]))
                 else:
                     self.body[i] = ('expr', line[1][0], line[1][1], tuple([x for x in line[1][2:] if x != None]))
 
+                if self.body[i][1] == 'argst':
+##                    print('INSERT')
+##                    self.body.insert(i+1, ('expr', 'call_read', globalticker, self.body[i][3][:1]))
+##                    self.body.insert(i+2, ('expr', 'call_use', globalticker+1, self.body[i][3][:1]))
+                    globalticker += 2
+            if line[0] == 'decl':
+##                self.body.insert(i+1, ('expr', 'decl', line[1], ()))
+                self.body.insert(i+1, ('expr', 'addr', line[1]+'.&', (line[1],)))
+                #Also does double duty as the immediate use means that the variable naming gets properly init'd
+                
+            
+
         while True:
             for line in self.body[:]:
-                if line[0] == 'undecl':
+                if line[0] in ['undecl', 'memsave', 'memsavebit']:
                     del self.body[self.body.index(line)]
             break
         for line in self.body: assert line[0] != 'undecl'
 
     def __repr__(self):
-        return self.label + f' -> {self.Succs()} <- J{self.JumpPreds()} + N{self.NatPreds()}:\n' \
+        return self.label + f' -> {self.Succs()} <- J{self.JumpPreds()} + N{self.NatPreds()} *{self.refs}:\n' \
         + f'  Vars: `{self.localvars}`\n' \
         + ''.join([f'    {line}\n' for line in self.body])+f'  {self.exit}\n'
 
@@ -699,13 +783,14 @@ class IntRange:
 def Optimize(llir: LHL.LLIR) -> None:
     global funcRenumId
     newfuncs = []
+    preprune = ''
     for func in llir.funcs:
         body = BlockSet([])
         newfuncs.append(body)
         for block in func['body']:
             body.blocks.append(Block(body, block))
+            
         body.Renumber()
-##        print(repr(body))
         body.ForwardJumps()
         body.Renumber()
 
@@ -714,20 +799,29 @@ def Optimize(llir: LHL.LLIR) -> None:
         
         body.ToSSA()
         body.MovForward()
+
+        print(repr(body))
+        body.FromSSA()
+        print(repr(body))
+        body.ToSSA()
+        print(repr(body))
+
         body.ElimWritesWithoutRead()
+        body.ComputeRefables()
+
+##        print(repr(body))
+        
         #body.PropPotValues()
 
-##        print(repr(body))
+        preprune += repr(body)+'\n'
+
+        print(repr(body))
         
         body.FromSSA()
-        
-##        print(repr(body))
 
         body.PruneUnreachable()
-##
-##        print(repr(body))
-        
-##        assert False
+
+        assert False
 
     funcRenumId = 0
     optlr = ''
@@ -736,7 +830,8 @@ def Optimize(llir: LHL.LLIR) -> None:
         optlr += repr(func)+'\n'
     with open(f'out_opt.llr', 'w') as f:
         f.write(optlr)
-##        print(repr(func))
+    with open(f'out_preprune_opt.llr', 'w') as f:
+        f.write(preprune)
 
 
 Any = IntRange(32, 0, MAXUINT)

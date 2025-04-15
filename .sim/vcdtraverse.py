@@ -277,8 +277,11 @@ def dispcompvars():
         for i in range(29):
             if regs[i] == var:
                 regstate = f'r{i}'.ljust(3)
-                value = bin(vals[f'reg{i}'])[2:].zfill(width)[::-1]
-                break
+                try:
+                    value = bin(int(vals[f'reg{i}']))[2:].zfill(width)[::-1]
+                    break
+                except:
+                    pass
         else:
             regstate = 'mem'
             if all(memoryseen[addr:][:width]):
@@ -301,16 +304,19 @@ def dispcompvars():
     while stk != []:
         var = stk[0]
         del stk[0]
-        if var[2].struct == None or var[2].numPtrs > 0:
+        if type(var[2].body) != Statics.Struct or type(var[2]) in [Statics.Pointer, Statics.C_Array]:
+##        if type(var[2].body) in [Statics.Pointer, Statics.C_Array]:
             if var[1].isnumeric():
                 val = int(var[1][::-1], 2)
             else:
                 val = var[1][::-1]
             print(var[0].ljust(20), val)
-        else:
-            for arg, data in structs[var[2].struct]['args'].items():
+        elif type(var[2].body) == Statics.Struct:
+            for arg, data in structs[var[2].name]['args'].items():
 ##                print(var[0], var[1])
                 stk.append((f'{var[0]}.{arg}', var[1][data['offset']:][:data['width']], data['type']))
+        else:
+            print(f'Unknown var: `{var}` @ (`{type(var[2].body)}`)')
 ##    print(compvars)
             
     
@@ -320,10 +326,10 @@ def revdict(d, v0):
     return [k for k,v in d.items() if v == v0][0]
 
 def dispdbg():
-    F = dbgmap[vals['IP']]
-    D = dbgmap[vals['IP_f']]
-    E = dbgmap[vals['expectedIP']]
-    e = dbgmap[vals['IP_d']] if vals['isValid_d'] else E
+    F = dbgmap.get(vals['IP'], 0)
+    D = dbgmap.get(vals['IP_f'], 0)
+    E = dbgmap.get(vals['expectedIP'], 0)
+    e = dbgmap.get(vals['IP_d'], 0) if vals['isValid_d'] else E
 
     lidx = max(0, E-10)
     if lidx == 0:
@@ -527,7 +533,7 @@ for line in dump.splitlines():
 ##    for v, k in nchgs:
 ##        print(f'{nameof(k).ljust(20)}: {v}')
 ##    input()
-I = 'b'
+I = ''
 while True:
     if (platform := sys.platform) == 'win32':
         os.system("cls")

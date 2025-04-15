@@ -1254,7 +1254,7 @@ def GenAssume(inter, tree):
 
 
 
-def Compile(filepath, verbose = False):
+def Compile(filepath, verbose = False, optimize = True):
     global funcs, syms, ind, tid, eid, srcs, inter, tree, txt
     with open(filepath, 'r') as f:
         txt = f.read()
@@ -1297,7 +1297,7 @@ def Compile(filepath, verbose = False):
     with open('out.llr', 'w') as f:
         f.write(repr(llir))
 
-    LLOptimizer.Optimize(llir)
+    if optimize: LLOptimizer.Optimize(llir)
 
     if verbose:
         print('\nOptimized LLIR:')
