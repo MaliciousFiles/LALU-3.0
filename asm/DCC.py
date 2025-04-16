@@ -12,7 +12,7 @@ if __name__ == "__main__":
     args = sys.argv[2:]
     fName = sys.argv[1] if len(sys.argv) > 1 else input("Program File: ")
     verb = "--verb" in args
-    optimize = '-nooptimize' not in args
+    optimize = '--optimize' in args
     prepath = fName[::-1].split('/', maxsplit=1)[-1][::-1]+'/' if '/' in fName else ''
 
     contents = None

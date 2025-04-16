@@ -318,6 +318,8 @@ class Type:
             return True
         if skind == Bool or skind == Void:
             return False
+        if okind == Void:
+            return False
         if skind == Comp:
             return True
         if skind == Any or okind == Any:
@@ -335,6 +337,7 @@ class Type:
             else:
                 return False
         else:
+            assert okind != Void, f'{self=} {other=}'
             return self.body.signed == other.body.signed and other.body.width >= self.body.width
     def BitSameAs(self, other):
         return self.CanCoerceTo(other) and other.CanCoerceTo(self)

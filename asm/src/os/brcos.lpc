@@ -11,6 +11,8 @@ fn Main() void {
     rs.file = "Hello World!";
 
     rs.&:Draw();
+    var ptr = rs.&;
+    ptr.* = ptr.*;
 
     WriteCharFlaggedColored('A', 0, 0, 0, 0xFFFFFF, 0x000000);
 

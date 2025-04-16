@@ -1,653 +1,681 @@
-_Main__ -> ('LA0',) <- J() + N() *{'rs'}:
-  Vars: `{'memory': ['loc', 'loc'], 'rs_0': ['loc', 'loc'], 'rs_1': ['loc', 'loc'], 'rs_2': ['loc', 'loc'], 'rs_3': ['loc', 'loc'], 'rs_4': ['loc', 'loc'], 'rs_5': ['loc', 'loc'], 'rs_6': ['loc', 'loc'], 'rs_7': ['loc', 'loc'], 'rs_8': ['loc', 'loc'], 'rs_0.&': ['loc', 'loc'], 's0:': ['loc', 'loc']}`
-    ['alloc', 'memory', 32768, 64]
-    ['expr', 'argst', 0, ['memory']]
-    ['expr', 'call', 'u_Block____MemInit', []]
-    ['decl', 'rs_0', 32]
-    ['decl', 'rs_1', 32]
-    ['decl', 'rs_2', 32]
-    ['decl', 'rs_3', 32]
-    ['decl', 'rs_4', 32]
-    ['decl', 'rs_5', 32]
-    ['decl', 'rs_6', 32]
-    ['decl', 'rs_7', 32]
-    ['decl', 'rs_8', 32]
-    ['expr', 'argst', 0, ['rs_0.&']]
-    ['expr', 'call', 'u_RenderState____Init', []]
-    ['expr', 'argst', 0, ['rs_0.&']]
-    ['expr', 'call', 'u_RenderState____Draw', []]
-    ['expr', 'argst', 0, [65]]
-    ['expr', 'argst', 1, [0]]
-    ['expr', 'argst', 2, [0]]
-    ['expr', 'argst', 3, [0]]
-    ['expr', 'argst', 4, [16777215]]
-    ['expr', 'argst', 5, [0]]
-    ['expr', 'call', 'WriteCharFlaggedColored', []]
+_Main__ -> ('LA0',) <- J() + N() *{'memory', 'rs'}:
+  Vars: `{'memory': ['loc', 'loc'], 'rs_0': ['loc', 'loc'], 'rs_1': ['loc', 'loc'], 'rs_2': ['loc', 'loc'], 'rs_3': ['loc', 'loc'], 'rs_4': ['loc', 'loc'], 'rs_5': ['loc', 'loc'], 'rs_6': ['loc', 'loc'], 'rs_7': ['loc', 'loc'], 'rs_8': ['loc', 'loc'], 'rs_0.&': ['loc', 'loc'], 'ptr': ['loc', 'loc'], 't203_0': ['loc', 'loc'], 't203_1': ['loc', 'loc'], 't203_2': ['loc', 'loc'], 't203_3': ['loc', 'loc'], 't203_4': ['loc', 'loc'], 't203_5': ['loc', 'loc'], 't203_6': ['loc', 'loc'], 't203_7': ['loc', 'loc'], 't203_8': ['loc', 'loc']}`
+    [0000] ['alloc', 'memory', 32768, 64]
+    [0001] ['expr', 'argst', 0, ['memory']]
+    [005A] ['expr', 'maywrite', 'rs_0', []]
+    [0002] ['expr', 'call', 'u_Block____MemInit', []]
+    [0003] ['decl', 'rs_0', 32]
+    [0004] ['expr', 'addr', 'rs_0.&', ['rs_0']]
+    [0005] ['decl', 'rs_1', 32]
+    [0007] ['decl', 'rs_2', 32]
+    [0009] ['decl', 'rs_3', 32]
+    [000B] ['decl', 'rs_4', 32]
+    [000D] ['decl', 'rs_5', 32]
+    [000F] ['decl', 'rs_6', 32]
+    [0011] ['decl', 'rs_7', 32]
+    [0013] ['decl', 'rs_8', 32]
+    [0015] ['expr', 'argst', 0, ['rs_0.&']]
+    [0016] ['expr', 'call', 'u_RenderState____Init', []]
+    [0018] ['expr', 'argst', 0, ['rs_0.&']]
+    [007A] ['expr', 'maywrite', 'rs_8', []]
+    [007B] ['expr', 'maywrite', 'rs_7', []]
+    [007C] ['expr', 'maywrite', 'rs_6', []]
+    [007D] ['expr', 'maywrite', 'rs_5', []]
+    [007E] ['expr', 'maywrite', 'rs_4', []]
+    [007F] ['expr', 'maywrite', 'rs_3', []]
+    [0080] ['expr', 'maywrite', 'rs_2', []]
+    [0081] ['expr', 'maywrite', 'rs_1', []]
+    [0082] ['expr', 'maywrite', 'rs_0', []]
+    [0019] ['expr', 'call', 'u_RenderState____Draw', []]
+    [001A] ['decl', 'ptr', 32]
+    [001D] ['decl', 't203_0', 32]
+    [001F] ['decl', 't203_1', 32]
+    [0021] ['decl', 't203_2', 32]
+    [0023] ['decl', 't203_3', 32]
+    [0025] ['decl', 't203_4', 32]
+    [0027] ['decl', 't203_5', 32]
+    [0029] ['decl', 't203_6', 32]
+    [002B] ['decl', 't203_7', 32]
+    [002D] ['decl', 't203_8', 32]
+    [008E] ['expr', 'mayread', None, ['rs_0.&', 'rs_8']]
+    [008F] ['expr', 'mayread', None, ['rs_0.&', 'rs_7']]
+    [0090] ['expr', 'mayread', None, ['rs_0.&', 'rs_6']]
+    [0091] ['expr', 'mayread', None, ['rs_0.&', 'rs_5']]
+    [0092] ['expr', 'mayread', None, ['rs_0.&', 'rs_4']]
+    [0093] ['expr', 'mayread', None, ['rs_0.&', 'rs_3']]
+    [0094] ['expr', 'mayread', None, ['rs_0.&', 'rs_2']]
+    [0095] ['expr', 'mayread', None, ['rs_0.&', 'rs_1']]
+    [0096] ['expr', 'mayread', None, ['rs_0.&', 'rs_0']]
+    [0140] ['expr', 'maywrite', 't203_0', []]
+    [0038] ['expr', 'st', 'ptr', ['t203_0', 'rs_0.&', 0, 0]]
+    [0153] ['expr', 'maywrite', 't203_1', []]
+    [0155] ['expr', 'maywrite', 'ptr', []]
+    [0039] ['expr', 'st', 'ptr', ['t203_1', 'ptr', 32, 0]]
+    [0166] ['expr', 'maywrite', 't203_2', []]
+    [0169] ['expr', 'maywrite', 'ptr', []]
+    [003A] ['expr', 'st', 'ptr', ['t203_2', 'ptr', 64, 0]]
+    [0179] ['expr', 'maywrite', 't203_3', []]
+    [017D] ['expr', 'maywrite', 'ptr', []]
+    [003B] ['expr', 'st', 'ptr', ['t203_3', 'ptr', 96, 0]]
+    [018C] ['expr', 'maywrite', 't203_4', []]
+    [0191] ['expr', 'maywrite', 'ptr', []]
+    [003C] ['expr', 'st', 'ptr', ['t203_4', 'ptr', 128, 0]]
+    [019F] ['expr', 'maywrite', 't203_5', []]
+    [01A5] ['expr', 'maywrite', 'ptr', []]
+    [003D] ['expr', 'st', 'ptr', ['t203_5', 'ptr', 160, 0]]
+    [01B2] ['expr', 'maywrite', 't203_6', []]
+    [01B9] ['expr', 'maywrite', 'ptr', []]
+    [003E] ['expr', 'st', 'ptr', ['t203_6', 'ptr', 192, 0]]
+    [01C5] ['expr', 'maywrite', 't203_7', []]
+    [01CD] ['expr', 'maywrite', 'ptr', []]
+    [003F] ['expr', 'st', 'ptr', ['t203_7', 'ptr', 224, 0]]
+    [01D8] ['expr', 'maywrite', 't203_8', []]
+    [01E1] ['expr', 'maywrite', 'ptr', []]
+    [0040] ['expr', 'st', 'ptr', ['t203_8', 'ptr', 256, 0]]
+    [0041] ['expr', 'argst', 0, [65]]
+    [0042] ['expr', 'argst', 1, [0]]
+    [0043] ['expr', 'argst', 2, [0]]
+    [0044] ['expr', 'argst', 3, [0]]
+    [0045] ['expr', 'argst', 4, [16777215]]
+    [0046] ['expr', 'argst', 5, [0]]
+    [0047] ['expr', 'call', 'WriteCharFlaggedColored', []]
   ('FALL',)
 
-LA0 -> ('LA0',) <- J('LA0',) + N('_Main__',) *set():
+LA0 -> ('LA0',) <- J('LA0',) + N('_Main__',) *{'memory'}:
   Vars: `{}`
   ('jmp', 'LA0')
 
-_u_Block____MemInit__ -> () <- J() + N() *set():
-  Vars: `{'memory': ['loc', 'loc'], 'nblock_0': ['loc', 'loc'], 'nblock_1': ['loc', 'loc'], 't1': ['loc', 'loc'], 't_hl0': ['loc', 'loc']}`
-    ['expr', 'argld', 'memory', [0]]
-    ['decl', 'nblock_0', 32]
-    ['decl', 'nblock_1', 32]
-    ['expr', 'bst', 'nblock_0', ['nblock_0', 0, 0, 0]]
-    ['expr', 'bst', 'nblock_1', ['nblock_1', 32768, 0, 31]]
-    ['expr', 'bst', 'nblock_1', ['nblock_1', 1, 31, 1]]
-    ['decl', 't1', 32]
-    ['decl', 't_hl0', 32]
-    ['expr', 'st', None, ['nblock_0', 'memory', 0, 0]]
-    ['expr', 'add', 't_hl0', [0, 32]]
-    ['expr', 'st', None, ['nblock_1', 'memory', 't_hl0', 0]]
-    ['regrst', 'nblock_0']
-    ['regrst', 'nblock_1']
+_u_Block____MemInit__ -> () <- J() + N() *{'memory'}:
+  Vars: `{'nblock_0': ['loc', 'loc'], 'nblock_1': ['loc', 'loc'], 't_hl0': ['loc', 'loc'], 'memory': ['loc', 'loc']}`
+    [0201] ['decl', 'nblock_0', 32]
+    [0203] ['decl', 'nblock_1', 32]
+    [020B] ['decl', 't_hl0', 32]
+    [0215] ['expr', 'maywrite', 'nblock_0', []]
+    [0216] ['expr', 'maywrite', 'memory', []]
+    [020E] ['expr', 'st', 'memory', ['nblock_0', 'memory', 0, 0]]
+    [0217] ['expr', 'maywrite', 't_hl0', []]
+    [0219] ['expr', 'maywrite', 'nblock_1', []]
+    [021B] ['expr', 'maywrite', 'memory', []]
+    [0210] ['expr', 'st', 'memory', ['nblock_1', 'memory', 't_hl0', 0]]
   ('ret', None, None, None, None)
 
-_u_Block____Malloc__ -> ('LC0',) <- J() + N() *set():
-  Vars: `{'memory': ['loc', 'loc'], 'size': ['loc', 'loc'], 't3': ['loc', 'loc'], 'ENDPTR': ['loc', 'post'], 't4': ['loc', 'loc'], 't5': ['loc', 'loc'], 't7': ['loc', 'loc'], 'rsize': ['loc', 'post'], 'hijack': ['loc', 'post'], 'u_target': ['loc', 'post'], 'doSplit': ['loc', 'post'], 'blockptr': ['loc', 'post']}`
-    ['expr', 'argld', 'memory', [0]]
-    ['expr', 'argld', 'size', [1]]
-    ['decl', 't3', 32]
-    ['expr', 'add', 't3', ['memory', 32768]]
-    ['decl', 'ENDPTR', 32]
-    ['expr', 'mov', 'ENDPTR', ['t3']]
-    ['decl', 't4', 31]
-    ['expr', 'sub', 't4', ['size', 1]]
-    ['decl', 't5', 31]
-    ['decl', 't7', 31]
-    ['expr', 'bsr', 't7', ['t4', 5]]
-    ['decl', 'rsize', 31]
-    ['expr', 'mov', 'rsize', ['t7']]
-    ['decl', 'hijack', 32]
-    ['expr', 'mov', 'hijack', [0]]
-    ['decl', 'u_target', 32]
-    ['expr', 'mov', 'u_target', [0]]
-    ['decl', 'doSplit', 1]
-    ['expr', 'mov', 'doSplit', [0]]
-    ['decl', 'blockptr', 32]
-    ['expr', 'mov', 'blockptr', ['memory']]
+_u_Block____Malloc__ -> ('LC0',) <- J() + N() *{'memory', 'size'}:
+  Vars: `{'memory': ['loc', 'loc'], 'size': ['loc', 'loc'], 't3': ['loc', 'loc'], 'ENDPTR': ['loc', 'post'], 't4': ['loc', 'loc'], 't7': ['loc', 'loc'], 'rsize': ['loc', 'post'], 'hijack': ['loc', 'post'], 'u_target': ['loc', 'post'], 'doSplit': ['loc', 'post'], 'blockptr': ['loc', 'post']}`
+    [021C] ['expr', 'argld', 'memory', [0]]
+    [021D] ['expr', 'argld', 'size', [1]]
+    [021E] ['decl', 't3', 32]
+    [0220] ['expr', 'add', 't3', ['memory', 32768]]
+    [0221] ['decl', 'ENDPTR', 32]
+    [0223] ['expr', 'mov', 'ENDPTR', ['t3']]
+    [0224] ['decl', 't4', 31]
+    [0226] ['expr', 'sub', 't4', ['size', 1]]
+    [022A] ['decl', 't7', 31]
+    [022C] ['expr', 'bsr', 't7', ['t4', 5]]
+    [022D] ['decl', 'rsize', 31]
+    [022F] ['expr', 'mov', 'rsize', ['t7']]
+    [0230] ['decl', 'hijack', 32]
+    [0232] ['expr', 'mov', 'hijack', [0]]
+    [0233] ['decl', 'u_target', 32]
+    [0235] ['expr', 'mov', 'u_target', [0]]
+    [0236] ['decl', 'doSplit', 1]
+    [0238] ['expr', 'mov', 'doSplit', [0]]
+    [0239] ['decl', 'blockptr', 32]
+    [023B] ['expr', 'mov', 'blockptr', ['memory']]
   ('FALL',)
 
-LC0 -> ('LC10', 'LC1') <- J('LC1', 'LC9') + N('_u_Block____Malloc__',) *set():
+LC0 -> ('LC10', 'LC1') <- J('LC1', 'LC9') + N('_u_Block____Malloc__',) *{'memory', 'size'}:
   Vars: `{'blockptr': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'rsize': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['expr', 'ne', None, ['blockptr', 'ENDPTR']]
+    [023C] ['expr', 'ne', None, ['blockptr', 'ENDPTR']]
   ('cn.jmp', 'LC10')
 
-LC1 -> ('LC0', 'LC2') <- J() + N('LC0',) *set():
+LC1 -> ('LC0', 'LC2') <- J() + N('LC0',) *{'memory', 'size'}:
   Vars: `{'t15_0': ['loc', 'loc'], 't15_1': ['loc', 'loc'], 'blockptr': ['pre', 'post'], 't16': ['loc', 'loc'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'rsize': ['pre', 'post'], 'u_target': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['decl', 't15_0', 32]
-    ['decl', 't15_1', 32]
-    ['expr', 'ld', 't15_1', ['blockptr', 32, 0]]
-    ['decl', 't16', 1]
-    ['expr', 'bsf', 't16', ['t15_1', 0, 1]]
-    ['expr', 'eq', None, ['t16', 0]]
+    [023D] ['decl', 't15_0', 32]
+    [023F] ['decl', 't15_1', 32]
+    [031A] ['expr', 'mayread', None, ['blockptr', 't15_1']]
+    [031B] ['expr', 'mayread', None, ['blockptr', 't15_0']]
+    [0241] ['expr', 'ld', 't15_0', ['blockptr', 0, 0]]
+    [031E] ['expr', 'mayread', None, ['blockptr', 't15_0']]
+    [0242] ['expr', 'ld', 't15_1', ['blockptr', 32, 0]]
+    [0243] ['decl', 't16', 1]
+    [0245] ['expr', 'bsf', 't16', ['t15_1', 0, 1]]
+    [0246] ['expr', 'eq', None, ['t16', 0]]
   ('c.jmp', 'LC0')
 
-LC2 -> ('LC3',) <- J() + N('LC1',) *set():
+LC2 -> ('LC3',) <- J() + N('LC1',) *{'memory', 'size'}:
   Vars: `{'blockptr': ['pre', 'post'], 'rsize': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'hijack': ['pre', 'post']}`
   ('jmp', 'LC3')
 
-LC3 -> ('LC5', 'LC4') <- J() + N('LC2',) *set():
-  Vars: `{'t20_0': ['loc', 'loc'], 't20_1': ['loc', 'loc'], 'blockptr': ['pre', 'post'], 't21': ['loc', 'loc'], 'bsize': ['loc', 'post'], 'rsize': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['decl', 't20_0', 32]
-    ['decl', 't20_1', 32]
-    ['expr', 'ld', 't20_1', ['blockptr', 32, 0]]
-    ['decl', 't21', 31]
-    ['expr', 'bsf', 't21', ['t20_1', 0, 31]]
-    ['decl', 'bsize', 31]
-    ['expr', 'eq', None, ['t21', 'rsize']]
+LC3 -> ('LC5', 'LC4') <- J() + N('LC2',) *{'memory', 'size'}:
+  Vars: `{'t20_0': ['loc', 'loc'], 't20_1': ['loc', 'loc'], 'blockptr': ['pre', 'post'], 't21': ['loc', 'post'], 'rsize': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'hijack': ['pre', 'post']}`
+    [0247] ['decl', 't20_0', 32]
+    [0249] ['decl', 't20_1', 32]
+    [0321] ['expr', 'mayread', None, ['blockptr', 't20_1']]
+    [0322] ['expr', 'mayread', None, ['blockptr', 't20_0']]
+    [024B] ['expr', 'ld', 't20_0', ['blockptr', 0, 0]]
+    [0326] ['expr', 'mayread', None, ['blockptr', 't20_0']]
+    [024C] ['expr', 'ld', 't20_1', ['blockptr', 32, 0]]
+    [024D] ['decl', 't21', 31]
+    [024F] ['expr', 'bsf', 't21', ['t20_1', 0, 31]]
+    [0253] ['expr', 'eq', None, ['t21', 'rsize']]
   ('cn.jmp', 'LC5')
 
-LC4 -> ('LC10',) <- J() + N('LC3',) *set():
+LC4 -> ('LC10',) <- J() + N('LC3',) *{'memory', 'size'}:
   Vars: `{'blockptr': ['pre', 'loc'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'rsize': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['expr', 'mov', 'u_target', ['blockptr']]
+    [0254] ['expr', 'mov', 'u_target', ['blockptr']]
   ('jmp', 'LC10')
 
-LC5 -> ('LC7', 'LC6') <- J('LC3',) + N() *set():
-  Vars: `{'t32': ['loc', 'loc'], 'rsize': ['pre', 'post'], 'bsize': ['pre', 'post'], 'blockptr': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['decl', 't32', 31]
-    ['expr', 'add', 't32', ['rsize', 1]]
-    ['expr', 'eq', None, ['t21', 't32']]
+LC5 -> ('LC7', 'LC6') <- J('LC3',) + N() *{'memory', 'size'}:
+  Vars: `{'t32': ['loc', 'loc'], 'rsize': ['pre', 'post'], 't21': ['pre', 'post'], 'blockptr': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'hijack': ['pre', 'post']}`
+    [0255] ['decl', 't32', 31]
+    [0257] ['expr', 'add', 't32', ['rsize', 1]]
+    [0258] ['expr', 'eq', None, ['t21', 't32']]
   ('cn.jmp', 'LC7')
 
-LC6 -> ('LC9',) <- J() + N('LC5',) *set():
+LC6 -> ('LC9',) <- J() + N('LC5',) *{'memory', 'size'}:
   Vars: `{'blockptr': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'rsize': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['expr', 'mov', 'hijack', ['blockptr']]
+    [0259] ['expr', 'mov', 'hijack', ['blockptr']]
   ('jmp', 'LC9')
 
-LC7 -> ('LC9', 'LC8') <- J('LC5',) + N() *set():
-  Vars: `{'t38': ['loc', 'loc'], 'rsize': ['pre', 'post'], 'bsize': ['pre', 'loc'], 'blockptr': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['decl', 't38', 31]
-    ['expr', 'add', 't38', ['rsize', 1]]
-    ['expr', 'ugt', None, ['t21', 't38']]
+LC7 -> ('LC9', 'LC8') <- J('LC5',) + N() *{'memory', 'size'}:
+  Vars: `{'t38': ['loc', 'loc'], 'rsize': ['pre', 'post'], 't21': ['pre', 'loc'], 'blockptr': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'hijack': ['pre', 'post']}`
+    [025A] ['decl', 't38', 31]
+    [025C] ['expr', 'add', 't38', ['rsize', 1]]
+    [025D] ['expr', 'ugt', None, ['t21', 't38']]
   ('cn.jmp', 'LC9')
 
-LC8 -> ('LC10',) <- J() + N('LC7',) *set():
+LC8 -> ('LC10',) <- J() + N('LC7',) *{'memory', 'size'}:
   Vars: `{'blockptr': ['pre', 'loc'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'rsize': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['expr', 'mov', 'doSplit', [1]]
-    ['expr', 'mov', 'u_target', ['blockptr']]
+    [025E] ['expr', 'mov', 'doSplit', [1]]
+    [025F] ['expr', 'mov', 'u_target', ['blockptr']]
   ('jmp', 'LC10')
 
-LC9 -> ('LC0',) <- J('LC6', 'LC7') + N() *set():
+LC9 -> ('LC0',) <- J('LC6', 'LC7') + N() *{'memory', 'size'}:
   Vars: `{'t42': ['loc', 'loc'], 'blockptr': ['pre', 'post'], 't43_0': ['loc', 'loc'], 't43_1': ['loc', 'loc'], 't44': ['loc', 'loc'], 't45': ['loc', 'loc'], 'ENDPTR': ['pre', 'post'], 'doSplit': ['pre', 'post'], 'u_target': ['pre', 'post'], 'rsize': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['decl', 't42', 32]
-    ['expr', 'add', 't42', ['blockptr', 1]]
-    ['decl', 't43_0', 32]
-    ['decl', 't43_1', 32]
-    ['expr', 'ld', 't43_1', ['blockptr', 32, 0]]
-    ['decl', 't44', 31]
-    ['expr', 'bsf', 't44', ['t43_1', 0, 31]]
-    ['decl', 't45', 32]
-    ['expr', 'add', 't45', ['t42', 't44']]
-    ['expr', 'mov', 'blockptr', ['t45']]
+    [0260] ['decl', 't42', 32]
+    [0262] ['expr', 'add', 't42', ['blockptr', 1]]
+    [0263] ['decl', 't43_0', 32]
+    [0265] ['decl', 't43_1', 32]
+    [0329] ['expr', 'mayread', None, ['blockptr', 't43_1']]
+    [032A] ['expr', 'mayread', None, ['blockptr', 't43_0']]
+    [032B] ['expr', 'mayread', None, ['blockptr', 't42']]
+    [0267] ['expr', 'ld', 't43_0', ['blockptr', 0, 0]]
+    [032F] ['expr', 'mayread', None, ['blockptr', 't43_0']]
+    [0268] ['expr', 'ld', 't43_1', ['blockptr', 32, 0]]
+    [0269] ['decl', 't44', 31]
+    [026B] ['expr', 'bsf', 't44', ['t43_1', 0, 31]]
+    [026C] ['decl', 't45', 32]
+    [026E] ['expr', 'add', 't45', ['t42', 't44']]
+    [026F] ['expr', 'mov', 'blockptr', ['t45']]
   ('jmp', 'LC0')
 
-LC10 -> ('LC16', 'LC11') <- J('LC0', 'LC4', 'LC8') + N() *set():
+LC10 -> ('LC16', 'LC11') <- J('LC0', 'LC4', 'LC8') + N() *{'memory', 'size'}:
   Vars: `{'doSplit': ['pre', 'loc'], 'u_target': ['pre', 'post'], 'rsize': ['pre', 'post'], 'ENDPTR': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['expr', 'eq', None, ['doSplit', 0]]
+    [0270] ['expr', 'eq', None, ['doSplit', 0]]
   ('cn.jmp', 'LC16')
 
-LC11 -> ('LC13', 'LC12') <- J() + N('LC10',) *set():
+LC11 -> ('LC13', 'LC12') <- J() + N('LC10',) *{'memory', 'size'}:
   Vars: `{'u_target': ['pre', 'post'], 'hijack': ['pre', 'post']}`
-    ['expr', 'ne', None, ['u_target', 0]]
+    [0271] ['expr', 'ne', None, ['u_target', 0]]
   ('cn.jmp', 'LC13')
 
-LC12 -> () <- J() + N('LC11',) *set():
-  Vars: `{'t57_0': ['loc', 'loc'], 't57_1': ['loc', 'loc'], 'u_target': ['pre', 'loc'], 't58': ['loc', 'loc'], 't59': ['loc', 'loc']}`
-    ['decl', 't57_0', 32]
-    ['decl', 't57_1', 32]
-    ['expr', 'ld', 't57_1', ['u_target', 32, 0]]
-    ['decl', 't58', 32]
-    ['expr', 'add', 't58', ['u_target', 1]]
-    ['decl', 't59', 32]
-    ['expr', 'retst', 0, ['t58']]
+LC12 -> () <- J() + N('LC11',) *{'memory', 'size'}:
+  Vars: `{'u_target': ['pre', 'loc'], 't58': ['loc', 'loc']}`
+    [0272] ['expr', 'stw', 63, ['u_target', 63, 1]]
+    [0273] ['decl', 't58', 32]
+    [0275] ['expr', 'add', 't58', ['u_target', 1]]
+    [0279] ['expr', 'retst', 0, ['t58']]
   ('ret', None, None, None, None)
 
-LC13 -> ('LC15', 'LC14') <- J('LC11',) + N() *set():
+LC13 -> ('LC15', 'LC14') <- J('LC11',) + N() *{'memory', 'size'}:
   Vars: `{'hijack': ['pre', 'post']}`
-    ['expr', 'ne', None, ['hijack', 0]]
+    [027A] ['expr', 'ne', None, ['hijack', 0]]
   ('cn.jmp', 'LC15')
 
-LC14 -> () <- J() + N('LC13',) *set():
-  Vars: `{'t67_0': ['loc', 'loc'], 't67_1': ['loc', 'loc'], 'hijack': ['pre', 'loc'], 't68': ['loc', 'loc'], 't69': ['loc', 'loc']}`
-    ['decl', 't67_0', 32]
-    ['decl', 't67_1', 32]
-    ['expr', 'ld', 't67_1', ['hijack', 32, 0]]
-    ['decl', 't68', 32]
-    ['expr', 'add', 't68', ['hijack', 1]]
-    ['decl', 't69', 32]
-    ['expr', 'retst', 0, ['t68']]
+LC14 -> () <- J() + N('LC13',) *{'memory', 'size'}:
+  Vars: `{'hijack': ['pre', 'loc'], 't68': ['loc', 'loc']}`
+    [027B] ['expr', 'stw', 63, ['hijack', 63, 1]]
+    [027C] ['decl', 't68', 32]
+    [027E] ['expr', 'add', 't68', ['hijack', 1]]
+    [0282] ['expr', 'retst', 0, ['t68']]
   ('ret', None, None, None, None)
 
-LC15 -> () <- J('LC13',) + N() *set():
+LC15 -> () <- J('LC13',) + N() *{'memory', 'size'}:
   Vars: `{}`
-    ['expr', 'retst', 0, [0]]
+    [0283] ['expr', 'retst', 0, [0]]
   ('ret', None, None, None, None)
 
-LC16 -> ('LC18', 'LC17') <- J('LC10',) + N() *set():
-  Vars: `{'t74_0': ['loc', 'loc'], 't74_1': ['loc', 'loc'], 'u_target': ['pre', 'post'], 't75_0': ['loc', 'loc'], 't75_1': ['loc', 'loc'], 't76': ['loc', 'loc'], 'oldsize': ['loc', 'loc'], 't77': ['loc', 'loc'], 'rsize': ['pre', 'loc'], 't78': ['loc', 'loc'], 'excess': ['loc', 'loc'], 't79_0': ['loc', 'loc'], 't79_1': ['loc', 'loc'], 't80': ['loc', 'loc'], 't81_0': ['loc', 'loc'], 't81_1': ['loc', 'loc'], 't82': ['loc', 'loc'], 't83': ['loc', 'loc'], 'newNext': ['loc', 'post'], 't84_0': ['loc', 'loc'], 't84_1': ['loc', 'loc'], 't85_0': ['loc', 'loc'], 't85_1': ['loc', 'loc'], 't86_0': ['loc', 'loc'], 't86_1': ['loc', 'loc'], 't87': ['loc', 'loc'], 't88_0': ['loc', 'loc'], 't88_1': ['loc', 'loc'], 't89': ['loc', 'loc'], 't90': ['loc', 'loc'], 'nextNext': ['loc', 'post'], 'ENDPTR': ['pre', 'loc']}`
-    ['decl', 't74_0', 32]
-    ['decl', 't74_1', 32]
-    ['expr', 'ld', 't74_1', ['u_target', 32, 0]]
-    ['decl', 't75_0', 32]
-    ['decl', 't75_1', 32]
-    ['expr', 'ld', 't75_1', ['u_target', 32, 0]]
-    ['decl', 't76', 31]
-    ['expr', 'bsf', 't76', ['t75_1', 0, 31]]
-    ['decl', 'oldsize', 31]
-    ['decl', 't77', 31]
-    ['expr', 'sub', 't77', ['t76', 'rsize']]
-    ['decl', 't78', 31]
-    ['expr', 'sub', 't78', ['t77', 1]]
-    ['decl', 'excess', 31]
-    ['decl', 't79_0', 32]
-    ['decl', 't79_1', 32]
-    ['expr', 'ld', 't79_1', ['u_target', 32, 0]]
-    ['decl', 't80', 32]
-    ['expr', 'add', 't80', ['u_target', 1]]
-    ['decl', 't81_0', 32]
-    ['decl', 't81_1', 32]
-    ['expr', 'ld', 't81_1', ['u_target', 32, 0]]
-    ['decl', 't82', 31]
-    ['expr', 'bsf', 't82', ['t81_1', 0, 31]]
-    ['decl', 't83', 32]
-    ['expr', 'add', 't83', ['t80', 't82']]
-    ['decl', 'newNext', 32]
-    ['decl', 't84_0', 32]
-    ['decl', 't84_1', 32]
-    ['expr', 'ld', 't84_1', ['t83', 32, 0]]
-    ['decl', 't85_0', 32]
-    ['decl', 't85_1', 32]
-    ['expr', 'ld', 't85_1', ['t83', 32, 0]]
-    ['decl', 't86_0', 32]
-    ['decl', 't86_1', 32]
-    ['expr', 'ld', 't86_0', ['t83', 0, 0]]
-    ['decl', 't87', 32]
-    ['expr', 'add', 't87', ['t83', 1]]
-    ['decl', 't88_0', 32]
-    ['decl', 't88_1', 32]
-    ['expr', 'ld', 't88_1', ['t83', 32, 0]]
-    ['decl', 't89', 31]
-    ['expr', 'bsf', 't89', ['t88_1', 0, 31]]
-    ['decl', 't90', 32]
-    ['expr', 'add', 't90', ['t87', 't89']]
-    ['decl', 'nextNext', 32]
-    ['expr', 'ne', None, ['t90', 'ENDPTR']]
+LC16 -> ('LC18', 'LC17') <- J('LC10',) + N() *{'memory', 'size'}:
+  Vars: `{'u_target': ['pre', 'post'], 't75_0': ['loc', 'loc'], 't75_1': ['loc', 'loc'], 't76': ['loc', 'loc'], 'oldsize': ['loc', 'loc'], 't77': ['loc', 'loc'], 'rsize': ['pre', 'loc'], 't78': ['loc', 'loc'], 'excess': ['loc', 'loc'], 't80': ['loc', 'loc'], 't81_0': ['loc', 'loc'], 't81_1': ['loc', 'loc'], 't82': ['loc', 'loc'], 't83': ['loc', 'loc'], 't87': ['loc', 'loc'], 't88_1': ['loc', 'loc'], 't89': ['loc', 'loc'], 't90': ['loc', 'post'], 'ENDPTR': ['pre', 'loc']}`
+    [0346] ['expr', 'maywrite', 't75_1', []]
+    [0347] ['expr', 'maywrite', 't75_0', []]
+    [0284] ['expr', 'stw', 63, ['u_target', 63, 1]]
+    [0285] ['decl', 't75_0', 32]
+    [0287] ['decl', 't75_1', 32]
+    [0359] ['expr', 'mayread', None, ['u_target', 't75_1']]
+    [035A] ['expr', 'mayread', None, ['u_target', 't75_0']]
+    [0289] ['expr', 'ld', 't75_0', ['u_target', 0, 0]]
+    [036D] ['expr', 'mayread', None, ['u_target', 't75_0']]
+    [028A] ['expr', 'ld', 't75_1', ['u_target', 32, 0]]
+    [028B] ['decl', 't76', 31]
+    [028E] ['decl', 'oldsize', 31]
+    [0291] ['decl', 't77', 31]
+    [0294] ['decl', 't78', 31]
+    [0297] ['decl', 'excess', 31]
+    [0377] ['expr', 'maywrite', 't81_1', []]
+    [0378] ['expr', 'maywrite', 't81_0', []]
+    [037A] ['expr', 'maywrite', 'excess', []]
+    [037B] ['expr', 'maywrite', 't78', []]
+    [037C] ['expr', 'maywrite', 't77', []]
+    [037D] ['expr', 'maywrite', 'oldsize', []]
+    [037E] ['expr', 'maywrite', 't76', []]
+    [037F] ['expr', 'maywrite', 't75_1', []]
+    [0380] ['expr', 'maywrite', 't75_0', []]
+    [029A] ['expr', 'stw', 32, ['u_target', 32, 31]]
+    [029B] ['decl', 't80', 32]
+    [029D] ['expr', 'add', 't80', ['u_target', 1]]
+    [029E] ['decl', 't81_0', 32]
+    [02A0] ['decl', 't81_1', 32]
+    [038A] ['expr', 'mayread', None, ['u_target', 't81_1']]
+    [038B] ['expr', 'mayread', None, ['u_target', 't81_0']]
+    [038C] ['expr', 'mayread', None, ['u_target', 't80']]
+    [038D] ['expr', 'mayread', None, ['u_target', 'excess']]
+    [038E] ['expr', 'mayread', None, ['u_target', 't78']]
+    [038F] ['expr', 'mayread', None, ['u_target', 't77']]
+    [0390] ['expr', 'mayread', None, ['u_target', 'oldsize']]
+    [0391] ['expr', 'mayread', None, ['u_target', 't76']]
+    [0392] ['expr', 'mayread', None, ['u_target', 't75_1']]
+    [0393] ['expr', 'mayread', None, ['u_target', 't75_0']]
+    [02A2] ['expr', 'ld', 't81_0', ['u_target', 0, 0]]
+    [039E] ['expr', 'mayread', None, ['u_target', 't81_0']]
+    [02A7] ['decl', 't83', 32]
+    [03AE] ['expr', 'maywrite', 't83', []]
+    [02AD] ['expr', 'stw', 63, ['t83', 63, 1]]
+    [03C1] ['expr', 'maywrite', 't83', []]
+    [02AE] ['expr', 'stw', 32, ['t83', 32, 31]]
+    [03D4] ['expr', 'maywrite', 't83', []]
+    [02AF] ['expr', 'stw', 0, ['t83', 0, 32]]
+    [02B0] ['decl', 't87', 32]
+    [02B2] ['expr', 'add', 't87', ['t83', 1]]
+    [02B5] ['decl', 't88_1', 32]
+    [02B8] ['expr', 'ld', 't88_1', ['t83', 32, 0]]
+    [02B9] ['decl', 't89', 31]
+    [02BB] ['expr', 'bsf', 't89', ['t88_1', 0, 31]]
+    [02BC] ['decl', 't90', 32]
+    [02BE] ['expr', 'add', 't90', ['t87', 't89']]
+    [02C2] ['expr', 'ne', None, ['t90', 'ENDPTR']]
   ('cn.jmp', 'LC18')
 
-LC17 -> ('LC18',) <- J() + N('LC16',) *set():
-  Vars: `{'t95_0': ['loc', 'loc'], 't95_1': ['loc', 'loc'], 'nextNext': ['pre', 'loc'], 'newNext': ['pre', 'loc'], 'u_target': ['pre', 'post']}`
-    ['decl', 't95_0', 32]
-    ['decl', 't95_1', 32]
-    ['expr', 'ld', 't95_0', ['t90', 0, 0]]
+LC17 -> ('LC18',) <- J() + N('LC16',) *{'memory', 'size'}:
+  Vars: `{'t90': ['pre', 'loc'], 'u_target': ['pre', 'post']}`
+    [02C3] ['expr', 'stw', 0, ['t90', 0, 32]]
   ('FALL',)
 
-LC18 -> () <- J('LC16',) + N('LC17',) *set():
-  Vars: `{'t96': ['loc', 'loc'], 'u_target': ['pre', 'loc'], 't97': ['loc', 'loc']}`
-    ['decl', 't96', 32]
-    ['expr', 'add', 't96', ['u_target', 1]]
-    ['decl', 't97', 32]
-    ['expr', 'retst', 0, ['t96']]
+LC18 -> () <- J('LC16',) + N('LC17',) *{'memory', 'size'}:
+  Vars: `{'t96': ['loc', 'loc'], 'u_target': ['pre', 'loc']}`
+    [02C4] ['decl', 't96', 32]
+    [02C6] ['expr', 'add', 't96', ['u_target', 1]]
+    [02CA] ['expr', 'retst', 0, ['t96']]
   ('ret', None, None, None, None)
 
-_u_RenderState____Init__ -> () <- J() + N() *set():
-  Vars: `{'self': ['loc', 'loc'], 't99_0': ['loc', 'loc'], 't99_1': ['loc', 'loc'], 't99_2': ['loc', 'loc'], 't99_3': ['loc', 'loc'], 't99_4': ['loc', 'loc'], 't99_5': ['loc', 'loc'], 't99_6': ['loc', 'loc'], 't99_7': ['loc', 'loc'], 't99_8': ['loc', 'loc'], 't100_0': ['loc', 'loc'], 't100_1': ['loc', 'loc'], 't101_0': ['loc', 'loc'], 't101_1': ['loc', 'loc'], 't101_2': ['loc', 'loc'], 't101_3': ['loc', 'loc'], 't101_4': ['loc', 'loc'], 't101_5': ['loc', 'loc'], 't101_6': ['loc', 'loc'], 't101_7': ['loc', 'loc'], 't101_8': ['loc', 'loc'], 't102_0': ['loc', 'loc'], 't102_1': ['loc', 'loc'], 't103_0': ['loc', 'loc'], 't103_1': ['loc', 'loc'], 't103_2': ['loc', 'loc'], 't103_3': ['loc', 'loc'], 't103_4': ['loc', 'loc'], 't103_5': ['loc', 'loc'], 't103_6': ['loc', 'loc'], 't103_7': ['loc', 'loc'], 't103_8': ['loc', 'loc'], 't104_0': ['loc', 'loc'], 't104_1': ['loc', 'loc'], 't104_2': ['loc', 'loc'], 't104_3': ['loc', 'loc'], 't104_4': ['loc', 'loc'], 't104_5': ['loc', 'loc'], 't104_6': ['loc', 'loc'], 't104_7': ['loc', 'loc'], 't104_8': ['loc', 'loc'], 't105': ['loc', 'loc'], 't106_0': ['loc', 'loc'], 't106_1': ['loc', 'loc'], 't106_2': ['loc', 'loc'], 't106_3': ['loc', 'loc'], 't106_4': ['loc', 'loc'], 't106_5': ['loc', 'loc'], 't106_6': ['loc', 'loc'], 't106_7': ['loc', 'loc'], 't106_8': ['loc', 'loc'], 't107': ['loc', 'loc']}`
-    ['expr', 'argld', 'self', [0]]
-    ['decl', 't99_0', 32]
-    ['decl', 't99_1', 32]
-    ['decl', 't99_2', 32]
-    ['decl', 't99_3', 32]
-    ['decl', 't99_4', 32]
-    ['decl', 't99_5', 32]
-    ['decl', 't99_6', 32]
-    ['decl', 't99_7', 32]
-    ['decl', 't99_8', 32]
-    ['expr', 'ld', 't99_2', ['self', 64, 0]]
-    ['expr', 'ld', 't99_3', ['self', 96, 0]]
-    ['decl', 't100_0', 32]
-    ['decl', 't100_1', 32]
-    ['expr', 'bst', 't100_0', ['t100_0', 0, 0, 0]]
-    ['expr', 'bst', 't100_1', ['t100_1', 0, 0, 0]]
-    ['decl', 't101_0', 32]
-    ['decl', 't101_1', 32]
-    ['decl', 't101_2', 32]
-    ['decl', 't101_3', 32]
-    ['decl', 't101_4', 32]
-    ['decl', 't101_5', 32]
-    ['decl', 't101_6', 32]
-    ['decl', 't101_7', 32]
-    ['decl', 't101_8', 32]
-    ['expr', 'ld', 't101_4', ['self', 128, 0]]
-    ['expr', 'ld', 't101_5', ['self', 160, 0]]
-    ['decl', 't102_0', 32]
-    ['decl', 't102_1', 32]
-    ['expr', 'bst', 't102_0', ['t102_0', 0, 0, 0]]
-    ['expr', 'bst', 't102_1', ['t102_1', 0, 0, 0]]
-    ['decl', 't103_0', 32]
-    ['decl', 't103_1', 32]
-    ['decl', 't103_2', 32]
-    ['decl', 't103_3', 32]
-    ['decl', 't103_4', 32]
-    ['decl', 't103_5', 32]
-    ['decl', 't103_6', 32]
-    ['decl', 't103_7', 32]
-    ['decl', 't103_8', 32]
-    ['expr', 'ld', 't103_6', ['self', 192, 0]]
-    ['decl', 't104_0', 32]
-    ['decl', 't104_1', 32]
-    ['decl', 't104_2', 32]
-    ['decl', 't104_3', 32]
-    ['decl', 't104_4', 32]
-    ['decl', 't104_5', 32]
-    ['decl', 't104_6', 32]
-    ['decl', 't104_7', 32]
-    ['decl', 't104_8', 32]
-    ['expr', 'ld', 't104_7', ['self', 224, 0]]
-    ['decl', 't105', 32]
-    ['expr', 'bst', 't105', ['t105', 255, 16, 8]]
-    ['expr', 'bst', 't105', ['t105', 255, 8, 8]]
-    ['expr', 'bst', 't105', ['t105', 255, 0, 8]]
-    ['decl', 't106_0', 32]
-    ['decl', 't106_1', 32]
-    ['decl', 't106_2', 32]
-    ['decl', 't106_3', 32]
-    ['decl', 't106_4', 32]
-    ['decl', 't106_5', 32]
-    ['decl', 't106_6', 32]
-    ['decl', 't106_7', 32]
-    ['decl', 't106_8', 32]
-    ['expr', 'ld', 't106_8', ['self', 256, 0]]
-    ['decl', 't107', 32]
-    ['expr', 'bst', 't107', ['t107', 0, 16, 8]]
-    ['expr', 'bst', 't107', ['t107', 0, 8, 8]]
-    ['expr', 'bst', 't107', ['t107', 0, 0, 8]]
+_u_RenderState____Init__ -> () <- J() + N() *{'self'}:
+  Vars: `{'t99_0': ['loc', 'loc'], 't99_1': ['loc', 'loc'], 'self': ['loc', 'loc'], 't101_0': ['loc', 'loc'], 't101_1': ['loc', 'loc'], 't104': ['loc', 'loc'], 't106': ['loc', 'loc']}`
+    [04A3] ['decl', 't99_0', 32]
+    [04A5] ['decl', 't99_1', 32]
+    [04C5] ['expr', 'maywrite', 't99_0', []]
+    [04C6] ['expr', 'maywrite', 'self', []]
+    [04A9] ['expr', 'st', 'self', ['t99_0', 'self', 64, 0]]
+    [04CB] ['expr', 'maywrite', 't99_1', []]
+    [04CD] ['expr', 'maywrite', 'self', []]
+    [04AA] ['expr', 'st', 'self', ['t99_1', 'self', 96, 0]]
+    [04AB] ['decl', 't101_0', 32]
+    [04AD] ['decl', 't101_1', 32]
+    [04D1] ['expr', 'maywrite', 't101_0', []]
+    [04D4] ['expr', 'maywrite', 'self', []]
+    [04B1] ['expr', 'st', 'self', ['t101_0', 'self', 128, 0]]
+    [04D7] ['expr', 'maywrite', 't101_1', []]
+    [04DB] ['expr', 'maywrite', 'self', []]
+    [04B2] ['expr', 'st', 'self', ['t101_1', 'self', 160, 0]]
+    [04E2] ['expr', 'maywrite', 'self', []]
+    [04B3] ['expr', 'stw', 192, ['self', 192, 8]]
+    [04B4] ['decl', 't104', 32]
+    [04E4] ['expr', 'maywrite', 't104', []]
+    [04E9] ['expr', 'maywrite', 'self', []]
+    [04B9] ['expr', 'st', 'self', ['t104', 'self', 224, 0]]
+    [04BA] ['decl', 't106', 32]
+    [04EA] ['expr', 'maywrite', 't106', []]
+    [04F0] ['expr', 'maywrite', 'self', []]
+    [04BF] ['expr', 'st', 'self', ['t106', 'self', 256, 0]]
   ('ret', None, None, None, None)
 
-_u_RenderState____Draw__ -> ('LE0',) <- J() + N() *set():
-  Vars: `{'self': ['loc', 'post'], 't109_0': ['loc', 'loc'], 't109_1': ['loc', 'loc'], 't109_2': ['loc', 'loc'], 't109_3': ['loc', 'loc'], 't109_4': ['loc', 'loc'], 't109_5': ['loc', 'loc'], 't109_6': ['loc', 'loc'], 't109_7': ['loc', 'loc'], 't109_8': ['loc', 'loc'], 't110_0': ['loc', 'loc'], 't110_1': ['loc', 'loc'], 't111': ['loc', 'loc'], 'latScroll': ['loc', 'post'], 'row': ['loc', 'post']}`
-    ['expr', 'argld', 'self', [0]]
-    ['decl', 't109_0', 32]
-    ['decl', 't109_1', 32]
-    ['decl', 't109_2', 32]
-    ['decl', 't109_3', 32]
-    ['decl', 't109_4', 32]
-    ['decl', 't109_5', 32]
-    ['decl', 't109_6', 32]
-    ['decl', 't109_7', 32]
-    ['decl', 't109_8', 32]
-    ['expr', 'ld', 't109_2', ['self', 64, 0]]
-    ['expr', 'ld', 't109_3', ['self', 96, 0]]
-    ['decl', 't110_0', 32]
-    ['decl', 't110_1', 32]
-    ['expr', 'bsf', 't110_1', ['t109_3', 0, 0]]
-    ['decl', 't111', 32]
-    ['expr', 'bsf', 't111', ['t110_1', 0, 0]]
-    ['decl', 'latScroll', 32]
-    ['expr', 'mov', 'latScroll', ['t111']]
-    ['decl', 'row', 32]
-    ['expr', 'mov', 'row', [0]]
+_u_RenderState____Draw__ -> ('LE0',) <- J() + N() *{'self', 't118'}:
+  Vars: `{'self': ['loc', 'post'], 't109_3': ['loc', 'loc'], 't110_1': ['loc', 'loc'], 't111': ['loc', 'loc'], 'latScroll': ['loc', 'post'], 'row': ['loc', 'post']}`
+    [04F1] ['expr', 'argld', 'self', [0]]
+    [04F8] ['decl', 't109_3', 32]
+    [0507] ['expr', 'ld', 't109_3', ['self', 96, 0]]
+    [050F] ['decl', 't110_1', 32]
+    [0512] ['expr', 'bsf', 't110_1', ['t109_3', 0, 0]]
+    [0513] ['decl', 't111', 32]
+    [0515] ['expr', 'bsf', 't111', ['t110_1', 0, 0]]
+    [0516] ['decl', 'latScroll', 32]
+    [0518] ['expr', 'mov', 'latScroll', ['t111']]
+    [0519] ['decl', 'row', 32]
+    [051B] ['expr', 'mov', 'row', [0]]
   ('FALL',)
 
-LE0 -> ('LE10', 'LE1') <- J('LE9',) + N('_u_RenderState____Draw__',) *set():
+LE0 -> ('LE10', 'LE1') <- J('LE9',) + N('_u_RenderState____Draw__',) *{'self', 't118'}:
   Vars: `{'row': ['pre', 'post'], 'self': ['pre', 'post'], 'latScroll': ['pre', 'post']}`
-    ['expr', 'ult', None, ['row', 24]]
+    [051C] ['expr', 'ult', None, ['row', 24]]
   ('cn.jmp', 'LE10')
 
-LE1 -> ('LE2',) <- J() + N('LE0',) *set():
+LE1 -> ('LE2',) <- J() + N('LE0',) *{'self', 't118'}:
   Vars: `{'t117_0': ['loc', 'loc'], 't117_1': ['loc', 'loc'], 't117_2': ['loc', 'loc'], 't117_3': ['loc', 'loc'], 't117_4': ['loc', 'loc'], 't117_5': ['loc', 'loc'], 't117_6': ['loc', 'loc'], 't117_7': ['loc', 'loc'], 't117_8': ['loc', 'loc'], 'self': ['pre', 'post'], 't118': ['loc', 'loc'], 't119': ['loc', 'loc'], 'row': ['pre', 'post'], 't120': ['loc', 'loc'], 'linePtr': ['loc', 'post'], 'col': ['loc', 'post'], 'latScroll': ['pre', 'post']}`
-    ['decl', 't117_0', 32]
-    ['decl', 't117_1', 32]
-    ['decl', 't117_2', 32]
-    ['decl', 't117_3', 32]
-    ['decl', 't117_4', 32]
-    ['decl', 't117_5', 32]
-    ['decl', 't117_6', 32]
-    ['decl', 't117_7', 32]
-    ['decl', 't117_8', 32]
-    ['expr', 'ld', 't117_1', ['self', 32, 0]]
-    ['alloc', 't118', 24, 32]
-    ['expr', 'bsf', 't118', ['t117_1', 0, 0]]
-    ['decl', 't119', 32]
-    ['expr', 'mul', 't119', ['row', 32]]
-    ['decl', 't120', 32]
-    ['expr', 'ldw', 't120', ['t118', 't119']]
-    ['decl', 'linePtr', 32]
-    ['expr', 'mov', 'linePtr', ['t120']]
-    ['decl', 'col', 32]
-    ['expr', 'mov', 'col', [0]]
+    [051D] ['decl', 't117_0', 32]
+    [051F] ['decl', 't117_1', 32]
+    [0521] ['decl', 't117_2', 32]
+    [0523] ['decl', 't117_3', 32]
+    [0525] ['decl', 't117_4', 32]
+    [0527] ['decl', 't117_5', 32]
+    [0529] ['decl', 't117_6', 32]
+    [052B] ['decl', 't117_7', 32]
+    [052D] ['decl', 't117_8', 32]
+    [0648] ['expr', 'mayread', None, ['self', 'self']]
+    [0649] ['expr', 'mayread', None, ['self', 't117_8']]
+    [064A] ['expr', 'mayread', None, ['self', 't117_7']]
+    [064B] ['expr', 'mayread', None, ['self', 't117_6']]
+    [064C] ['expr', 'mayread', None, ['self', 't117_5']]
+    [064D] ['expr', 'mayread', None, ['self', 't117_4']]
+    [064E] ['expr', 'mayread', None, ['self', 't117_3']]
+    [064F] ['expr', 'mayread', None, ['self', 't117_2']]
+    [0650] ['expr', 'mayread', None, ['self', 't117_1']]
+    [0651] ['expr', 'mayread', None, ['self', 't117_0']]
+    [052F] ['expr', 'ld', 't117_0', ['self', 0, 0]]
+    [0660] ['expr', 'mayread', None, ['self', 't117_0']]
+    [0530] ['expr', 'ld', 't117_1', ['self', 32, 0]]
+    [066E] ['expr', 'mayread', None, ['self', 't117_1']]
+    [0531] ['expr', 'ld', 't117_2', ['self', 64, 0]]
+    [067C] ['expr', 'mayread', None, ['self', 't117_2']]
+    [0532] ['expr', 'ld', 't117_3', ['self', 96, 0]]
+    [068A] ['expr', 'mayread', None, ['self', 't117_3']]
+    [0533] ['expr', 'ld', 't117_4', ['self', 128, 0]]
+    [0698] ['expr', 'mayread', None, ['self', 't117_4']]
+    [0534] ['expr', 'ld', 't117_5', ['self', 160, 0]]
+    [06A6] ['expr', 'mayread', None, ['self', 't117_5']]
+    [0535] ['expr', 'ld', 't117_6', ['self', 192, 0]]
+    [06B4] ['expr', 'mayread', None, ['self', 't117_6']]
+    [0536] ['expr', 'ld', 't117_7', ['self', 224, 0]]
+    [06C2] ['expr', 'mayread', None, ['self', 't117_7']]
+    [0538] ['alloc', 't118', 24, 32]
+    [0539] ['expr', 'bsf', 't118', ['t117_1', 0, 0]]
+    [053A] ['decl', 't119', 32]
+    [053C] ['expr', 'mul', 't119', ['row', 32]]
+    [053D] ['decl', 't120', 32]
+    [053F] ['expr', 'ldw', 't120', ['t118', 't119']]
+    [0540] ['decl', 'linePtr', 32]
+    [0542] ['expr', 'mov', 'linePtr', ['t120']]
+    [0543] ['decl', 'col', 32]
+    [0545] ['expr', 'mov', 'col', [0]]
   ('FALL',)
 
-LE2 -> ('LE9', 'LE3') <- J('LE8',) + N('LE1',) *set():
-  Vars: `{'col': ['pre', 'post'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post'], 'row': ['pre', 'post'], 'self': ['pre', 'post']}`
-    ['expr', 'ult', None, ['col', 64]]
+LE2 -> ('LE9', 'LE3') <- J('LE8',) + N('LE1',) *{'self', 't118'}:
+  Vars: `{'col': ['pre', 'post'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post']}`
+    [0546] ['expr', 'ult', None, ['col', 64]]
   ('cn.jmp', 'LE9')
 
-LE3 -> ('LE6', 'LE4') <- J() + N('LE2',) *set():
-  Vars: `{'t126': ['loc', 'loc'], 'col': ['pre', 'post'], 'latScroll': ['pre', 'post'], 't127': ['loc', 'loc'], 't128': ['loc', 'loc'], 'linePtr': ['pre', 'post'], 'char': ['loc', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post']}`
-    ['decl', 't126', 32]
-    ['expr', 'add', 't126', ['col', 'latScroll']]
-    ['decl', 't127', 32]
-    ['expr', 'mul', 't127', ['t126', 32]]
-    ['decl', 't128', 8]
-    ['expr', 'ldw', 't128', ['linePtr', 't127']]
-    ['decl', 'char', 8]
-    ['expr', 'eq', None, ['t128', 10]]
+LE3 -> ('LE6', 'LE4') <- J() + N('LE2',) *{'self', 't118'}:
+  Vars: `{'t126': ['loc', 'loc'], 'col': ['pre', 'post'], 'latScroll': ['pre', 'post'], 't127': ['loc', 'loc'], 't128': ['loc', 'post'], 'linePtr': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post']}`
+    [0547] ['decl', 't126', 32]
+    [0549] ['expr', 'add', 't126', ['col', 'latScroll']]
+    [054A] ['decl', 't127', 32]
+    [054C] ['expr', 'mul', 't127', ['t126', 32]]
+    [054D] ['decl', 't128', 8]
+    [06D9] ['expr', 'mayread', None, ['linePtr', 'self']]
+    [06DB] ['expr', 'mayread', None, ['linePtr', 't128']]
+    [06DC] ['expr', 'mayread', None, ['linePtr', 't127']]
+    [06DD] ['expr', 'mayread', None, ['linePtr', 't126']]
+    [054F] ['expr', 'ldw', 't128', ['linePtr', 't127']]
+    [0553] ['expr', 'eq', None, ['t128', 10]]
   ('c.jmp', 'LE6')
 
-LE4 -> ('LE5',) <- J() + N('LE3',) *set():
-  Vars: `{'char': ['pre', 'post'], 'col': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post']}`
+LE4 -> ('LE5',) <- J() + N('LE3',) *{'self', 't118'}:
+  Vars: `{'t128': ['pre', 'post'], 'col': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post']}`
   ('jmp', 'LE5')
 
-LE5 -> ('LE8', 'LE6') <- J() + N('LE4',) *set():
-  Vars: `{'char': ['pre', 'post'], 'col': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post']}`
-    ['expr', 'eq', None, ['t128', 0]]
+LE5 -> ('LE8', 'LE6') <- J() + N('LE4',) *{'self', 't118'}:
+  Vars: `{'t128': ['pre', 'post'], 'col': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post']}`
+    [0554] ['expr', 'eq', None, ['t128', 0]]
   ('cn.jmp', 'LE8')
 
-LE6 -> ('LE9', 'LE7') <- J('LE3', 'LE7') + N('LE5',) *set():
+LE6 -> ('LE9', 'LE7') <- J('LE3', 'LE7') + N('LE5',) *{'self', 't118'}:
   Vars: `{'col': ['pre', 'post'], 'self': ['pre', 'post'], 'row': ['pre', 'post'], 'latScroll': ['pre', 'post']}`
-    ['expr', 'ult', None, ['col', 64]]
+    [0555] ['expr', 'ult', None, ['col', 64]]
   ('cn.jmp', 'LE9')
 
-LE7 -> ('LE6',) <- J() + N('LE6',) *set():
+LE7 -> ('LE6',) <- J() + N('LE6',) *{'self', 't118'}:
   Vars: `{'self': ['pre', 'post'], 'row': ['pre', 'post'], 'col': ['pre', 'post'], 't142': ['loc', 'loc'], 'latScroll': ['pre', 'post']}`
-    ['expr', 'argst', 0, ['self']]
-    ['expr', 'argst', 1, [0]]
-    ['expr', 'argst', 2, ['row']]
-    ['expr', 'argst', 3, ['col']]
-    ['expr', 'call', 'u_RenderState____WriteChar', []]
-    ['decl', 't142', 32]
-    ['expr', 'add', 't142', ['col', 1]]
-    ['expr', 'mov', 'col', ['t142']]
+    [0556] ['expr', 'argst', 0, ['self']]
+    [0557] ['expr', 'argst', 1, [0]]
+    [0558] ['expr', 'argst', 2, ['row']]
+    [0559] ['expr', 'argst', 3, ['col']]
+    [06DF] ['expr', 'maywrite', 'self', []]
+    [055A] ['expr', 'call', 'u_RenderState____WriteChar', []]
+    [055B] ['decl', 't142', 32]
+    [055D] ['expr', 'add', 't142', ['col', 1]]
+    [055E] ['expr', 'mov', 'col', ['t142']]
   ('jmp', 'LE6')
 
-LE8 -> ('LE2',) <- J('LE5',) + N() *set():
-  Vars: `{'self': ['pre', 'post'], 'char': ['pre', 'loc'], 'row': ['pre', 'post'], 'col': ['pre', 'post'], 't146': ['loc', 'loc'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post']}`
-    ['expr', 'argst', 0, ['self']]
-    ['expr', 'argst', 1, ['t128']]
-    ['expr', 'argst', 2, ['row']]
-    ['expr', 'argst', 3, ['col']]
-    ['expr', 'call', 'u_RenderState____WriteChar', []]
-    ['decl', 't146', 32]
-    ['expr', 'add', 't146', ['col', 1]]
-    ['expr', 'mov', 'col', ['t146']]
+LE8 -> ('LE2',) <- J('LE5',) + N() *{'self', 't118'}:
+  Vars: `{'self': ['pre', 'post'], 't128': ['pre', 'loc'], 'row': ['pre', 'post'], 'col': ['pre', 'post'], 't146': ['loc', 'loc'], 'latScroll': ['pre', 'post'], 'linePtr': ['pre', 'post']}`
+    [055F] ['expr', 'argst', 0, ['self']]
+    [0560] ['expr', 'argst', 1, ['t128']]
+    [0561] ['expr', 'argst', 2, ['row']]
+    [0562] ['expr', 'argst', 3, ['col']]
+    [06E1] ['expr', 'maywrite', 'self', []]
+    [0563] ['expr', 'call', 'u_RenderState____WriteChar', []]
+    [0564] ['decl', 't146', 32]
+    [0566] ['expr', 'add', 't146', ['col', 1]]
+    [0567] ['expr', 'mov', 'col', ['t146']]
   ('jmp', 'LE2')
 
-LE9 -> ('LE0',) <- J('LE2', 'LE6') + N() *set():
+LE9 -> ('LE0',) <- J('LE2', 'LE6') + N() *{'self', 't118'}:
   Vars: `{'t148': ['loc', 'loc'], 'row': ['pre', 'post'], 'self': ['pre', 'post'], 'latScroll': ['pre', 'post']}`
-    ['decl', 't148', 32]
-    ['expr', 'add', 't148', ['row', 1]]
-    ['expr', 'mov', 'row', ['t148']]
+    [0568] ['decl', 't148', 32]
+    [056A] ['expr', 'add', 't148', ['row', 1]]
+    [056B] ['expr', 'mov', 'row', ['t148']]
   ('jmp', 'LE0')
 
-LE10 -> () <- J('LE0',) + N() *set():
-  Vars: `{'t150_0': ['loc', 'loc'], 't150_1': ['loc', 'loc'], 't150_2': ['loc', 'loc'], 't150_3': ['loc', 'loc'], 't150_4': ['loc', 'loc'], 't150_5': ['loc', 'loc'], 't150_6': ['loc', 'loc'], 't150_7': ['loc', 'loc'], 't150_8': ['loc', 'loc'], 'self': ['pre', 'loc'], 't151_0': ['loc', 'loc'], 't151_1': ['loc', 'loc'], 't151_2': ['loc', 'loc'], 't151_3': ['loc', 'loc'], 't151_4': ['loc', 'loc'], 't151_5': ['loc', 'loc'], 't151_6': ['loc', 'loc'], 't151_7': ['loc', 'loc'], 't151_8': ['loc', 'loc'], 't152': ['loc', 'loc'], 't153': ['loc', 'loc']}`
-    ['decl', 't150_0', 32]
-    ['decl', 't150_1', 32]
-    ['decl', 't150_2', 32]
-    ['decl', 't150_3', 32]
-    ['decl', 't150_4', 32]
-    ['decl', 't150_5', 32]
-    ['decl', 't150_6', 32]
-    ['decl', 't150_7', 32]
-    ['decl', 't150_8', 32]
-    ['expr', 'ld', 't150_6', ['self', 192, 0]]
-    ['decl', 't151_0', 32]
-    ['decl', 't151_1', 32]
-    ['decl', 't151_2', 32]
-    ['decl', 't151_3', 32]
-    ['decl', 't151_4', 32]
-    ['decl', 't151_5', 32]
-    ['decl', 't151_6', 32]
-    ['decl', 't151_7', 32]
-    ['decl', 't151_8', 32]
-    ['expr', 'ld', 't151_6', ['self', 192, 0]]
-    ['decl', 't152', 8]
-    ['expr', 'bsf', 't152', ['t151_6', 0, 8]]
-    ['decl', 't153', 8]
-    ['expr', 'add', 't153', ['t152', 1]]
+LE10 -> () <- J('LE0',) + N() *{'self', 't118'}:
+  Vars: `{'t150_0': ['loc', 'loc'], 't150_1': ['loc', 'loc'], 't150_2': ['loc', 'loc'], 't150_3': ['loc', 'loc'], 't150_4': ['loc', 'loc'], 't150_5': ['loc', 'loc'], 't150_6': ['loc', 'loc'], 't150_7': ['loc', 'loc'], 't150_8': ['loc', 'loc'], 'self': ['pre', 'loc']}`
+    [056C] ['decl', 't150_0', 32]
+    [056E] ['decl', 't150_1', 32]
+    [0570] ['decl', 't150_2', 32]
+    [0572] ['decl', 't150_3', 32]
+    [0574] ['decl', 't150_4', 32]
+    [0576] ['decl', 't150_5', 32]
+    [0578] ['decl', 't150_6', 32]
+    [057A] ['decl', 't150_7', 32]
+    [057C] ['decl', 't150_8', 32]
+    [06E4] ['expr', 'mayread', None, ['self', 'self']]
+    [06E5] ['expr', 'mayread', None, ['self', 't150_8']]
+    [06E6] ['expr', 'mayread', None, ['self', 't150_7']]
+    [06E7] ['expr', 'mayread', None, ['self', 't150_6']]
+    [06E8] ['expr', 'mayread', None, ['self', 't150_5']]
+    [06E9] ['expr', 'mayread', None, ['self', 't150_4']]
+    [06EA] ['expr', 'mayread', None, ['self', 't150_3']]
+    [06EB] ['expr', 'mayread', None, ['self', 't150_2']]
+    [06EC] ['expr', 'mayread', None, ['self', 't150_1']]
+    [06ED] ['expr', 'mayread', None, ['self', 't150_0']]
+    [057E] ['expr', 'ld', 't150_0', ['self', 0, 0]]
+    [06F9] ['expr', 'mayread', None, ['self', 't150_0']]
+    [057F] ['expr', 'ld', 't150_1', ['self', 32, 0]]
+    [0704] ['expr', 'mayread', None, ['self', 't150_1']]
+    [0580] ['expr', 'ld', 't150_2', ['self', 64, 0]]
+    [070F] ['expr', 'mayread', None, ['self', 't150_2']]
+    [0581] ['expr', 'ld', 't150_3', ['self', 96, 0]]
+    [071A] ['expr', 'mayread', None, ['self', 't150_3']]
+    [0582] ['expr', 'ld', 't150_4', ['self', 128, 0]]
+    [0725] ['expr', 'mayread', None, ['self', 't150_4']]
+    [0583] ['expr', 'ld', 't150_5', ['self', 160, 0]]
+    [0730] ['expr', 'mayread', None, ['self', 't150_5']]
+    [0584] ['expr', 'ld', 't150_6', ['self', 192, 0]]
+    [073B] ['expr', 'mayread', None, ['self', 't150_6']]
+    [0585] ['expr', 'ld', 't150_7', ['self', 224, 0]]
+    [0746] ['expr', 'mayread', None, ['self', 't150_7']]
+    [0750] ['expr', 'maywrite', 'self', []]
+    [058D] ['expr', 'stw', 192, ['self', 192, 8]]
   ('ret', None, None, None, None)
 
-_u_RenderState____WriteChar__ -> ('LF3', 'LF0') <- J() + N() *set():
-  Vars: `{'self': ['loc', 'post'], 'char': ['loc', 'post'], 'row': ['loc', 'post'], 'col': ['loc', 'post'], 't155_0': ['loc', 'loc'], 't155_1': ['loc', 'loc'], 't155_2': ['loc', 'loc'], 't155_3': ['loc', 'loc'], 't155_4': ['loc', 'loc'], 't155_5': ['loc', 'loc'], 't155_6': ['loc', 'loc'], 't155_7': ['loc', 'loc'], 't155_8': ['loc', 'loc'], 't156': ['loc', 'loc'], 'fore': ['loc', 'post'], 't157_0': ['loc', 'loc'], 't157_1': ['loc', 'loc'], 't157_2': ['loc', 'loc'], 't157_3': ['loc', 'loc'], 't157_4': ['loc', 'loc'], 't157_5': ['loc', 'loc'], 't157_6': ['loc', 'loc'], 't157_7': ['loc', 'loc'], 't157_8': ['loc', 'loc'], 't158': ['loc', 'loc'], 'back': ['loc', 'post'], 't163_0': ['loc', 'loc'], 't163_1': ['loc', 'loc'], 't163_2': ['loc', 'loc'], 't163_3': ['loc', 'loc'], 't163_4': ['loc', 'loc'], 't163_5': ['loc', 'loc'], 't163_6': ['loc', 'loc'], 't163_7': ['loc', 'loc'], 't163_8': ['loc', 'loc'], 't164_0': ['loc', 'loc'], 't164_1': ['loc', 'loc'], 't165': ['loc', 'loc']}`
-    ['expr', 'argld', 'self', [0]]
-    ['expr', 'argld', 'char', [1]]
-    ['expr', 'argld', 'row', [2]]
-    ['expr', 'argld', 'col', [3]]
-    ['decl', 't155_0', 32]
-    ['decl', 't155_1', 32]
-    ['decl', 't155_2', 32]
-    ['decl', 't155_3', 32]
-    ['decl', 't155_4', 32]
-    ['decl', 't155_5', 32]
-    ['decl', 't155_6', 32]
-    ['decl', 't155_7', 32]
-    ['decl', 't155_8', 32]
-    ['expr', 'ld', 't155_7', ['self', 224, 0]]
-    ['decl', 't156', 32]
-    ['expr', 'bsf', 't156', ['t155_7', 0, 0]]
-    ['decl', 'fore', 32]
-    ['expr', 'mov', 'fore', ['t156']]
-    ['decl', 't157_0', 32]
-    ['decl', 't157_1', 32]
-    ['decl', 't157_2', 32]
-    ['decl', 't157_3', 32]
-    ['decl', 't157_4', 32]
-    ['decl', 't157_5', 32]
-    ['decl', 't157_6', 32]
-    ['decl', 't157_7', 32]
-    ['decl', 't157_8', 32]
-    ['expr', 'ld', 't157_8', ['self', 256, 0]]
-    ['decl', 't158', 32]
-    ['expr', 'bsf', 't158', ['t157_8', 0, 0]]
-    ['decl', 'back', 32]
-    ['expr', 'mov', 'back', ['t158']]
-    ['decl', 't163_0', 32]
-    ['decl', 't163_1', 32]
-    ['decl', 't163_2', 32]
-    ['decl', 't163_3', 32]
-    ['decl', 't163_4', 32]
-    ['decl', 't163_5', 32]
-    ['decl', 't163_6', 32]
-    ['decl', 't163_7', 32]
-    ['decl', 't163_8', 32]
-    ['expr', 'ld', 't163_4', ['self', 128, 0]]
-    ['expr', 'ld', 't163_5', ['self', 160, 0]]
-    ['decl', 't164_0', 32]
-    ['decl', 't164_1', 32]
-    ['expr', 'bsf', 't164_1', ['t163_5', 0, 0]]
-    ['decl', 't165', 32]
-    ['expr', 'bsf', 't165', ['t164_1', 0, 0]]
-    ['expr', 'eq', None, ['row', 't165']]
+_u_RenderState____WriteChar__ -> ('LF3', 'LF0') <- J() + N() *{'char', 'self', 'row', 'col'}:
+  Vars: `{'self': ['loc', 'post'], 'char': ['loc', 'post'], 'row': ['loc', 'post'], 'col': ['loc', 'post'], 't155_7': ['loc', 'loc'], 't156': ['loc', 'post'], 'fore': ['loc', 'post'], 't157_8': ['loc', 'loc'], 't158': ['loc', 'post'], 'back': ['loc', 'post'], 't163_5': ['loc', 'loc'], 't164_1': ['loc', 'loc'], 't165': ['loc', 'loc']}`
+    [07B6] ['expr', 'argld', 'self', [0]]
+    [07B7] ['expr', 'argld', 'char', [1]]
+    [07B8] ['expr', 'argld', 'row', [2]]
+    [07B9] ['expr', 'argld', 'col', [3]]
+    [07C8] ['decl', 't155_7', 32]
+    [07D3] ['expr', 'ld', 't155_7', ['self', 224, 0]]
+    [07D5] ['decl', 't156', 32]
+    [07D7] ['expr', 'bsf', 't156', ['t155_7', 0, 0]]
+    [07D8] ['decl', 'fore', 32]
+    [07DA] ['expr', 'mov', 'fore', ['t156']]
+    [07EB] ['decl', 't157_8', 32]
+    [07F5] ['expr', 'ld', 't157_8', ['self', 256, 0]]
+    [07F6] ['decl', 't158', 32]
+    [07F8] ['expr', 'bsf', 't158', ['t157_8', 0, 0]]
+    [07F9] ['decl', 'back', 32]
+    [07FB] ['expr', 'mov', 'back', ['t158']]
+    [0806] ['decl', 't163_5', 32]
+    [0813] ['expr', 'ld', 't163_5', ['self', 160, 0]]
+    [0819] ['decl', 't164_1', 32]
+    [081C] ['expr', 'bsf', 't164_1', ['t163_5', 0, 0]]
+    [081D] ['decl', 't165', 32]
+    [081F] ['expr', 'bsf', 't165', ['t164_1', 0, 0]]
+    [0820] ['expr', 'eq', None, ['row', 't165']]
   ('cn.jmp', 'LF3')
 
-LF0 -> ('LF3', 'LF1') <- J() + N('_u_RenderState____WriteChar__',) *set():
-  Vars: `{'t168_0': ['loc', 'loc'], 't168_1': ['loc', 'loc'], 't168_2': ['loc', 'loc'], 't168_3': ['loc', 'loc'], 't168_4': ['loc', 'loc'], 't168_5': ['loc', 'loc'], 't168_6': ['loc', 'loc'], 't168_7': ['loc', 'loc'], 't168_8': ['loc', 'loc'], 'self': ['pre', 'post'], 't169_0': ['loc', 'loc'], 't169_1': ['loc', 'loc'], 't170': ['loc', 'loc'], 'col': ['pre', 'post'], 'char': ['pre', 'post'], 'row': ['pre', 'post'], 'fore': ['pre', 'post'], 'back': ['pre', 'post']}`
-    ['expr', 'mov', 'back', ['t158']]
-    ['expr', 'mov', 'fore', ['t156']]
-    ['decl', 't168_0', 32]
-    ['decl', 't168_1', 32]
-    ['decl', 't168_2', 32]
-    ['decl', 't168_3', 32]
-    ['decl', 't168_4', 32]
-    ['decl', 't168_5', 32]
-    ['decl', 't168_6', 32]
-    ['decl', 't168_7', 32]
-    ['decl', 't168_8', 32]
-    ['expr', 'ld', 't168_4', ['self', 128, 0]]
-    ['expr', 'ld', 't168_5', ['self', 160, 0]]
-    ['decl', 't169_0', 32]
-    ['decl', 't169_1', 32]
-    ['expr', 'bsf', 't169_0', ['t168_4', 0, 0]]
-    ['decl', 't170', 32]
-    ['expr', 'bsf', 't170', ['t169_0', 0, 0]]
-    ['expr', 'eq', None, ['col', 't170']]
+LF0 -> ('LF3', 'LF1') <- J() + N('_u_RenderState____WriteChar__',) *{'char', 'self', 'row', 'col'}:
+  Vars: `{'t158': ['pre', 'post'], 't156': ['pre', 'post'], 't168_4': ['loc', 'loc'], 'self': ['pre', 'post'], 't169_0': ['loc', 'loc'], 't170': ['loc', 'loc'], 'col': ['pre', 'post'], 'char': ['pre', 'post'], 'row': ['pre', 'post'], 'fore': ['pre', 'post'], 'back': ['pre', 'post']}`
+    [0874] ['expr', 'mov', 'back', ['t158']]
+    [0875] ['expr', 'mov', 'fore', ['t156']]
+    [0829] ['decl', 't168_4', 32]
+    [0C92] ['expr', 'mayread', None, ['self', 'self']]
+    [0837] ['expr', 'ld', 't168_4', ['self', 128, 0]]
+    [083C] ['decl', 't169_0', 32]
+    [0840] ['expr', 'bsf', 't169_0', ['t168_4', 0, 0]]
+    [0842] ['decl', 't170', 32]
+    [0844] ['expr', 'bsf', 't170', ['t169_0', 0, 0]]
+    [0845] ['expr', 'eq', None, ['col', 't170']]
   ('cn.jmp', 'LF3')
 
-LF1 -> ('LF3', 'LF2') <- J() + N('LF0',) *set():
-  Vars: `{'t173_0': ['loc', 'loc'], 't173_1': ['loc', 'loc'], 't173_2': ['loc', 'loc'], 't173_3': ['loc', 'loc'], 't173_4': ['loc', 'loc'], 't173_5': ['loc', 'loc'], 't173_6': ['loc', 'loc'], 't173_7': ['loc', 'loc'], 't173_8': ['loc', 'loc'], 'self': ['pre', 'loc'], 't174': ['loc', 'loc'], 't175': ['loc', 'loc'], 'fore': ['pre', 'post'], 'back': ['pre', 'post'], 'char': ['pre', 'post'], 'row': ['pre', 'post'], 'col': ['pre', 'post']}`
-    ['expr', 'mov', 'back', ['t158']]
-    ['expr', 'mov', 'fore', ['t156']]
-    ['decl', 't173_0', 32]
-    ['decl', 't173_1', 32]
-    ['decl', 't173_2', 32]
-    ['decl', 't173_3', 32]
-    ['decl', 't173_4', 32]
-    ['decl', 't173_5', 32]
-    ['decl', 't173_6', 32]
-    ['decl', 't173_7', 32]
-    ['decl', 't173_8', 32]
-    ['expr', 'ld', 't173_6', ['self', 192, 0]]
-    ['decl', 't174', 8]
-    ['expr', 'bsf', 't174', ['t173_6', 0, 8]]
-    ['decl', 't175', 1]
-    ['expr', 'bsf', 't175', ['t174', 5, 1]]
-    ['expr', 'eq', None, ['t175', 1]]
+LF1 -> ('LF3', 'LF2') <- J() + N('LF0',) *{'char', 'self', 'row', 'col'}:
+  Vars: `{'t158': ['pre', 'post'], 't156': ['pre', 'post'], 't173_6': ['loc', 'loc'], 'self': ['pre', 'loc'], 't174': ['loc', 'loc'], 't175': ['loc', 'loc'], 'char': ['pre', 'post'], 'row': ['pre', 'post'], 'col': ['pre', 'post'], 'fore': ['pre', 'post'], 'back': ['pre', 'post']}`
+    [087D] ['expr', 'mov', 'back', ['t158']]
+    [087E] ['expr', 'mov', 'fore', ['t156']]
+    [0852] ['decl', 't173_6', 32]
+    [0D21] ['expr', 'mayread', None, ['self', 'self']]
+    [085E] ['expr', 'ld', 't173_6', ['self', 192, 0]]
+    [0861] ['decl', 't174', 8]
+    [0863] ['expr', 'bsf', 't174', ['t173_6', 0, 8]]
+    [0864] ['decl', 't175', 1]
+    [0866] ['expr', 'bsf', 't175', ['t174', 5, 1]]
+    [0867] ['expr', 'eq', None, ['t175', 1]]
   ('cn.jmp', 'LF3')
 
-LF2 -> ('LF3',) <- J() + N('LF1',) *set():
-  Vars: `{'u_tmp': ['loc', 'loc'], 'fore': ['pre', 'post'], 'back': ['pre', 'post'], 'char': ['pre', 'post'], 'row': ['pre', 'post'], 'col': ['pre', 'post']}`
-    ['decl', 'u_tmp', 32]
-    ['expr', 'mov', 'fore', ['t158']]
-    ['expr', 'mov', 'back', ['t156']]
+LF2 -> ('LF3',) <- J() + N('LF1',) *{'char', 'self', 'row', 'col'}:
+  Vars: `{'t158': ['pre', 'loc'], 't156': ['pre', 'loc'], 'char': ['pre', 'post'], 'row': ['pre', 'post'], 'col': ['pre', 'post'], 'fore': ['pre', 'post'], 'back': ['pre', 'post']}`
+    [086B] ['expr', 'mov', 'fore', ['t158']]
+    [086C] ['expr', 'mov', 'back', ['t156']]
   ('FALL',)
 
-LF3 -> () <- J('_u_RenderState____WriteChar__', 'LF0', 'LF1') + N('LF2',) *set():
+LF3 -> () <- J('_u_RenderState____WriteChar__', 'LF0', 'LF1') + N('LF2',) *{'char', 'self', 'row', 'col'}:
   Vars: `{'char': ['pre', 'loc'], 'row': ['pre', 'loc'], 'col': ['pre', 'loc'], 'fore': ['pre', 'loc'], 'back': ['pre', 'loc']}`
-    ['expr', 'argst', 0, ['char']]
-    ['expr', 'argst', 1, ['row']]
-    ['expr', 'argst', 2, ['col']]
-    ['expr', 'argst', 3, [0]]
-    ['expr', 'argst', 4, ['fore']]
-    ['expr', 'argst', 5, ['back']]
-    ['expr', 'call', 'WriteCharFlaggedColored', []]
+    [086D] ['expr', 'argst', 0, ['char']]
+    [086E] ['expr', 'argst', 1, ['row']]
+    [086F] ['expr', 'argst', 2, ['col']]
+    [0870] ['expr', 'argst', 3, [0]]
+    [0871] ['expr', 'argst', 4, ['fore']]
+    [0872] ['expr', 'argst', 5, ['back']]
+    [0873] ['expr', 'call', 'WriteCharFlaggedColored', []]
   ('ret', None, None, None, None)
 
-_u_RenderState____RecalcHeaders__ -> ('LG0',) <- J() + N() *set():
+_u_RenderState____RecalcHeaders__ -> ('LG0',) <- J() + N() *{'self'}:
   Vars: `{'self': ['loc', 'post'], 'fileIdx': ['loc', 'post'], 'ptrIdx': ['loc', 'post']}`
-    ['expr', 'argld', 'self', [0]]
-    ['decl', 'fileIdx', 32]
-    ['expr', 'mov', 'fileIdx', [0]]
-    ['decl', 'ptrIdx', 32]
-    ['expr', 'mov', 'ptrIdx', [0]]
+    [0DDE] ['expr', 'argld', 'self', [0]]
+    [0DDF] ['decl', 'fileIdx', 32]
+    [0DE1] ['expr', 'mov', 'fileIdx', [0]]
+    [0DE2] ['decl', 'ptrIdx', 32]
+    [0DE4] ['expr', 'mov', 'ptrIdx', [0]]
   ('FALL',)
 
-LG0 -> ('LG2', 'LG1') <- J('LG2',) + N('_u_RenderState____RecalcHeaders__',) *set():
+LG0 -> ('LG2', 'LG1') <- J('LG2',) + N('_u_RenderState____RecalcHeaders__',) *{'self'}:
   Vars: `{'ptrIdx': ['pre', 'post'], 'self': ['pre', 'post'], 'fileIdx': ['pre', 'post']}`
-    ['expr', 'ult', None, ['ptrIdx', 24]]
+    [0DE5] ['expr', 'ult', None, ['ptrIdx', 24]]
   ('c.jmp', 'LG2')
 
-LG1 -> () <- J() + N('LG0',) *set():
+LG1 -> () <- J() + N('LG0',) *{'self'}:
   Vars: `{}`
   ('ret',)
 
-LG2 -> ('LG0',) <- J('LG0',) + N() *set():
-  Vars: `{'t185_0': ['loc', 'loc'], 't185_1': ['loc', 'loc'], 't185_2': ['loc', 'loc'], 't185_3': ['loc', 'loc'], 't185_4': ['loc', 'loc'], 't185_5': ['loc', 'loc'], 't185_6': ['loc', 'loc'], 't185_7': ['loc', 'loc'], 't185_8': ['loc', 'loc'], 'self': ['pre', 'post'], 't186': ['loc', 'loc'], 't187': ['loc', 'loc'], 'fileIdx': ['pre', 'post'], 't188': ['loc', 'loc'], 't189': ['loc', 'loc'], 't190': ['loc', 'loc'], 'ptrIdx': ['pre', 'post']}`
-    ['decl', 't185_0', 32]
-    ['decl', 't185_1', 32]
-    ['decl', 't185_2', 32]
-    ['decl', 't185_3', 32]
-    ['decl', 't185_4', 32]
-    ['decl', 't185_5', 32]
-    ['decl', 't185_6', 32]
-    ['decl', 't185_7', 32]
-    ['decl', 't185_8', 32]
-    ['expr', 'ld', 't185_0', ['self', 0, 0]]
-    ['decl', 't186', 32]
-    ['expr', 'bsf', 't186', ['t185_0', 0, 0]]
-    ['decl', 't187', 32]
-    ['expr', 'mul', 't187', ['fileIdx', 32]]
-    ['decl', 't188', 8]
-    ['decl', 't189', 32]
-    ['expr', 'add', 't189', ['fileIdx', 1]]
-    ['expr', 'mov', 'fileIdx', ['t189']]
-    ['decl', 't190', 32]
-    ['expr', 'add', 't190', ['ptrIdx', 1]]
-    ['expr', 'mov', 'ptrIdx', ['t190']]
+LG2 -> ('LG0',) <- J('LG0',) + N() *{'self'}:
+  Vars: `{'t185_0': ['loc', 'loc'], 't185_1': ['loc', 'loc'], 't185_2': ['loc', 'loc'], 't185_3': ['loc', 'loc'], 't185_4': ['loc', 'loc'], 't185_5': ['loc', 'loc'], 't185_6': ['loc', 'loc'], 't185_7': ['loc', 'loc'], 't185_8': ['loc', 'loc'], 'self': ['pre', 'post'], 't189': ['loc', 'loc'], 'fileIdx': ['pre', 'post'], 't190': ['loc', 'loc'], 'ptrIdx': ['pre', 'post']}`
+    [0DE6] ['decl', 't185_0', 32]
+    [0DE8] ['decl', 't185_1', 32]
+    [0DEA] ['decl', 't185_2', 32]
+    [0DEC] ['decl', 't185_3', 32]
+    [0DEE] ['decl', 't185_4', 32]
+    [0DF0] ['decl', 't185_5', 32]
+    [0DF2] ['decl', 't185_6', 32]
+    [0DF4] ['decl', 't185_7', 32]
+    [0DF6] ['decl', 't185_8', 32]
+    [0E1D] ['expr', 'mayread', None, ['self', 'self']]
+    [0E1E] ['expr', 'mayread', None, ['self', 't185_8']]
+    [0E1F] ['expr', 'mayread', None, ['self', 't185_7']]
+    [0E20] ['expr', 'mayread', None, ['self', 't185_6']]
+    [0E21] ['expr', 'mayread', None, ['self', 't185_5']]
+    [0E22] ['expr', 'mayread', None, ['self', 't185_4']]
+    [0E23] ['expr', 'mayread', None, ['self', 't185_3']]
+    [0E24] ['expr', 'mayread', None, ['self', 't185_2']]
+    [0E25] ['expr', 'mayread', None, ['self', 't185_1']]
+    [0E26] ['expr', 'mayread', None, ['self', 't185_0']]
+    [0DF8] ['expr', 'ld', 't185_0', ['self', 0, 0]]
+    [0E35] ['expr', 'mayread', None, ['self', 't185_0']]
+    [0DF9] ['expr', 'ld', 't185_1', ['self', 32, 0]]
+    [0E43] ['expr', 'mayread', None, ['self', 't185_1']]
+    [0DFA] ['expr', 'ld', 't185_2', ['self', 64, 0]]
+    [0E51] ['expr', 'mayread', None, ['self', 't185_2']]
+    [0DFB] ['expr', 'ld', 't185_3', ['self', 96, 0]]
+    [0E5F] ['expr', 'mayread', None, ['self', 't185_3']]
+    [0DFC] ['expr', 'ld', 't185_4', ['self', 128, 0]]
+    [0E6D] ['expr', 'mayread', None, ['self', 't185_4']]
+    [0DFD] ['expr', 'ld', 't185_5', ['self', 160, 0]]
+    [0E7B] ['expr', 'mayread', None, ['self', 't185_5']]
+    [0DFE] ['expr', 'ld', 't185_6', ['self', 192, 0]]
+    [0E89] ['expr', 'mayread', None, ['self', 't185_6']]
+    [0DFF] ['expr', 'ld', 't185_7', ['self', 224, 0]]
+    [0E97] ['expr', 'mayread', None, ['self', 't185_7']]
+    [0E0A] ['decl', 't189', 32]
+    [0E0C] ['expr', 'add', 't189', ['fileIdx', 1]]
+    [0E0D] ['expr', 'mov', 'fileIdx', ['t189']]
+    [0E0E] ['decl', 't190', 32]
+    [0E10] ['expr', 'add', 't190', ['ptrIdx', 1]]
+    [0E11] ['expr', 'mov', 'ptrIdx', ['t190']]
   ('jmp', 'LG0')
 
-_WriteCharFlaggedColored__ -> () <- J() + N() *set():
-  Vars: `{'char': ['loc', 'loc'], 'row': ['loc', 'loc'], 'col': ['loc', 'loc'], 'flags': ['loc', 'loc'], 'foreColor': ['loc', 'loc'], 'backColor': ['loc', 'loc'], 't193': ['loc', 'loc'], 't194': ['loc', 'loc'], 'pos': ['loc', 'loc'], 't195': ['loc', 'loc'], 't196': ['loc', 'loc'], 'rd': ['loc', 'loc'], 't197': ['loc', 'loc'], 't198': ['loc', 'loc']}`
-    ['expr', 'argld', 'char', [0]]
-    ['expr', 'argld', 'row', [1]]
-    ['expr', 'argld', 'col', [2]]
-    ['expr', 'argld', 'flags', [3]]
-    ['expr', 'argld', 'foreColor', [4]]
-    ['expr', 'argld', 'backColor', [5]]
-    ['decl', 't193', 32]
-    ['expr', 'bsl', 't193', ['row', 5]]
-    ['decl', 't194', 32]
-    ['expr', 'add', 't194', ['t193', 'col']]
-    ['decl', 'pos', 32]
-    ['decl', 't195', 8]
-    ['expr', 'bsl', 't195', ['flags', 7]]
-    ['decl', 't196', 8]
-    ['expr', 'add', 't196', ['t195', 'char']]
-    ['decl', 'rd', 8]
-    ['decl', 't197', 32]
-    ['decl', 't198', 32]
-    ['expr', 'stchr', None, ['t196', 't194', 'foreColor', 'backColor']]
+_WriteCharFlaggedColored__ -> () <- J() + N() *{'char', 'flags', 'row', 'col', 'backColor', 'foreColor'}:
+  Vars: `{'char': ['loc', 'loc'], 'row': ['loc', 'loc'], 'col': ['loc', 'loc'], 'flags': ['loc', 'loc'], 'foreColor': ['loc', 'loc'], 'backColor': ['loc', 'loc'], 't193': ['loc', 'loc'], 't194': ['loc', 'loc'], 't195': ['loc', 'loc'], 't196': ['loc', 'loc']}`
+    [0EBA] ['expr', 'argld', 'char', [0]]
+    [0EBB] ['expr', 'argld', 'row', [1]]
+    [0EBC] ['expr', 'argld', 'col', [2]]
+    [0EBD] ['expr', 'argld', 'flags', [3]]
+    [0EBE] ['expr', 'argld', 'foreColor', [4]]
+    [0EBF] ['expr', 'argld', 'backColor', [5]]
+    [0EC0] ['decl', 't193', 32]
+    [0EC2] ['expr', 'bsl', 't193', ['row', 5]]
+    [0EC3] ['decl', 't194', 32]
+    [0EC5] ['expr', 'add', 't194', ['t193', 'col']]
+    [0EC9] ['decl', 't195', 8]
+    [0ECB] ['expr', 'bsl', 't195', ['flags', 7]]
+    [0ECC] ['decl', 't196', 8]
+    [0ECE] ['expr', 'add', 't196', ['t195', 'char']]
+    [0ED8] ['expr', 'stchr', None, ['t196', 't194', 'foreColor', 'backColor']]
   ('ret', None, None, None, None)
 

@@ -750,7 +750,7 @@ def Lvalue(expr):
             return Var(tmp, lhs.kind)
         elif data == 'fieldexpr':
             le, _, re, = expr.children
-            lhs = Rvalue(le)
+            lhs = Lvalue(le)
             field = re.children[0].value
             idk = Statics.structs[str(lhs.kind)]['args'][field]
             
@@ -885,6 +885,11 @@ class HLIR:
         self.AddPent('[]=', val, ary, idx, None)
         InvalidateAliasFor(inter, ary.kind.Deref())
 
+    def AddBitMemStore(self, ary, idx, width, val):
+        EvictAliasFor(inter, ary.kind.Deref())
+        self.AddPent('[]=', val, ary, idx, width)
+        InvalidateAliasFor(inter, ary.kind.Deref())
+
     def AddBitStore(self, ary, off, width, val):
 ##        ary, aryk = ary if ary else (None, None)
 ##        off, offk = off if off else (None, None)
@@ -928,20 +933,35 @@ class HLIR:
                 op = '='
 ##                assert False, 'Maybe this will get deprecated'
             
-            l, r = D.name[:-1].split('[')
+            l, r = D.name[:-1].split('[', maxsplit=1)
+            
             l = Var.FromVal(self, l)
-            if '+:' not in r:
-                r = Var.FromVal(self, r)
-                assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
-                self.AddMemStore(l, r, S0)
-            else:
+            if '[' in r:
+##                assert False, f'{D=}'
+                aryidx, r = r.split('][')
+                aryidx = Var.FromVal(self, aryidx)
+##                aryidx = int(aryidx)
                 r, w = r.split('+:')
                 r = Var.FromVal(self, r)
                 w = Var.FromVal(self, w)
-                assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
+##                assert False, f'{(aryidx, r, w)}'
+                tmp = NewTemp(r.kind)
+                self.AddPent('+', tmp, aryidx, r, None)
+                self.AddBitMemStore(l, tmp, w, S0)
+                print(l, tmp, w, S0)
+            else:
+                if '+:' not in r:
+                    r = Var.FromVal(self, r)
+                    assert op == '=', f'Expected operation to be `=` when lhs is array, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
+                    self.AddMemStore(l, r, S0)
+                else:
+                    r, w = r.split('+:')
+                    r = Var.FromVal(self, r)
+                    w = Var.FromVal(self, w)
+                    assert op == '=', f'Expected operation to be `=` when lhs is sliced, got `{op}`.\nLine was: `{(op, D, S0, S1, S2)}`'
 
-                
-                self.AddBitStore(l, r, w, S0)
+                    
+                    self.AddBitStore(l, r, w, S0)
             return
         
         self.body.Addline(('expr', (op, D, S0, S1, S2), eid))
@@ -1297,13 +1317,19 @@ def Compile(filepath, verbose = False, optimize = True):
     with open('out.llr', 'w') as f:
         f.write(repr(llir))
 
-    if optimize: LLOptimizer.Optimize(llir)
+    if optimize:
+        LLOptimizer.Optimize(llir)
+        if verbose:
+            print('\nOPT LLIR:')
+            print(repr(llir))
+        with open('out_ret_opt.llr', 'w') as f:
+            f.write(repr(llir))
 
-    if verbose:
-        print('\nOptimized LLIR:')
-        print(repr(llir))
-    with open('out.llr', 'w') as f:
-        f.write(repr(llir))
+##    if verbose:
+##        print('\nOptimized LLIR:')
+##        print(repr(llir))
+##    with open('out.llr', 'w') as f:
+##        f.write(repr(llir))
 
     asm = LLL.Lower(llir)
 

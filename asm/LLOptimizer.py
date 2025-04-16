@@ -12,9 +12,11 @@ depsGlobal = ['glcd']
 modsRd = ['bst']
 memReads = ['ld', 'lda', 'ldw']
 memWrites = ['st', 'sta', 'stw']
+hasSideEffects = ['susp']+memWrites
 funcRenumId = 0
 NOASSERT = False
 globalticker = 0
+gExprID = 0
 
 class BlockSet:
     def __init__(self, blocks):
@@ -23,6 +25,7 @@ class BlockSet:
         self.idom = {}
         self.dom_fr = {}
         self.ids = {}
+        self.frefs = set()
 
     def __repr__(self):
         global NOASSERT
@@ -172,12 +175,14 @@ class BlockSet:
 
     def PropogateUses(self):
         for block in self.blocks:
+            block.localvars = {}
             for line in block.body:
                 if line[0] == 'decl':
                     block.localvars[line[1]] = ['loc', 'loc']
                     idx = block.body.index(line)
 ##                    block.body.insert(idx+1, ('expr', 'mov', line[1], [None]))
                 if line[0] == 'alloc':
+                    self.frefs.add(line[1])
                     block.localvars[line[1]] = ['loc', 'loc']
                 if line[0] == 'expr' and line[1] == 'argld':
                     block.localvars[line[2]] = ['loc', 'loc']
@@ -204,6 +209,7 @@ class BlockSet:
                      
 
     def ToSSA(self):
+        self.ids = {}
         self.UpdateDominators()
         self.PropogateUses()
         phiblocks = set()
@@ -249,7 +255,7 @@ class BlockSet:
                         line[3].append(f'{idx}_{redname}')
                         line[1] = 'phi'
                     if all([x == line[3][0] for x in line[3]]):
-                        line[:] = ['expr', 'mov', line[2], line[3][:1]]
+                        line[:4] = ['expr', 'mov', line[2], line[3][:1]]
             else:
                 for line in block.body:
                     if not(line[0] == 'expr' and line[1][:2] == '..'): continue
@@ -260,6 +266,7 @@ class BlockSet:
                     idx = varsonexit[pred][redname]
                     line[3].append(f'{idx}_{redname}')
                     line[1] = 'mov'
+            block.EnsureTagged()
 
     #Small note, due to how SSA works, we cannot mov into phi functions as these dont actually exist an when theyre dropped bugs will appear
     def MovForward(self):
@@ -310,6 +317,7 @@ class BlockSet:
                             pass
                         else:
                             continue
+                    elif line[0] == 'expr' and line[1] in hasSideEffects: continue
                     assert block.body[idx] == line
                     del block.body[idx]
                     do = True
@@ -324,15 +332,22 @@ class BlockSet:
 
     def ComputeRefables(self):
         for block in self.blocks:
-            block.refs=set()
+            block.refs=set()|self.frefs
             for line in block.body:
                 if line[0]=='expr' and line[1]=='addr':
                     arg = line[3][0]
-                    if arg[0].isnumeric():
-                        arg = arg.split('_', maxsplit=1)[1]
-                    if arg[-1].isnumeric():
-                        arg = arg[::-1].split('_', maxsplit=1)[1][::-1]
-                    block.refs.add(arg)
+                elif line[0] == 'expr' and line[1] == 'argld':
+                    arg = line[2]
+                    self.frefs.add(arg.split('_')[1])
+                elif line[0] in ['alloc']:
+                    arg = line[1]
+                    
+                else: continue
+                if arg[0].isnumeric():
+                    arg = arg.split('_', maxsplit=1)[1]
+                if '_' in arg and arg[-1].isnumeric():
+                    arg = arg[::-1].split('_', maxsplit=1)[1][::-1]
+                block.refs.add(arg)
 
     def PropPotValues(self):
         def ValueOf(ident: str|int) -> ValueOption:
@@ -351,18 +366,39 @@ class BlockSet:
             oldvalues = values.copy()
             for block in self.blocks:
                 for line in block.body[:]:
+                    i = block.body.index(line)
                     if line[0] == 'decl':
                         values[f'0_{line[1]}'] = ValueOption(line[2], None, True)
                     elif line[0] == 'alloc':
                         values[f'0_{line[1]}'] = ValueOption(32, line[1])
                     elif line[0] == 'expr':
-##                        print(f'EXPR {line}')
+##                        print(f'LINE[1] = {line[1]}')
                         dest = line[2]
-                        if type(dest) != str: continue
-##                            if type(dest) == int and line[1] == 'call_use':
-##                                pass
-##                            else: continue
                         args = [ValueOf(x) for x in line[3]]
+
+                        if line[1] == 'mayread':
+##                            print('MAYREAD')
+                            if not args[0]: continue
+                            for opt in args[0].opts:
+                                if type(opt) == Symbolic:
+                                    ref = opt.symbol
+                                    if ref[0].isnumeric():
+                                        ref = ref.split('_', maxsplit=1)[1]
+                                    if ref[-1].isnumeric() and '_' in ref:
+                                        ref = ref[::-1].split('_', maxsplit=1)[1][::-1]
+                                    var = line[3][1]
+                                    if var[0].isnumeric():
+                                        var = var.split('_', maxsplit=1)[1]
+                                    if var[-1].isnumeric() and '_' in var:
+                                        var = var[::-1].split('_', maxsplit=1)[1][::-1]
+                                    if var == ref:
+##                                        print(var, ref)
+##                                        assert False
+                                        break
+                            else:
+                                del block.body[i]
+                        
+                        if type(dest) != str: continue
                         if line[1] == 'mov':
                             values[dest] = args[0]
                         elif line[1] == 'phi':
@@ -376,32 +412,6 @@ class BlockSet:
                                 values[dest] = res
                         elif line[1] == 'addr':
                             values[dest] = ValueOption(32, line[3][0].rstrip('.&'))
-##                        elif line[1] == 'call_use':
-####                            print('CALL_USE')
-##                            i = block.body.index(line)
-##                            
-##                            potrefs = set()
-##                            for arg in args:
-##                                for pot in arg.opts:
-##                                    if type(pot) != Symbolic: continue
-##                                    arg = pot.symbol
-##                                    if arg[0].isnumeric():
-##                                        arg = arg.split('_', maxsplit=1)[1]
-##                                    if arg[-1].isnumeric():
-##                                        arg = arg[::-1].split('_', maxsplit=1)[1][::-1]
-##                                    potrefs.add(arg)
-####                            print(i, potrefs, line)
-##                                
-##                            for var in block.localvars:
-##                                if var[-1].isnumeric():
-##                                    varref = var[::-1].split('_', maxsplit=1)[1][::-1]
-##                                else:
-##                                    varref = var
-##                                if varref in potrefs:
-##                                    newline = ('expr', 'maywrite', var, ())
-####                                    print(f'{var} ({varref}) <= {args[0]!s}')
-####                                    if newline not in block.body:
-####                                        block.body.insert(i+1, newline)
                         elif line[1] == 'add':
                             if any(x == None for x in args): continue
                             values[dest] = args[0] + args[1]
@@ -414,13 +424,16 @@ class BlockSet:
                         elif line[1] == 'bsr':
                             if any(x == None for x in args): continue
                             values[dest] = args[0].bsr(args[1])
+                        elif line[1] == 'argld':
+                            values[dest] = ValueOption(32, str(line[2]).split('_', maxsplit=1)[1])
+##                            if line[3][0] in
                         else:
                             mayundef = any(x != None and x.mayBeUndefined for x in args)
                             values[dest] = ValueOption(32, [Any], mayundef)
                         pass
-        print('New Iter')
-        for k,v in values.items():
-            print(f'{str(k).ljust(20)}{v}')
+##        print('New Iter')
+##        for k,v in values.items():
+##            print(f'{str(k).ljust(20)}{v}')
 
     def FromSSA(self):
         for block in self.blocks:
@@ -456,12 +469,59 @@ class BlockSet:
             idx = [i for i,x in enumerate(self.blocks) if x.label == block][0]
             del self.blocks[idx]
 
+    def InsertPotMutations(self):
+        for block in self.blocks:
+            for line in block.body[:]:
+                i = block.body.index(line)
+                if line[0] == 'expr' and line[1]=='call': 
+##                    print(f'FOUND CALL w/ refs {block.refs=}')
+                    for var in block.localvars:
+                        _var = var
+                        for refvar in block.refs:
+                            if '_' in var and var[-1].isnumeric():
+                                var = var[::-1].split('_', maxsplit=1)[1][::-1]
+                            if var == refvar:
+                                block.body.insert(i, ('expr', 'maywrite', _var, ()))
+                elif line[0] == 'expr' and line[1] in memReads: 
+                    for var in block.localvars:
+                        _var = var
+                        for refvar in block.refs:
+                            if '_' in var and var[-1].isnumeric():
+                                var = var[::-1].split('_', maxsplit=1)[1][::-1]
+                            if var == refvar:
+                                block.body.insert(i, ('expr', 'mayread', None, (line[3][0], _var)))
+                elif line[0] == 'expr' and line[1]in memWrites: 
+##                    print(f'FOUND CALL w/ refs {block.refs=}')
+                    for var in block.localvars:
+                        _var = var
+                        for refvar in block.refs:
+                            if '_' in var and var[-1].isnumeric():
+                                var = var[::-1].split('_', maxsplit=1)[1][::-1]
+                            if var == refvar:
+                                block.body.insert(i, ('expr', 'maywrite', _var, ()))
+            block.EnsureTagged()
 
+    def EliminateRedundantReads(self):
+        for block in self.blocks:
+            reads = set()
+            decls = set()
+            for line in block.body[:]:
+                i = block.body.index(line)
+                if line[0] == 'decl':
+                    decls.add(line[1])
+                if line[0] == 'expr' and line[1] == 'mayread':
+                    arg = line[3][1]
+                    if arg in reads:
+                        del block.body[i]
+                    elif arg.split('_', maxsplit=1)[1] not in block.localvars or (block.localvars[arg.split('_', maxsplit=1)[1]][0] == 'loc' and arg.split('_', maxsplit=1)[1] not in decls):
+                        print('DELETE', block.body[i], arg.split('_', maxsplit=1)[1], decls)
+                        del block.body[i]
+                    reads.add(arg)
 
 
 class Block:
     def __init__(self, parent: BlockSet, unoptBlock: LHL.Block):
-        global globalticker
+        global globalticker, globalExprID
         self.label = unoptBlock.entry
         self.body = unoptBlock.body[:]
         self.parent = parent
@@ -485,6 +545,10 @@ class Block:
                         self.body[i] = ('expr', line[1][0], None, tuple([x for x in line[1][1:] if x != None]))
                 else:
                     self.body[i] = ('expr', line[1][0], line[1][1], tuple([x for x in line[1][2:] if x != None]))
+                if line[1][0] in memWrites:
+                    self.body[i] = list(self.body[i])
+                    self.body[i][2] = self.body[i][3][1]
+                    self.body[i] = tuple(self.body[i])
 
                 if self.body[i][1] == 'argst':
 ##                    print('INSERT')
@@ -500,15 +564,34 @@ class Block:
 
         while True:
             for line in self.body[:]:
-                if line[0] in ['undecl', 'memsave', 'memsavebit']:
+                if line[0] in ['undecl', 'memsave', 'memsavebit', 'regrst']:
                     del self.body[self.body.index(line)]
             break
         for line in self.body: assert line[0] != 'undecl'
+        self.EnsureTagged()
+
+    def ToLLIR(self):
+        out = LHL.Block(self.label, None)
+        out.body = self.body
+        out.exit = self.exit
+        return out
+
+    def EnsureTagged(self):
+        global gExprID
+        for line in self.body:
+            if not (type(line[-1]) == str and line[-1].startswith('eid ')):
+                self.body[self.body.index(line)] = (list(line)+[f'eid {gExprID}'])
+                gExprID += 1
 
     def __repr__(self):
+        def fmtline(line):
+            if type(line[-1]) == str and line[-1].startswith('eid '):
+                return f'    [{hex(int(line[-1][4:]))[2:].upper().zfill(4)}] {line[:-1]}\n'
+            else:
+                return f'    -    - {line}\n'
         return self.label + f' -> {self.Succs()} <- J{self.JumpPreds()} + N{self.NatPreds()} *{self.refs}:\n' \
         + f'  Vars: `{self.localvars}`\n' \
-        + ''.join([f'    {line}\n' for line in self.body])+f'  {self.exit}\n'
+        + ''.join([fmtline(line) for line in self.body])+f'  {self.exit}\n'
 
     def JumpPreds(self):
         preds = []
@@ -592,7 +675,7 @@ class ValueOption:
         for opt in newopts[1:]:
             if type(opt) == IntRange and opt.high > filtered[-1].high and opt.high > opt.low:
                 filtered.append(opt)
-            elif type(opt) == Symbolic and filtered[-1].high != filtered[-1].maxuint:
+            elif type(opt) == Symbolic and (type(filtered[-1]) == Symbolic or filtered[-1].high != filtered[-1].maxuint):
                 filtered.append(opt)
         if forced or len(filtered) > MaxOptions:
             if (forced or mfs > 0) and all([type(x) == IntRange for x in filtered]):
@@ -794,14 +877,17 @@ def Optimize(llir: LHL.LLIR) -> None:
         body.ForwardJumps()
         body.Renumber()
 
-##        print(repr(body))
+        print(repr(body))
 
         
         body.ToSSA()
         body.MovForward()
 
         print(repr(body))
+        body.ComputeRefables()
         body.FromSSA()
+        print(repr(body))
+        body.InsertPotMutations()
         print(repr(body))
         body.ToSSA()
         print(repr(body))
@@ -809,19 +895,32 @@ def Optimize(llir: LHL.LLIR) -> None:
         body.ElimWritesWithoutRead()
         body.ComputeRefables()
 
-##        print(repr(body))
+        print(repr(body))
         
-        #body.PropPotValues()
+        body.PropPotValues()
+        body.EliminateRedundantReads()
+        body.ElimWritesWithoutRead()
+        body.PropogateUses()
+
 
         preprune += repr(body)+'\n'
 
         print(repr(body))
         
         body.FromSSA()
+        body.ToSSA()
+        body.EliminateRedundantReads()
+        body.ElimWritesWithoutRead()
+        body.ElimWritesWithoutRead()
+        body.FromSSA()
 
         body.PruneUnreachable()
 
-        assert False
+        func['body'] = []
+        for block in body.blocks:
+            func['body'].append(block.ToLLIR())
+
+##        assert '____Init' not in func['name']
 
     funcRenumId = 0
     optlr = ''
