@@ -1,0 +1,25 @@
+struct Vec {
+    x: u32,
+    y: u32,
+
+    fn Nop(self: Vec*) void {
+        -self;
+        return;
+    }
+}
+
+fn Main() void {
+    var ret = _Main();
+    @susp();
+}
+
+fn _Main() u32 {
+    var v = Vec{x := 3, y := 5};
+    var vptr = v.&;
+    vptr.*.x = 7;
+    var w = vptr.*;
+    var wptr = w.&;
+    wptr.* = Vec {x := 1, y := 1};
+    v.&:Nop();
+    return v.x - w.x;
+}
