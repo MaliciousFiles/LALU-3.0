@@ -110,7 +110,7 @@ module LALU(input CLOCK_50,
     predictor PREDICTOR(
         .clk(clk),
         .IP_f(IP_f),
-        .wouldExecute(run && ~stall_e && ~executiveOverride && isValid_d),
+        .wouldExecute(~totalSuspend && ~stall_e && ~executiveOverride && isValid_d),
         .expectedIP(expectedIP),
         .wasJump(format == JMP),
         .didJump(format == JMP && ~(conditional && generalFlag == negate)),
@@ -120,21 +120,20 @@ module LALU(input CLOCK_50,
     /*********************
      *      Memory       *
      *********************/
-	 reg fsDel, fsRden, fsWren;
-	 reg [31:0] fsFilename, fsAddress, fsData`ifdef __ICARUS__; wire [31:0]`endif fsQ;
+     wire [31:0] fsQ;
 	 filesystem fs(
 			.CLOCK_50(CLOCK_50),
-			
-			.del(fsDel),
-			.rden(fsRden),
-			.wren(fsWren),
-			
-			.filename(fsFilename),
-			.address(fsAddress),
-			.data(fsData),
-			
+
+			.del(1'b0),
+			.rden(pageFsRden),
+			.wren(pageFsWren),
+
+			.filename(pageFsFilename),
+			.address(pageFsAddress),
+			.data(pageFsData),
+
 			.q(fsQ),
-			
+
 			.HPS_DDR3_ADDR(HPS_DDR3_ADDR), .HPS_DDR3_BA(HPS_DDR3_BA), .HPS_DDR3_CAS_N(HPS_DDR3_CAS_N), .HPS_DDR3_CKE(HPS_DDR3_CKE), .HPS_DDR3_CK_N(HPS_DDR3_CK_N), .HPS_DDR3_CK_P(HPS_DDR3_CK_P), .HPS_DDR3_CS_N(HPS_DDR3_CS_N), .HPS_DDR3_DM(HPS_DDR3_DM), .HPS_DDR3_DQ(HPS_DDR3_DQ), .HPS_DDR3_DQS_N(HPS_DDR3_DQS_N), .HPS_DDR3_DQS_P(HPS_DDR3_DQS_P), .HPS_DDR3_ODT(HPS_DDR3_ODT), .HPS_DDR3_RAS_N(HPS_DDR3_RAS_N), .HPS_DDR3_RESET_N(HPS_DDR3_RESET_N), .HPS_DDR3_RZQ(HPS_DDR3_RZQ), .HPS_DDR3_WE_N(HPS_DDR3_WE_N));
 	  
     wire [15:0] fetchAddress;
@@ -145,19 +144,44 @@ module LALU(input CLOCK_50,
     wire [31:0] memAccessInput;
     wire memAccessRden;
     wire [31:0] memAccessOutput;
-    operational_memory MEM(
+
+    wire pageStall, pageFsRden, pageFsWren;
+    wire [31:0] pageFsFilename, pageFsAddress, pageFsData;
+    paged_RAM MEM(
         .clk(clk),
-        .operationMode(operationMode),
 
-        .fetchAddress(fetchAddress),
-        .fetchEnable(~stall_e),
-        .fetchOutput(fetchOutput),
+        .address_a(fetchAddress),
+        .wren_a(1'b0),
+        .data_a(32'b0),
+        .rden_a(~stall_e),
+        .q_a(fetchOutput),
 
-        .memAccessAddress(memAccessAddress),
-        .memAccessWren(memAccessWren),
-        .memAccessData(memAccessInput),
-        .memAccessRden(memAccessRden),
-        .memAccessOutput(memAccessOutput));
+        .address_b(memAccessAddress),
+        .wren_b(~operationMode && memAccessWren),
+        .data_b(memAccessData),
+        .rden_b(memAccessRden),
+        .q_b(userOut_memAccess),
+
+        .fsAccess(pageStall),
+        .fsRden(pageFsRden),
+        .fsWren(pageFsWren),
+        .fsQ(fsQ),
+        .fsFilename(pageFsFilename),
+        .fsAddress(pageFsAddress),
+        .fsData(pageFsData));
+//    operational_memory MEM(
+//        .clk(clk),
+//        .operationMode(operationMode),
+//
+//        .fetchAddress(fetchAddress),
+//        .fetchEnable(~stall_e),
+//        .fetchOutput(fetchOutput),
+//
+//        .memAccessAddress(memAccessAddress),
+//        .memAccessWren(memAccessWren),
+//        .memAccessData(memAccessInput),
+//        .memAccessRden(memAccessRden),
+//        .memAccessOutput(memAccessOutput));
 
 
     wire [11:0] stackReadAddr, stackWriteAddr;
@@ -250,12 +274,14 @@ module LALU(input CLOCK_50,
      *********************/
     // GENERAL
     integer globalCounter = 0; // how many cycles the processor has been running for
-    always @(posedge clk) if (run) globalCounter <= globalCounter + 1;
+    always @(posedge clk) if (~totalSuspend) globalCounter <= globalCounter + 1;
 
     reg [15:0] IP = 0; // instruction pointer
     reg operationMode = 1; // 0 = user mode, 1 = kernel mode
     reg run = 1; // setting to 0 entirely stops the processor
     assign suspended = ~run;
+
+    wire totalSuspend = ~run || pageStall; // in front of literally every always in the pipeline
 
     reg [11:0] stackPointer = 0;
 
@@ -387,7 +413,7 @@ module LALU(input CLOCK_50,
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
-    always @(posedge clk) begin if (run) if (~stall_e) begin
+    always @(posedge clk) begin if (~totalSuspend) if (~stall_e) begin
         IP_f <= fetchAddress; // save IP of fetched instruction
 
         IP <= executiveOverride
@@ -404,8 +430,8 @@ module LALU(input CLOCK_50,
     wire conditional_d = instruction[31];
     wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
-    always @(posedge clk) if (run) updateEIP <= ~executiveOverride && isValid_f_reg;
-    always @(posedge clk) begin if (run) if (~stall_e) begin if (~executiveOverride && isValid_f) begin
+    always @(posedge clk) if (~totalSuspend) updateEIP <= ~executiveOverride && isValid_f_reg;
+    always @(posedge clk) begin if (~totalSuspend) if (~stall_e) begin if (~executiveOverride && isValid_f) begin
         IP_d <= IP_f; // save IP of decoded instruction
         isValid_d <= 1'b1;
 
@@ -547,9 +573,9 @@ module LALU(input CLOCK_50,
     assign charWrX = Rs0[5:0];
     assign charWrY = Rs0[10:6];
 
-    wire isExecuting = run && ~stall_e && ~executiveOverride && executeInstr;
+    wire isExecuting = ~totalSuspend && ~stall_e && ~executiveOverride && executeInstr;
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
-    always @(posedge clk) begin if (run) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
+    always @(posedge clk) begin if (~totalSuspend) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
         if (updateEIP) begin
             expectedIP <= expectedIP + 1;
         end
@@ -914,7 +940,7 @@ module LALU(input CLOCK_50,
     /*********************
      *    Memory Read    *
      *********************/
-    always @(posedge clk) if (run) begin
+    always @(posedge clk) if (~totalSuspend) begin
         // if we just returned, we need to update the current return address from the stack
         // we have to put some Execute stuff here so that returnAddress is only being driven once
         if (isExecuting && format == JMP && funcID == CALL) returnAddress <= stackWriteData;
@@ -927,7 +953,7 @@ module LALU(input CLOCK_50,
     assign memAccessWren = isMemWrite_m || fullByteWrite;
     assign memAccessRden = (isMemRead_e || isMemWrite_e) && ~memAccessWren; // only read if we aren't writing
     assign memAccessAddress = isMemWrite_m ? memAccessAddress_m : memAccessAddress_e; // either write address or read address
-    always @(posedge clk) begin if (run) if (~stall_m && isValid_e) begin
+    always @(posedge clk) begin if (~totalSuspend) if (~stall_m && isValid_e) begin
         IP_m <= IP_e; // save IP of memory access instruction
         isValid_m <= 1'b1;
 
@@ -960,7 +986,7 @@ module LALU(input CLOCK_50,
         memOutput >> memAccessNumBits_m >> memAccessNumBitsBefore_m << memAccessNumBits_m << memAccessNumBitsBefore_m
         | (32'hFFFFFFFF & registers[Rd_m] << memAccessNumBitsAfter_m << memAccessNumBitsBefore_m) >> memAccessNumBitsAfter_m
         | (32'hFFFFFFFF & memOutput << memAccessNumBitsAfter_m << memAccessNumBits_m) >> memAccessNumBitsAfter_m >> memAccessNumBits_m;
-    always @(posedge clk) begin if (run) if (isValid_m) begin
+    always @(posedge clk) begin if (~totalSuspend) if (isValid_m) begin
         if (halt_m) run <= 1'b0;
 
         if (isWriteback_m) begin

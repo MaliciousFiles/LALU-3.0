@@ -45,7 +45,9 @@ module filesystem(
 		.memory_oct_rzqin(HPS_DDR3_RZQ),
 		.reset_reset_n(1'b1));
 `else
-    reg[1024*8-1:0] name;
+    reg[0:1024*8-1] name;
+    initial name[0 +: 8] = ".";  // relativize everything
+
     integer nameIdx = -1;
     integer fp = 0;
     integer scratch;
@@ -60,22 +62,23 @@ module filesystem(
         for (i = 0; !break && i < 4; i = i+1) begin
             if (filename[i*8 +: 8] == 8'b0) begin
                 if (nameIdx != -1) begin
-                    nameIdx[(nameIdx+1)*8 +: 8] = 8'b0;
+                    name[8+(nameIdx+1)*8 +: 8] = 8'b0;
+                    $display("opening %s", name >> ((1024-nameIdx-2)*8));
 
                     if (fp != 0) $fclose(fp);
-                    fp = $fopen(name, "rb+");
+                    fp = $fopen(name >> ((1024-nameIdx-2)*8), "rb+");
+
                     if (fp == 0) begin
                         $mkdir(name);
-                        fp = $fopen(name, "wb+");
+                        fp = $fopen(name >> ((1024-nameIdx-2)*8), "wb+");
                     end
-
                 end
 
                 nameIdx = -1;
                 break = 1;
             end else begin
                 nameIdx = nameIdx + 1;
-                name[nameIdx*8 +: 8] = filename[i*8 +: 8];
+                name[8+nameIdx*8 +: 8] = filename[24-i*8 +: 8];
             end
         end
 
@@ -92,7 +95,8 @@ module filesystem(
             scratch = $fseek(fp, address * 4, 0);
             if (rden) begin
                 scratch = $fread(rawRead, fp);
-                if (rawRead === 'bx) rawRead = 0;
+                if (rawRead === 'bx || $feof(fp)) rawRead = 0;
+                $display("read %h at %h", rawRead, address);
                 for (j = 0; j < 32; j = j+8) outData[j +: 8] = rawRead[31-j -: 8];
             end
             if (wren) $fwrite(fp, "%u", data);
