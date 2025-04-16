@@ -62,9 +62,9 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         genvar ii;
         generate
             for (ii = 0; ii < 1<<divsize; ii = ii+1) begin : blocks
-                wire [width-1:0] data_a, data_b;
-                assign paged_RAM.internal_q_a[ii] = data_a;
-                assign paged_RAM.internal_q_b[ii] = data_b;
+                wire [width-1:0] out_a, out_b;
+                assign paged_RAM.internal_q_a[ii] = out_a;
+                assign paged_RAM.internal_q_b[ii] = out_b;
 
                 // apparently have to grab these????
                 wire do_update_b = paged_RAM.do_update_b;
@@ -86,13 +86,13 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                     .wren_a((upper_addr_a == physicalBase[ii] && page_valid_a && wren_a) || (update_a && ii == leastRecentlyUsed && state == 3 && readIdx >= 2)),
                     .data_a(update_a ? fsQ : data_a),
                     .rden_a((page_valid_a && rden_a) || (update_a && state == 1)),
-                    .q_a(data_a),
+                    .q_a(out_a),
 
                     .address_b(do_update_b ? (state == 3 ? readIdx-2 : readIdx) : lower_addr_b),
                     .wren_b((upper_addr_b == physicalBase[ii] && page_valid_b && wren_b) || (do_update_b && ii == leastRecentlyUsed && state == 3 && readIdx >= 2)),
                     .data_b(do_update_b ? fsQ : data_b),
                     .rden_b((page_valid_b && rden_b) || (do_update_b && state == 1)),
-                    .q_b(data_b));
+                    .q_b(out_b));
             end
         endgenerate
 
@@ -103,7 +103,7 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
 
         reg [divsize:0] i, j;
         reg [width-1:0] old_addr_a = 1'bx, old_addr_b = 1'bx;
-        always @(posedge clk) begin
+        always @(posedge clk, upper_addr_a) begin
             old_page_idx_a = page_idx_a;
             if (upper_addr_a !== old_addr_a) begin
                 old_addr_a = upper_addr_a;
@@ -111,12 +111,13 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                 for (i = 0; ~page_valid_a && i < 1<<divsize; i = i+1) begin
                     if (upper_addr_a == physicalBase[i]) begin
                         page_idx_a = i;
+                        $display("[A] found page %d", page_idx_a);
                         page_valid_a = 1;
                     end else page_idx_a = 0;
                 end
             end
         end
-        always @(posedge clk) begin
+        always @(posedge clk, upper_addr_b) begin
             old_page_idx_b = page_idx_b;
             if (upper_addr_b !== old_addr_b) begin
                 old_addr_b = upper_addr_b;
@@ -124,6 +125,7 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                 for (i = 0; ~page_valid_b && i < 1<<divsize; i = i+1) begin
                     if (upper_addr_b == physicalBase[i]) begin
                         page_idx_b = i;
+                        $display("[B] found page %d", page_idx_b);
                         page_valid_b = 1;
                     end else page_idx_b = 0;
                 end
@@ -135,14 +137,21 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         assign q_b = page_valid_b ? internal_q_b[old_page_idx_b] : 0;
 
         reg old_page_valid_a = 0;
+        reg old_page_valid_b = 0;
         reg old_rden_a = 0;
+        reg old_rden_b = 0;
         reg [hwwidthad-divsize-1:0] old_lower_addr_a = 0;
+        reg [hwwidthad-divsize-1:0] old_lower_addr_b = 0;
         always @(posedge clk) begin
             old_page_valid_a <= page_valid_a;
+            old_page_valid_b <= page_valid_b;
             old_rden_a <= rden_a;
+            old_rden_b <= rden_b;
             old_lower_addr_a <= lower_addr_a;
-            if (old_page_valid_a && old_rden_a) $display("read %h from %h (%d)", q_a, old_lower_addr_a, old_page_idx_a);
-            if (page_valid_b && wren_b) $display("writing %h to %h (%d)", data_b, lower_addr_b, page_idx_b);
+            old_lower_addr_b <= lower_addr_b;
+            if (old_page_valid_a && old_rden_a) $display("[A] read %h from %h (%d)", q_a, old_lower_addr_a, old_page_idx_a);
+            if (old_page_valid_b && old_rden_b) $display("[B] read %h from %h (%d)", q_b, old_lower_addr_b, old_page_idx_b);
+            if (page_valid_b && wren_b) $display("[B] writing %h to %h (%d)", data_b, lower_addr_b, page_idx_b);
         end
 
         wire update_a = ~page_valid_a && (wren_a || rden_a);
@@ -156,7 +165,7 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         wire do_update_b = update_b && ~update_a;
         always @(posedge clk) begin
             if (update_a || update_b) begin
-                $display("overwriting page %d with %h", leastRecentlyUsed, (do_update_b ? upper_addr_b : upper_addr_a));
+//                $display("overwriting page %d with %h", leastRecentlyUsed, (do_update_b ? upper_addr_b : upper_addr_a));
                 case (state)
                     // open /dev/mem
                     0: begin
