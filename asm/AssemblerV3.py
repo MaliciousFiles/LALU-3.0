@@ -526,9 +526,36 @@ def UnpackHex(instr):
          '001':'Q', '101':'Q',
          '110':'J'}[b[-3:]]
     tab = []
+    data = {}
+    _b = b
     for field,width in formats[F].items():
-        tab.append((field, b[:width], [k for k,v in instrs.items() if 'Func_ID' in v and v['Func_ID'] == b[:width]][0] if field == 'Func_ID' else F if field == 'Fmt_Code' else ''))
+        data[field] = b[:width]
         b = b[width:]
+    b = _b
+##    print(data)
+
+    for field,width in formats[F].items():
+        tab.append((
+            field,
+            b[:width],
+            [k for k,v in instrs.items() if 'Func_ID' in v and v['Fmt_Code'] == data['Fmt_Code'] and v['Func_ID'] == b[:width]][0] if field == 'Func_ID' else F if field == 'Fmt_Code' else ''))
+        b = b[width:]
+
+    for j in range(len(tab)):
+        tab[j] = list(tab[j])
+        if tab[j][0].startswith('Rs'):
+            i = int(tab[j][0][2:])
+            if data.get(f'i{i}', 0) == '1':
+                if tab[j][1].count('0') == 0:
+                    tab[j][2] = '.e'
+                else:
+                    tab[j][2] = str(int(tab[j][1]))
+            else:
+                tab[j][2] = 'r'+str(int(tab[j][1]))
+        elif tab[j][0].startswith('R'):
+            tab[j][2] = 'r'+str(int(tab[j][1]))
+    print(tab)
+
     l = [max(len(x), max(len(y), len(z))) for x,y,z in tab]
     z=' '.join([z.center(l[i]) for i,(x,y,z) in enumerate(tab)])
     y=' '.join([y.center(l[i]) for i,(x,y,z) in enumerate(tab)])
