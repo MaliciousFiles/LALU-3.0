@@ -527,12 +527,13 @@ def UnpackHex(instr):
          '110':'J'}[b[-3:]]
     tab = []
     for field,width in formats[F].items():
-        tab.append((field, b[:width]))
+        tab.append((field, b[:width], [k for k,v in instrs.items() if 'Func_ID' in v and v['Func_ID'] == b[:width]][0] if field == 'Func_ID' else F if field == 'Fmt_Code' else ''))
         b = b[width:]
-    l = [max(len(x), len(y)) for x,y in tab]
-    y=' '.join([y.center(l[i]) for i,(x,y) in enumerate(tab)])
-    x=' '.join([x.center(l[i]) for i,(x,y) in enumerate(tab)])
-    print(x+'\n'+y)
+    l = [max(len(x), max(len(y), len(z))) for x,y,z in tab]
+    z=' '.join([z.center(l[i]) for i,(x,y,z) in enumerate(tab)])
+    y=' '.join([y.center(l[i]) for i,(x,y,z) in enumerate(tab)])
+    x=' '.join([x.center(l[i]) for i,(x,y,z) in enumerate(tab)])
+    print(x+'\n'+y+'\n'+z)
 
 def Macro_BIT(expr):
     rexpr = expr
