@@ -1,5 +1,5 @@
 from math import log2
-from Statics import Var, Type, Pointer, Int, C_Array
+from Statics import Var, Type, Pointer, Int, C_Array, NoVar
 
 log = lambda x:int(log2(x))
 IsPow2 = lambda x: type(x) == int and (x==x&-x)
@@ -142,10 +142,10 @@ def Xor(nblock, res, x, y):
 def Inv(nblock, res, x):
     raise NotImplementedError
 
-def Store(nblock, val, array, offset):
+def Store(nblock, val, array, offset, width):
     if offset.kind.comptime:
         assert offset.kind.comptime, f'Offset must be comptime known, not `{offset!r}`'
-        bitwidth = array.kind.ElementSize()
+        bitwidth = width.name if width.name else array.kind.ElementSize()
         regid = 0
         while bitwidth > 0:
             bits = 32 if bitwidth > 32 else bitwidth
@@ -354,8 +354,8 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
     elif op == '&':             AddPent(nblock, 'and', D, S0, S1, S2)
     elif op == '|':             AddPent(nblock, 'or', D, S0, S1, S2)
     elif op == '=':             AddPent(nblock, 'mov', D, S0, S1, S2)
-    elif op == '[]=':           AddPent(nblock, 'stw', D, S0, S1, S2)
-    elif op == '=[]':           AddPent(nblock, 'ldw', D, S0, S1, S2)
+    elif op == '[]=':           AddPent(nblock, 'st', D, S0, S1, 0 if S2 == NoVar else S2)
+    elif op == '=[]':           AddPent(nblock, 'ld', D, S0, S1, 0 if S2 == NoVar else S2)
     elif op == '[:]=':          AddPent(nblock, 'bst', D, S0, S1, Var(S2.name % 32, S2.kind))
     elif op == '=[:]':          AddPent(nblock, 'bsf', D, S0, S1, Var(S2.name % 32, S2.kind))
     elif op == '<<':            AddPent(nblock, 'bsl', D, S0, S1, S2)
