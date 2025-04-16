@@ -558,7 +558,7 @@ def Rvalue(expr):
             else:
                 assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguments'
                 args += [None]*4
-                tk = Type(comptime = ct)
+                tk = Type(Statics.Comptime() if ct else Statics.Int(32, False))
                 tmp = NewTemp(tk)
                 inter.AddPent(op = name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
                 return tmp
@@ -1348,8 +1348,13 @@ def Compile(filepath, verbose = False, optimize = True):
     with open('out.mif', 'w') as f:
         f.write(mif)
 
-    if os.path.exists('../.sim/Icarus Verilog-sim/RAM.mif'):
+    if os.path.exists('../.sim/Icarus Verilog-sim'):
         with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
             f.write(mif)
+
+        if not os.path.exists("../.sim/Icarus Verilog-sim/dev"): os.mkdir("../.sim/Icarus Verilog-sim/dev")
+        with open("../.sim/Icarus Verilog-sim/dev/mem", "wb") as f:
+            for hx in program.values():
+                f.write(bytearray.fromhex(hx)[::-1])
     else:
         pyperclip.copy(mif)
