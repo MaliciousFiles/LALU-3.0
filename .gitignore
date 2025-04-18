@@ -10,3 +10,4 @@ asm/__pycache__/
 asm/*.txt
 asm/out.*
 asm/src/*.txt
+expanded.lpc

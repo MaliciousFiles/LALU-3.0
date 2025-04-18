@@ -411,6 +411,7 @@ module LALU(input CLOCK_50,
      *********************/
     assign fetchAddress = isValid_f && curFormat == JMP && (~conditional_d || prediction) ? jumpTo : IP; // fetch address is the current instruction pointer
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
+    reg [32:0] instruction_reg = 0; // in case of stall, we don't want to lose the contents of `instruction`
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
     always @(posedge clk) begin if (~totalSuspend) if (~stall_e) begin
@@ -421,14 +422,16 @@ module LALU(input CLOCK_50,
             : fetchAddress + 1;       // else, increment IP
 
         isValid_f_reg <= ~executiveOverride;
-    end end
+    end; if (totalSuspend != instruction_reg[32]) instruction_reg <= {totalSuspend, instruction}; end
 
     /*********************
      *       Decode      *
      *********************/
-    wire [31:0] jumpTo = instruction[25:5];
-    wire conditional_d = instruction[31];
-    wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
+    wire [31:0] activeInstruction = instruction_reg[32] ? instruction_reg : instruction;
+
+    wire [31:0] jumpTo = activeInstruction[25:5];
+    wire conditional_d = activeInstruction[31];
+    wire [2:0] curFormat = activeInstruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
     always @(posedge clk) if (~totalSuspend) updateEIP <= ~executiveOverride && isValid_f_reg;
     always @(posedge clk) begin if (~totalSuspend) if (~stall_e) begin if (~executiveOverride && isValid_f) begin
@@ -438,24 +441,24 @@ module LALU(input CLOCK_50,
         // Universal
         format <= curFormat;
         conditional <= conditional_d;
-        negate <= instruction[30];
-        sticky_d <= instruction[29];
+        negate <= activeInstruction[30];
+        sticky_d <= activeInstruction[29];
 
         if (curFormat[1:0] == TRIP) begin // triple
-            Rd_d <= instruction[28:24];
+            Rd_d <= activeInstruction[28:24];
 
-            Rs0_d <= instruction[23:19];
-            Rs1_d <= instruction[18:14];
+            Rs0_d <= activeInstruction[23:19];
+            Rs1_d <= activeInstruction[18:14];
 
-            funcID <= instruction[13:5];
+            funcID <= activeInstruction[13:5];
 
-            i0 <= instruction[4];
-            i1 <= instruction[3];
+            i0 <= activeInstruction[4];
+            i1 <= activeInstruction[3];
 
             exImm <= {
                 1'b0,
-                instruction[3] && instruction[18:14] == 5'b11111,
-                instruction[4] && instruction[23:19] == 5'b11111};
+                activeInstruction[3] && activeInstruction[18:14] == 5'b11111,
+                activeInstruction[4] && activeInstruction[23:19] == 5'b11111};
 
             isWriteback_d <= ~curFormat[2];
 
@@ -465,20 +468,20 @@ module LALU(input CLOCK_50,
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
         end else if (curFormat[1:0] == QUAD) begin // quad
-            Rd_d <= instruction[28:24];
+            Rd_d <= activeInstruction[28:24];
 
-            Rs0_d <= instruction[23:19];
-            Rs1_d <= instruction[18:14];
-            Rs2_d <= instruction[13:9];
+            Rs0_d <= activeInstruction[23:19];
+            Rs1_d <= activeInstruction[18:14];
+            Rs2_d <= activeInstruction[13:9];
 
-            funcID <= {5'b0, instruction[8:5]};
+            funcID <= {5'b0, activeInstruction[8:5]};
 
-            i1 <= instruction[4];
-            i2 <= instruction[3];
+            i1 <= activeInstruction[4];
+            i2 <= activeInstruction[3];
 
             exImm <= {
-                instruction[3] && instruction[13:9] == 5'b11111,
-                instruction[4] && instruction[18:14] == 5'b11111,
+                activeInstruction[3] && activeInstruction[13:9] == 5'b11111,
+                activeInstruction[4] && activeInstruction[18:14] == 5'b11111,
                 1'b0};
 
             isWriteback_d <= ~curFormat[2];
@@ -488,10 +491,10 @@ module LALU(input CLOCK_50,
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
         end else if (curFormat == JMP) begin // jump
-            jumpPageLoc <= instruction[28:26];
+            jumpPageLoc <= activeInstruction[28:26];
             jumpLoc <= jumpTo;
 
-            funcID <= {7'b0, instruction[4:3]};
+            funcID <= {7'b0, activeInstruction[4:3]};
 
             // unused by jump
             Rd_d <= 5'b0;

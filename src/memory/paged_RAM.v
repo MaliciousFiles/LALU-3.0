@@ -22,32 +22,35 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
 
         reg [255:0] accessCounter = 0;
         reg [divsize-1:0] leastRecentlyUsed = 0;
-        reg [widthad-1:0] physicalBase [0:1<<divsize-1];
+        reg [widthad-1:0] physicalBase [0:(1<<divsize)-1];
 
         // page metadata
-        reg [255:0] lastAccessed [0:1<<divsize-1];
+        reg [255:0] lastAccessed [0:(1<<divsize)-1];
         initial for (i = 0; i < 1<<divsize; i = i+1) lastAccessed[i] = 0;
-        reg hasData [0:1<<divsize-1];
+        reg hasData [0:(1<<divsize)-1];
         initial for (i = 0; i < 1<<divsize; i = i+1) hasData[i] = 0;
 
         // todo: perms
-        reg elevated [0:1<<divsize-1];
-        reg userRead [0:1<<divsize-1];
-        reg userWrite [0:1<<divsize-1];
-        reg userExec [0:1<<divsize-1];
+        reg elevated [0:(1<<divsize)-1];
+        reg userRead [0:(1<<divsize)-1];
+        reg userWrite [0:(1<<divsize)-1];
+        reg userExec [0:(1<<divsize)-1];
 
         always @(posedge clk, posedge page_valid_a, posedge page_valid_b) begin
             if ((page_valid_a && (wren_a || rden_a)) || (page_valid_b && (wren_b || rden_b))) begin
-                if (page_valid_a && (wren_a || rden_a)) lastAccessed[page_idx_a] = accessCounter;
-                if (page_valid_b && (wren_b || rden_b)) lastAccessed[page_idx_b] = accessCounter;
+                if (page_valid_a && (wren_a || rden_a)) begin
+                    if (wren_a) hasData[page_idx_a] <= 1;
+                    lastAccessed[page_idx_a] = accessCounter;
+                end
+                if (page_valid_b && (wren_b || rden_b)) begin
+                    if (wren_b) hasData[page_idx_b] <= 1;
+                    lastAccessed[page_idx_b] = accessCounter;
+                end
 
                 accessCounter = accessCounter + 1;
 
                 // if we're overflowing, just reset :(
-                if (accessCounter == 0) begin
-                    for (i = 0; i < 1<<divsize; i = i+1) lastAccessed[i] = 0;
-                    leastRecentlyUsed = 0;
-                end
+                if (accessCounter == 0) for (i = 0; i < 1<<divsize; i = i+1) lastAccessed[i] = 0;
 
                 for (i = 0; i < 1<<divsize; i = i+1) begin
                     if (lastAccessed[i] < lastAccessed[leastRecentlyUsed]) leastRecentlyUsed = i;
@@ -56,8 +59,8 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         end
 
         // page mem blocks
-        wire [width-1:0] internal_q_a [0:1<<divsize-1];
-        wire [width-1:0] internal_q_b [0:1<<divsize-1];
+        wire [width-1:0] internal_q_a [0:(1<<divsize)-1];
+        wire [width-1:0] internal_q_b [0:(1<<divsize)-1];
 
         genvar ii;
         generate
@@ -101,22 +104,22 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         reg [divsize-1:0] page_idx_a, page_idx_b, old_page_idx_a, old_page_idx_b;
         reg page_valid_a, page_valid_b;
 
-        reg [divsize:0] i, j;
+        reg [divsize:0] i;
         reg [width-1:0] old_addr_a = 1'bx, old_addr_b = 1'bx;
+        always @(posedge clk) old_page_idx_a <= page_idx_a;
         always @(posedge clk, upper_addr_a) begin
-            old_page_idx_a = page_idx_a;
             if (upper_addr_a !== old_addr_a) begin
                 old_addr_a = upper_addr_a;
                 page_valid_a = 0;
                 for (i = 0; ~page_valid_a && i < 1<<divsize; i = i+1) begin
                     if (upper_addr_a == physicalBase[i]) begin
                         page_idx_a = i;
-                        $display("[A] found page %d", page_idx_a);
                         page_valid_a = 1;
                     end else page_idx_a = 0;
                 end
             end
         end
+        always @(posedge clk) old_page_idx_b <= page_idx_b;
         always @(posedge clk, upper_addr_b) begin
             old_page_idx_b = page_idx_b;
             if (upper_addr_b !== old_addr_b) begin
@@ -125,7 +128,6 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                 for (i = 0; ~page_valid_b && i < 1<<divsize; i = i+1) begin
                     if (upper_addr_b == physicalBase[i]) begin
                         page_idx_b = i;
-                        $display("[B] found page %d", page_idx_b);
                         page_valid_b = 1;
                     end else page_idx_b = 0;
                 end
@@ -135,24 +137,6 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         // output
         assign q_a = page_valid_a ? internal_q_a[old_page_idx_a] : 0;
         assign q_b = page_valid_b ? internal_q_b[old_page_idx_b] : 0;
-
-        reg old_page_valid_a = 0;
-        reg old_page_valid_b = 0;
-        reg old_rden_a = 0;
-        reg old_rden_b = 0;
-        reg [hwwidthad-divsize-1:0] old_lower_addr_a = 0;
-        reg [hwwidthad-divsize-1:0] old_lower_addr_b = 0;
-        always @(posedge clk) begin
-            old_page_valid_a <= page_valid_a;
-            old_page_valid_b <= page_valid_b;
-            old_rden_a <= rden_a;
-            old_rden_b <= rden_b;
-            old_lower_addr_a <= lower_addr_a;
-            old_lower_addr_b <= lower_addr_b;
-            if (old_page_valid_a && old_rden_a) $display("[A] read %h from %h (%d)", q_a, old_lower_addr_a, old_page_idx_a);
-            if (old_page_valid_b && old_rden_b) $display("[B] read %h from %h (%d)", q_b, old_lower_addr_b, old_page_idx_b);
-            if (page_valid_b && wren_b) $display("[B] writing %h to %h (%d)", data_b, lower_addr_b, page_idx_b);
-        end
 
         wire update_a = ~page_valid_a && (wren_a || rden_a);
         wire update_b = ~page_valid_b && (wren_b || rden_b);
@@ -165,7 +149,6 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         wire do_update_b = update_b && ~update_a;
         always @(posedge clk) begin
             if (update_a || update_b) begin
-//                $display("overwriting page %d with %h", leastRecentlyUsed, (do_update_b ? upper_addr_b : upper_addr_a));
                 case (state)
                     // open /dev/mem
                     0: begin
@@ -176,20 +159,22 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                             PATH_2: begin
                                 fsFilename <= 0;
                                 state <= hasData[leastRecentlyUsed] ? 1 : 3;
+                                readIdx <= 0;
                             end
                         endcase
                     end
                     // dump the page
                     1,2: begin
-                        fsWren <= 1;
-                        fsAddress <= physicalBase[leastRecentlyUsed] + readIdx;
-                        fsData <= (do_update_b ? internal_q_b[leastRecentlyUsed] : internal_q_a[leastRecentlyUsed]);
+                        if (readIdx != 0) begin
+                            fsWren <= 1;
+                            fsAddress <= physicalBase[leastRecentlyUsed] + readIdx - 1;
+                            fsData <= (do_update_b ? internal_q_b[leastRecentlyUsed] : internal_q_a[leastRecentlyUsed]);
+                        end
 
                         // we have to actually do one more write, so just use another stage
                         if (&readIdx) begin
                             state <= 2;
                             readIdx <= 0;
-                            fsData <= 0;
                         end else if (state == 2) state <= 3; // writing to addr [-1]
                         else readIdx <= readIdx + 1;
                     end
@@ -242,7 +227,7 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                            fsAddress <= 0;
                         end else begin
                             physicalBase[leastRecentlyUsed] <= (do_update_b ? upper_addr_b : upper_addr_a);
-                            hasData[leastRecentlyUsed] <= 1;
+                            hasData[leastRecentlyUsed] <= 0;
                             elevated[leastRecentlyUsed] <= fsQ[3];
                             userRead[leastRecentlyUsed] <= fsQ[2];
                             userWrite[leastRecentlyUsed] <= fsQ[1];
@@ -258,8 +243,6 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                                 page_valid_a <= 1;
                                 page_idx_a <= leastRecentlyUsed;
                             end
-
-                            $display("done!");
                         end
                     end
                 endcase
