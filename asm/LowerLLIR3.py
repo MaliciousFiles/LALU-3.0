@@ -162,12 +162,24 @@ class BlockState:
         self.stack_top: int = 0
         self.variables: dict[str, Variable] = {}
         self.registers: list[Register] = [Register() for _ in range(NUM_REGS)]
+        self.predecl_addr: list[int, int] = [0, None]
+
+    def predeclare(self, num: int, width: int, alignment = ...) -> None:
+        if alignment is ...:
+            alignment = AlignOf(width)
+        var_addr = self.find_free_addr(width, alignment)
+        self.predecl_addr = [num, var_addr]
 
     # assumes that if you give an addr, there is data already stored there
     def declare_var(self, name: str, width: int, addr: int = None, alignment = ...):
         if alignment is ...:
             alignment = AlignOf(width)
-        var_addr = self.find_free_addr(width, alignment) if addr is None else addr
+        if self.predecl_addr[0] > 0:
+            self.predecl_addr[0] -= 1
+            var_addr = self.predecl_addr[1]
+            self.predecl_addr[1] += width
+        else:
+            var_addr = self.find_free_addr(width, alignment) if addr is None else addr
         self.variables[name] = Variable(name, width, var_addr, addr is not None)
         self.stack_top += 1
 
@@ -242,6 +254,10 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.add_comment(f"decl `{instr[1]}`: u{instr[2] if len(instr) > 2 else 32}")
 
             state.declare_var(instr[1], instr[2] if len(instr) > 2 else 32)
+        elif instr[0] == 'predecl': # ('decl', amt, totalwidth)
+            comp_state.add_comment(f"predecl {instr[2]}/{instr[1]}")
+
+            state.predeclare(instr[1], instr[2])
         elif instr[0] == 'undecl': # ('undecl', name)
             comp_state.add_comment(f"undecl `{instr[1]}`")
 
@@ -254,7 +270,12 @@ def CompileBlock(comp_state: CompilerState, block: Block):
 
             width = instr[3] if len(instr) > 3 and instr[3] else 32
             state.declare_var('_ARRAY_'+instr[1], None, instr[2]*width, AlignOf(width))
+            comp_state.add_comment(f"  decl `{'_ARRAY_'+instr[1]}`: u{instr[2]*width}")
             state.declare_var(instr[1], 32)
+            comp_state.add_comment(f"  decl `{instr[1]}`: u32")
+            comp_state.add_comment(f"  expr `{instr[1]}` = `_ARRAY_{instr[1]}.&`")
+            comp_state.add_assembly(('mov', [], state.use_var(instr[1], comp_state), state.use_var(f'_ARRAY_{instr[1]}.&', comp_state)))
+            #print(f'INTERNAL WARNING: `alloc` does not assign address')
             #TODO: Set variable to hold the pointer
         elif instr[0] == 'regrst': # ('regrst', var)
             for i in range(NUM_REGS):

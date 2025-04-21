@@ -239,7 +239,9 @@ def dispvars():
                 value = int(''.join([str(x) for x in memoryval[addr:][:width]])[::-1],2)
             else:
                 value = '?'
-        print(f'{var.ljust(20)} @ ({hex(addr)[2:].upper().zfill(6)} +: {width}) ({regstate}) :: {value}')
+##        addr = f'{hex(addr)[2:].upper().zfill(6)}'
+        addr = f'{hex(addr//32)[2:].upper().zfill(5)}.{hex(addr%32)[2:].upper().zfill(2)}'
+        print(f'{var.ljust(20)} @ ({addr} +: {width}) ({regstate}) :: {value}')
     varlocs = nvarlocs
 
 def dispcompvars():
@@ -285,7 +287,7 @@ def dispcompvars():
         else:
             regstate = 'mem'
             if all(memoryseen[addr:][:width]):
-                value = ''.join([str(x) for x in memoryval[addr:][:width]])[::-1]
+                value = ''.join([str(x) for x in memoryval[addr:][:width][::-1]])[::-1]
             else:
                 value = '?' * width
 ##        print(rootvar, offset, width, value, ''.join(compvars[rootvar][0][offset:offset+width]))
@@ -310,7 +312,11 @@ def dispcompvars():
                 val = int(var[1][::-1], 2)
             else:
                 val = var[1][::-1]
-            print(var[0].ljust(20), val)
+            if type(var[2].body) != Statics.Pointer or type(val) == str:
+                print(var[0].ljust(20), val)
+            else:
+                addr = f'0x{hex(val//32)[2:].upper().zfill(5)}.{hex(val%32)[2:].upper().zfill(2)}'
+                print(var[0].ljust(20), addr)
         elif type(var[2].body) == Statics.Struct:
             for arg, data in structs[var[2].name]['args'].items():
 ##                print(var[0], var[1])

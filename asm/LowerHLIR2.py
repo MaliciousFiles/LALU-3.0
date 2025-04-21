@@ -423,6 +423,10 @@ def ConvertMeta(block):
         elif line[0] == 'decl':
             var = line[1]
             nbody.append(('decl', var.name, var.kind.OpWidth()))
+        elif line[0] == 'predecl':
+            amt = line[1]
+            kind = line[2]
+            nbody.append(('predecl', amt, kind.OpWidth()))
         elif line[0] == 'alloc':
             #alloc name count size
             varname = line[1]
@@ -464,6 +468,7 @@ def Lower(hlir):
                             nblock.Addline(('alloc', var.name, var.kind.count, var.kind.ElementSize()))
                         else:
                             ws = WordSizeOf(var.kind)
+                            nblock.Addline(('predecl', ws, var.kind))
                             for i in range(ws):
                                 svar = SubReg(var, i)
                                 nblock.Addline(('decl', svar))
