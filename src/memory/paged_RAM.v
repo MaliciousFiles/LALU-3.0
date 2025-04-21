@@ -8,9 +8,12 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         output [width-1:0]      q_a,        q_b,
 
         output                  fsAccess,
-        output reg              fsRden=0, fsWren=0,
+        output reg              fsRden=0,
+        output reg              fsWren=0,
         input  [31:0]           fsQ,
-        output reg [31:0]       fsFilename=0, fsAddress=0, fsData=0);
+        output reg [31:0]       fsFilename=0,
+        output reg [31:0]       fsAddress=0,
+        output reg [31:0]       fsData=0);
         parameter PATH_1 = "/dev";
         parameter PATH_2 = "/mem";
         parameter PATH_3 = "meta";
