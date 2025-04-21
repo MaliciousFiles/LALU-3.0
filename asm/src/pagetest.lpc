@@ -1,0 +1,14 @@
+#define N 32
+
+fn Main() void {
+	for (var page: u32 = 1; page < N; page += 1) {
+	    var addr: u32* = page * 0x1000 << 5;
+	    addr.* = page;
+	}
+
+	for (var page: u32 = 1; page < N; page += 1) {
+        var addr: u32* = page * 0x1000 << 5;
+        if (addr.* != page) while (true) {}
+    }
+	@susp();
+}

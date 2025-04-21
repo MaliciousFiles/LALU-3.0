@@ -211,6 +211,11 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
     'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
 
+    'opf':   T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1000'),
+    'delf':  T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1001'),
+    'stf':   Q_CODE(Fmt_Code = '001', Func_ID = '1010'),
+    'ldf':   Q_CODE(Fmt_Code = '001', Func_ID = '1011'),
+
     'gcld':  D_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
     'susp':  N_CODE(Fmt_Code = '100', Func_ID = '1_1111_1111'),
 }
@@ -549,12 +554,12 @@ def UnpackHex(instr):
                 if tab[j][1].count('0') == 0:
                     tab[j][2] = '.e'
                 else:
-                    tab[j][2] = str(int(tab[j][1]))
+                    tab[j][2] = str(int(tab[j][1], 2))
             else:
-                tab[j][2] = 'r'+str(int(tab[j][1]))
+                tab[j][2] = 'r'+str(int(tab[j][1], 2))
         elif tab[j][0].startswith('R'):
             tab[j][2] = 'r'+str(int(tab[j][1]))
-    print(tab)
+    #print(tab)
 
     l = [max(len(x), max(len(y), len(z))) for x,y,z in tab]
     z=' '.join([z.center(l[i]) for i,(x,y,z) in enumerate(tab)])

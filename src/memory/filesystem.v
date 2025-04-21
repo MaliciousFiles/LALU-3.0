@@ -63,7 +63,6 @@ module filesystem(
             if (filename[i*8 +: 8] == 8'b0) begin
                 if (nameIdx != -1) begin
                     name[8+(nameIdx+1)*8 +: 8] = 8'b0;
-                    $display("opening %s", name >> ((1024-nameIdx-2)*8));
 
                     if (fp != 0) $fclose(fp);
                     fp = $fopen(name >> ((1024-nameIdx-2)*8), "rb+");
@@ -96,7 +95,6 @@ module filesystem(
             if (rden) begin
                 scratch = $fread(rawRead, fp);
                 if (rawRead === 'bx || $feof(fp)) rawRead = 0;
-                $display("read %h at %h", rawRead, address);
                 for (j = 0; j < 32; j = j+8) outData[j +: 8] = rawRead[31-j -: 8];
             end
             if (wren) $fwrite(fp, "%u", data);
