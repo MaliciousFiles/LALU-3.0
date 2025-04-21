@@ -199,7 +199,8 @@ class BlockState:
     # emits the instructions required to transform from `self` to `other`
     # since this is the end of the line for this BlockState, doesn't need to mutate
     def transform(self, other, mods: list[str]) -> list[tuple]:
-        instrs: list[tuple] = []
+        stores: list[tuple] = []
+        loads: list[tuple] = []
 
         for i in range(NUM_REGS):
             my_var = self.registers[i].contained
@@ -207,11 +208,11 @@ class BlockState:
 
             if my_var != other_var:
                 if my_var is not None:
-                    instrs.append(self.variables[my_var].store(i, mods))
+                    stores.append(self.variables[my_var].store(i, mods))
                 elif other_var is not None:
-                    instrs.append(self.variables[other_var].load(i, mods))
+                    loads.append(self.variables[other_var].load(i, mods))
 
-        return instrs
+        return stores + loads
 
     def dump_regs(self, mods: list[str]) -> list[tuple]:
         instrs = []

@@ -136,10 +136,10 @@ module LALU(input CLOCK_50,
 
 			.HPS_DDR3_ADDR(HPS_DDR3_ADDR), .HPS_DDR3_BA(HPS_DDR3_BA), .HPS_DDR3_CAS_N(HPS_DDR3_CAS_N), .HPS_DDR3_CKE(HPS_DDR3_CKE), .HPS_DDR3_CK_N(HPS_DDR3_CK_N), .HPS_DDR3_CK_P(HPS_DDR3_CK_P), .HPS_DDR3_CS_N(HPS_DDR3_CS_N), .HPS_DDR3_DM(HPS_DDR3_DM), .HPS_DDR3_DQ(HPS_DDR3_DQ), .HPS_DDR3_DQS_N(HPS_DDR3_DQS_N), .HPS_DDR3_DQS_P(HPS_DDR3_DQS_P), .HPS_DDR3_ODT(HPS_DDR3_ODT), .HPS_DDR3_RAS_N(HPS_DDR3_RAS_N), .HPS_DDR3_RESET_N(HPS_DDR3_RESET_N), .HPS_DDR3_RZQ(HPS_DDR3_RZQ), .HPS_DDR3_WE_N(HPS_DDR3_WE_N));
 	  
-    wire [15:0] fetchAddress;
+    wire [31:0] fetchAddress;
     wire [31:0] fetchOutput;
 
-    wire [15:0] memAccessAddress;
+    wire [31:0] memAccessAddress;
     wire memAccessWren;
     wire [31:0] memAccessInput;
     wire memAccessRden;
@@ -157,10 +157,10 @@ module LALU(input CLOCK_50,
         .q_a(fetchOutput),
 
         .address_b(memAccessAddress),
-        .wren_b(~operationMode && memAccessWren),
-        .data_b(memAccessData),
+        .wren_b(memAccessWren),
+        .data_b(memAccessInput),
         .rden_b(memAccessRden),
-        .q_b(userOut_memAccess),
+        .q_b(memAccessOutput),
 
         .fsAccess(pageStall),
         .fsRden(pageFsRden),
@@ -185,9 +185,9 @@ module LALU(input CLOCK_50,
 
 
     wire [11:0] stackReadAddr, stackWriteAddr;
-    wire [16:0] stackReadOut, stackWriteData;
+    wire [32:0] stackReadOut, stackWriteData;
     wire stackWren;
-    RAM #(12, 17) STACK(
+    RAM #(12, 33) STACK(
         .clk(clk),
 
         .address_a(stackReadAddr),
@@ -276,7 +276,7 @@ module LALU(input CLOCK_50,
     integer globalCounter = 0; // how many cycles the processor has been running for
     always @(posedge clk) if (~totalSuspend) globalCounter <= globalCounter + 1;
 
-    reg [15:0] IP = 0; // instruction pointer
+    reg [31:0] IP = 0; // instruction pointer
     reg operationMode = 1; // 0 = user mode, 1 = kernel mode
     reg run = 1; // setting to 0 entirely stops the processor
     assign suspended = ~run;
@@ -330,11 +330,11 @@ module LALU(input CLOCK_50,
     reg zeroFlag = 0;
 
     // FETCH
-    reg [15:0] IP_f = 0; // instruction pointer at fetch stage
+    reg [31:0] IP_f = 0; // instruction pointer at fetch stage
     reg isValid_f_reg = 0; // whether the fetched instruction is valid
 
     // DECODE
-    reg [15:0] IP_d = 0; // instruction pointer at decode stage
+    reg [31:0] IP_d = 0; // instruction pointer at decode stage
     reg isValid_d = 0; // whether the decoded instruction is valid
     reg [2:0] exImm = 0; // whether the next instruction is an extended immediate
     reg updateEIP = 0; // used for updating expected IP
@@ -355,10 +355,10 @@ module LALU(input CLOCK_50,
     reg isWriteback_d = 0; // whether the instruction writes back to a register
 
     // EXECUTE
-    reg [15:0] IP_e = 0; // instruction pointer at execute stage
+    reg [31:0] IP_e = 0; // instruction pointer at execute stage
     reg isValid_e_reg = 0; // whether the executed instruction is valid
     reg invalidFunction = 0; // if the FMT/FuncID pairing wasn't recognized
-    reg [15:0] expectedIP = 0; // expected instruction pointer; if incorrect, is synced with IP
+    reg [31:0] expectedIP = 0; // expected instruction pointer; if incorrect, is synced with IP
 
     reg [4:0] Rd_e = 0;
     reg sticky_e = 0;
@@ -370,18 +370,18 @@ module LALU(input CLOCK_50,
     reg carryFlag_e = 0;
     reg overflowFlag_e = 0;
 
-    reg [15:0] memAccessAddress_e = 0;
+    reg [31:0] memAccessAddress_e = 0;
     reg [4:0] memAccessNumBitsBefore_e = 0;
     reg [4:0] memAccessNumBits_e = 0;
     reg [4:0] memAccessNumBitsAfter_e = 0;
 
-    reg [16:0] returnAddress = 0;
+    reg [32:0] returnAddress = 0;
     reg isRet_e = 0;
 
     reg halt_e = 0;
 
     // MEMORY READ
-    reg [15:0] IP_m = 0; // instruction pointer at memory read stage
+    reg [31:0] IP_m = 0; // instruction pointer at memory read stage
     reg isValid_m = 0; // whether the memory read instruction is valid
 
     reg sticky_m = 0;
@@ -394,7 +394,7 @@ module LALU(input CLOCK_50,
     reg overflowFlag_m = 0;
     reg [31:0] result_m = 0;
 
-    reg [15:0] memAccessAddress_m = 0;
+    reg [31:0] memAccessAddress_m = 0;
     reg [4:0] memAccessNumBitsBefore_m = 0;
     reg [4:0] memAccessNumBits_m = 0;
     reg [4:0] memAccessNumBitsAfter_m = 0;
@@ -403,7 +403,7 @@ module LALU(input CLOCK_50,
 
     // WRITEBACK
     reg memAccessWren_w = 0;
-    reg [15:0] memAccessAddress_w = 0;
+    reg [31:0] memAccessAddress_w = 0;
     reg [31:0] memAccessInput_w = 0;
 
     /*********************
@@ -411,6 +411,7 @@ module LALU(input CLOCK_50,
      *********************/
     assign fetchAddress = isValid_f && curFormat == JMP && (~conditional_d || prediction) ? jumpTo : IP; // fetch address is the current instruction pointer
     wire [31:0] instruction = fetchOutput; // current fetched instruction (as used in decode)
+    reg [32:0] instruction_reg = 0; // in case of stall, we don't want to lose the contents of `instruction`
     wire isValid_f = isValid_f_reg && ~extendedImmediate; // whether the fetched instruction is valid
 
     always @(posedge clk) begin if (~totalSuspend) if (~stall_e) begin
@@ -421,14 +422,16 @@ module LALU(input CLOCK_50,
             : fetchAddress + 1;       // else, increment IP
 
         isValid_f_reg <= ~executiveOverride;
-    end end
+    end; if (totalSuspend != instruction_reg[32]) instruction_reg <= {totalSuspend, instruction}; end
 
     /*********************
      *       Decode      *
      *********************/
-    wire [15:0] jumpTo = instruction[25:5];
-    wire conditional_d = instruction[31];
-    wire [2:0] curFormat = instruction[2:0]; // current instruction format, to know how to decode
+    wire [31:0] activeInstruction = instruction_reg[32] ? instruction_reg : instruction;
+
+    wire [31:0] jumpTo = activeInstruction[25:5];
+    wire conditional_d = activeInstruction[31];
+    wire [2:0] curFormat = activeInstruction[2:0]; // current instruction format, to know how to decode
     wire extendedImmediate = exImm[0] || exImm[1] || exImm[2];
     always @(posedge clk) if (~totalSuspend) updateEIP <= ~executiveOverride && isValid_f_reg;
     always @(posedge clk) begin if (~totalSuspend) if (~stall_e) begin if (~executiveOverride && isValid_f) begin
@@ -438,24 +441,24 @@ module LALU(input CLOCK_50,
         // Universal
         format <= curFormat;
         conditional <= conditional_d;
-        negate <= instruction[30];
-        sticky_d <= instruction[29];
+        negate <= activeInstruction[30];
+        sticky_d <= activeInstruction[29];
 
         if (curFormat[1:0] == TRIP) begin // triple
-            Rd_d <= instruction[28:24];
+            Rd_d <= activeInstruction[28:24];
 
-            Rs0_d <= instruction[23:19];
-            Rs1_d <= instruction[18:14];
+            Rs0_d <= activeInstruction[23:19];
+            Rs1_d <= activeInstruction[18:14];
 
-            funcID <= instruction[13:5];
+            funcID <= activeInstruction[13:5];
 
-            i0 <= instruction[4];
-            i1 <= instruction[3];
+            i0 <= activeInstruction[4];
+            i1 <= activeInstruction[3];
 
             exImm <= {
                 1'b0,
-                instruction[3] && instruction[18:14] == 5'b11111,
-                instruction[4] && instruction[23:19] == 5'b11111};
+                activeInstruction[3] && activeInstruction[18:14] == 5'b11111,
+                activeInstruction[4] && activeInstruction[23:19] == 5'b11111};
 
             isWriteback_d <= ~curFormat[2];
 
@@ -465,20 +468,20 @@ module LALU(input CLOCK_50,
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
         end else if (curFormat[1:0] == QUAD) begin // quad
-            Rd_d <= instruction[28:24];
+            Rd_d <= activeInstruction[28:24];
 
-            Rs0_d <= instruction[23:19];
-            Rs1_d <= instruction[18:14];
-            Rs2_d <= instruction[13:9];
+            Rs0_d <= activeInstruction[23:19];
+            Rs1_d <= activeInstruction[18:14];
+            Rs2_d <= activeInstruction[13:9];
 
-            funcID <= {5'b0, instruction[8:5]};
+            funcID <= {5'b0, activeInstruction[8:5]};
 
-            i1 <= instruction[4];
-            i2 <= instruction[3];
+            i1 <= activeInstruction[4];
+            i2 <= activeInstruction[3];
 
             exImm <= {
-                instruction[3] && instruction[13:9] == 5'b11111,
-                instruction[4] && instruction[18:14] == 5'b11111,
+                activeInstruction[3] && activeInstruction[13:9] == 5'b11111,
+                activeInstruction[4] && activeInstruction[18:14] == 5'b11111,
                 1'b0};
 
             isWriteback_d <= ~curFormat[2];
@@ -488,10 +491,10 @@ module LALU(input CLOCK_50,
             jumpLoc <= 21'b0;
             jumpPageLoc <= 3'b0;
         end else if (curFormat == JMP) begin // jump
-            jumpPageLoc <= instruction[28:26];
+            jumpPageLoc <= activeInstruction[28:26];
             jumpLoc <= jumpTo;
 
-            funcID <= {7'b0, instruction[4:3]};
+            funcID <= {7'b0, activeInstruction[4:3]};
 
             // unused by jump
             Rd_d <= 5'b0;
@@ -795,10 +798,10 @@ module LALU(input CLOCK_50,
             end else if (format == NO_WB_TRIP) begin
                 case (funcID)
                     RET: begin
-                        expectedIP <= isRet_e ? stackReadOut : returnAddress[15:0];
+                        expectedIP <= isRet_e ? stackReadOut : returnAddress[31:0];
 
                         stackPointer <= stackPointer - 1;
-                        operationMode <= returnAddress[16];
+                        operationMode <= returnAddress[32];
                         isRet_e <= 1'b1;
                     end
                     RSTKEY: begin end
@@ -885,7 +888,7 @@ module LALU(input CLOCK_50,
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[{Rs1[i], Rs0[i]}];
                     end
                     LD: begin
-                        memAccessAddress_e <= sum[20:5];
+                        memAccessAddress_e <= sum[31:5];
                         memAccessNumBitsBefore_e <= sum[4:0];
                         memAccessNumBits_e <= Rs2;
                         memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
@@ -907,7 +910,7 @@ module LALU(input CLOCK_50,
             end else if (format == NO_WB_QUAD) begin
                 case (funcID)
                     ST: begin
-                        memAccessAddress_e <= sum[20:5];
+                        memAccessAddress_e <= sum[31:5];
                         memAccessNumBitsBefore_e <= sum[4:0];
                         memAccessNumBits_e <= Rs2;
                         memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];

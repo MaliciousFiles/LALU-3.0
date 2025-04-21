@@ -338,6 +338,11 @@ class Type:
                 return False
         else:
             assert okind != Void, f'{self=} {other=}'
+            assert skind == Int, f'{skind=}'
+
+            if okind == Pointer:
+                return not self.body.signed and self.body.width >= PTRWIDTH
+
             return self.body.signed == other.body.signed and other.body.width >= self.body.width
     def BitSameAs(self, other):
         return self.CanCoerceTo(other) and other.CanCoerceTo(self)

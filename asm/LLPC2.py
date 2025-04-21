@@ -13,7 +13,7 @@ import LLOptimizer
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 
-usesRd = ['[]=', '[:]=', '@stchr']
+usesRd = ['[]=', '[:]=', '@stchr', '@st', '@sta', '@stw']
 nullret = ['@susp', '@rstkey', '@stchr', '@nop']
 
 def MapRawName(name):
