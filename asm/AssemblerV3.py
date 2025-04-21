@@ -554,12 +554,12 @@ def UnpackHex(instr):
                 if tab[j][1].count('0') == 0:
                     tab[j][2] = '.e'
                 else:
-                    tab[j][2] = str(int(tab[j][1]))
+                    tab[j][2] = str(int(tab[j][1], 2))
             else:
-                tab[j][2] = 'r'+str(int(tab[j][1]))
+                tab[j][2] = 'r'+str(int(tab[j][1], 2))
         elif tab[j][0].startswith('R'):
             tab[j][2] = 'r'+str(int(tab[j][1]))
-    print(tab)
+    #print(tab)
 
     l = [max(len(x), max(len(y), len(z))) for x,y,z in tab]
     z=' '.join([z.center(l[i]) for i,(x,y,z) in enumerate(tab)])
