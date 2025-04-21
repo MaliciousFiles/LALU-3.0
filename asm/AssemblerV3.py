@@ -211,6 +211,11 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
     'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
 
+    'opf':   T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1000'),
+    'delf':  T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1001'),
+    'stf':   Q_CODE(Fmt_Code = '001', Func_ID = '1010'),
+    'ldf':   Q_CODE(Fmt_Code = '001', Func_ID = '1011'),
+
     'gcld':  D_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
     'susp':  N_CODE(Fmt_Code = '100', Func_ID = '1_1111_1111'),
 }

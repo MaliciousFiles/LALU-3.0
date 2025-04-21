@@ -1,4 +1,4 @@
-module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width=32, parameter divsize=4) (
+module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width=32, parameter divsize=6) (
         input                   clk,
 
         input [widthad-1:0]     address_a,  address_b,
