@@ -90,7 +90,7 @@ module LALU(input CLOCK_50,
     parameter NNF	            = 9'b0_1001_0100;
     parameter NZF	            = 9'b0_1001_0101;
     parameter NCF	            = 9'b0_1001_0110;
-    parameter NOF	            = 9'b0_1001_0111
+    parameter NOF	            = 9'b0_1001_0111;
 
     parameter OPF               = 9'b0_1001_1000;
     parameter DELF   			= 9'b0_1001_1001;
