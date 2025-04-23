@@ -8,7 +8,7 @@ fn Main() void {
     var rs: RenderState;
     rs.&:Init();
 
-    rs.file = "Hello World!";
+    rs.lineHeads[0] = "Hello World!";
 
     rs.&:Draw();
     var ptr = rs.&;

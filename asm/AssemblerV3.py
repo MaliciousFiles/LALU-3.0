@@ -213,7 +213,7 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
 
     'opf':   T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1000'),
     'delf':  T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1001'),
-    'stf':   Q_CODE(Fmt_Code = '001', Func_ID = '1010'),
+    'stf':   Q_CODE(Fmt_Code = '101', Func_ID = '1010'),
     'ldf':   Q_CODE(Fmt_Code = '001', Func_ID = '1011'),
 
     'gcld':  D_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
@@ -322,7 +322,10 @@ def ResolveInstr(form, lbls):
             if arg[0] == 'reg':
                 out += Binary(arg[1], 5)
             elif arg[0] == 'lit':
-                out += Binary(arg[1], 5)
+                if field == 'Addr':
+                    out += Binary(arg[1], 24)
+                else:
+                    out += Binary(arg[1], 5)
             elif arg[0] == 'exlit':
                 out += '11111'
                 ex = arg[1]
@@ -431,10 +434,10 @@ def ParseFile(file):
     segment = '.CODE'
     lines = file.split('\n')
     lbls = {}
-    addr = 0
     codes = []
     mem = {}
-    addr = 0
+    addr = 32
+    startaddr = 32
     breaks = []
     for line in lines:
         oline = line
@@ -480,6 +483,7 @@ def ParseFile(file):
                     mem[addr] = hex(int(bits[:32], 2))[2:].upper().zfill(8)
                     bits = bits[min(len(bits), 32):]
                     addr += 32
+                    startaddr += 32
 ##                addr += -(-nb//32)
                         
             else:
@@ -487,7 +491,11 @@ def ParseFile(file):
         except Exception as e:
             print(f'Error on line: \n`{oline}` -> `{mline}`\n\n')
             raise e
-##    print(codes, lbls)
+
+    codes.insert(0, PrepInstr('jmp', [('lit', startaddr//32)], []))
+    codes[0]['loc'] = 0
+    codes[0]['line'] = 'jmp #0x'+hex(startaddr//32)[2:].zfill(4).upper()
+
     out = []
     lblsinv = {v:k for k,v in lbls.items()}
 

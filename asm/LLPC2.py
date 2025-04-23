@@ -1387,7 +1387,7 @@ def Compile(filepath, verbose = False, optimize = True):
 
         if not os.path.exists("../.sim/Icarus Verilog-sim/dev"): os.mkdir("../.sim/Icarus Verilog-sim/dev")
         with open("../.sim/Icarus Verilog-sim/dev/mem", "wb") as f:
-            for hx in program.values():
+            for _,hx in sorted(program.items(), key=lambda x:x[0]):
                 f.write(bytearray.fromhex(hx)[::-1])
     else:
         pyperclip.copy(mif)

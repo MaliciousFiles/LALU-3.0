@@ -400,7 +400,7 @@ def Lower(llir):
         CompileBlock(comp_state, comp_state.blocks[block])
 
     # expects data to be {label: (value, words)}
-    addr = 2 + sum(ceil((len(v.value)+1)/4) for v in llir.data.values()) # one for setting up the stack pointer, and one to point to the address immediately after
+    addr = 3 + sum(ceil((len(v.value)+1)/4) for v in llir.data.values()) # one for the initial jump that's always there, one for setting up the stack pointer, and one to point to the address immediately after
     asm_out = ""
     state_dump_out = ""
     for func in comp_state.functions.values():

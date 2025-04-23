@@ -125,17 +125,18 @@ module LALU(input CLOCK_50,
     /*********************
      *      Memory       *
      *********************/
-     wire [31:0] fsQ;
-	 filesystem fs(
-			.CLOCK_50(CLOCK_50),
+    wire openFile, delFile;
+    wire [31:0] fsQ;
+	filesystem fs(
+	        .CLOCK_50(CLOCK_50),
 
-			.del(1'b0),
-			.rden(pageFsRden),
-			.wren(pageFsWren),
+	        .del(delFile),
+			.rden(pageStall ? pageFsRden : isFileMem_e && memAccessRden),
+			.wren(pageStall ? pageFsWren : ((isMemWrite_m && isFileMem_m) || isFileMem_e) && memAccessWren),
 
 			.filename(pageFsFilename),
-			.address(pageFsAddress),
-			.data(pageFsData),
+			.address(pageStall ? pageFsAddress : memAccessAddress),
+			.data(pageStall ? pageFsData : memAccessInput),
 
 			.q(fsQ),
 
@@ -379,6 +380,7 @@ module LALU(input CLOCK_50,
     reg [4:0] memAccessNumBitsBefore_e = 0;
     reg [4:0] memAccessNumBits_e = 0;
     reg [4:0] memAccessNumBitsAfter_e = 0;
+    reg isFileMem_e = 0;
 
     reg [32:0] returnAddress = 0;
     reg isRet_e = 0;
@@ -393,6 +395,7 @@ module LALU(input CLOCK_50,
     reg isWriteback_m = 0;
     reg isMemRead_m = 0;
     reg isMemWrite_m = 0;
+    reg isFileMem_m = 0;
 
     reg [4:0] Rd_m = 0;
     reg carryFlag_m = 0;
@@ -408,6 +411,7 @@ module LALU(input CLOCK_50,
 
     // WRITEBACK
     reg memAccessWren_w = 0;
+    reg isFileMem_w = 0;
     reg [31:0] memAccessAddress_w = 0;
     reg [31:0] memAccessInput_w = 0;
 
@@ -581,6 +585,9 @@ module LALU(input CLOCK_50,
     assign charWrX = Rs0[5:0];
     assign charWrY = Rs0[10:6];
 
+    assign openFile = isExecuting && format == NO_WB_TRIP && funcID == OPF;
+    assign delFile = isExecuting && format == NO_WB_TRIP && funcID == DELF;
+
     wire isExecuting = ~totalSuspend && ~stall_e && ~executiveOverride && executeInstr;
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
     always @(posedge clk) begin if (~totalSuspend) if (~stall_m) begin if (~stall_e && ~executiveOverride) begin
@@ -599,6 +606,7 @@ module LALU(input CLOCK_50,
             invalidFunction <= 1'b0;
             isMemRead_e <= 1'b0;
             isMemWrite_e <= 1'b0;
+            isFileMem_e <= 1'b0;
             carryFlag_e <= 1'b0;
             overflowFlag_e <= 1'b0;
             isRet_e <= 1'b0;
@@ -867,6 +875,8 @@ module LALU(input CLOCK_50,
                     SUSP: begin
                         halt_e <= 1'b1;
                     end
+                    OPF: begin end // all handled with wires
+                    DELF: begin end // all handled with wires
                     default begin
                         invalidFunction <= 1'b1;
                     end
@@ -892,6 +902,14 @@ module LALU(input CLOCK_50,
                     BIT: begin
                         for (i = 0; i < 32; i = i+1) result_e[i] <= Rs2[{Rs1[i], Rs0[i]}];
                     end
+                    LDF: begin
+                        memAccessAddress_e <= sum[31:5];
+                        memAccessNumBitsBefore_e <= sum[4:0];
+                        memAccessNumBits_e <= Rs2;
+                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
+                        isMemRead_e <= 1'b1;
+                        isFileMem_e <= 1'b1;
+                    end
                     LD: begin
                         memAccessAddress_e <= sum[31:5];
                         memAccessNumBitsBefore_e <= sum[4:0];
@@ -899,6 +917,9 @@ module LALU(input CLOCK_50,
                         memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
                         isMemRead_e <= 1'b1;
                     end
+//                    LDF: begin
+//
+//                    end
                     BSF: begin
                         result_e <= Rs2 == 0 ? Rs0 : (32'hFFFFFFFF & (64'b0 | Rs0) >> Rs1 << 32 >> Rs2) << Rs2 >> 32;
                     end
@@ -920,6 +941,14 @@ module LALU(input CLOCK_50,
                         memAccessNumBits_e <= Rs2;
                         memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
                         isMemWrite_e <= 1'b1;
+                    end
+                    STF: begin
+                        memAccessAddress_e <= sum[31:5];
+                        memAccessNumBitsBefore_e <= sum[4:0];
+                        memAccessNumBits_e <= Rs2;
+                        memAccessNumBitsAfter_e <= Rs2 == 0 ? 0 : 32-Rs2-sum[4:0];
+                        isMemWrite_e <= 1'b1;
+                        isFileMem_e <= 1'b1;
                     end
                     STCHR: begin end
                     default begin
@@ -969,6 +998,7 @@ module LALU(input CLOCK_50,
         isWriteback_m <= isWriteback_e;
         isMemRead_m <= isMemRead_e;
         isMemWrite_m <= isMemWrite_e && ~fullByteWrite;
+        isFileMem_m <= isFileMem_e;
         Rd_m <= Rd_e;
         carryFlag_m <= carryFlag_e;
         overflowFlag_m <= overflowFlag_e;
@@ -985,7 +1015,7 @@ module LALU(input CLOCK_50,
     /*********************
      *     Writeback     *
      *********************/
-    wire [31:0] memOutput = memAccessWren_w && memAccessAddress_m == memAccessAddress_w ? memAccessInput_w : memAccessOutput;
+    wire [31:0] memOutput = memAccessWren_w && memAccessAddress_m == memAccessAddress_w && isFileMem_m == isFileMem_w ? memAccessInput_w : (isFileMem_m ? fsQ : memAccessOutput);
     wire [31:0] finalResult_w = isMemRead_m
         ? ((FULL & memOutput << memAccessNumBitsAfter_m) >> memAccessNumBitsAfter_m) >> memAccessNumBitsBefore_m
         : result_m;
@@ -1011,5 +1041,6 @@ module LALU(input CLOCK_50,
         memAccessWren_w <= memAccessWren;
         memAccessAddress_w <= memAccessAddress;
         memAccessInput_w <= memAccessInput;
+        isFileMem_w <= isFileMem_m
     end end
 endmodule
