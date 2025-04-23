@@ -14,27 +14,34 @@
 #define BASE 0xFF200000
 #define SPAN 0x00005000
 
-#define NAME_STREAM 0x00000000
-#define CLOCK 0x00000010
-#define READ_ENABLE 0x00000020
-#define ADDRESS 0x00000040
-#define READ_DATA 0x00000030
-#define WRITE_DATA 0x00000050
-#define WRITE_ENABLE 0x00000060
-#define DELETE_FILE 0x00000070
 
-void mkdir_parents(const char *path) {
-    char parent_path[strlen(path) + 1];
-    strcpy(parent_path, path);
 
-    char *last_slash = strrchr(parent_path, '/');
-    if (last_slash == NULL) return; // it's the root directory
-    *last_slash = '\0';
+#define SYSCALL_NOOP 0
+#define SYSCALL_OPEN 1
+#define SYSCALL_CLOSE 2
+#define SYSCALL_RMFILE 3
+#define SYSCALL_RENAME 4
+#define SYSCALL_READ 5
+#define SYSCALL_WRITE 6
+#define SYSCALL_MKDIR 7
+#define SYSCALL_RMDIR 8
 
-    if (strlen(parent_path) == 0) return; // it's the root directory
+char* getString(int swapFd, uint32_t addr) {
+    int i = 0;
+    lseek(swapFd, addr >> 3, SEEK_SET);
+    while (1) {
+        char c;
+        read(swapFd, &c, 1);
+        if (c == '\0') break;
+        i++;
+    }
 
-    mkdir_parents(parent_path);
-    mkdir(path, 0777);
+    char* str = malloc(i + 1);
+    lseek(swapFd, addr >> 3, SEEK_SET);
+    read(swapFd, str, i);
+    str[i] = '\0';
+
+    return str;
 }
 
 int main() {
@@ -43,72 +50,109 @@ int main() {
 
     bool* clock = bridge + CLOCK;
 
-    uint16_t* address = bridge + ADDRESS;
+    bool* swapMeta = bridge + SWAP_META;
+    uint32_t* swapAddress = bridge + SWAP_ADDRESS;
 
-    bool* readEnable = bridge + READ_ENABLE;
-    uint32_t* readData = bridge + READ_DATA;
+    bool* swapRden = bridge + SWAP_RDEN;
+    uint32_t* swapReadData = bridge + SWAP_READ_DATA;
 
-    bool* writeEnable = bridge + WRITE_ENABLE;
-    uint32_t* writeData = bridge + WRITE_DATA;
+    bool* swapWren = bridge + SWAP_WREN;
+    uint32_t* swapWriteData = bridge + SWAP_WRITE_DATA;
 
-    char* nameStream = bridge + NAME_STREAM;
-    bool* deleteFile = bridge + DELETE_FILE;
+    uint4_t* syscallId = bridge + SYSCALL_ID;
+
+    uint32_t* pathPtr = bridge + PATH_PTR_1;
+    char** pathPtr2 = bridge + PATH_PTR_2;
+
+    uint32_t* fileDescriptor = bridge + FILE_DESCRIPTOR;
+    uint32_t* fileAddress = bridge + FILE_ADDRESS;
+
+    uint8_t* fileReadBits = bridge + FILE_READ_BITS; // 5 bits
+    uint32_t* fileWriteData = bridge + FILE_WRITE_DATA;
+
+    uint32_t* dataOut = bridge + DATA_OUT;
 
 	chroot("/home/root/LALU_fs");
 	chdir("/");
 
+	int swapFd = open("/dev/mem", (O_RDWR | O_SYNC | O_TRUNC | O_CREAT));
+	int swapMetaFd = open("/dev/memmeta", (O_RDWR | O_SYNC | O_TRUNC | O_CREAT));
+
     bool oldClock = false;
 
-    char name[1024];
-    int nameIdx = -1;
-    FILE* fp = NULL;
 
     while (1) {
         // on clock rising edge
         if (!oldClock && *clock) {
-            // check on the name stream
-            for (int i = 0; i < 4; i++) {
-                char c = *(nameStream + i);
+            // implement system calls
+            switch(*syscallId) {
+                case SYSCALL_OPEN:
+                    char* path = getString(swapFd, *pathPtr);
+                    *dataOut = open(path, (O_RDWR | O_SYNC), 0777);
 
-                // end of the stream
-                if (c == 0) {
-                    if (nameIdx > -1) {
-                        name[++nameIdx] = 0;
-
-                        if (fp != NULL) fclose(fp);
-                        fp = fopen(name, "rb+");
-
-                        if (fp == NULL) { // the file doesn't exist, create it
-                            mkdir_parents(name);
-                            fp = fopen(name, "wb+");
-                        }
-                    }
-
-                    nameIdx = -1;
+                    free(path);
                     break;
-                }
+                case SYSCALL_CLOSE:
+                    close(*fileDescriptor);
+                    break;
+                case SYSCALL_RMFILE:
+                    char* path = getString(swapFd, *pathPtr);
+                    remove(path);
 
-                name[++nameIdx] = c;
+                    free(path);
+                    break;
+                case SYSCALL_RENAME:
+                    char* path = getString(swapFd, *pathPtr);
+                    char* path2 = getString(swapFd, *pathPtr2);
+                    rename(path, path2);
+
+                    free(path);
+                    free(path2);
+                    break;
+                case SYSCALL_READ:
+                    lseek(*fileDescriptor, (*fileAddress >> 5) * 4, SEEK_SET);
+                    read(*fileDescriptor, dataOut, 4); // read a 32-bit word
+                    *dataOut = (*dataOut >> (*fileAddress % 32)) & (1<<(*fileReadBits)-1);
+                    break;
+                case SYSCALL_WRITE:
+                    lseek(*fileDescriptor, (*fileAddress >> 5) * 4, SEEK_SET);
+
+                    uint32_t readData;
+                    read(*fileDescriptor, &readData, 4);
+
+                    *fileWriteData = (*fileWriteData << (*fileAddress % 32)) | (readData & ~((1<<(*fileReadBits)-1) << (*fileAddress % 32)));
+                    write(*fileDescriptor, fileWriteData, 4); // write a 32-bit word
+                    break;
+                case SYSCALL_MKDIR:
+                    char* path = getString(swapFd, *pathPtr);
+                    mkdir(*pathPtr, 0777);
+
+                    free(path);
+                    break;
+                case SYSCALL_RMDIR:
+                    char* path = getString(swapFd, *pathPtr);
+                    rmdir(*pathPtr);
+
+                    free(path);
+                    break;
+                case SYSCALL_NOOP:
+                default: break;
             }
 
-            if (*deleteFile) {
-                if (fp != NULL) {
-                    fclose(fp);
-                    remove(name);
-                }
-            	fp = NULL;
-            	*readData = 0;
+            // implement swap reading
+            if (*swapRden) {
+                int fd = *swapMeta ? swapMetaFd : swapFd;
+
+                lseek(fd, *swapAddress >> 3, SEEK_SET);
+                read(fd, swapReadData, 4);
             }
 
-            if (fp != NULL) {
-                fseek(fp, *address * 4, SEEK_SET);
-                if (*readEnable) {
-                    fread(readData, 4, 1, fp);
-                    if (feof(fp)) *readData = 0;
-                }
-                if (*writeEnable) {
-                	fwrite(writeData, 4, 1, fp);
-                }
+            // implement swap writing
+            if (*swapWren) {
+                int fd = *swapMeta ? swapMetaFd : swapFd;
+
+                lseek(fd, *swapAddress >> 3, SEEK_SET);
+                write(fd, swapWriteData, 4);
             }
         }
 
@@ -117,6 +161,7 @@ int main() {
 
     munmap(bridge, SPAN);
     close(fdm);
-    if (fp != NULL) fclose(fp);
+    close(swapFd);
+    close(swapMetaFd);
     return 0;
 }

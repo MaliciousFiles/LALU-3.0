@@ -1,13 +1,21 @@
 module filesystem(
 	input CLOCK_50,
 	
-	input del,
-	input rden,
-	input wren,
-	input [31:0] filename,
-	input [31:0] address,
-	input [31:0] data,
-	output [31:0] q,
+	input swapMeta,
+	input [31:0] swapAddress,
+	input swapRden,
+	output [31:0] swapQ,
+	input swapWren,
+	input [31:0] swapData,
+
+	input [31:0] pathPtr1,
+	input [31:0] pathPtr2,
+	input [31:0] fileDescriptor,
+	input [31:0] fileAddress,
+	input [4:0] fileReadBits,
+	input [31:0] writeData,
+
+	output [31:0] dataOut,
 	
 	output [12:0] HPS_DDR3_ADDR, output [2:0] HPS_DDR3_BA, output HPS_DDR3_CAS_N, output HPS_DDR3_CKE, output HPS_DDR3_CK_N, output HPS_DDR3_CK_P, output HPS_DDR3_CS_N, output HPS_DDR3_DM, inout [7:0] HPS_DDR3_DQ, inout HPS_DDR3_DQS_N, inout HPS_DDR3_DQS_P, output HPS_DDR3_ODT, output HPS_DDR3_RAS_N, output HPS_DDR3_RESET_N, input HPS_DDR3_RZQ, output HPS_DDR3_WE_N);
 
@@ -18,14 +26,22 @@ module filesystem(
 	hps_connection inst (
 		.clk_clk(CLOCK_100),
 
-		.read_enable_export(rden),
-		.write_enable_export(wren),
-		.address_export(address),
-		.write_data_export(data),
-		.read_data_export(q),
-		.clock_export(CLOCK_50),
-		.name_stream_export(filename),
-		.delete_file_export(del),
+        .clock_export(CLOCK_50),
+
+		.swap_meta_export(swapMeta),
+		.swap_address_export(swapAddress),
+		.swap_rden_export(swapRden),
+		.swap_read_data_export(swapQ),
+		.swap_wren_export(swapWren),
+		.swap_write_data_export(swapData),
+
+		.path_ptr1_export(pathPtr1),
+		.path_ptr2_export(pathPtr2),
+		.file_descriptor_export(fileDescriptor),
+		.file_address_export(fileAddress),
+		.file_read_bits_export(fileReadBits),
+		.write_data_export(writeData),
+		.data_out_export(dataOut),
 
 		.memory_mem_a(HPS_DDR3_ADDR),
 		.memory_mem_ba(HPS_DDR3_BA),
