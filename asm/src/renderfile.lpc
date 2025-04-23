@@ -53,7 +53,7 @@ fn RenderState__Draw(self: *RenderState) void {
   self.*.tick += 1;
 }
 
-fn RenderState__WriteChar(self: *RenderState, char: u7, row: u32, col: u32) void {
+fn RenderState__WriteChar(self: *RenderState, char: u8, row: u32, col: u32) void {
   var fore = self.*.foreColor;
   var back = self.*.backColor;
   if (row == self.*.curPos.y 
@@ -70,14 +70,14 @@ fn RenderState__RecalcHeaders(self: *RenderState) void {
   var fileIdx: u32 = 0;
   for range(ptrIdx, 0, 24) {
     var char = self.*.file[fileIdx];
-    
+
     fileIdx += 1;
   }
 }
 
-fn WriteCharFlaggedColored(char: u7, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
+fn WriteCharFlaggedColored(char: u8, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
   var pos = row << 5 + col;
-  var rd = flags << 7 + char;
+  var rd = flags << 8 + char;
 
   @stchr(rd, pos, <u32>foreColor, <u32>backColor);
 }
