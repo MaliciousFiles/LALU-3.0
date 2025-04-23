@@ -1,559 +1,360 @@
 fn Main () 0 {
   _Main__:
-    ['alloc', 'memory', 32768, 64, 'eid 0']
-    ['expr', 'argst', 0, ['memory'], 'eid 1']
-    ['expr', 'maywrite', 'rs_0', [], 'eid 90']
-    ['expr', 'call', 'u_Block____MemInit', [], 'eid 2']
-    ['decl', 'rs_0', 32, 'eid 3']
-    ['expr', 'addr', 'rs_0.&', ['rs_0'], 'eid 4']
-    ['decl', 'rs_1', 32, 'eid 5']
-    ['decl', 'rs_2', 32, 'eid 7']
-    ['decl', 'rs_3', 32, 'eid 9']
-    ['decl', 'rs_4', 32, 'eid 11']
-    ['decl', 'rs_5', 32, 'eid 13']
-    ['decl', 'rs_6', 32, 'eid 15']
-    ['decl', 'rs_7', 32, 'eid 17']
-    ['decl', 'rs_8', 32, 'eid 19']
-    ['expr', 'argst', 0, ['rs_0.&'], 'eid 21']
-    ['expr', 'call', 'u_RenderState____Init', [], 'eid 22']
-    ['expr', 'argst', 0, ['rs_0.&'], 'eid 24']
-    ['expr', 'maywrite', 'rs_8', [], 'eid 122']
-    ['expr', 'maywrite', 'rs_7', [], 'eid 123']
-    ['expr', 'maywrite', 'rs_6', [], 'eid 124']
-    ['expr', 'maywrite', 'rs_5', [], 'eid 125']
-    ['expr', 'maywrite', 'rs_4', [], 'eid 126']
-    ['expr', 'maywrite', 'rs_3', [], 'eid 127']
-    ['expr', 'maywrite', 'rs_2', [], 'eid 128']
-    ['expr', 'maywrite', 'rs_1', [], 'eid 129']
-    ['expr', 'maywrite', 'rs_0', [], 'eid 130']
-    ['expr', 'call', 'u_RenderState____Draw', [], 'eid 25']
-    ['decl', 'ptr', 32, 'eid 26']
-    ['decl', 't203_0', 32, 'eid 29']
-    ['decl', 't203_1', 32, 'eid 31']
-    ['decl', 't203_2', 32, 'eid 33']
-    ['decl', 't203_3', 32, 'eid 35']
-    ['decl', 't203_4', 32, 'eid 37']
-    ['decl', 't203_5', 32, 'eid 39']
-    ['decl', 't203_6', 32, 'eid 41']
-    ['decl', 't203_7', 32, 'eid 43']
-    ['decl', 't203_8', 32, 'eid 45']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_8'], 'eid 142']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_7'], 'eid 143']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_6'], 'eid 144']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_5'], 'eid 145']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_4'], 'eid 146']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_3'], 'eid 147']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_2'], 'eid 148']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_1'], 'eid 149']
-    ['expr', 'mayread', None, ['rs_0.&', 'rs_0'], 'eid 150']
-    ['expr', 'maywrite', 't203_0', [], 'eid 320']
-    ['expr', 'st', 'ptr', ['t203_0', 'rs_0.&', 0, 0], 'eid 56']
-    ['expr', 'maywrite', 't203_1', [], 'eid 339']
-    ['expr', 'maywrite', 'ptr', [], 'eid 341']
-    ['expr', 'st', 'ptr', ['t203_1', 'ptr', 32, 0], 'eid 57']
-    ['expr', 'maywrite', 't203_2', [], 'eid 358']
-    ['expr', 'maywrite', 'ptr', [], 'eid 361']
-    ['expr', 'st', 'ptr', ['t203_2', 'ptr', 64, 0], 'eid 58']
-    ['expr', 'maywrite', 't203_3', [], 'eid 377']
-    ['expr', 'maywrite', 'ptr', [], 'eid 381']
-    ['expr', 'st', 'ptr', ['t203_3', 'ptr', 96, 0], 'eid 59']
-    ['expr', 'maywrite', 't203_4', [], 'eid 396']
-    ['expr', 'maywrite', 'ptr', [], 'eid 401']
-    ['expr', 'st', 'ptr', ['t203_4', 'ptr', 128, 0], 'eid 60']
-    ['expr', 'maywrite', 't203_5', [], 'eid 415']
-    ['expr', 'maywrite', 'ptr', [], 'eid 421']
-    ['expr', 'st', 'ptr', ['t203_5', 'ptr', 160, 0], 'eid 61']
-    ['expr', 'maywrite', 't203_6', [], 'eid 434']
-    ['expr', 'maywrite', 'ptr', [], 'eid 441']
-    ['expr', 'st', 'ptr', ['t203_6', 'ptr', 192, 0], 'eid 62']
-    ['expr', 'maywrite', 't203_7', [], 'eid 453']
-    ['expr', 'maywrite', 'ptr', [], 'eid 461']
-    ['expr', 'st', 'ptr', ['t203_7', 'ptr', 224, 0], 'eid 63']
-    ['expr', 'maywrite', 't203_8', [], 'eid 472']
-    ['expr', 'maywrite', 'ptr', [], 'eid 481']
-    ['expr', 'st', 'ptr', ['t203_8', 'ptr', 256, 0], 'eid 64']
-    ['expr', 'argst', 0, [65], 'eid 65']
-    ['expr', 'argst', 1, [0], 'eid 66']
-    ['expr', 'argst', 2, [0], 'eid 67']
-    ['expr', 'argst', 3, [0], 'eid 68']
-    ['expr', 'argst', 4, [16777215], 'eid 69']
-    ['expr', 'argst', 5, [0], 'eid 70']
-    ['expr', 'call', 'WriteCharFlaggedColored', [], 'eid 71']
+    ('alloc', 'memory', 32768, 64)
+    ('expr', ('argst', 0, 'memory'))
+    ('expr', ('call', 'u_Block____MemInit'))
+    ('predecl', 9, 288)
+    ('decl', 'rs_0', 32)
+    ('expr', ('addr', 'rs_0.&', 'rs_0'))
+    ('expr', ('argst', 0, 'rs_0.&'))
+    ('expr', ('call', 'u_RenderState____Init'))
+    ('expr', ('argst', 0, 'rs_0.&'))
+    ('expr', ('call', 'u_RenderState____Draw'))
+    ('decl', 'ptr', 32)
+    ('predecl', 9, 288)
+    ('decl', 't203_0', 32)
+    ('decl', 't203_1', 32)
+    ('decl', 't203_2', 32)
+    ('decl', 't203_3', 32)
+    ('decl', 't203_4', 32)
+    ('decl', 't203_5', 32)
+    ('decl', 't203_6', 32)
+    ('decl', 't203_7', 32)
+    ('decl', 't203_8', 32)
+    ('expr', ('ld', 't203_0', 'rs_0.&', 0, 0))
+    ('expr', ('ld', 't203_1', 'rs_0.&', 32, 0))
+    ('expr', ('ld', 't203_2', 'rs_0.&', 64, 0))
+    ('expr', ('ld', 't203_3', 'rs_0.&', 96, 0))
+    ('expr', ('ld', 't203_4', 'rs_0.&', 128, 0))
+    ('expr', ('ld', 't203_5', 'rs_0.&', 160, 0))
+    ('expr', ('ld', 't203_6', 'rs_0.&', 192, 0))
+    ('expr', ('ld', 't203_7', 'rs_0.&', 224, 0))
+    ('expr', ('ld', 't203_8', 'rs_0.&', 256, 0))
+    ('expr', ('st', 't203_0', 'rs_0.&', 0, 0))
+    ('expr', ('st', 't203_1', 'ptr', 32, 0))
+    ('expr', ('st', 't203_2', 'ptr', 64, 0))
+    ('expr', ('st', 't203_3', 'ptr', 96, 0))
+    ('expr', ('st', 't203_4', 'ptr', 128, 0))
+    ('expr', ('st', 't203_5', 'ptr', 160, 0))
+    ('expr', ('st', 't203_6', 'ptr', 192, 0))
+    ('expr', ('st', 't203_7', 'ptr', 224, 0))
+    ('expr', ('st', 't203_8', 'ptr', 256, 0))
+    ('expr', ('argst', 0, 65))
+    ('expr', ('argst', 1, 0))
+    ('expr', ('argst', 2, 0))
+    ('expr', ('argst', 3, 0))
+    ('expr', ('argst', 4, 16777215))
+    ('expr', ('argst', 5, 0))
+    ('expr', ('call', 'WriteCharFlaggedColored'))
   L0:
 }
 fn u_Block____MemInit (memory) 0 {
   _u_Block____MemInit__:
-    ['decl', 'nblock_0', 32, 'eid 513']
-    ['decl', 'nblock_1', 32, 'eid 515']
-    ['decl', 't_hl0', 32, 'eid 523']
-    ['expr', 'maywrite', 'nblock_0', [], 'eid 533']
-    ['expr', 'maywrite', 'memory', [], 'eid 534']
-    ['expr', 'st', 'memory', ['nblock_0', 'memory', 0, 0], 'eid 526']
-    ['expr', 'maywrite', 't_hl0', [], 'eid 535']
-    ['expr', 'maywrite', 'nblock_1', [], 'eid 537']
-    ['expr', 'maywrite', 'memory', [], 'eid 539']
-    ['expr', 'st', 'memory', ['nblock_1', 'memory', 't_hl0', 0], 'eid 528']
+    ('expr', ('argld', 'memory', 0))
+    ('predecl', 2, 64)
+    ('decl', 'nblock_0', 32)
+    ('decl', 'nblock_1', 32)
+    ('expr', ('bst', 'nblock_0', 0, 0, 0))
+    ('expr', ('bst', 'nblock_1', 32768, 0, 31))
+    ('expr', ('bst', 'nblock_1', 1, 31, 1))
+    ('decl', 't_hl0', 32)
+    ('expr', ('st', 'nblock_0', 'memory', 0, 0))
+    ('expr', ('add', 't_hl0', 0, 32))
+    ('expr', ('st', 'nblock_1', 'memory', 't_hl0', 0))
 }
 fn u_Block____Malloc (memory, size) 1 {
   _u_Block____Malloc__:
-    ['expr', 'argld', 'memory', [0], 'eid 540']
-    ['expr', 'argld', 'size', [1], 'eid 541']
-    ['decl', 't3', 32, 'eid 542']
-    ['expr', 'add', 't3', ['memory', 32768], 'eid 544']
-    ['decl', 'ENDPTR', 32, 'eid 545']
-    ['expr', 'mov', 'ENDPTR', ['t3'], 'eid 547']
-    ['decl', 't4', 31, 'eid 548']
-    ['expr', 'sub', 't4', ['size', 1], 'eid 550']
-    ['decl', 't7', 31, 'eid 554']
-    ['expr', 'bsr', 't7', ['t4', 5], 'eid 556']
-    ['decl', 'rsize', 31, 'eid 557']
-    ['expr', 'mov', 'rsize', ['t7'], 'eid 559']
-    ['decl', 'hijack', 32, 'eid 560']
-    ['expr', 'mov', 'hijack', [0], 'eid 562']
-    ['decl', 'u_target', 32, 'eid 563']
-    ['expr', 'mov', 'u_target', [0], 'eid 565']
-    ['decl', 'doSplit', 1, 'eid 566']
-    ['expr', 'mov', 'doSplit', [0], 'eid 568']
-    ['decl', 'blockptr', 32, 'eid 569']
-    ['expr', 'mov', 'blockptr', ['memory'], 'eid 571']
+    ('expr', ('argld', 'memory', 0))
+    ('expr', ('argld', 'size', 1))
+    ('decl', 'ENDPTR', 32)
+    ('expr', ('add', 'ENDPTR', 'memory', 32768))
+    ('decl', 'rsize', 31)
+    ('decl', 't4', 31)
+    ('expr', ('sub', 't5', 'size', 1))
+    ('decl', 't5', 31)
+    ('expr', ('mov', 't5', 't4'))
+    ('expr', ('bsr', 'rsize', 't5', 5))
+    ('decl', 'hijack', 32)
+    ('expr', ('mov', 'hijack', 0))
+    ('decl', 'u_target', 32)
+    ('expr', ('mov', 'u_target', 0))
+    ('decl', 'doSplit', 1)
+    ('expr', ('mov', 'doSplit', 0))
+    ('decl', 'blockptr', 32)
+    ('expr', ('mov', 'blockptr', 'memory'))
   L0:
-    ['expr', 'ne', None, ['blockptr', 'ENDPTR'], 'eid 572']
+    ('expr', ('ne', None, 'blockptr', 'ENDPTR'))
   L1:
-    ['decl', 't15_0', 32, 'eid 573']
-    ['decl', 't15_1', 32, 'eid 575']
-    ['expr', 'mayread', None, ['blockptr', 't15_1'], 'eid 794']
-    ['expr', 'mayread', None, ['blockptr', 't15_0'], 'eid 795']
-    ['expr', 'ld', 't15_0', ['blockptr', 0, 0], 'eid 577']
-    ['expr', 'mayread', None, ['blockptr', 't15_0'], 'eid 798']
-    ['expr', 'ld', 't15_1', ['blockptr', 32, 0], 'eid 578']
-    ['decl', 't16', 1, 'eid 579']
-    ['expr', 'bsf', 't16', ['t15_1', 0, 1], 'eid 581']
-    ['expr', 'eq', None, ['t16', 0], 'eid 582']
+    ('decl', 't15_1', 32)
+    ('expr', ('ld', 't15_1', 'blockptr', 32, 0))
+    ('decl', 't16', 1)
+    ('expr', ('bsf', 't16', 't15_1', 0, 1))
+    ('expr', ('eq', None, 't16', 0))
   L2:
   L3:
-    ['decl', 't20_0', 32, 'eid 583']
-    ['decl', 't20_1', 32, 'eid 585']
-    ['expr', 'mayread', None, ['blockptr', 't20_1'], 'eid 801']
-    ['expr', 'mayread', None, ['blockptr', 't20_0'], 'eid 802']
-    ['expr', 'ld', 't20_0', ['blockptr', 0, 0], 'eid 587']
-    ['expr', 'mayread', None, ['blockptr', 't20_0'], 'eid 806']
-    ['expr', 'ld', 't20_1', ['blockptr', 32, 0], 'eid 588']
-    ['decl', 't21', 31, 'eid 589']
-    ['expr', 'bsf', 't21', ['t20_1', 0, 31], 'eid 591']
-    ['expr', 'eq', None, ['t21', 'rsize'], 'eid 595']
+    ('decl', 'bsize', 31)
+    ('decl', 't20_1', 32)
+    ('expr', ('ld', 't20_1', 'blockptr', 32, 0))
+    ('expr', ('bsf', 'bsize', 't20_1', 0, 31))
+    ('expr', ('eq', None, 'bsize', 'rsize'))
   L4:
-    ['expr', 'mov', 'u_target', ['blockptr'], 'eid 596']
+    ('expr', ('mov', 'u_target', 'blockptr'))
   L5:
-    ['decl', 't32', 31, 'eid 597']
-    ['expr', 'add', 't32', ['rsize', 1], 'eid 599']
-    ['expr', 'eq', None, ['t21', 't32'], 'eid 600']
+    ('decl', 't32', 31)
+    ('expr', ('add', 't32', 'rsize', 1))
+    ('expr', ('eq', None, 'bsize', 't32'))
   L6:
-    ['expr', 'mov', 'hijack', ['blockptr'], 'eid 601']
+    ('expr', ('mov', 'hijack', 'blockptr'))
   L7:
-    ['decl', 't38', 31, 'eid 602']
-    ['expr', 'add', 't38', ['rsize', 1], 'eid 604']
-    ['expr', 'ugt', None, ['t21', 't38'], 'eid 605']
+    ('decl', 't38', 31)
+    ('expr', ('add', 't38', 'rsize', 1))
+    ('expr', ('ugt', None, 'bsize', 't38'))
   L8:
-    ['expr', 'mov', 'doSplit', [1], 'eid 606']
-    ['expr', 'mov', 'u_target', ['blockptr'], 'eid 607']
+    ('expr', ('mov', 'doSplit', 1))
+    ('expr', ('mov', 'u_target', 'blockptr'))
   L9:
-    ['decl', 't42', 32, 'eid 608']
-    ['expr', 'add', 't42', ['blockptr', 1], 'eid 610']
-    ['decl', 't43_0', 32, 'eid 611']
-    ['decl', 't43_1', 32, 'eid 613']
-    ['expr', 'mayread', None, ['blockptr', 't43_1'], 'eid 809']
-    ['expr', 'mayread', None, ['blockptr', 't43_0'], 'eid 810']
-    ['expr', 'mayread', None, ['blockptr', 't42'], 'eid 811']
-    ['expr', 'ld', 't43_0', ['blockptr', 0, 0], 'eid 615']
-    ['expr', 'mayread', None, ['blockptr', 't43_0'], 'eid 815']
-    ['expr', 'ld', 't43_1', ['blockptr', 32, 0], 'eid 616']
-    ['decl', 't44', 31, 'eid 617']
-    ['expr', 'bsf', 't44', ['t43_1', 0, 31], 'eid 619']
-    ['decl', 't45', 32, 'eid 620']
-    ['expr', 'add', 't45', ['t42', 't44'], 'eid 622']
-    ['expr', 'mov', 'blockptr', ['t45'], 'eid 623']
+    ('decl', 't42', 32)
+    ('expr', ('add', 't42', 'blockptr', 1))
+    ('decl', 't43_1', 32)
+    ('expr', ('ld', 't43_1', 'blockptr', 32, 0))
+    ('decl', 't44', 31)
+    ('expr', ('bsf', 't44', 't43_1', 0, 31))
+    ('expr', ('add', 'blockptr', 't42', 't44'))
   L10:
-    ['expr', 'eq', None, ['doSplit', 0], 'eid 624']
+    ('expr', ('eq', None, 'doSplit', 0))
   L11:
-    ['expr', 'ne', None, ['u_target', 0], 'eid 625']
+    ('expr', ('ne', None, 'u_target', 0))
   L12:
-    ['expr', 'stw', 63, ['u_target', 63, 1], 'eid 626']
-    ['decl', 't58', 32, 'eid 627']
-    ['expr', 'add', 't58', ['u_target', 1], 'eid 629']
-    ['expr', 'retst', 0, ['t58'], 'eid 633']
+    ('expr', ('st', 0, 'u_target', 63, 1))
+    ('decl', 't58', 32)
+    ('expr', ('add', 't59', 'u_target', 1))
+    ('decl', 't59', 32)
+    ('expr', ('mov', 't59', 't58'))
+    ('expr', ('retst', 0, 't59'))
   L13:
-    ['expr', 'ne', None, ['hijack', 0], 'eid 634']
+    ('expr', ('ne', None, 'hijack', 0))
   L14:
-    ['expr', 'stw', 63, ['hijack', 63, 1], 'eid 635']
-    ['decl', 't68', 32, 'eid 636']
-    ['expr', 'add', 't68', ['hijack', 1], 'eid 638']
-    ['expr', 'retst', 0, ['t68'], 'eid 642']
+    ('expr', ('st', 0, 'hijack', 63, 1))
+    ('decl', 't68', 32)
+    ('expr', ('add', 't69', 'hijack', 1))
+    ('decl', 't69', 32)
+    ('expr', ('mov', 't69', 't68'))
+    ('expr', ('retst', 0, 't69'))
   L15:
-    ['expr', 'retst', 0, [0], 'eid 643']
+    ('expr', ('retst', 0, 0))
   L16:
-    ['expr', 'maywrite', 't75_1', [], 'eid 838']
-    ['expr', 'maywrite', 't75_0', [], 'eid 839']
-    ['expr', 'stw', 63, ['u_target', 63, 1], 'eid 644']
-    ['decl', 't75_0', 32, 'eid 645']
-    ['decl', 't75_1', 32, 'eid 647']
-    ['expr', 'mayread', None, ['u_target', 't75_1'], 'eid 857']
-    ['expr', 'mayread', None, ['u_target', 't75_0'], 'eid 858']
-    ['expr', 'ld', 't75_0', ['u_target', 0, 0], 'eid 649']
-    ['expr', 'mayread', None, ['u_target', 't75_0'], 'eid 877']
-    ['expr', 'ld', 't75_1', ['u_target', 32, 0], 'eid 650']
-    ['decl', 't76', 31, 'eid 651']
-    ['decl', 'oldsize', 31, 'eid 654']
-    ['decl', 't77', 31, 'eid 657']
-    ['decl', 't78', 31, 'eid 660']
-    ['decl', 'excess', 31, 'eid 663']
-    ['expr', 'maywrite', 't81_1', [], 'eid 887']
-    ['expr', 'maywrite', 't81_0', [], 'eid 888']
-    ['expr', 'maywrite', 'excess', [], 'eid 890']
-    ['expr', 'maywrite', 't78', [], 'eid 891']
-    ['expr', 'maywrite', 't77', [], 'eid 892']
-    ['expr', 'maywrite', 'oldsize', [], 'eid 893']
-    ['expr', 'maywrite', 't76', [], 'eid 894']
-    ['expr', 'maywrite', 't75_1', [], 'eid 895']
-    ['expr', 'maywrite', 't75_0', [], 'eid 896']
-    ['expr', 'stw', 32, ['u_target', 32, 31], 'eid 666']
-    ['decl', 't80', 32, 'eid 667']
-    ['expr', 'add', 't80', ['u_target', 1], 'eid 669']
-    ['decl', 't81_0', 32, 'eid 670']
-    ['decl', 't81_1', 32, 'eid 672']
-    ['expr', 'mayread', None, ['u_target', 't81_1'], 'eid 906']
-    ['expr', 'mayread', None, ['u_target', 't81_0'], 'eid 907']
-    ['expr', 'mayread', None, ['u_target', 't80'], 'eid 908']
-    ['expr', 'mayread', None, ['u_target', 'excess'], 'eid 909']
-    ['expr', 'mayread', None, ['u_target', 't78'], 'eid 910']
-    ['expr', 'mayread', None, ['u_target', 't77'], 'eid 911']
-    ['expr', 'mayread', None, ['u_target', 'oldsize'], 'eid 912']
-    ['expr', 'mayread', None, ['u_target', 't76'], 'eid 913']
-    ['expr', 'mayread', None, ['u_target', 't75_1'], 'eid 914']
-    ['expr', 'mayread', None, ['u_target', 't75_0'], 'eid 915']
-    ['expr', 'ld', 't81_0', ['u_target', 0, 0], 'eid 674']
-    ['expr', 'mayread', None, ['u_target', 't81_0'], 'eid 926']
-    ['decl', 't83', 32, 'eid 679']
-    ['expr', 'maywrite', 't83', [], 'eid 942']
-    ['expr', 'stw', 63, ['t83', 63, 1], 'eid 685']
-    ['expr', 'maywrite', 't83', [], 'eid 961']
-    ['expr', 'stw', 32, ['t83', 32, 31], 'eid 686']
-    ['expr', 'maywrite', 't83', [], 'eid 980']
-    ['expr', 'stw', 0, ['t83', 0, 32], 'eid 687']
-    ['decl', 't87', 32, 'eid 688']
-    ['expr', 'add', 't87', ['t83', 1], 'eid 690']
-    ['decl', 't88_1', 32, 'eid 693']
-    ['expr', 'ld', 't88_1', ['t83', 32, 0], 'eid 696']
-    ['decl', 't89', 31, 'eid 697']
-    ['expr', 'bsf', 't89', ['t88_1', 0, 31], 'eid 699']
-    ['decl', 't90', 32, 'eid 700']
-    ['expr', 'add', 't90', ['t87', 't89'], 'eid 702']
-    ['expr', 'ne', None, ['t90', 'ENDPTR'], 'eid 706']
+    ('expr', ('st', 0, 'u_target', 63, 1))
+    ('decl', 'oldsize', 31)
+    ('decl', 't75_1', 32)
+    ('expr', ('ld', 't75_1', 'u_target', 32, 0))
+    ('expr', ('bsf', 'oldsize', 't75_1', 0, 31))
+    ('decl', 'excess', 31)
+    ('decl', 't77', 31)
+    ('expr', ('sub', 't77', 'oldsize', 'rsize'))
+    ('expr', ('sub', 'excess', 't77', 1))
+    ('expr', ('st', 'rsize', 'u_target', 32, 31))
+    ('decl', 'newNext', 32)
+    ('decl', 't80', 32)
+    ('expr', ('add', 't80', 'u_target', 1))
+    ('decl', 't81_1', 32)
+    ('expr', ('ld', 't81_1', 'u_target', 32, 0))
+    ('decl', 't82', 31)
+    ('expr', ('bsf', 't82', 't81_1', 0, 31))
+    ('expr', ('add', 'newNext', 't80', 't82'))
+    ('expr', ('st', 1, 'newNext', 63, 1))
+    ('expr', ('st', 'excess', 'newNext', 32, 31))
+    ('expr', ('st', 'u_target', 'newNext', 0, 32))
+    ('decl', 'nextNext', 32)
+    ('decl', 't87', 32)
+    ('expr', ('add', 't87', 'newNext', 1))
+    ('decl', 't88_1', 32)
+    ('expr', ('ld', 't88_1', 'newNext', 32, 0))
+    ('decl', 't89', 31)
+    ('expr', ('bsf', 't89', 't88_1', 0, 31))
+    ('expr', ('add', 'nextNext', 't87', 't89'))
+    ('expr', ('ne', None, 'nextNext', 'ENDPTR'))
   L17:
-    ['expr', 'stw', 0, ['t90', 0, 32], 'eid 707']
+    ('expr', ('st', 'newNext', 'nextNext', 0, 32))
   L18:
-    ['decl', 't96', 32, 'eid 708']
-    ['expr', 'add', 't96', ['u_target', 1], 'eid 710']
-    ['expr', 'retst', 0, ['t96'], 'eid 714']
+    ('decl', 't96', 32)
+    ('expr', ('add', 't97', 'u_target', 1))
+    ('decl', 't97', 32)
+    ('expr', ('mov', 't97', 't96'))
+    ('expr', ('retst', 0, 't97'))
 }
 fn u_RenderState____Init (self) 0 {
   _u_RenderState____Init__:
-    ['decl', 't99_0', 32, 'eid 1187']
-    ['decl', 't99_1', 32, 'eid 1189']
-    ['expr', 'maywrite', 't99_0', [], 'eid 1221']
-    ['expr', 'maywrite', 'self', [], 'eid 1222']
-    ['expr', 'st', 'self', ['t99_0', 'self', 64, 0], 'eid 1193']
-    ['expr', 'maywrite', 't99_1', [], 'eid 1227']
-    ['expr', 'maywrite', 'self', [], 'eid 1229']
-    ['expr', 'st', 'self', ['t99_1', 'self', 96, 0], 'eid 1194']
-    ['decl', 't101_0', 32, 'eid 1195']
-    ['decl', 't101_1', 32, 'eid 1197']
-    ['expr', 'maywrite', 't101_0', [], 'eid 1233']
-    ['expr', 'maywrite', 'self', [], 'eid 1236']
-    ['expr', 'st', 'self', ['t101_0', 'self', 128, 0], 'eid 1201']
-    ['expr', 'maywrite', 't101_1', [], 'eid 1239']
-    ['expr', 'maywrite', 'self', [], 'eid 1243']
-    ['expr', 'st', 'self', ['t101_1', 'self', 160, 0], 'eid 1202']
-    ['expr', 'maywrite', 'self', [], 'eid 1250']
-    ['expr', 'stw', 192, ['self', 192, 8], 'eid 1203']
-    ['decl', 't104', 32, 'eid 1204']
-    ['expr', 'maywrite', 't104', [], 'eid 1252']
-    ['expr', 'maywrite', 'self', [], 'eid 1257']
-    ['expr', 'st', 'self', ['t104', 'self', 224, 0], 'eid 1209']
-    ['decl', 't106', 32, 'eid 1210']
-    ['expr', 'maywrite', 't106', [], 'eid 1258']
-    ['expr', 'maywrite', 'self', [], 'eid 1264']
-    ['expr', 'st', 'self', ['t106', 'self', 256, 0], 'eid 1215']
+    ('expr', ('argld', 'self', 0))
+    ('predecl', 2, 64)
+    ('decl', 't99_0', 32)
+    ('decl', 't99_1', 32)
+    ('expr', ('bst', 't99_0', 0, 0, 0))
+    ('expr', ('bst', 't99_1', 0, 0, 0))
+    ('expr', ('st', 't99_0', 'self', 64, 0))
+    ('expr', ('st', 't99_1', 'self', 96, 0))
+    ('predecl', 2, 64)
+    ('decl', 't101_0', 32)
+    ('decl', 't101_1', 32)
+    ('expr', ('bst', 't101_0', 0, 0, 0))
+    ('expr', ('bst', 't101_1', 0, 0, 0))
+    ('expr', ('st', 't101_0', 'self', 128, 0))
+    ('expr', ('st', 't101_1', 'self', 160, 0))
+    ('expr', ('st', 0, 'self', 192, 8))
+    ('predecl', 1, 32)
+    ('decl', 't104', 32)
+    ('expr', ('bst', 't104', 255, 16, 8))
+    ('expr', ('bst', 't104', 255, 8, 8))
+    ('expr', ('bst', 't104', 255, 0, 8))
+    ('expr', ('st', 't104', 'self', 224, 0))
+    ('predecl', 1, 32)
+    ('decl', 't106', 32)
+    ('expr', ('bst', 't106', 0, 16, 8))
+    ('expr', ('bst', 't106', 0, 8, 8))
+    ('expr', ('bst', 't106', 0, 0, 8))
+    ('expr', ('st', 't106', 'self', 256, 0))
 }
 fn u_RenderState____Draw (self) 0 {
   _u_RenderState____Draw__:
-    ['expr', 'argld', 'self', [0], 'eid 1265']
-    ['decl', 't109_3', 32, 'eid 1272']
-    ['expr', 'ld', 't109_3', ['self', 96, 0], 'eid 1287']
-    ['decl', 't110_1', 32, 'eid 1295']
-    ['expr', 'bsf', 't110_1', ['t109_3', 0, 0], 'eid 1298']
-    ['decl', 't111', 32, 'eid 1299']
-    ['expr', 'bsf', 't111', ['t110_1', 0, 0], 'eid 1301']
-    ['decl', 'latScroll', 32, 'eid 1302']
-    ['expr', 'mov', 'latScroll', ['t111'], 'eid 1304']
-    ['decl', 'row', 32, 'eid 1305']
-    ['expr', 'mov', 'row', [0], 'eid 1307']
+    ('expr', ('argld', 'self', 0))
+    ('decl', 'latScroll', 32)
+    ('decl', 't109_3', 32)
+    ('expr', ('ld', 't109_3', 'self', 96, 0))
+    ('decl', 't110_1', 32)
+    ('expr', ('bsf', 't110_1', 't109_3', 0, 0))
+    ('expr', ('bsf', 'latScroll', 't110_1', 0, 0))
+    ('decl', 'row', 32)
+    ('expr', ('mov', 'row', 0))
   L0:
-    ['expr', 'ult', None, ['row', 24], 'eid 1308']
+    ('expr', ('ult', None, 'row', 24))
   L1:
-    ['decl', 't117_0', 32, 'eid 1309']
-    ['decl', 't117_1', 32, 'eid 1311']
-    ['decl', 't117_2', 32, 'eid 1313']
-    ['decl', 't117_3', 32, 'eid 1315']
-    ['decl', 't117_4', 32, 'eid 1317']
-    ['decl', 't117_5', 32, 'eid 1319']
-    ['decl', 't117_6', 32, 'eid 1321']
-    ['decl', 't117_7', 32, 'eid 1323']
-    ['decl', 't117_8', 32, 'eid 1325']
-    ['expr', 'mayread', None, ['self', 'self'], 'eid 1608']
-    ['expr', 'mayread', None, ['self', 't117_8'], 'eid 1609']
-    ['expr', 'mayread', None, ['self', 't117_7'], 'eid 1610']
-    ['expr', 'mayread', None, ['self', 't117_6'], 'eid 1611']
-    ['expr', 'mayread', None, ['self', 't117_5'], 'eid 1612']
-    ['expr', 'mayread', None, ['self', 't117_4'], 'eid 1613']
-    ['expr', 'mayread', None, ['self', 't117_3'], 'eid 1614']
-    ['expr', 'mayread', None, ['self', 't117_2'], 'eid 1615']
-    ['expr', 'mayread', None, ['self', 't117_1'], 'eid 1616']
-    ['expr', 'mayread', None, ['self', 't117_0'], 'eid 1617']
-    ['expr', 'ld', 't117_0', ['self', 0, 0], 'eid 1327']
-    ['expr', 'mayread', None, ['self', 't117_0'], 'eid 1632']
-    ['expr', 'ld', 't117_1', ['self', 32, 0], 'eid 1328']
-    ['expr', 'mayread', None, ['self', 't117_1'], 'eid 1646']
-    ['expr', 'ld', 't117_2', ['self', 64, 0], 'eid 1329']
-    ['expr', 'mayread', None, ['self', 't117_2'], 'eid 1660']
-    ['expr', 'ld', 't117_3', ['self', 96, 0], 'eid 1330']
-    ['expr', 'mayread', None, ['self', 't117_3'], 'eid 1674']
-    ['expr', 'ld', 't117_4', ['self', 128, 0], 'eid 1331']
-    ['expr', 'mayread', None, ['self', 't117_4'], 'eid 1688']
-    ['expr', 'ld', 't117_5', ['self', 160, 0], 'eid 1332']
-    ['expr', 'mayread', None, ['self', 't117_5'], 'eid 1702']
-    ['expr', 'ld', 't117_6', ['self', 192, 0], 'eid 1333']
-    ['expr', 'mayread', None, ['self', 't117_6'], 'eid 1716']
-    ['expr', 'ld', 't117_7', ['self', 224, 0], 'eid 1334']
-    ['expr', 'mayread', None, ['self', 't117_7'], 'eid 1730']
-    ['alloc', 't118', 24, 32, 'eid 1336']
-    ['expr', 'bsf', 't118', ['t117_1', 0, 0], 'eid 1337']
-    ['decl', 't119', 32, 'eid 1338']
-    ['expr', 'mul', 't119', ['row', 32], 'eid 1340']
-    ['decl', 't120', 32, 'eid 1341']
-    ['expr', 'ldw', 't120', ['t118', 't119'], 'eid 1343']
-    ['decl', 'linePtr', 32, 'eid 1344']
-    ['expr', 'mov', 'linePtr', ['t120'], 'eid 1346']
-    ['decl', 'col', 32, 'eid 1347']
-    ['expr', 'mov', 'col', [0], 'eid 1349']
+    ('decl', 'linePtr', 32)
+    ('decl', 't117_1', 32)
+    ('expr', ('ld', 't117_1', 'self', 32, 0))
+    ('alloc', 't118', 24, 32)
+    ('expr', ('bsf', 't118', 't117_1', 0, 0))
+    ('decl', 't119', 32)
+    ('expr', ('mul', 't119', 'row', 32))
+    ('expr', ('ld', 'linePtr', 't118', 't119', 0))
+    ('decl', 'col', 32)
+    ('expr', ('mov', 'col', 0))
   L2:
-    ['expr', 'ult', None, ['col', 64], 'eid 1350']
+    ('expr', ('ult', None, 'col', 64))
   L3:
-    ['decl', 't126', 32, 'eid 1351']
-    ['expr', 'add', 't126', ['col', 'latScroll'], 'eid 1353']
-    ['decl', 't127', 32, 'eid 1354']
-    ['expr', 'mul', 't127', ['t126', 32], 'eid 1356']
-    ['decl', 't128', 8, 'eid 1357']
-    ['expr', 'mayread', None, ['linePtr', 'self'], 'eid 1753']
-    ['expr', 'mayread', None, ['linePtr', 't128'], 'eid 1755']
-    ['expr', 'mayread', None, ['linePtr', 't127'], 'eid 1756']
-    ['expr', 'mayread', None, ['linePtr', 't126'], 'eid 1757']
-    ['expr', 'ldw', 't128', ['linePtr', 't127'], 'eid 1359']
-    ['expr', 'eq', None, ['t128', 10], 'eid 1363']
+    ('decl', 'char', 8)
+    ('decl', 't126', 32)
+    ('expr', ('add', 't126', 'col', 'latScroll'))
+    ('decl', 't127', 32)
+    ('expr', ('mul', 't127', 't126', 32))
+    ('expr', ('ld', 'char', 'linePtr', 't127', 0))
+    ('expr', ('eq', None, 'char', 10))
   L4:
   L5:
-    ['expr', 'eq', None, ['t128', 0], 'eid 1364']
+    ('expr', ('eq', None, 'char', 0))
   L6:
-    ['expr', 'ult', None, ['col', 64], 'eid 1365']
+    ('expr', ('ult', None, 'col', 64))
   L7:
-    ['expr', 'argst', 0, ['self'], 'eid 1366']
-    ['expr', 'argst', 1, [0], 'eid 1367']
-    ['expr', 'argst', 2, ['row'], 'eid 1368']
-    ['expr', 'argst', 3, ['col'], 'eid 1369']
-    ['expr', 'maywrite', 'self', [], 'eid 1759']
-    ['expr', 'call', 'u_RenderState____WriteChar', [], 'eid 1370']
-    ['decl', 't142', 32, 'eid 1371']
-    ['expr', 'add', 't142', ['col', 1], 'eid 1373']
-    ['expr', 'mov', 'col', ['t142'], 'eid 1374']
+    ('expr', ('argst', 0, 'self'))
+    ('expr', ('argst', 1, 0))
+    ('expr', ('argst', 2, 'row'))
+    ('expr', ('argst', 3, 'col'))
+    ('expr', ('call', 'u_RenderState____WriteChar'))
+    ('expr', ('add', 'col', 'col', 1))
   L8:
-    ['expr', 'argst', 0, ['self'], 'eid 1375']
-    ['expr', 'argst', 1, ['t128'], 'eid 1376']
-    ['expr', 'argst', 2, ['row'], 'eid 1377']
-    ['expr', 'argst', 3, ['col'], 'eid 1378']
-    ['expr', 'maywrite', 'self', [], 'eid 1761']
-    ['expr', 'call', 'u_RenderState____WriteChar', [], 'eid 1379']
-    ['decl', 't146', 32, 'eid 1380']
-    ['expr', 'add', 't146', ['col', 1], 'eid 1382']
-    ['expr', 'mov', 'col', ['t146'], 'eid 1383']
+    ('expr', ('argst', 0, 'self'))
+    ('expr', ('argst', 1, 'char'))
+    ('expr', ('argst', 2, 'row'))
+    ('expr', ('argst', 3, 'col'))
+    ('expr', ('call', 'u_RenderState____WriteChar'))
+    ('expr', ('add', 'col', 'col', 1))
   L9:
-    ['decl', 't148', 32, 'eid 1384']
-    ['expr', 'add', 't148', ['row', 1], 'eid 1386']
-    ['expr', 'mov', 'row', ['t148'], 'eid 1387']
+    ('expr', ('add', 'row', 'row', 1))
   L10:
-    ['decl', 't150_0', 32, 'eid 1388']
-    ['decl', 't150_1', 32, 'eid 1390']
-    ['decl', 't150_2', 32, 'eid 1392']
-    ['decl', 't150_3', 32, 'eid 1394']
-    ['decl', 't150_4', 32, 'eid 1396']
-    ['decl', 't150_5', 32, 'eid 1398']
-    ['decl', 't150_6', 32, 'eid 1400']
-    ['decl', 't150_7', 32, 'eid 1402']
-    ['decl', 't150_8', 32, 'eid 1404']
-    ['expr', 'mayread', None, ['self', 'self'], 'eid 1764']
-    ['expr', 'mayread', None, ['self', 't150_8'], 'eid 1765']
-    ['expr', 'mayread', None, ['self', 't150_7'], 'eid 1766']
-    ['expr', 'mayread', None, ['self', 't150_6'], 'eid 1767']
-    ['expr', 'mayread', None, ['self', 't150_5'], 'eid 1768']
-    ['expr', 'mayread', None, ['self', 't150_4'], 'eid 1769']
-    ['expr', 'mayread', None, ['self', 't150_3'], 'eid 1770']
-    ['expr', 'mayread', None, ['self', 't150_2'], 'eid 1771']
-    ['expr', 'mayread', None, ['self', 't150_1'], 'eid 1772']
-    ['expr', 'mayread', None, ['self', 't150_0'], 'eid 1773']
-    ['expr', 'ld', 't150_0', ['self', 0, 0], 'eid 1406']
-    ['expr', 'mayread', None, ['self', 't150_0'], 'eid 1785']
-    ['expr', 'ld', 't150_1', ['self', 32, 0], 'eid 1407']
-    ['expr', 'mayread', None, ['self', 't150_1'], 'eid 1796']
-    ['expr', 'ld', 't150_2', ['self', 64, 0], 'eid 1408']
-    ['expr', 'mayread', None, ['self', 't150_2'], 'eid 1807']
-    ['expr', 'ld', 't150_3', ['self', 96, 0], 'eid 1409']
-    ['expr', 'mayread', None, ['self', 't150_3'], 'eid 1818']
-    ['expr', 'ld', 't150_4', ['self', 128, 0], 'eid 1410']
-    ['expr', 'mayread', None, ['self', 't150_4'], 'eid 1829']
-    ['expr', 'ld', 't150_5', ['self', 160, 0], 'eid 1411']
-    ['expr', 'mayread', None, ['self', 't150_5'], 'eid 1840']
-    ['expr', 'ld', 't150_6', ['self', 192, 0], 'eid 1412']
-    ['expr', 'mayread', None, ['self', 't150_6'], 'eid 1851']
-    ['expr', 'ld', 't150_7', ['self', 224, 0], 'eid 1413']
-    ['expr', 'mayread', None, ['self', 't150_7'], 'eid 1862']
-    ['expr', 'maywrite', 'self', [], 'eid 1872']
-    ['expr', 'stw', 192, ['self', 192, 8], 'eid 1421']
+    ('decl', 't150_6', 32)
+    ('expr', ('ld', 't150_6', 'self', 192, 0))
+    ('decl', 't151', 8)
+    ('expr', ('bsf', 't151', 't150_6', 0, 8))
+    ('decl', 't152', 8)
+    ('expr', ('add', 't152', 't151', 1))
+    ('expr', ('st', 't152', 'self', 192, 8))
 }
 fn u_RenderState____WriteChar (self, char, row, col) 0 {
   _u_RenderState____WriteChar__:
-    ['expr', 'argld', 'self', [0], 'eid 1974']
-    ['expr', 'argld', 'char', [1], 'eid 1975']
-    ['expr', 'argld', 'row', [2], 'eid 1976']
-    ['expr', 'argld', 'col', [3], 'eid 1977']
-    ['decl', 't155_7', 32, 'eid 1992']
-    ['expr', 'ld', 't155_7', ['self', 224, 0], 'eid 2003']
-    ['decl', 't156', 32, 'eid 2005']
-    ['expr', 'bsf', 't156', ['t155_7', 0, 0], 'eid 2007']
-    ['decl', 'fore', 32, 'eid 2008']
-    ['expr', 'mov', 'fore', ['t156'], 'eid 2010']
-    ['decl', 't157_8', 32, 'eid 2027']
-    ['expr', 'ld', 't157_8', ['self', 256, 0], 'eid 2037']
-    ['decl', 't158', 32, 'eid 2038']
-    ['expr', 'bsf', 't158', ['t157_8', 0, 0], 'eid 2040']
-    ['decl', 'back', 32, 'eid 2041']
-    ['expr', 'mov', 'back', ['t158'], 'eid 2043']
-    ['decl', 't163_5', 32, 'eid 2054']
-    ['expr', 'ld', 't163_5', ['self', 160, 0], 'eid 2067']
-    ['decl', 't164_1', 32, 'eid 2073']
-    ['expr', 'bsf', 't164_1', ['t163_5', 0, 0], 'eid 2076']
-    ['decl', 't165', 32, 'eid 2077']
-    ['expr', 'bsf', 't165', ['t164_1', 0, 0], 'eid 2079']
-    ['expr', 'eq', None, ['row', 't165'], 'eid 2080']
+    ('expr', ('argld', 'self', 0))
+    ('expr', ('argld', 'char', 1))
+    ('expr', ('argld', 'row', 2))
+    ('expr', ('argld', 'col', 3))
+    ('decl', 'fore', 32)
+    ('decl', 't155_7', 32)
+    ('expr', ('ld', 't155_7', 'self', 224, 0))
+    ('expr', ('bsf', 'fore', 't155_7', 0, 0))
+    ('decl', 'back', 32)
+    ('decl', 't157_8', 32)
+    ('expr', ('ld', 't157_8', 'self', 256, 0))
+    ('expr', ('bsf', 'back', 't157_8', 0, 0))
+    ('decl', 't163_5', 32)
+    ('expr', ('ld', 't163_5', 'self', 160, 0))
+    ('decl', 't164_1', 32)
+    ('expr', ('bsf', 't164_1', 't163_5', 0, 0))
+    ('decl', 't165', 32)
+    ('expr', ('bsf', 't165', 't164_1', 0, 0))
+    ('expr', ('eq', None, 'row', 't165'))
   L0:
-    ['expr', 'mov', 'back', ['t158'], 'eid 2164']
-    ['expr', 'mov', 'fore', ['t156'], 'eid 2165']
-    ['decl', 't168_4', 32, 'eid 2089']
-    ['expr', 'mayread', None, ['self', 'self'], 'eid 3218']
-    ['expr', 'ld', 't168_4', ['self', 128, 0], 'eid 2103']
-    ['decl', 't169_0', 32, 'eid 2108']
-    ['expr', 'bsf', 't169_0', ['t168_4', 0, 0], 'eid 2112']
-    ['decl', 't170', 32, 'eid 2114']
-    ['expr', 'bsf', 't170', ['t169_0', 0, 0], 'eid 2116']
-    ['expr', 'eq', None, ['col', 't170'], 'eid 2117']
+    ('decl', 't168_4', 32)
+    ('expr', ('ld', 't168_4', 'self', 128, 0))
+    ('decl', 't169_0', 32)
+    ('expr', ('bsf', 't169_0', 't168_4', 0, 0))
+    ('decl', 't170', 32)
+    ('expr', ('bsf', 't170', 't169_0', 0, 0))
+    ('expr', ('eq', None, 'col', 't170'))
   L1:
-    ['expr', 'mov', 'back', ['t158'], 'eid 2173']
-    ['expr', 'mov', 'fore', ['t156'], 'eid 2174']
-    ['decl', 't173_6', 32, 'eid 2130']
-    ['expr', 'mayread', None, ['self', 'self'], 'eid 3361']
-    ['expr', 'ld', 't173_6', ['self', 192, 0], 'eid 2142']
-    ['decl', 't174', 8, 'eid 2145']
-    ['expr', 'bsf', 't174', ['t173_6', 0, 8], 'eid 2147']
-    ['decl', 't175', 1, 'eid 2148']
-    ['expr', 'bsf', 't175', ['t174', 5, 1], 'eid 2150']
-    ['expr', 'eq', None, ['t175', 1], 'eid 2151']
+    ('decl', 't173_6', 32)
+    ('expr', ('ld', 't173_6', 'self', 192, 0))
+    ('decl', 't174', 8)
+    ('expr', ('bsf', 't174', 't173_6', 0, 8))
+    ('decl', 't175', 1)
+    ('expr', ('bsf', 't175', 't174', 5, 1))
+    ('expr', ('eq', None, 't175', 1))
   L2:
-    ['expr', 'mov', 'fore', ['t158'], 'eid 2155']
-    ['expr', 'mov', 'back', ['t156'], 'eid 2156']
+    ('expr', ('mov', 'fore', 'back'))
+    ('expr', ('mov', 'back', 'fore'))
   L3:
-    ['expr', 'argst', 0, ['char'], 'eid 2157']
-    ['expr', 'argst', 1, ['row'], 'eid 2158']
-    ['expr', 'argst', 2, ['col'], 'eid 2159']
-    ['expr', 'argst', 3, [0], 'eid 2160']
-    ['expr', 'argst', 4, ['fore'], 'eid 2161']
-    ['expr', 'argst', 5, ['back'], 'eid 2162']
-    ['expr', 'call', 'WriteCharFlaggedColored', [], 'eid 2163']
+    ('expr', ('argst', 0, 'char'))
+    ('expr', ('argst', 1, 'row'))
+    ('expr', ('argst', 2, 'col'))
+    ('expr', ('argst', 3, 0))
+    ('expr', ('argst', 4, 'fore'))
+    ('expr', ('argst', 5, 'back'))
+    ('expr', ('call', 'WriteCharFlaggedColored'))
 }
 fn u_RenderState____RecalcHeaders (self) 0 {
   _u_RenderState____RecalcHeaders__:
-    ['expr', 'argld', 'self', [0], 'eid 3550']
-    ['decl', 'fileIdx', 32, 'eid 3551']
-    ['expr', 'mov', 'fileIdx', [0], 'eid 3553']
-    ['decl', 'ptrIdx', 32, 'eid 3554']
-    ['expr', 'mov', 'ptrIdx', [0], 'eid 3556']
+    ('expr', ('argld', 'self', 0))
+    ('decl', 'fileIdx', 32)
+    ('expr', ('mov', 'fileIdx', 0))
+    ('decl', 'ptrIdx', 32)
+    ('expr', ('mov', 'ptrIdx', 0))
   L0:
-    ['expr', 'ult', None, ['ptrIdx', 24], 'eid 3557']
+    ('expr', ('ult', None, 'ptrIdx', 24))
   L1:
   L2:
-    ['decl', 't185_0', 32, 'eid 3558']
-    ['decl', 't185_1', 32, 'eid 3560']
-    ['decl', 't185_2', 32, 'eid 3562']
-    ['decl', 't185_3', 32, 'eid 3564']
-    ['decl', 't185_4', 32, 'eid 3566']
-    ['decl', 't185_5', 32, 'eid 3568']
-    ['decl', 't185_6', 32, 'eid 3570']
-    ['decl', 't185_7', 32, 'eid 3572']
-    ['decl', 't185_8', 32, 'eid 3574']
-    ['expr', 'mayread', None, ['self', 'self'], 'eid 3613']
-    ['expr', 'mayread', None, ['self', 't185_8'], 'eid 3614']
-    ['expr', 'mayread', None, ['self', 't185_7'], 'eid 3615']
-    ['expr', 'mayread', None, ['self', 't185_6'], 'eid 3616']
-    ['expr', 'mayread', None, ['self', 't185_5'], 'eid 3617']
-    ['expr', 'mayread', None, ['self', 't185_4'], 'eid 3618']
-    ['expr', 'mayread', None, ['self', 't185_3'], 'eid 3619']
-    ['expr', 'mayread', None, ['self', 't185_2'], 'eid 3620']
-    ['expr', 'mayread', None, ['self', 't185_1'], 'eid 3621']
-    ['expr', 'mayread', None, ['self', 't185_0'], 'eid 3622']
-    ['expr', 'ld', 't185_0', ['self', 0, 0], 'eid 3576']
-    ['expr', 'mayread', None, ['self', 't185_0'], 'eid 3637']
-    ['expr', 'ld', 't185_1', ['self', 32, 0], 'eid 3577']
-    ['expr', 'mayread', None, ['self', 't185_1'], 'eid 3651']
-    ['expr', 'ld', 't185_2', ['self', 64, 0], 'eid 3578']
-    ['expr', 'mayread', None, ['self', 't185_2'], 'eid 3665']
-    ['expr', 'ld', 't185_3', ['self', 96, 0], 'eid 3579']
-    ['expr', 'mayread', None, ['self', 't185_3'], 'eid 3679']
-    ['expr', 'ld', 't185_4', ['self', 128, 0], 'eid 3580']
-    ['expr', 'mayread', None, ['self', 't185_4'], 'eid 3693']
-    ['expr', 'ld', 't185_5', ['self', 160, 0], 'eid 3581']
-    ['expr', 'mayread', None, ['self', 't185_5'], 'eid 3707']
-    ['expr', 'ld', 't185_6', ['self', 192, 0], 'eid 3582']
-    ['expr', 'mayread', None, ['self', 't185_6'], 'eid 3721']
-    ['expr', 'ld', 't185_7', ['self', 224, 0], 'eid 3583']
-    ['expr', 'mayread', None, ['self', 't185_7'], 'eid 3735']
-    ['decl', 't189', 32, 'eid 3594']
-    ['expr', 'add', 't189', ['fileIdx', 1], 'eid 3596']
-    ['expr', 'mov', 'fileIdx', ['t189'], 'eid 3597']
-    ['decl', 't190', 32, 'eid 3598']
-    ['expr', 'add', 't190', ['ptrIdx', 1], 'eid 3600']
-    ['expr', 'mov', 'ptrIdx', ['t190'], 'eid 3601']
+    ('expr', ('add', 'fileIdx', 'fileIdx', 1))
+    ('expr', ('add', 'ptrIdx', 'ptrIdx', 1))
 }
 fn WriteCharFlaggedColored (char, row, col, flags, foreColor, backColor) 0 {
   _WriteCharFlaggedColored__:
-    ['expr', 'argld', 'char', [0], 'eid 3770']
-    ['expr', 'argld', 'row', [1], 'eid 3771']
-    ['expr', 'argld', 'col', [2], 'eid 3772']
-    ['expr', 'argld', 'flags', [3], 'eid 3773']
-    ['expr', 'argld', 'foreColor', [4], 'eid 3774']
-    ['expr', 'argld', 'backColor', [5], 'eid 3775']
-    ['decl', 't193', 32, 'eid 3776']
-    ['expr', 'bsl', 't193', ['row', 5], 'eid 3778']
-    ['decl', 't194', 32, 'eid 3779']
-    ['expr', 'add', 't194', ['t193', 'col'], 'eid 3781']
-    ['decl', 't195', 8, 'eid 3785']
-    ['expr', 'bsl', 't195', ['flags', 7], 'eid 3787']
-    ['decl', 't196', 8, 'eid 3788']
-    ['expr', 'add', 't196', ['t195', 'char'], 'eid 3790']
-    ['expr', 'stchr', None, ['t196', 't194', 'foreColor', 'backColor'], 'eid 3800']
+    ('expr', ('argld', 'char', 0))
+    ('expr', ('argld', 'row', 1))
+    ('expr', ('argld', 'col', 2))
+    ('expr', ('argld', 'flags', 3))
+    ('expr', ('argld', 'foreColor', 4))
+    ('expr', ('argld', 'backColor', 5))
+    ('decl', 'pos', 32)
+    ('decl', 't193', 32)
+    ('expr', ('bsl', 't193', 'row', 5))
+    ('expr', ('add', 'pos', 't193', 'col'))
+    ('decl', 'rd', 8)
+    ('decl', 't195', 8)
+    ('expr', ('bsl', 't195', 'flags', 7))
+    ('expr', ('add', 'rd', 't195', 'char'))
+    ('expr', ('stchr', 'rd', 'pos', 'foreColor', 'backColor'))
 }

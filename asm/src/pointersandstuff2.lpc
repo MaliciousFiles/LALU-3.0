@@ -1,0 +1,19 @@
+struct Vec {
+  z: u32,
+  xs: u32[2],
+  w: u32,
+}
+
+fn Main() void {
+  var ret = _Main();
+  @susp();
+  -ret;
+}
+
+fn _Main() u32 {
+  var v: Vec;
+  v.xs[0] = 3;
+  v.xs[1] = 5;
+  
+  return v.xs[1] - v.xs[0];
+}

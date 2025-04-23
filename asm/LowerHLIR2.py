@@ -95,6 +95,9 @@ def AddPent(block, op, D, S0, S1, S2, mods = []):
 def Add(nblock, res, x, y):
     raise NotImplementedError
 
+def AddWrap(nblock, res, x, y):
+    raise NotImplementedError
+
 def Sub(nblock, res, x, y):
     raise NotImplementedError
 
@@ -107,7 +110,8 @@ def Div(nblock, res, x, y):
 def Mod(nblock, res, x, y):
     raise NotImplementedError
 
-def Assg(nblock, res, x):
+def Assg(nblock, res, x, sticky):
+    assert not sticky
     bitwidth = min(res.kind.OpWidth(), x.kind.OpWidth())
     regwidth = CeilDiv(bitwidth, 32)
     for i in range(regwidth):
@@ -142,7 +146,8 @@ def Xor(nblock, res, x, y):
 def Inv(nblock, res, x):
     raise NotImplementedError
 
-def Store(nblock, val, array, offset, width):
+def Store(nblock, val, array, offset, width, sticky):
+    assert not sticky
     if offset.kind.comptime:
         assert offset.kind.comptime, f'Offset must be comptime known, not `{offset!r}`'
         bitwidth = width.name if width.name else array.kind.ElementSize()
@@ -173,8 +178,8 @@ def Store(nblock, val, array, offset, width):
         
     raise NotImplementedError
 
-def Load(nblock, res, array, offset):
-
+def Load(nblock, res, array, offset, sticky):
+    assert not sticky
     opWidth = array.kind.ElementSize()
     perOpWidth = 32 if opWidth >= 32 else opWidth #How many bits per read
 
@@ -207,7 +212,8 @@ def MovlikePrepare(offset, width):
     return aligned, wordoffset, bitoffset, wordwidth, bitwidth
 
 
-def SliceTo(nblock, dest, val, offset, width):
+def SliceTo(nblock, dest, val, offset, width, sticky):
+    assert not sticky
     aligned, wordoffset, bitoffset, wordwidth, bitwidth = MovlikePrepare(offset, width)
 
     i = 0
@@ -229,7 +235,8 @@ def SliceTo(nblock, dest, val, offset, width):
         i += 1
     return
 
-def SliceFrom(nblock, dest, val, offset, width):
+def SliceFrom(nblock, dest, val, offset, width, sticky):
+    assert not sticky
     aligned, wordoffset, bitoffset, wordwidth, bitwidth = MovlikePrepare(offset, width)
 
     i = 0
@@ -251,15 +258,16 @@ def SliceFrom(nblock, dest, val, offset, width):
         i += 1
     return
 
-def ComplexCast(nblock, dest, val):
+def ComplexCast(nblock, dest, val, sticky):
+    assert not sticky
     if not (val.kind.IsBasicInt() and dest.kind.IsBasicInt()):
-        Assg(nblock, dest, val)
+        Assg(nblock, dest, val, False)
         return
     raise NotImplementedError
 
 
 def NativeCast(nblock, D, S):
-    Assg(nblock, D, S)
+    Assg(nblock, D, S, False)
     return
     
     if S.kind.comptime:
@@ -290,25 +298,29 @@ def AddrOf(var):
     rootvar = SubReg(var, 0)
     return Var(rootvar.name+'.&', Type())
 
-def ArgStore(nblock, dest, value):
+def ArgStore(nblock, dest, value, sticky):
+    assert not sticky
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
         AddPent(nblock, 'argst', Var.FromVal(None, dest.name+i), eS, None, None)
 
-def ArgLoad(nblock, value, dest):
+def ArgLoad(nblock, value, dest, sticky):
+    assert not sticky
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
         AddPent(nblock, 'argld', eS, Var.FromVal(None, dest.name+i), None, None)
 
-def RetStore(nblock, dest, value):
+def RetStore(nblock, dest, value, sticky):
+    assert not sticky
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
         AddPent(nblock, 'retst', Var.FromVal(None, dest.name+i), eS, None, None)
 
-def RetLoad(nblock, value, dest):
+def RetLoad(nblock, value, dest, sticky):
+    assert not sticky
     assert dest.kind.comptime, f'Destination is not comptime known, is `{dest}`'
     wordwidth = CeilDiv(value.kind.OpWidth(), 32)
     for i, eS in enumerate(SubRegs(value)):
@@ -317,6 +329,7 @@ def RetLoad(nblock, value, dest):
 
 OPMAP = {
     '+': Add,
+    '+%': AddWrap,
     '-': Sub,
     '*': Mul,
     '/': Div,
@@ -343,7 +356,7 @@ OPMAP = {
     'call': lambda nblock, lbl: AddPent(nblock, 'call', lbl, None, None, None),
 }
 
-def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
+def Native(nblock, op, D, S0, S1, S2, sticky): #For 32 bit native instructions
     S0 = SubReg(S0, 0)
     S1 = SubReg(S1, 0)
     S2 = SubReg(S2, 0)
@@ -351,6 +364,8 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
     elif op[0]=='@':            AddPent(nblock, op[1:], D, S0, S1, S2)
     elif op == '+':             AddPent(nblock, 'add', D, S0, S1, S2)
     elif op == '-':             AddPent(nblock, 'sub', D, S0, S1, S2)
+    elif op == '+%':            AddPent(nblock, 'add', D, S0, S1, S2)
+    elif op == '-%':            AddPent(nblock, 'sub', D, S0, S1, S2)
     elif op == '&':             AddPent(nblock, 'and', D, S0, S1, S2)
     elif op == '|':             AddPent(nblock, 'or', D, S0, S1, S2)
     elif op == '=':             AddPent(nblock, 'mov', D, S0, S1, S2)
@@ -365,6 +380,7 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
     elif op == 'argld':         AddPent(nblock, 'argld', D, S0, None, S2)
     elif op == 'retst':         AddPent(nblock, 'retst', D, S0, S1, S2)
     elif op == 'call':          AddPent(nblock, 'call', D, S0, S1, S2)
+    elif op == 'of':            AddPent(nblock, 'of', D, S0, S1, S2)
     elif op == '=<>':           NativeCast(nblock, D, S0)
 
     elif op == '*' and IsPow2(S1):
@@ -381,6 +397,13 @@ def Native(nblock, op, D, S0, S1, S2): #For 32 bit native instructions
         AddPent(nblock, cmp, None, lhs, rhs, None)
     else:
         assert False, f'Cannot lower operand `{op}` 32 width'
+    if sticky:
+        print(nblock.body[-1])
+        nblock.body[-1] = list(nblock.body[-1])
+        nblock.body[-1][1] = list(nblock.body[-1][1])
+        nblock.body[-1][1][0] += '.s'
+        nblock.body[-1][1] = tuple(nblock.body[-1][1])
+        nblock.body[-1] = tuple(nblock.body[-1])
 
 def Comptime(comp, op, D, S0, S1, S2):
     S0 = S0.name
@@ -526,15 +549,15 @@ def Lower(hlir):
                         if D.name in comp:
                             Comptime(comp, op, D, S0, S1, S2)
                         elif all([IsNative(x) for x in [D, S0, S1, S2]]) or op == 'breakpoint':
-                            Native(nblock, op, D, S0, S1, S2)
+                            Native(nblock, op, D, S0, S1, S2, sticky = line[2])
                         else:
                             assert op[0] != '@', f'Cannot perform instrincs on non 32 width instructions'
 
                             OpHandler = OPMAP[op]
-                            numargs = OpHandler.__code__.co_argcount - 1 #1 is always `nblock`
+                            numargs = OpHandler.__code__.co_argcount - 2 #1 is always `nblock`, and one is sticky
                             args = [D, S0, S1, S2][:numargs]
                             try:
-                                OpHandler(nblock, *args)
+                                OpHandler(nblock, *args, sticky = line[2])
                             except NotImplementedError:
                                 print(f'Compiling line:\n{line}')
                                 raise NotImplementedError(f'HLIR -> LLIR does not currently support operation `{op}` with args: {D=}; {S0=}; {S1=}; {S2=}')

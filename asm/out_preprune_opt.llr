@@ -1,838 +1,578 @@
-_Main__ -> ('L0',) <- J() + N() *{'memory', 'rs'}:
-  Vars: `{'memory': ['loc', 'loc'], '0_memory': ['loc', 'loc'], 'rs_0': ['loc', 'loc'], '0_rs_0': ['loc', 'loc'], 'rs_1': ['loc', 'loc'], 'rs_2': ['loc', 'loc'], 'rs_3': ['loc', 'loc'], 'rs_4': ['loc', 'loc'], 'rs_5': ['loc', 'loc'], 'rs_6': ['loc', 'loc'], 'rs_7': ['loc', 'loc'], 'rs_8': ['loc', 'loc'], '0_rs_0.&': ['loc', 'loc'], 'ptr': ['loc', 'loc'], 't203_0': ['loc', 'loc'], 't203_1': ['loc', 'loc'], 't203_2': ['loc', 'loc'], 't203_3': ['loc', 'loc'], 't203_4': ['loc', 'loc'], 't203_5': ['loc', 'loc'], 't203_6': ['loc', 'loc'], 't203_7': ['loc', 'loc'], 't203_8': ['loc', 'loc'], '2_rs_8': ['loc', 'loc'], '2_rs_7': ['loc', 'loc'], '2_rs_6': ['loc', 'loc'], '2_rs_5': ['loc', 'loc'], '2_rs_4': ['loc', 'loc'], '2_rs_3': ['loc', 'loc'], '2_rs_2': ['loc', 'loc'], '2_rs_1': ['loc', 'loc'], '3_rs_0': ['loc', 'loc'], '4_t203_0': ['loc', 'loc'], '5_t203_1': ['loc', 'loc'], '6_ptr': ['loc', 'loc'], '6_t203_2': ['loc', 'loc'], '8_ptr': ['loc', 'loc'], '7_t203_3': ['loc', 'loc'], '10_ptr': ['loc', 'loc'], '8_t203_4': ['loc', 'loc'], '12_ptr': ['loc', 'loc'], '9_t203_5': ['loc', 'loc'], '14_ptr': ['loc', 'loc'], '10_t203_6': ['loc', 'loc'], '16_ptr': ['loc', 'loc'], '11_t203_7': ['loc', 'loc'], '18_ptr': ['loc', 'loc'], '12_t203_8': ['loc', 'loc'], '20_ptr': ['loc', 'loc']}`
+_Main__ -> ('L0',) <- J() + N() *{}:
+  Vars: `{'memory': ['loc', 'loc'], '0_memory': ['loc', 'loc'], 'rs_0': ['loc', 'loc'], '0_rs_0': ['loc', 'loc'], '0_rs_0.&': ['loc', 'loc'], 'ptr': ['loc', 'loc'], 't203_0': ['loc', 'loc'], 't203_1': ['loc', 'loc'], 't203_2': ['loc', 'loc'], 't203_3': ['loc', 'loc'], 't203_4': ['loc', 'loc'], 't203_5': ['loc', 'loc'], 't203_6': ['loc', 'loc'], 't203_7': ['loc', 'loc'], 't203_8': ['loc', 'loc'], '1_t203_0': ['loc', 'loc'], '1_t203_1': ['loc', 'loc'], '2_ptr': ['loc', 'loc'], '1_t203_2': ['loc', 'loc'], '3_ptr': ['loc', 'loc'], '1_t203_3': ['loc', 'loc'], '4_ptr': ['loc', 'loc'], '1_t203_4': ['loc', 'loc'], '5_ptr': ['loc', 'loc'], '1_t203_5': ['loc', 'loc'], '6_ptr': ['loc', 'loc'], '1_t203_6': ['loc', 'loc'], '7_ptr': ['loc', 'loc'], '1_t203_7': ['loc', 'loc'], '8_ptr': ['loc', 'loc'], '1_t203_8': ['loc', 'loc'], '9_ptr': ['loc', 'loc']}`
     [0000] ['alloc', 'memory', 32768, 64]
     [0001] ['expr', 'argst', 0, ['0_memory']]
-    [005A] ['expr', 'maywrite', '0_rs_0', []]
     [0002] ['expr', 'call', '0_u_Block____MemInit', []]
-    [0003] ['decl', 'rs_0', 32]
-    [0004] ['expr', 'addr', '0_rs_0.&', ['0_rs_0']]
-    [0005] ['decl', 'rs_1', 32]
-    [0007] ['decl', 'rs_2', 32]
-    [0009] ['decl', 'rs_3', 32]
-    [000B] ['decl', 'rs_4', 32]
-    [000D] ['decl', 'rs_5', 32]
-    [000F] ['decl', 'rs_6', 32]
-    [0011] ['decl', 'rs_7', 32]
-    [0013] ['decl', 'rs_8', 32]
-    [0015] ['expr', 'argst', 0, ['0_rs_0.&']]
-    [0016] ['expr', 'call', '0_u_RenderState____Init', []]
-    [0018] ['expr', 'argst', 0, ['0_rs_0.&']]
-    [007A] ['expr', 'maywrite', '2_rs_8', []]
-    [007B] ['expr', 'maywrite', '2_rs_7', []]
-    [007C] ['expr', 'maywrite', '2_rs_6', []]
-    [007D] ['expr', 'maywrite', '2_rs_5', []]
-    [007E] ['expr', 'maywrite', '2_rs_4', []]
-    [007F] ['expr', 'maywrite', '2_rs_3', []]
-    [0080] ['expr', 'maywrite', '2_rs_2', []]
-    [0081] ['expr', 'maywrite', '2_rs_1', []]
-    [0082] ['expr', 'maywrite', '3_rs_0', []]
-    [0019] ['expr', 'call', '0_u_RenderState____Draw', []]
-    [001A] ['decl', 'ptr', 32]
-    [001D] ['decl', 't203_0', 32]
-    [001F] ['decl', 't203_1', 32]
-    [0021] ['decl', 't203_2', 32]
-    [0023] ['decl', 't203_3', 32]
-    [0025] ['decl', 't203_4', 32]
-    [0027] ['decl', 't203_5', 32]
-    [0029] ['decl', 't203_6', 32]
-    [002B] ['decl', 't203_7', 32]
-    [002D] ['decl', 't203_8', 32]
-    [008E] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_8']]
-    [008F] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_7']]
-    [0090] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_6']]
-    [0091] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_5']]
-    [0092] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_4']]
-    [0093] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_3']]
-    [0094] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_2']]
-    [0095] ['expr', 'mayread', None, ['0_rs_0.&', '2_rs_1']]
-    [0096] ['expr', 'mayread', None, ['0_rs_0.&', '3_rs_0']]
-    [0140] ['expr', 'maywrite', '4_t203_0', []]
-    [0038] ['expr', 'st', '5_ptr', ['4_t203_0', '0_rs_0.&', 0, 0]]
-    [0153] ['expr', 'maywrite', '5_t203_1', []]
-    [0155] ['expr', 'maywrite', '6_ptr', []]
-    [0039] ['expr', 'st', '7_ptr', ['5_t203_1', '6_ptr', 32, 0]]
-    [0166] ['expr', 'maywrite', '6_t203_2', []]
-    [0169] ['expr', 'maywrite', '8_ptr', []]
-    [003A] ['expr', 'st', '9_ptr', ['6_t203_2', '8_ptr', 64, 0]]
-    [0179] ['expr', 'maywrite', '7_t203_3', []]
-    [017D] ['expr', 'maywrite', '10_ptr', []]
-    [003B] ['expr', 'st', '11_ptr', ['7_t203_3', '10_ptr', 96, 0]]
-    [018C] ['expr', 'maywrite', '8_t203_4', []]
-    [0191] ['expr', 'maywrite', '12_ptr', []]
-    [003C] ['expr', 'st', '13_ptr', ['8_t203_4', '12_ptr', 128, 0]]
-    [019F] ['expr', 'maywrite', '9_t203_5', []]
-    [01A5] ['expr', 'maywrite', '14_ptr', []]
-    [003D] ['expr', 'st', '15_ptr', ['9_t203_5', '14_ptr', 160, 0]]
-    [01B2] ['expr', 'maywrite', '10_t203_6', []]
-    [01B9] ['expr', 'maywrite', '16_ptr', []]
-    [003E] ['expr', 'st', '17_ptr', ['10_t203_6', '16_ptr', 192, 0]]
-    [01C5] ['expr', 'maywrite', '11_t203_7', []]
-    [01CD] ['expr', 'maywrite', '18_ptr', []]
-    [003F] ['expr', 'st', '19_ptr', ['11_t203_7', '18_ptr', 224, 0]]
-    [01D8] ['expr', 'maywrite', '12_t203_8', []]
-    [01E1] ['expr', 'maywrite', '20_ptr', []]
-    [0040] ['expr', 'st', '21_ptr', ['12_t203_8', '20_ptr', 256, 0]]
-    [0041] ['expr', 'argst', 0, [65]]
-    [0042] ['expr', 'argst', 1, [0]]
-    [0043] ['expr', 'argst', 2, [0]]
-    [0044] ['expr', 'argst', 3, [0]]
-    [0045] ['expr', 'argst', 4, [16777215]]
-    [0046] ['expr', 'argst', 5, [0]]
-    [0047] ['expr', 'call', '0_WriteCharFlaggedColored', []]
+    [0004] ['predecl', 9, 288]
+    [0005] ['decl', 'rs_0', 32]
+    [0006] ['expr', 'addr', '0_rs_0.&', ['0_rs_0']]
+    [0017] ['expr', 'argst', 0, ['0_rs_0.&']]
+    [0018] ['expr', 'call', '0_u_RenderState____Init', []]
+    [001B] ['expr', 'argst', 0, ['0_rs_0.&']]
+    [001C] ['expr', 'call', '0_u_RenderState____Draw', []]
+    [001F] ['decl', 'ptr', 32]
+    [0022] ['predecl', 9, 288]
+    [0023] ['decl', 't203_0', 32]
+    [0025] ['decl', 't203_1', 32]
+    [0027] ['decl', 't203_2', 32]
+    [0029] ['decl', 't203_3', 32]
+    [002B] ['decl', 't203_4', 32]
+    [002D] ['decl', 't203_5', 32]
+    [002F] ['decl', 't203_6', 32]
+    [0031] ['decl', 't203_7', 32]
+    [0033] ['decl', 't203_8', 32]
+    [0035] ['expr', 'ld', '1_t203_0', ['0_rs_0.&', 0, 0]]
+    [0036] ['expr', 'ld', '1_t203_1', ['0_rs_0.&', 32, 0]]
+    [0037] ['expr', 'ld', '1_t203_2', ['0_rs_0.&', 64, 0]]
+    [0038] ['expr', 'ld', '1_t203_3', ['0_rs_0.&', 96, 0]]
+    [0039] ['expr', 'ld', '1_t203_4', ['0_rs_0.&', 128, 0]]
+    [003A] ['expr', 'ld', '1_t203_5', ['0_rs_0.&', 160, 0]]
+    [003B] ['expr', 'ld', '1_t203_6', ['0_rs_0.&', 192, 0]]
+    [003C] ['expr', 'ld', '1_t203_7', ['0_rs_0.&', 224, 0]]
+    [003D] ['expr', 'ld', '1_t203_8', ['0_rs_0.&', 256, 0]]
+    [003E] ['expr', 'st', '2_ptr', ['1_t203_0', '0_rs_0.&', 0, 0]]
+    [003F] ['expr', 'st', '3_ptr', ['1_t203_1', '2_ptr', 32, 0]]
+    [0040] ['expr', 'st', '4_ptr', ['1_t203_2', '3_ptr', 64, 0]]
+    [0041] ['expr', 'st', '5_ptr', ['1_t203_3', '4_ptr', 96, 0]]
+    [0042] ['expr', 'st', '6_ptr', ['1_t203_4', '5_ptr', 128, 0]]
+    [0043] ['expr', 'st', '7_ptr', ['1_t203_5', '6_ptr', 160, 0]]
+    [0044] ['expr', 'st', '8_ptr', ['1_t203_6', '7_ptr', 192, 0]]
+    [0045] ['expr', 'st', '9_ptr', ['1_t203_7', '8_ptr', 224, 0]]
+    [0046] ['expr', 'st', '10_ptr', ['1_t203_8', '9_ptr', 256, 0]]
+    [0047] ['expr', 'argst', 0, [65]]
+    [0048] ['expr', 'argst', 1, [0]]
+    [0049] ['expr', 'argst', 2, [0]]
+    [004A] ['expr', 'argst', 3, [0]]
+    [004B] ['expr', 'argst', 4, [16777215]]
+    [004C] ['expr', 'argst', 5, [0]]
+    [004D] ['expr', 'call', '0_WriteCharFlaggedColored', []]
   ('FALL',)
 
-L0 -> ('L0',) <- J('L0',) + N('_Main__',) *{'memory'}:
+L0 -> ('L0',) <- J('L0',) + N('_Main__',) *{}:
   Vars: `{}`
   ('jmp', 'L0')
 
-_u_Block____MemInit__ -> () <- J() + N() *{'memory'}:
-  Vars: `{'nblock_0': ['loc', 'loc'], 'nblock_1': ['loc', 'loc'], 't_hl0': ['loc', 'loc'], '2_nblock_0': ['loc', 'loc'], '1_memory': ['loc', 'loc'], '4_nblock_1': ['loc', 'loc'], '3_memory': ['loc', 'loc'], '4_t_hl0': ['loc', 'loc']}`
-    [0201] ['decl', 'nblock_0', 32]
-    [0203] ['decl', 'nblock_1', 32]
-    [020B] ['decl', 't_hl0', 32]
-    [0215] ['expr', 'maywrite', '2_nblock_0', []]
-    [0216] ['expr', 'maywrite', '1_memory', []]
-    [020E] ['expr', 'st', '2_memory', ['2_nblock_0', '1_memory', 0, 0]]
-    [0217] ['expr', 'maywrite', '4_t_hl0', []]
-    [0219] ['expr', 'maywrite', '4_nblock_1', []]
-    [021B] ['expr', 'maywrite', '3_memory', []]
-    [0210] ['expr', 'st', '4_memory', ['4_nblock_1', '3_memory', '4_t_hl0', 0]]
+_u_Block____MemInit__ -> () <- J() + N() *{}:
+  Vars: `{'0_memory': ['loc', 'loc'], 'nblock_0': ['loc', 'loc'], 'nblock_1': ['loc', 'loc'], '0_nblock_0': ['loc', 'loc'], '0_nblock_1': ['loc', 'loc'], '1_nblock_1': ['loc', 'loc'], 't_hl0': ['loc', 'loc'], '1_nblock_0': ['loc', 'loc'], '2_nblock_1': ['loc', 'loc'], '1_memory': ['loc', 'loc'], '2_t_hl0': ['loc', 'loc']}`
+    [004F] ['expr', 'argld', '0_memory', [0]]
+    [0050] ['predecl', 2, 64]
+    [0051] ['decl', 'nblock_0', 32]
+    [0053] ['decl', 'nblock_1', 32]
+    [0055] ['expr', 'bst', '1_nblock_0', ['0_nblock_0', 0, 0, 0]]
+    [0056] ['expr', 'bst', '1_nblock_1', ['0_nblock_1', 32768, 0, 31]]
+    [0057] ['expr', 'bst', '2_nblock_1', ['1_nblock_1', 1, 31, 1]]
+    [005C] ['decl', 't_hl0', 32]
+    [005F] ['expr', 'st', '1_memory', ['1_nblock_0', '0_memory', 0, 0]]
+    [0060] ['expr', 'add', '2_t_hl0', [0, 32]]
+    [0061] ['expr', 'st', '2_memory', ['2_nblock_1', '1_memory', '2_t_hl0', 0]]
   ('ret', None, None, None, None)
 
-_u_Block____Malloc__ -> ('L0',) <- J() + N() *{'memory', 'size'}:
-  Vars: `{'0_memory': ['loc', 'loc'], '0_size': ['loc', 'loc'], 't3': ['loc', 'loc'], 'ENDPTR': ['loc', 'loc'], '1_t3': ['loc', 'loc'], 't4': ['loc', 'loc'], 't7': ['loc', 'loc'], '1_t4': ['loc', 'loc'], 'rsize': ['loc', 'loc'], '1_t7': ['loc', 'loc'], 'hijack': ['loc', 'loc'], 'u_target': ['loc', 'loc'], 'doSplit': ['loc', 'loc'], 'blockptr': ['loc', 'loc'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '10_blockptr': ['pre', 'post']}`
-    [021C] ['expr', 'argld', '0_memory', [0]]
-    [021D] ['expr', 'argld', '0_size', [1]]
-    [021E] ['decl', 't3', 32]
-    [0220] ['expr', 'add', '1_t3', ['0_memory', 32768]]
-    [0221] ['decl', 'ENDPTR', 32]
-    [0223] ['expr', 'mov', '1_ENDPTR', ['1_t3']]
-    [0224] ['decl', 't4', 31]
-    [0226] ['expr', 'sub', '1_t4', ['0_size', 1]]
-    [022A] ['decl', 't7', 31]
-    [022C] ['expr', 'bsr', '1_t7', ['1_t4', 5]]
-    [022D] ['decl', 'rsize', 31]
-    [022F] ['expr', 'mov', '1_rsize', ['1_t7']]
-    [0230] ['decl', 'hijack', 32]
-    [0232] ['expr', 'mov', '1_hijack', [0]]
-    [0233] ['decl', 'u_target', 32]
-    [0235] ['expr', 'mov', '1_u_target', [0]]
-    [0236] ['decl', 'doSplit', 1]
-    [0238] ['expr', 'mov', '1_doSplit', [0]]
-    [0239] ['decl', 'blockptr', 32]
-    [023B] ['expr', 'mov', '1_blockptr', ['0_memory']]
+_u_Block____Malloc__ -> ('L0',) <- J() + N() *{}:
+  Vars: `{'0_memory': ['loc', 'loc'], '0_size': ['loc', 'loc'], 'ENDPTR': ['loc', 'loc'], 'rsize': ['loc', 'loc'], 't4': ['loc', 'loc'], 't5': ['loc', 'loc'], '1_t4': ['loc', 'loc'], '1_t5': ['loc', 'loc'], 'hijack': ['loc', 'loc'], 'u_target': ['loc', 'loc'], 'doSplit': ['loc', 'loc'], 'blockptr': ['loc', 'loc'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t32': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post']}`
+    [0063] ['expr', 'argld', '0_memory', [0]]
+    [0064] ['expr', 'argld', '0_size', [1]]
+    [0066] ['decl', 'ENDPTR', 32]
+    [006B] ['expr', 'add', '1_ENDPTR', ['0_memory', 32768]]
+    [006E] ['decl', 'rsize', 31]
+    [0071] ['decl', 't4', 31]
+    [0073] ['expr', 'sub', '1_t5', ['0_size', 1]]
+    [0075] ['decl', 't5', 31]
+    [0077] ['expr', 'mov', '1_t5', ['1_t4']]
+    [007B] ['expr', 'bsr', '1_rsize', ['1_t5', 5]]
+    [007E] ['decl', 'hijack', 32]
+    [0080] ['expr', 'mov', '1_hijack', [0]]
+    [0082] ['decl', 'u_target', 32]
+    [0084] ['expr', 'mov', '1_u_target', [0]]
+    [0086] ['decl', 'doSplit', 1]
+    [0088] ['expr', 'mov', '1_doSplit', [0]]
+    [008A] ['decl', 'blockptr', 32]
+    [008C] ['expr', 'mov', '1_blockptr', ['0_memory']]
   ('FALL',)
 
-L0 -> ('L10', 'L1') <- J('L1', 'L9') + N('_u_Block____Malloc__',) *{'memory', 'size'}:
-  Vars: `{'1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '10_blockptr': ['pre', 'post']}`
-    [0406] ['expr', 'phi', '2_hijack', ['1_hijack', '3_hijack', '12_hijack']]
-    [0407] ['expr', 'phi', '2_rsize', ['1_rsize', '3_rsize', '11_rsize']]
-    [0408] ['expr', 'phi', '2_u_target', ['1_u_target', '3_u_target', '13_u_target']]
-    [0409] ['expr', 'phi', '2_doSplit', ['1_doSplit', '3_doSplit', '12_doSplit']]
-    [040A] ['expr', 'phi', '2_ENDPTR', ['1_ENDPTR', '3_ENDPTR', '11_ENDPTR']]
-    [040B] ['expr', 'phi', '2_blockptr', ['1_blockptr', '3_blockptr', '12_blockptr']]
-    [023C] ['expr', 'ne', None, ['2_blockptr', '2_ENDPTR']]
+L0 -> ('L10', 'L1') <- J('L1', 'L9') + N('_u_Block____Malloc__',) *{}:
+  Vars: `{'1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t32': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post']}`
+    [013D] ['expr', 'phi', '2_hijack', ['1_hijack', '3_hijack', '12_hijack']]
+    [013E] ['expr', 'phi', '2_rsize', ['1_rsize', '3_rsize', '11_rsize']]
+    [013F] ['expr', 'phi', '2_u_target', ['1_u_target', '3_u_target', '13_u_target']]
+    [0140] ['expr', 'phi', '2_doSplit', ['1_doSplit', '3_doSplit', '12_doSplit']]
+    [0141] ['expr', 'phi', '2_ENDPTR', ['1_ENDPTR', '3_ENDPTR', '11_ENDPTR']]
+    [0142] ['expr', 'phi', '2_blockptr', ['1_blockptr', '3_blockptr', '12_blockptr']]
+    [008D] ['expr', 'ne', None, ['2_blockptr', '2_ENDPTR']]
   ('cn.jmp', 'L10')
 
-L1 -> ('L0', 'L2') <- J() + N('L0',) *{'memory', 'size'}:
-  Vars: `{'2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_blockptr': ['pre', 'post'], 't15_0': ['loc', 'loc'], 't15_1': ['loc', 'loc'], '3_blockptr': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], 't16': ['loc', 'loc'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '10_blockptr': ['pre', 'post']}`
-    [040C] ['expr', 'mov', '3_hijack', ['2_hijack']]
-    [040D] ['expr', 'mov', '3_u_target', ['2_u_target']]
-    [040E] ['expr', 'mov', '3_rsize', ['2_rsize']]
-    [040F] ['expr', 'mov', '3_doSplit', ['2_doSplit']]
-    [0410] ['expr', 'mov', '3_ENDPTR', ['2_ENDPTR']]
-    [0411] ['expr', 'mov', '3_blockptr', ['2_blockptr']]
-    [023D] ['decl', 't15_0', 32]
-    [023F] ['decl', 't15_1', 32]
-    [031A] ['expr', 'mayread', None, ['3_blockptr', '0_t15_1']]
-    [031B] ['expr', 'mayread', None, ['3_blockptr', '0_t15_0']]
-    [0241] ['expr', 'ld', '1_t15_0', ['3_blockptr', 0, 0]]
-    [031E] ['expr', 'mayread', None, ['3_blockptr', '1_t15_0']]
-    [0242] ['expr', 'ld', '1_t15_1', ['3_blockptr', 32, 0]]
-    [0243] ['decl', 't16', 1]
-    [0245] ['expr', 'bsf', '1_t16', ['1_t15_1', 0, 1]]
-    [0246] ['expr', 'eq', None, ['1_t16', 0]]
+L1 -> ('L0', 'L2') <- J() + N('L0',) *{}:
+  Vars: `{'2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_blockptr': ['pre', 'post'], 't15_1': ['loc', 'loc'], 't16': ['loc', 'loc'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '1_t32': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t38': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post']}`
+    [0143] ['expr', 'mov', '3_hijack', ['2_hijack']]
+    [0144] ['expr', 'mov', '3_u_target', ['2_u_target']]
+    [0145] ['expr', 'mov', '3_rsize', ['2_rsize']]
+    [0146] ['expr', 'mov', '3_doSplit', ['2_doSplit']]
+    [0147] ['expr', 'mov', '3_ENDPTR', ['2_ENDPTR']]
+    [0148] ['expr', 'mov', '3_blockptr', ['2_blockptr']]
+    [0091] ['decl', 't15_1', 32]
+    [0094] ['expr', 'ld', '1_t15_1', ['2_blockptr', 32, 0]]
+    [0096] ['decl', 't16', 1]
+    [0098] ['expr', 'bsf', '1_t16', ['1_t15_1', 0, 1]]
+    [0099] ['expr', 'eq', None, ['1_t16', 0]]
   ('c.jmp', 'L0')
 
-L2 -> ('L3',) <- J() + N('L1',) *{'memory', 'size'}:
-  Vars: `{'3_hijack': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '3_u_target': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '3_rsize': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '2_hijack': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '1_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '10_blockptr': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [0412] ['expr', 'mov', '4_hijack', ['3_hijack']]
-    [0413] ['expr', 'mov', '4_ENDPTR', ['3_ENDPTR']]
-    [0414] ['expr', 'mov', '4_u_target', ['3_u_target']]
-    [0415] ['expr', 'mov', '4_doSplit', ['3_doSplit']]
-    [0416] ['expr', 'mov', '4_rsize', ['3_rsize']]
-    [0417] ['expr', 'mov', '4_blockptr', ['3_blockptr']]
+L2 -> ('L3',) <- J() + N('L1',) *{}:
+  Vars: `{'2_blockptr': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '1_t32': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '1_t38': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
   ('jmp', 'L3')
 
-L3 -> ('L5', 'L4') <- J() + N('L2',) *{'memory', 'size'}:
-  Vars: `{'4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], 't20_0': ['loc', 'loc'], 't20_1': ['loc', 'loc'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], 't21': ['loc', 'loc'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '2_hijack': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '10_blockptr': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [0418] ['expr', 'mov', '5_hijack', ['4_hijack']]
-    [0419] ['expr', 'mov', '5_ENDPTR', ['4_ENDPTR']]
-    [041A] ['expr', 'mov', '5_u_target', ['4_u_target']]
-    [041B] ['expr', 'mov', '5_doSplit', ['4_doSplit']]
-    [041C] ['expr', 'mov', '5_rsize', ['4_rsize']]
-    [041D] ['expr', 'mov', '5_blockptr', ['4_blockptr']]
-    [0247] ['decl', 't20_0', 32]
-    [0249] ['decl', 't20_1', 32]
-    [0321] ['expr', 'mayread', None, ['5_blockptr', '0_t20_1']]
-    [0322] ['expr', 'mayread', None, ['5_blockptr', '0_t20_0']]
-    [024B] ['expr', 'ld', '1_t20_0', ['5_blockptr', 0, 0]]
-    [0326] ['expr', 'mayread', None, ['5_blockptr', '1_t20_0']]
-    [024C] ['expr', 'ld', '1_t20_1', ['5_blockptr', 32, 0]]
-    [024D] ['decl', 't21', 31]
-    [024F] ['expr', 'bsf', '1_t21', ['1_t20_1', 0, 31]]
-    [0253] ['expr', 'eq', None, ['1_t21', '5_rsize']]
+L3 -> ('L5', 'L4') <- J() + N('L2',) *{}:
+  Vars: `{'bsize': ['loc', 'loc'], 't20_1': ['loc', 'loc'], '2_blockptr': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '1_t32': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '1_t38': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [009B] ['decl', 'bsize', 31]
+    [00A0] ['decl', 't20_1', 32]
+    [00A3] ['expr', 'ld', '1_t20_1', ['2_blockptr', 32, 0]]
+    [00A7] ['expr', 'bsf', '1_bsize', ['1_t20_1', 0, 31]]
+    [00A9] ['expr', 'eq', None, ['1_bsize', '2_rsize']]
   ('cn.jmp', 'L5')
 
-L4 -> ('L10',) <- J() + N('L3',) *{'memory', 'size'}:
-  Vars: `{'5_hijack': ['pre', 'loc'], '5_ENDPTR': ['pre', 'loc'], '5_rsize': ['pre', 'loc'], '5_doSplit': ['pre', 'loc'], '5_blockptr': ['pre', 'loc'], '6_blockptr': ['pre', 'loc'], '2_hijack': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [041E] ['expr', 'mov', '6_hijack', ['5_hijack']]
-    [041F] ['expr', 'mov', '6_ENDPTR', ['5_ENDPTR']]
-    [0420] ['expr', 'mov', '6_rsize', ['5_rsize']]
-    [0422] ['expr', 'mov', '6_doSplit', ['5_doSplit']]
-    [0423] ['expr', 'mov', '6_blockptr', ['5_blockptr']]
-    [0254] ['expr', 'mov', '7_u_target', ['6_blockptr']]
+L4 -> ('L10',) <- J() + N('L3',) *{}:
+  Vars: `{'2_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '2_blockptr': ['pre', 'loc'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [0155] ['expr', 'mov', '6_hijack', ['2_hijack']]
+    [0156] ['expr', 'mov', '6_ENDPTR', ['2_ENDPTR']]
+    [0157] ['expr', 'mov', '6_rsize', ['2_rsize']]
+    [0159] ['expr', 'mov', '6_doSplit', ['2_doSplit']]
+    [00AA] ['expr', 'mov', '7_u_target', ['2_blockptr']]
   ('jmp', 'L10')
 
-L5 -> ('L7', 'L6') <- J('L3',) + N() *{'memory', 'size'}:
-  Vars: `{'5_hijack': ['pre', 'post'], '5_u_target': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '5_rsize': ['pre', 'post'], '1_t21': ['pre', 'post'], 't32': ['loc', 'loc'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '10_blockptr': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [0424] ['expr', 'mov', '7_hijack', ['5_hijack']]
-    [0425] ['expr', 'mov', '8_u_target', ['5_u_target']]
-    [0426] ['expr', 'mov', '7_doSplit', ['5_doSplit']]
-    [0427] ['expr', 'mov', '7_ENDPTR', ['5_ENDPTR']]
-    [0428] ['expr', 'mov', '7_blockptr', ['5_blockptr']]
-    [0429] ['expr', 'mov', '7_rsize', ['5_rsize']]
-    [042A] ['expr', 'mov', '2_t21', ['1_t21']]
-    [0255] ['decl', 't32', 31]
-    [0257] ['expr', 'add', '1_t32', ['7_rsize', 1]]
-    [0258] ['expr', 'eq', None, ['2_t21', '1_t32']]
+L5 -> ('L7', 'L6') <- J('L3',) + N() *{}:
+  Vars: `{'t32': ['loc', 'loc'], '2_rsize': ['pre', 'post'], '1_bsize': ['pre', 'post'], '1_t32': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_hijack': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [00AC] ['decl', 't32', 31]
+    [00AE] ['expr', 'add', '1_t32', ['2_rsize', 1]]
+    [00AF] ['expr', 'eq', None, ['1_bsize', '1_t32']]
   ('cn.jmp', 'L7')
 
-L6 -> ('L9',) <- J() + N('L5',) *{'memory', 'size'}:
-  Vars: `{'7_rsize': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '7_hijack': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '10_blockptr': ['pre', 'post']}`
-    [042C] ['expr', 'mov', '8_rsize', ['7_rsize']]
-    [042D] ['expr', 'mov', '9_u_target', ['8_u_target']]
-    [042E] ['expr', 'mov', '8_doSplit', ['7_doSplit']]
-    [042F] ['expr', 'mov', '8_ENDPTR', ['7_ENDPTR']]
-    [0430] ['expr', 'mov', '8_blockptr', ['7_blockptr']]
-    [0259] ['expr', 'mov', '9_hijack', ['8_blockptr']]
+L6 -> ('L9',) <- J() + N('L5',) *{}:
+  Vars: `{'2_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_hijack': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t32': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post'], '1_t38': ['pre', 'post']}`
+    [0163] ['expr', 'mov', '8_rsize', ['2_rsize']]
+    [0164] ['expr', 'mov', '9_u_target', ['2_u_target']]
+    [0165] ['expr', 'mov', '8_doSplit', ['2_doSplit']]
+    [0166] ['expr', 'mov', '8_ENDPTR', ['2_ENDPTR']]
+    [0167] ['expr', 'mov', '8_blockptr', ['2_blockptr']]
+    [00B0] ['expr', 'mov', '9_hijack', ['2_blockptr']]
   ('jmp', 'L9')
 
-L7 -> ('L9', 'L8') <- J('L5',) + N() *{'memory', 'size'}:
-  Vars: `{'7_hijack': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], 't38': ['loc', 'loc'], '9_rsize': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '10_hijack': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '10_blockptr': ['pre', 'post'], '9_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '1_t32': ['pre', 'post']}`
-    [0431] ['expr', 'mov', '10_hijack', ['7_hijack']]
-    [0432] ['expr', 'mov', '10_u_target', ['8_u_target']]
-    [0433] ['expr', 'mov', '9_doSplit', ['7_doSplit']]
-    [0434] ['expr', 'mov', '9_ENDPTR', ['7_ENDPTR']]
-    [0435] ['expr', 'mov', '9_blockptr', ['7_blockptr']]
-    [0436] ['expr', 'mov', '9_rsize', ['7_rsize']]
-    [0437] ['expr', 'mov', '3_t21', ['2_t21']]
-    [025A] ['decl', 't38', 31]
-    [025C] ['expr', 'add', '1_t38', ['9_rsize', 1]]
-    [025D] ['expr', 'ugt', None, ['3_t21', '1_t38']]
+L7 -> ('L9', 'L8') <- J('L5',) + N() *{}:
+  Vars: `{'2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_rsize': ['pre', 'post'], 't38': ['loc', 'loc'], '1_bsize': ['pre', 'post'], '1_t38': ['pre', 'post'], '9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], '11_blockptr': ['pre', 'post'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post'], '1_t32': ['pre', 'post']}`
+    [0168] ['expr', 'mov', '10_hijack', ['2_hijack']]
+    [0169] ['expr', 'mov', '10_u_target', ['2_u_target']]
+    [016A] ['expr', 'mov', '9_doSplit', ['2_doSplit']]
+    [016B] ['expr', 'mov', '9_ENDPTR', ['2_ENDPTR']]
+    [016C] ['expr', 'mov', '9_blockptr', ['2_blockptr']]
+    [016E] ['expr', 'mov', '9_rsize', ['2_rsize']]
+    [00B2] ['decl', 't38', 31]
+    [00B4] ['expr', 'add', '1_t38', ['2_rsize', 1]]
+    [00B5] ['expr', 'ugt', None, ['1_bsize', '1_t38']]
   ('cn.jmp', 'L9')
 
-L8 -> ('L10',) <- J() + N('L7',) *{'memory', 'size'}:
-  Vars: `{'10_hijack': ['pre', 'loc'], '9_ENDPTR': ['pre', 'loc'], '9_rsize': ['pre', 'loc'], '9_blockptr': ['pre', 'loc'], '10_blockptr': ['pre', 'loc'], '2_hijack': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [0438] ['expr', 'mov', '11_hijack', ['10_hijack']]
-    [0439] ['expr', 'mov', '10_ENDPTR', ['9_ENDPTR']]
-    [043A] ['expr', 'mov', '10_rsize', ['9_rsize']]
-    [043D] ['expr', 'mov', '10_blockptr', ['9_blockptr']]
-    [025E] ['expr', 'mov', '11_doSplit', [1]]
-    [025F] ['expr', 'mov', '12_u_target', ['10_blockptr']]
+L8 -> ('L10',) <- J() + N('L7',) *{}:
+  Vars: `{'2_hijack': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_blockptr': ['pre', 'loc'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '2_u_target': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [016F] ['expr', 'mov', '11_hijack', ['2_hijack']]
+    [0170] ['expr', 'mov', '10_ENDPTR', ['2_ENDPTR']]
+    [0171] ['expr', 'mov', '10_rsize', ['2_rsize']]
+    [00B6] ['expr', 'mov', '11_doSplit', [1]]
+    [00B7] ['expr', 'mov', '12_u_target', ['2_blockptr']]
   ('jmp', 'L10')
 
-L9 -> ('L0',) <- J('L6', 'L7') + N() *{'memory', 'size'}:
-  Vars: `{'9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], 't42': ['loc', 'loc'], '11_blockptr': ['pre', 'post'], 't43_0': ['loc', 'loc'], 't43_1': ['loc', 'loc'], '0_t43_1': ['pre', 'post'], '0_t43_0': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t43_0': ['pre', 'post'], 't44': ['loc', 'loc'], '1_t43_1': ['pre', 'post'], 't45': ['loc', 'loc'], '1_t44': ['pre', 'post'], '1_t45': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '0_t15_1': ['pre', 'post'], '0_t15_0': ['pre', 'post'], '1_t15_0': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '4_hijack': ['pre', 'post'], '4_ENDPTR': ['pre', 'post'], '4_u_target': ['pre', 'post'], '4_doSplit': ['pre', 'post'], '4_rsize': ['pre', 'post'], '4_blockptr': ['pre', 'post'], '5_blockptr': ['pre', 'post'], '0_t20_1': ['pre', 'post'], '0_t20_0': ['pre', 'post'], '1_t20_0': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_t21': ['pre', 'post'], '5_rsize': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '5_hijack': ['pre', 'post'], '5_ENDPTR': ['pre', 'post'], '5_doSplit': ['pre', 'post'], '6_blockptr': ['pre', 'post'], '5_u_target': ['pre', 'post'], '7_rsize': ['pre', 'post'], '2_t21': ['pre', 'post'], '1_t32': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '8_u_target': ['pre', 'post'], '7_doSplit': ['pre', 'post'], '7_ENDPTR': ['pre', 'post'], '7_blockptr': ['pre', 'post'], '7_hijack': ['pre', 'post'], '3_t21': ['pre', 'post'], '1_t38': ['pre', 'post'], '10_blockptr': ['pre', 'post']}`
-    [043E] ['expr', 'phi', '12_hijack', ['9_hijack', '10_hijack']]
-    [043F] ['expr', 'phi', '11_rsize', ['8_rsize', '9_rsize']]
-    [0440] ['expr', 'phi', '13_u_target', ['9_u_target', '10_u_target']]
-    [0441] ['expr', 'phi', '12_doSplit', ['8_doSplit', '9_doSplit']]
-    [0442] ['expr', 'phi', '11_ENDPTR', ['8_ENDPTR', '9_ENDPTR']]
-    [0443] ['expr', 'phi', '11_blockptr', ['8_blockptr', '9_blockptr']]
-    [0260] ['decl', 't42', 32]
-    [0262] ['expr', 'add', '1_t42', ['11_blockptr', 1]]
-    [0263] ['decl', 't43_0', 32]
-    [0265] ['decl', 't43_1', 32]
-    [0329] ['expr', 'mayread', None, ['11_blockptr', '0_t43_1']]
-    [032A] ['expr', 'mayread', None, ['11_blockptr', '0_t43_0']]
-    [032B] ['expr', 'mayread', None, ['11_blockptr', '1_t42']]
-    [0267] ['expr', 'ld', '1_t43_0', ['11_blockptr', 0, 0]]
-    [032F] ['expr', 'mayread', None, ['11_blockptr', '1_t43_0']]
-    [0268] ['expr', 'ld', '1_t43_1', ['11_blockptr', 32, 0]]
-    [0269] ['decl', 't44', 31]
-    [026B] ['expr', 'bsf', '1_t44', ['1_t43_1', 0, 31]]
-    [026C] ['decl', 't45', 32]
-    [026E] ['expr', 'add', '1_t45', ['1_t42', '1_t44']]
-    [026F] ['expr', 'mov', '12_blockptr', ['1_t45']]
+L9 -> ('L0',) <- J('L6', 'L7') + N() *{}:
+  Vars: `{'9_hijack': ['pre', 'post'], '10_hijack': ['pre', 'post'], '8_rsize': ['pre', 'post'], '9_rsize': ['pre', 'post'], '9_u_target': ['pre', 'post'], '10_u_target': ['pre', 'post'], '8_doSplit': ['pre', 'post'], '9_doSplit': ['pre', 'post'], '8_ENDPTR': ['pre', 'post'], '9_ENDPTR': ['pre', 'post'], '8_blockptr': ['pre', 'post'], '9_blockptr': ['pre', 'post'], 't42': ['loc', 'loc'], '11_blockptr': ['pre', 'post'], 't43_1': ['loc', 'loc'], 't44': ['loc', 'loc'], '1_t43_1': ['pre', 'post'], '1_t42': ['pre', 'post'], '1_t44': ['pre', 'post'], '1_hijack': ['pre', 'post'], '3_hijack': ['pre', 'post'], '12_hijack': ['pre', 'post'], '1_rsize': ['pre', 'post'], '3_rsize': ['pre', 'post'], '11_rsize': ['pre', 'post'], '1_u_target': ['pre', 'post'], '3_u_target': ['pre', 'post'], '13_u_target': ['pre', 'post'], '1_doSplit': ['pre', 'post'], '3_doSplit': ['pre', 'post'], '12_doSplit': ['pre', 'post'], '1_ENDPTR': ['pre', 'post'], '3_ENDPTR': ['pre', 'post'], '11_ENDPTR': ['pre', 'post'], '1_blockptr': ['pre', 'post'], '3_blockptr': ['pre', 'post'], '12_blockptr': ['pre', 'post'], '2_blockptr': ['pre', 'post'], '2_ENDPTR': ['pre', 'post'], '2_hijack': ['pre', 'post'], '2_u_target': ['pre', 'post'], '2_rsize': ['pre', 'post'], '2_doSplit': ['pre', 'post'], '1_t15_1': ['pre', 'post'], '1_t16': ['pre', 'post'], '6_hijack': ['pre', 'post'], '11_hijack': ['pre', 'post'], '6_ENDPTR': ['pre', 'post'], '10_ENDPTR': ['pre', 'post'], '6_rsize': ['pre', 'post'], '10_rsize': ['pre', 'post'], '7_u_target': ['pre', 'post'], '12_u_target': ['pre', 'post'], '6_doSplit': ['pre', 'post'], '11_doSplit': ['pre', 'post'], '13_doSplit': ['pre', 'post'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '1_t20_1': ['pre', 'post'], '1_bsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '1_t32': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post'], '1_t38': ['pre', 'post']}`
+    [0175] ['expr', 'phi', '12_hijack', ['9_hijack', '10_hijack']]
+    [0176] ['expr', 'phi', '11_rsize', ['8_rsize', '9_rsize']]
+    [0177] ['expr', 'phi', '13_u_target', ['9_u_target', '10_u_target']]
+    [0178] ['expr', 'phi', '12_doSplit', ['8_doSplit', '9_doSplit']]
+    [0179] ['expr', 'phi', '11_ENDPTR', ['8_ENDPTR', '9_ENDPTR']]
+    [017A] ['expr', 'phi', '11_blockptr', ['8_blockptr', '9_blockptr']]
+    [00B9] ['decl', 't42', 32]
+    [00BB] ['expr', 'add', '1_t42', ['11_blockptr', 1]]
+    [00BF] ['decl', 't43_1', 32]
+    [00C2] ['expr', 'ld', '1_t43_1', ['11_blockptr', 32, 0]]
+    [00C4] ['decl', 't44', 31]
+    [00C6] ['expr', 'bsf', '1_t44', ['1_t43_1', 0, 31]]
+    [00CA] ['expr', 'add', '12_blockptr', ['1_t42', '1_t44']]
   ('jmp', 'L0')
 
-L10 -> ('L16', 'L11') <- J('L0', 'L4', 'L8') + N() *{'memory', 'size'}:
-  Vars: `{'2_hijack': ['pre', 'loc'], '6_hijack': ['pre', 'loc'], '11_hijack': ['pre', 'loc'], '2_ENDPTR': ['pre', 'loc'], '6_ENDPTR': ['pre', 'loc'], '10_ENDPTR': ['pre', 'loc'], '2_rsize': ['pre', 'loc'], '6_rsize': ['pre', 'loc'], '10_rsize': ['pre', 'loc'], '2_u_target': ['pre', 'loc'], '7_u_target': ['pre', 'loc'], '12_u_target': ['pre', 'loc'], '2_doSplit': ['pre', 'loc'], '6_doSplit': ['pre', 'loc'], '11_doSplit': ['pre', 'loc'], '13_doSplit': ['pre', 'loc'], '13_hijack': ['pre', 'post'], '14_u_target': ['pre', 'post'], '15_u_target': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '12_rsize': ['pre', 'post'], '17_u_target': ['pre', 'post'], '0_t75_1': ['pre', 'post'], '0_t75_0': ['pre', 'post'], '1_t75_0': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_t76': ['pre', 'post'], '13_rsize': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t81_0': ['pre', 'post'], '2_t80': ['pre', 'post'], '2_excess': ['pre', 'post'], '2_t78': ['pre', 'post'], '2_t77': ['pre', 'post'], '2_oldsize': ['pre', 'post'], '2_t76': ['pre', 'post'], '2_t75_1': ['pre', 'post'], '2_t75_0': ['pre', 'post'], '2_t81_0': ['pre', 'post'], '2_t81_1': ['pre', 'post'], '3_t83': ['pre', 'post'], '4_t83': ['pre', 'post'], '5_t83': ['pre', 'post'], '5_t88_1': ['pre', 'post'], '5_t87': ['pre', 'post'], '5_t89': ['pre', 'post'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [0444] ['expr', 'phi', '13_hijack', ['2_hijack', '6_hijack', '11_hijack']]
-    [0445] ['expr', 'phi', '12_ENDPTR', ['2_ENDPTR', '6_ENDPTR', '10_ENDPTR']]
-    [0446] ['expr', 'phi', '12_rsize', ['2_rsize', '6_rsize', '10_rsize']]
-    [0447] ['expr', 'phi', '14_u_target', ['2_u_target', '7_u_target', '12_u_target']]
-    [0448] ['expr', 'phi', '13_doSplit', ['2_doSplit', '6_doSplit', '11_doSplit']]
-    [0270] ['expr', 'eq', None, ['13_doSplit', 0]]
+L10 -> ('L16', 'L11') <- J('L0', 'L4', 'L8') + N() *{}:
+  Vars: `{'2_hijack': ['pre', 'loc'], '6_hijack': ['pre', 'loc'], '11_hijack': ['pre', 'loc'], '2_ENDPTR': ['pre', 'loc'], '6_ENDPTR': ['pre', 'loc'], '10_ENDPTR': ['pre', 'loc'], '2_rsize': ['pre', 'loc'], '6_rsize': ['pre', 'loc'], '10_rsize': ['pre', 'loc'], '2_u_target': ['pre', 'loc'], '7_u_target': ['pre', 'loc'], '12_u_target': ['pre', 'loc'], '2_doSplit': ['pre', 'loc'], '6_doSplit': ['pre', 'loc'], '11_doSplit': ['pre', 'loc'], '13_doSplit': ['pre', 'loc'], '14_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t75_1': ['pre', 'post'], '1_oldsize': ['pre', 'post'], '12_rsize': ['pre', 'post'], '1_t77': ['pre', 'post'], '20_u_target': ['pre', 'post'], '1_t81_1': ['pre', 'post'], '1_t80': ['pre', 'post'], '1_t82': ['pre', 'post'], '1_newNext': ['pre', 'post'], '1_excess': ['pre', 'post'], '2_newNext': ['pre', 'post'], '3_newNext': ['pre', 'post'], '4_newNext': ['pre', 'post'], '1_t88_1': ['pre', 'post'], '1_t87': ['pre', 'post'], '1_t89': ['pre', 'post'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [017B] ['expr', 'phi', '13_hijack', ['2_hijack', '6_hijack', '11_hijack']]
+    [017C] ['expr', 'phi', '12_ENDPTR', ['2_ENDPTR', '6_ENDPTR', '10_ENDPTR']]
+    [017D] ['expr', 'phi', '12_rsize', ['2_rsize', '6_rsize', '10_rsize']]
+    [017E] ['expr', 'phi', '14_u_target', ['2_u_target', '7_u_target', '12_u_target']]
+    [017F] ['expr', 'phi', '13_doSplit', ['2_doSplit', '6_doSplit', '11_doSplit']]
+    [00CC] ['expr', 'eq', None, ['13_doSplit', 0]]
   ('cn.jmp', 'L16')
 
-L11 -> ('L13', 'L12') <- J() + N('L10',) *{'memory', 'size'}:
-  Vars: `{'13_hijack': ['pre', 'loc'], '14_u_target': ['pre', 'loc'], '15_u_target': ['pre', 'post'], '16_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '14_hijack': ['pre', 'post'], '15_hijack': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [0449] ['expr', 'mov', '14_hijack', ['13_hijack']]
-    [044A] ['expr', 'mov', '15_u_target', ['14_u_target']]
-    [0271] ['expr', 'ne', None, ['15_u_target', 0]]
+L11 -> ('L13', 'L12') <- J() + N('L10',) *{}:
+  Vars: `{'14_u_target': ['pre', 'post'], '17_u_target': ['pre', 'post'], '1_t58': ['pre', 'post'], '1_t59': ['pre', 'post'], '13_hijack': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [00CD] ['expr', 'ne', None, ['14_u_target', 0]]
   ('cn.jmp', 'L13')
 
-L12 -> () <- J() + N('L11',) *{'memory', 'size'}:
-  Vars: `{'15_u_target': ['pre', 'loc'], '16_u_target': ['pre', 'loc'], 't58': ['loc', 'loc'], '1_t58': ['pre', 'loc']}`
-    [044B] ['expr', 'mov', '16_u_target', ['15_u_target']]
-    [0272] ['expr', 'stw', 63, ['16_u_target', 63, 1]]
-    [0273] ['decl', 't58', 32]
-    [0275] ['expr', 'add', '1_t58', ['16_u_target', 1]]
-    [0279] ['expr', 'retst', 0, ['1_t58']]
+L12 -> () <- J() + N('L11',) *{}:
+  Vars: `{'14_u_target': ['pre', 'loc'], 't58': ['loc', 'loc'], '17_u_target': ['pre', 'loc'], 't59': ['loc', 'loc'], '1_t58': ['pre', 'loc'], '1_t59': ['pre', 'loc']}`
+    [00CE] ['expr', 'st', '17_u_target', [0, '14_u_target', 63, 1]]
+    [00D0] ['decl', 't58', 32]
+    [00D2] ['expr', 'add', '1_t59', ['17_u_target', 1]]
+    [00D4] ['decl', 't59', 32]
+    [00D6] ['expr', 'mov', '1_t59', ['1_t58']]
+    [00D7] ['expr', 'retst', 0, ['1_t59']]
   ('ret', None, None, None, None)
 
-L13 -> ('L15', 'L14') <- J('L11',) + N() *{'memory', 'size'}:
-  Vars: `{'14_hijack': ['pre', 'loc'], '15_hijack': ['pre', 'post'], '16_hijack': ['pre', 'post'], '1_t68': ['pre', 'post']}`
-    [044C] ['expr', 'mov', '15_hijack', ['14_hijack']]
-    [027A] ['expr', 'ne', None, ['15_hijack', 0]]
+L13 -> ('L15', 'L14') <- J('L11',) + N() *{}:
+  Vars: `{'13_hijack': ['pre', 'post'], '17_hijack': ['pre', 'post'], '1_t68': ['pre', 'post'], '1_t69': ['pre', 'post']}`
+    [00D8] ['expr', 'ne', None, ['13_hijack', 0]]
   ('cn.jmp', 'L15')
 
-L14 -> () <- J() + N('L13',) *{'memory', 'size'}:
-  Vars: `{'15_hijack': ['pre', 'loc'], '16_hijack': ['pre', 'loc'], 't68': ['loc', 'loc'], '1_t68': ['pre', 'loc']}`
-    [044D] ['expr', 'mov', '16_hijack', ['15_hijack']]
-    [027B] ['expr', 'stw', 63, ['16_hijack', 63, 1]]
-    [027C] ['decl', 't68', 32]
-    [027E] ['expr', 'add', '1_t68', ['16_hijack', 1]]
-    [0282] ['expr', 'retst', 0, ['1_t68']]
+L14 -> () <- J() + N('L13',) *{}:
+  Vars: `{'13_hijack': ['pre', 'loc'], 't68': ['loc', 'loc'], '17_hijack': ['pre', 'loc'], 't69': ['loc', 'loc'], '1_t68': ['pre', 'loc'], '1_t69': ['pre', 'loc']}`
+    [00D9] ['expr', 'st', '17_hijack', [0, '13_hijack', 63, 1]]
+    [00DB] ['decl', 't68', 32]
+    [00DD] ['expr', 'add', '1_t69', ['17_hijack', 1]]
+    [00DF] ['decl', 't69', 32]
+    [00E1] ['expr', 'mov', '1_t69', ['1_t68']]
+    [00E2] ['expr', 'retst', 0, ['1_t69']]
   ('ret', None, None, None, None)
 
-L15 -> () <- J('L13',) + N() *{'memory', 'size'}:
+L15 -> () <- J('L13',) + N() *{}:
   Vars: `{}`
-    [0283] ['expr', 'retst', 0, [0]]
+    [00E3] ['expr', 'retst', 0, [0]]
   ('ret', None, None, None, None)
 
-L16 -> ('L18', 'L17') <- J('L10',) + N() *{'memory', 'size'}:
-  Vars: `{'12_ENDPTR': ['pre', 'loc'], '12_rsize': ['pre', 'loc'], '14_u_target': ['pre', 'loc'], '17_u_target': ['pre', 'post'], 't75_0': ['loc', 'loc'], 't75_1': ['loc', 'loc'], '0_t75_1': ['pre', 'loc'], '0_t75_0': ['pre', 'loc'], '1_t75_0': ['pre', 'loc'], 't76': ['loc', 'loc'], '1_t75_1': ['pre', 'loc'], 'oldsize': ['loc', 'loc'], 't77': ['loc', 'loc'], '1_t76': ['pre', 'loc'], '13_rsize': ['pre', 'loc'], 't78': ['loc', 'loc'], 'excess': ['loc', 'loc'], 't80': ['loc', 'loc'], 't81_0': ['loc', 'loc'], 't81_1': ['loc', 'loc'], '1_t81_1': ['pre', 'loc'], '1_t81_0': ['pre', 'loc'], '2_t80': ['pre', 'loc'], '2_excess': ['pre', 'loc'], '2_t78': ['pre', 'loc'], '2_t77': ['pre', 'loc'], '2_oldsize': ['pre', 'loc'], '2_t76': ['pre', 'loc'], '2_t75_1': ['pre', 'loc'], '2_t75_0': ['pre', 'loc'], '2_t81_0': ['pre', 'loc'], 't82': ['loc', 'loc'], '2_t81_1': ['pre', 'loc'], 't83': ['loc', 'loc'], '3_t83': ['pre', 'loc'], '4_t83': ['pre', 'loc'], '5_t83': ['pre', 'loc'], 't87': ['loc', 'loc'], 't88_1': ['loc', 'loc'], 't89': ['loc', 'loc'], '5_t88_1': ['pre', 'loc'], 't90': ['loc', 'loc'], '5_t87': ['pre', 'loc'], '5_t89': ['pre', 'loc'], '5_t90': ['pre', 'post'], '13_ENDPTR': ['pre', 'loc'], '6_t90': ['pre', 'post'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post']}`
-    [044E] ['expr', 'mov', '13_ENDPTR', ['12_ENDPTR']]
-    [044F] ['expr', 'mov', '13_rsize', ['12_rsize']]
-    [0450] ['expr', 'mov', '17_u_target', ['14_u_target']]
-    [0346] ['expr', 'maywrite', '0_t75_1', []]
-    [0347] ['expr', 'maywrite', '0_t75_0', []]
-    [0284] ['expr', 'stw', 63, ['17_u_target', 63, 1]]
-    [0285] ['decl', 't75_0', 32]
-    [0287] ['decl', 't75_1', 32]
-    [0359] ['expr', 'mayread', None, ['17_u_target', '0_t75_1']]
-    [035A] ['expr', 'mayread', None, ['17_u_target', '0_t75_0']]
-    [0289] ['expr', 'ld', '1_t75_0', ['17_u_target', 0, 0]]
-    [036D] ['expr', 'mayread', None, ['17_u_target', '1_t75_0']]
-    [028A] ['expr', 'ld', '1_t75_1', ['17_u_target', 32, 0]]
-    [028B] ['decl', 't76', 31]
-    [028D] ['expr', 'bsf', '1_t76', ['1_t75_1', 0, 31]]
-    [028E] ['decl', 'oldsize', 31]
-    [0291] ['decl', 't77', 31]
-    [0293] ['expr', 'sub', '1_t77', ['1_t76', '13_rsize']]
-    [0294] ['decl', 't78', 31]
-    [0297] ['decl', 'excess', 31]
-    [0377] ['expr', 'maywrite', '1_t81_1', []]
-    [0378] ['expr', 'maywrite', '1_t81_0', []]
-    [037A] ['expr', 'maywrite', '2_excess', []]
-    [037B] ['expr', 'maywrite', '2_t78', []]
-    [037C] ['expr', 'maywrite', '2_t77', []]
-    [037D] ['expr', 'maywrite', '2_oldsize', []]
-    [037E] ['expr', 'maywrite', '2_t76', []]
-    [037F] ['expr', 'maywrite', '2_t75_1', []]
-    [0380] ['expr', 'maywrite', '2_t75_0', []]
-    [029A] ['expr', 'stw', 32, ['17_u_target', 32, 31]]
-    [029B] ['decl', 't80', 32]
-    [029D] ['expr', 'add', '2_t80', ['17_u_target', 1]]
-    [029E] ['decl', 't81_0', 32]
-    [02A0] ['decl', 't81_1', 32]
-    [038A] ['expr', 'mayread', None, ['17_u_target', '1_t81_1']]
-    [038B] ['expr', 'mayread', None, ['17_u_target', '1_t81_0']]
-    [038C] ['expr', 'mayread', None, ['17_u_target', '2_t80']]
-    [038D] ['expr', 'mayread', None, ['17_u_target', '2_excess']]
-    [038E] ['expr', 'mayread', None, ['17_u_target', '2_t78']]
-    [038F] ['expr', 'mayread', None, ['17_u_target', '2_t77']]
-    [0390] ['expr', 'mayread', None, ['17_u_target', '2_oldsize']]
-    [0391] ['expr', 'mayread', None, ['17_u_target', '2_t76']]
-    [0392] ['expr', 'mayread', None, ['17_u_target', '2_t75_1']]
-    [0393] ['expr', 'mayread', None, ['17_u_target', '2_t75_0']]
-    [02A2] ['expr', 'ld', '2_t81_0', ['17_u_target', 0, 0]]
-    [039E] ['expr', 'mayread', None, ['17_u_target', '2_t81_0']]
-    [02A3] ['expr', 'ld', '2_t81_1', ['17_u_target', 32, 0]]
-    [02A4] ['decl', 't82', 31]
-    [02A6] ['expr', 'bsf', '2_t82', ['2_t81_1', 0, 31]]
-    [02A7] ['decl', 't83', 32]
-    [03AE] ['expr', 'maywrite', '3_t83', []]
-    [02AD] ['expr', 'stw', 63, ['3_t83', 63, 1]]
-    [03C1] ['expr', 'maywrite', '4_t83', []]
-    [02AE] ['expr', 'stw', 32, ['4_t83', 32, 31]]
-    [03D4] ['expr', 'maywrite', '5_t83', []]
-    [02AF] ['expr', 'stw', 0, ['5_t83', 0, 32]]
-    [02B0] ['decl', 't87', 32]
-    [02B2] ['expr', 'add', '5_t87', ['5_t83', 1]]
-    [02B5] ['decl', 't88_1', 32]
-    [02B8] ['expr', 'ld', '5_t88_1', ['5_t83', 32, 0]]
-    [02B9] ['decl', 't89', 31]
-    [02BB] ['expr', 'bsf', '5_t89', ['5_t88_1', 0, 31]]
-    [02BC] ['decl', 't90', 32]
-    [02BE] ['expr', 'add', '5_t90', ['5_t87', '5_t89']]
-    [02C2] ['expr', 'ne', None, ['5_t90', '13_ENDPTR']]
+L16 -> ('L18', 'L17') <- J('L10',) + N() *{}:
+  Vars: `{'14_u_target': ['pre', 'loc'], 'oldsize': ['loc', 'loc'], 't75_1': ['loc', 'loc'], '19_u_target': ['pre', 'loc'], '1_t75_1': ['pre', 'loc'], 'excess': ['loc', 'loc'], 't77': ['loc', 'loc'], '1_oldsize': ['pre', 'loc'], '12_rsize': ['pre', 'loc'], '1_t77': ['pre', 'loc'], 'newNext': ['loc', 'loc'], 't80': ['loc', 'loc'], '20_u_target': ['pre', 'post'], 't81_1': ['loc', 'loc'], 't82': ['loc', 'loc'], '1_t81_1': ['pre', 'loc'], '1_t80': ['pre', 'loc'], '1_t82': ['pre', 'loc'], '1_newNext': ['pre', 'loc'], '1_excess': ['pre', 'loc'], '2_newNext': ['pre', 'loc'], '3_newNext': ['pre', 'loc'], 'nextNext': ['loc', 'loc'], 't87': ['loc', 'loc'], '4_newNext': ['pre', 'post'], 't88_1': ['loc', 'loc'], 't89': ['loc', 'loc'], '1_t88_1': ['pre', 'loc'], '1_t87': ['pre', 'loc'], '1_t89': ['pre', 'loc'], '1_nextNext': ['pre', 'post'], '12_ENDPTR': ['pre', 'loc'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post']}`
+    [00E4] ['expr', 'st', '19_u_target', [0, '14_u_target', 63, 1]]
+    [00E6] ['decl', 'oldsize', 31]
+    [00EB] ['decl', 't75_1', 32]
+    [00EE] ['expr', 'ld', '1_t75_1', ['19_u_target', 32, 0]]
+    [00F2] ['expr', 'bsf', '1_oldsize', ['1_t75_1', 0, 31]]
+    [00F5] ['decl', 'excess', 31]
+    [00F8] ['decl', 't77', 31]
+    [00FA] ['expr', 'sub', '1_t77', ['1_oldsize', '12_rsize']]
+    [00FE] ['expr', 'sub', '1_excess', ['1_t77', 1]]
+    [0100] ['expr', 'st', '20_u_target', ['12_rsize', '19_u_target', 32, 31]]
+    [0102] ['decl', 'newNext', 32]
+    [0105] ['decl', 't80', 32]
+    [0107] ['expr', 'add', '1_t80', ['20_u_target', 1]]
+    [010B] ['decl', 't81_1', 32]
+    [010E] ['expr', 'ld', '1_t81_1', ['20_u_target', 32, 0]]
+    [0110] ['decl', 't82', 31]
+    [0112] ['expr', 'bsf', '1_t82', ['1_t81_1', 0, 31]]
+    [0116] ['expr', 'add', '1_newNext', ['1_t80', '1_t82']]
+    [0118] ['expr', 'st', '2_newNext', [1, '1_newNext', 63, 1]]
+    [0119] ['expr', 'st', '3_newNext', ['1_excess', '2_newNext', 32, 31]]
+    [011A] ['expr', 'st', '4_newNext', ['20_u_target', '3_newNext', 0, 32]]
+    [011C] ['decl', 'nextNext', 32]
+    [011F] ['decl', 't87', 32]
+    [0121] ['expr', 'add', '1_t87', ['4_newNext', 1]]
+    [0125] ['decl', 't88_1', 32]
+    [0128] ['expr', 'ld', '1_t88_1', ['4_newNext', 32, 0]]
+    [012A] ['decl', 't89', 31]
+    [012C] ['expr', 'bsf', '1_t89', ['1_t88_1', 0, 31]]
+    [0130] ['expr', 'add', '1_nextNext', ['1_t87', '1_t89']]
+    [0132] ['expr', 'ne', None, ['1_nextNext', '12_ENDPTR']]
   ('cn.jmp', 'L18')
 
-L17 -> ('L18',) <- J() + N('L16',) *{'memory', 'size'}:
-  Vars: `{'17_u_target': ['pre', 'post'], '5_t90': ['pre', 'loc'], '6_t90': ['pre', 'loc'], '18_u_target': ['pre', 'post'], '19_u_target': ['pre', 'post'], '1_t96': ['pre', 'post']}`
-    [0451] ['expr', 'mov', '18_u_target', ['17_u_target']]
-    [0452] ['expr', 'mov', '6_t90', ['5_t90']]
-    [02C3] ['expr', 'stw', 0, ['6_t90', 0, 32]]
+L17 -> ('L18',) <- J() + N('L16',) *{}:
+  Vars: `{'20_u_target': ['pre', 'post'], '4_newNext': ['pre', 'loc'], '1_nextNext': ['pre', 'loc'], '21_u_target': ['pre', 'post'], '22_u_target': ['pre', 'post'], '1_t96': ['pre', 'post'], '1_t97': ['pre', 'post']}`
+    [0188] ['expr', 'mov', '21_u_target', ['20_u_target']]
+    [0133] ['expr', 'st', '3_nextNext', ['4_newNext', '1_nextNext', 0, 32]]
   ('FALL',)
 
-L18 -> () <- J('L16',) + N('L17',) *{'memory', 'size'}:
-  Vars: `{'17_u_target': ['pre', 'loc'], '18_u_target': ['pre', 'loc'], 't96': ['loc', 'loc'], '19_u_target': ['pre', 'loc'], '1_t96': ['pre', 'loc']}`
-    [0453] ['expr', 'phi', '19_u_target', ['17_u_target', '18_u_target']]
-    [02C4] ['decl', 't96', 32]
-    [02C6] ['expr', 'add', '1_t96', ['19_u_target', 1]]
-    [02CA] ['expr', 'retst', 0, ['1_t96']]
+L18 -> () <- J('L16',) + N('L17',) *{}:
+  Vars: `{'20_u_target': ['pre', 'loc'], '21_u_target': ['pre', 'loc'], 't96': ['loc', 'loc'], '22_u_target': ['pre', 'loc'], 't97': ['loc', 'loc'], '1_t96': ['pre', 'loc'], '1_t97': ['pre', 'loc']}`
+    [018B] ['expr', 'phi', '22_u_target', ['20_u_target', '21_u_target']]
+    [0135] ['decl', 't96', 32]
+    [0137] ['expr', 'add', '1_t97', ['22_u_target', 1]]
+    [0139] ['decl', 't97', 32]
+    [013B] ['expr', 'mov', '1_t97', ['1_t96']]
+    [013C] ['expr', 'retst', 0, ['1_t97']]
   ('ret', None, None, None, None)
 
-_u_RenderState____Init__ -> () <- J() + N() *{'self'}:
-  Vars: `{'t99_0': ['loc', 'loc'], 't99_1': ['loc', 'loc'], '2_t99_0': ['loc', 'loc'], '1_self': ['loc', 'loc'], '3_t99_1': ['loc', 'loc'], '3_self': ['loc', 'loc'], 't101_0': ['loc', 'loc'], 't101_1': ['loc', 'loc'], '3_t101_0': ['loc', 'loc'], '5_self': ['loc', 'loc'], '4_t101_1': ['loc', 'loc'], '7_self': ['loc', 'loc'], '9_self': ['loc', 'loc'], 't104': ['loc', 'loc'], '4_t104': ['loc', 'loc'], '8_t104': ['loc', 'loc'], '10_self': ['loc', 'loc'], 't106': ['loc', 'loc'], '5_t106': ['loc', 'loc'], '9_t106': ['loc', 'loc'], '12_self': ['loc', 'loc']}`
-    [04A3] ['decl', 't99_0', 32]
-    [04A5] ['decl', 't99_1', 32]
-    [04C5] ['expr', 'maywrite', '2_t99_0', []]
-    [04C6] ['expr', 'maywrite', '1_self', []]
-    [04A9] ['expr', 'st', '2_self', ['2_t99_0', '1_self', 64, 0]]
-    [04CB] ['expr', 'maywrite', '3_t99_1', []]
-    [04CD] ['expr', 'maywrite', '3_self', []]
-    [04AA] ['expr', 'st', '4_self', ['3_t99_1', '3_self', 96, 0]]
-    [04AB] ['decl', 't101_0', 32]
-    [04AD] ['decl', 't101_1', 32]
-    [04D1] ['expr', 'maywrite', '3_t101_0', []]
-    [04D4] ['expr', 'maywrite', '5_self', []]
-    [04B1] ['expr', 'st', '6_self', ['3_t101_0', '5_self', 128, 0]]
-    [04D7] ['expr', 'maywrite', '4_t101_1', []]
-    [04DB] ['expr', 'maywrite', '7_self', []]
-    [04B2] ['expr', 'st', '8_self', ['4_t101_1', '7_self', 160, 0]]
-    [04DD] ['expr', 'maywrite', '4_t104', []]
-    [04E2] ['expr', 'maywrite', '9_self', []]
-    [04B3] ['expr', 'stw', 192, ['9_self', 192, 8]]
-    [04B4] ['decl', 't104', 32]
-    [04B6] ['expr', 'bst', '5_t104', ['4_t104', 255, 16, 8]]
-    [04E3] ['expr', 'maywrite', '5_t106', []]
-    [04E4] ['expr', 'maywrite', '8_t104', []]
-    [04E9] ['expr', 'maywrite', '10_self', []]
-    [04B9] ['expr', 'st', '11_self', ['8_t104', '10_self', 224, 0]]
-    [04BA] ['decl', 't106', 32]
-    [04BC] ['expr', 'bst', '6_t106', ['5_t106', 0, 16, 8]]
-    [04EA] ['expr', 'maywrite', '9_t106', []]
-    [04F0] ['expr', 'maywrite', '12_self', []]
-    [04BF] ['expr', 'st', '13_self', ['9_t106', '12_self', 256, 0]]
+_u_RenderState____Init__ -> () <- J() + N() *{}:
+  Vars: `{'0_self': ['loc', 'loc'], 't99_0': ['loc', 'loc'], 't99_1': ['loc', 'loc'], '0_t99_0': ['loc', 'loc'], '0_t99_1': ['loc', 'loc'], '1_t99_0': ['loc', 'loc'], '1_t99_1': ['loc', 'loc'], '1_self': ['loc', 'loc'], 't101_0': ['loc', 'loc'], 't101_1': ['loc', 'loc'], '0_t101_0': ['loc', 'loc'], '0_t101_1': ['loc', 'loc'], '1_t101_0': ['loc', 'loc'], '2_self': ['loc', 'loc'], '1_t101_1': ['loc', 'loc'], '3_self': ['loc', 'loc'], '4_self': ['loc', 'loc'], 't104': ['loc', 'loc'], '0_t104': ['loc', 'loc'], '1_t104': ['loc', 'loc'], '2_t104': ['loc', 'loc'], '3_t104': ['loc', 'loc'], '5_self': ['loc', 'loc'], 't106': ['loc', 'loc'], '0_t106': ['loc', 'loc'], '1_t106': ['loc', 'loc'], '2_t106': ['loc', 'loc'], '3_t106': ['loc', 'loc'], '6_self': ['loc', 'loc']}`
+    [018C] ['expr', 'argld', '0_self', [0]]
+    [018D] ['predecl', 2, 64]
+    [018E] ['decl', 't99_0', 32]
+    [0190] ['decl', 't99_1', 32]
+    [0192] ['expr', 'bst', '1_t99_0', ['0_t99_0', 0, 0, 0]]
+    [0193] ['expr', 'bst', '1_t99_1', ['0_t99_1', 0, 0, 0]]
+    [0194] ['expr', 'st', '1_self', ['1_t99_0', '0_self', 64, 0]]
+    [0195] ['expr', 'st', '2_self', ['1_t99_1', '1_self', 96, 0]]
+    [0196] ['predecl', 2, 64]
+    [0197] ['decl', 't101_0', 32]
+    [0199] ['decl', 't101_1', 32]
+    [019B] ['expr', 'bst', '1_t101_0', ['0_t101_0', 0, 0, 0]]
+    [019C] ['expr', 'bst', '1_t101_1', ['0_t101_1', 0, 0, 0]]
+    [019D] ['expr', 'st', '3_self', ['1_t101_0', '2_self', 128, 0]]
+    [019E] ['expr', 'st', '4_self', ['1_t101_1', '3_self', 160, 0]]
+    [019F] ['expr', 'st', '5_self', [0, '4_self', 192, 8]]
+    [01A0] ['predecl', 1, 32]
+    [01A1] ['decl', 't104', 32]
+    [01A3] ['expr', 'bst', '1_t104', ['0_t104', 255, 16, 8]]
+    [01A4] ['expr', 'bst', '2_t104', ['1_t104', 255, 8, 8]]
+    [01A5] ['expr', 'bst', '3_t104', ['2_t104', 255, 0, 8]]
+    [01A6] ['expr', 'st', '6_self', ['3_t104', '5_self', 224, 0]]
+    [01A7] ['predecl', 1, 32]
+    [01A8] ['decl', 't106', 32]
+    [01AA] ['expr', 'bst', '1_t106', ['0_t106', 0, 16, 8]]
+    [01AB] ['expr', 'bst', '2_t106', ['1_t106', 0, 8, 8]]
+    [01AC] ['expr', 'bst', '3_t106', ['2_t106', 0, 0, 8]]
+    [01AD] ['expr', 'st', '7_self', ['3_t106', '6_self', 256, 0]]
   ('ret', None, None, None, None)
 
-_u_RenderState____Draw__ -> ('L0',) <- J() + N() *{'self', 't118'}:
-  Vars: `{'0_self': ['loc', 'post'], 't109_3': ['loc', 'loc'], 't110_1': ['loc', 'loc'], '1_t109_3': ['loc', 'loc'], 't111': ['loc', 'loc'], '1_t110_1': ['loc', 'loc'], 'latScroll': ['loc', 'loc'], '1_t111': ['loc', 'loc'], 'row': ['loc', 'loc'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '2_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '3_row': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '10_row': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '7_self': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '5_row': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [04F1] ['expr', 'argld', '0_self', [0]]
-    [04F8] ['decl', 't109_3', 32]
-    [0507] ['expr', 'ld', '1_t109_3', ['0_self', 96, 0]]
-    [050F] ['decl', 't110_1', 32]
-    [0512] ['expr', 'bsf', '1_t110_1', ['1_t109_3', 0, 0]]
-    [0513] ['decl', 't111', 32]
-    [0515] ['expr', 'bsf', '1_t111', ['1_t110_1', 0, 0]]
-    [0516] ['decl', 'latScroll', 32]
-    [0518] ['expr', 'mov', '1_latScroll', ['1_t111']]
-    [0519] ['decl', 'row', 32]
-    [051B] ['expr', 'mov', '1_row', [0]]
+_u_RenderState____Draw__ -> ('L0',) <- J() + N() *{}:
+  Vars: `{'0_self': ['loc', 'loc'], 'latScroll': ['loc', 'loc'], 't109_3': ['loc', 'loc'], 't110_1': ['loc', 'loc'], '1_t109_3': ['loc', 'loc'], '1_t110_1': ['loc', 'loc'], 'row': ['loc', 'loc'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '7_self': ['pre', 'post']}`
+    [01AE] ['expr', 'argld', '0_self', [0]]
+    [01B0] ['decl', 'latScroll', 32]
+    [01B9] ['decl', 't109_3', 32]
+    [01C8] ['expr', 'ld', '1_t109_3', ['0_self', 96, 0]]
+    [01D1] ['decl', 't110_1', 32]
+    [01D4] ['expr', 'bsf', '1_t110_1', ['1_t109_3', 0, 0]]
+    [01D8] ['expr', 'bsf', '1_latScroll', ['1_t110_1', 0, 0]]
+    [01DB] ['decl', 'row', 32]
+    [01DD] ['expr', 'mov', '1_row', [0]]
   ('FALL',)
 
-L0 -> ('L10', 'L1') <- J('L9',) + N('_u_RenderState____Draw__',) *{'self', 't118'}:
-  Vars: `{'1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '2_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '3_row': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '10_row': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '7_self': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '5_row': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [075A] ['expr', 'phi', '2_latScroll', ['1_latScroll', '11_latScroll']]
-    [075B] ['expr', 'phi', '1_self', ['0_self', '12_self']]
-    [075C] ['expr', 'phi', '2_row', ['1_row', '12_row']]
-    [051C] ['expr', 'ult', None, ['2_row', 24]]
+L0 -> ('L10', 'L1') <- J('L9',) + N('_u_RenderState____Draw__',) *{}:
+  Vars: `{'1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '7_self': ['pre', 'post']}`
+    [0261] ['expr', 'phi', '3_latScroll', ['1_latScroll', '11_latScroll']]
+    [0263] ['expr', 'phi', '2_row', ['1_row', '12_row']]
+    [01DE] ['expr', 'ult', None, ['2_row', 24]]
   ('cn.jmp', 'L10')
 
-L1 -> ('L2',) <- J() + N('L0',) *{'self', 't118'}:
-  Vars: `{'2_latScroll': ['pre', 'post'], '2_row': ['pre', 'post'], '1_self': ['pre', 'post'], 't117_0': ['loc', 'loc'], 't117_1': ['loc', 'loc'], 't117_2': ['loc', 'loc'], 't117_3': ['loc', 'loc'], 't117_4': ['loc', 'loc'], 't117_5': ['loc', 'loc'], 't117_6': ['loc', 'loc'], 't117_7': ['loc', 'loc'], 't117_8': ['loc', 'loc'], '2_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], 't118': ['loc', 'loc'], 't119': ['loc', 'loc'], '3_row': ['pre', 'post'], 't120': ['loc', 'loc'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], 'linePtr': ['loc', 'loc'], '1_t120': ['pre', 'post'], 'col': ['loc', 'loc'], '10_row': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '7_self': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '5_row': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [075D] ['expr', 'mov', '3_latScroll', ['2_latScroll']]
-    [075E] ['expr', 'mov', '3_row', ['2_row']]
-    [075F] ['expr', 'mov', '2_self', ['1_self']]
-    [051D] ['decl', 't117_0', 32]
-    [051F] ['decl', 't117_1', 32]
-    [0521] ['decl', 't117_2', 32]
-    [0523] ['decl', 't117_3', 32]
-    [0525] ['decl', 't117_4', 32]
-    [0527] ['decl', 't117_5', 32]
-    [0529] ['decl', 't117_6', 32]
-    [052B] ['decl', 't117_7', 32]
-    [052D] ['decl', 't117_8', 32]
-    [0648] ['expr', 'mayread', None, ['2_self', '2_self']]
-    [0649] ['expr', 'mayread', None, ['2_self', '0_t117_8']]
-    [064A] ['expr', 'mayread', None, ['2_self', '0_t117_7']]
-    [064B] ['expr', 'mayread', None, ['2_self', '0_t117_6']]
-    [064C] ['expr', 'mayread', None, ['2_self', '0_t117_5']]
-    [064D] ['expr', 'mayread', None, ['2_self', '0_t117_4']]
-    [064E] ['expr', 'mayread', None, ['2_self', '0_t117_3']]
-    [064F] ['expr', 'mayread', None, ['2_self', '0_t117_2']]
-    [0650] ['expr', 'mayread', None, ['2_self', '0_t117_1']]
-    [0651] ['expr', 'mayread', None, ['2_self', '0_t117_0']]
-    [052F] ['expr', 'ld', '1_t117_0', ['2_self', 0, 0]]
-    [0660] ['expr', 'mayread', None, ['2_self', '1_t117_0']]
-    [0530] ['expr', 'ld', '1_t117_1', ['2_self', 32, 0]]
-    [066E] ['expr', 'mayread', None, ['2_self', '1_t117_1']]
-    [0531] ['expr', 'ld', '1_t117_2', ['2_self', 64, 0]]
-    [067C] ['expr', 'mayread', None, ['2_self', '1_t117_2']]
-    [0532] ['expr', 'ld', '1_t117_3', ['2_self', 96, 0]]
-    [068A] ['expr', 'mayread', None, ['2_self', '1_t117_3']]
-    [0533] ['expr', 'ld', '1_t117_4', ['2_self', 128, 0]]
-    [0698] ['expr', 'mayread', None, ['2_self', '1_t117_4']]
-    [0534] ['expr', 'ld', '1_t117_5', ['2_self', 160, 0]]
-    [06A6] ['expr', 'mayread', None, ['2_self', '1_t117_5']]
-    [0535] ['expr', 'ld', '1_t117_6', ['2_self', 192, 0]]
-    [06B4] ['expr', 'mayread', None, ['2_self', '1_t117_6']]
-    [0536] ['expr', 'ld', '1_t117_7', ['2_self', 224, 0]]
-    [06C2] ['expr', 'mayread', None, ['2_self', '1_t117_7']]
-    [0538] ['alloc', 't118', 24, 32]
-    [0539] ['expr', 'bsf', '1_t118', ['1_t117_1', 0, 0]]
-    [053A] ['decl', 't119', 32]
-    [053C] ['expr', 'mul', '1_t119', ['3_row', 32]]
-    [053D] ['decl', 't120', 32]
-    [053F] ['expr', 'ldw', '1_t120', ['1_t118', '1_t119']]
-    [0540] ['decl', 'linePtr', 32]
-    [0542] ['expr', 'mov', '1_linePtr', ['1_t120']]
-    [0543] ['decl', 'col', 32]
-    [0545] ['expr', 'mov', '1_col', [0]]
+L1 -> ('L2',) <- J() + N('L0',) *{}:
+  Vars: `{'2_latScroll': ['pre', 'post'], '2_row': ['pre', 'post'], '1_self': ['pre', 'post'], 'linePtr': ['loc', 'loc'], 't117_1': ['loc', 'loc'], 't118': ['loc', 'loc'], '1_t117_1': ['pre', 'post'], 't119': ['loc', 'loc'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], 'col': ['loc', 'loc'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '7_self': ['pre', 'post']}`
+    [0264] ['expr', 'mov', '3_latScroll', ['2_latScroll']]
+    [0265] ['expr', 'mov', '3_row', ['2_row']]
+    [0266] ['expr', 'mov', '2_self', ['1_self']]
+    [01E0] ['decl', 'linePtr', 32]
+    [01E5] ['decl', 't117_1', 32]
+    [01F6] ['expr', 'ld', '1_t117_1', ['1_self', 32, 0]]
+    [01FE] ['alloc', 't118', 24, 32]
+    [01FF] ['expr', 'bsf', '0_t118', ['1_t117_1', 0, 0]]
+    [0201] ['decl', 't119', 32]
+    [0203] ['expr', 'mul', '1_t119', ['2_row', 32]]
+    [0207] ['expr', 'ld', '1_linePtr', ['0_t118', '1_t119', 0]]
+    [020A] ['decl', 'col', 32]
+    [020C] ['expr', 'mov', '1_col', [0]]
   ('FALL',)
 
-L2 -> ('L9', 'L3') <- J('L8',) + N('L1',) *{'self', 't118'}:
-  Vars: `{'3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '2_self': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '7_self': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '5_row': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [0760] ['expr', 'phi', '4_row', ['3_row', '10_row']]
-    [0761] ['expr', 'phi', '3_self', ['2_self', '11_self']]
-    [0762] ['expr', 'phi', '2_linePtr', ['1_linePtr', '6_linePtr']]
-    [0763] ['expr', 'phi', '4_latScroll', ['3_latScroll', '10_latScroll']]
-    [0764] ['expr', 'phi', '2_col', ['1_col', '10_col']]
-    [0546] ['expr', 'ult', None, ['2_col', 64]]
+L2 -> ('L9', 'L3') <- J('L8',) + N('L1',) *{}:
+  Vars: `{'2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '7_self': ['pre', 'post']}`
+    [0267] ['expr', 'phi', '3_self', ['2_self', '9_self']]
+    [0268] ['expr', 'phi', '4_row', ['3_row', '10_row']]
+    [0269] ['expr', 'phi', '2_linePtr', ['1_linePtr', '6_linePtr']]
+    [026A] ['expr', 'phi', '4_latScroll', ['3_latScroll', '10_latScroll']]
+    [026B] ['expr', 'phi', '2_col', ['1_col', '10_col']]
+    [020D] ['expr', 'ult', None, ['2_col', 64]]
   ('cn.jmp', 'L9')
 
-L3 -> ('L6', 'L4') <- J() + N('L2',) *{'self', 't118'}:
-  Vars: `{'4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '2_col': ['pre', 'post'], 't126': ['loc', 'loc'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], 't127': ['loc', 'loc'], '1_t126': ['pre', 'post'], 't128': ['loc', 'loc'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '5_row': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '10_row': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post'], '3_row': ['pre', 'post'], '2_self': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post']}`
-    [0765] ['expr', 'mov', '5_row', ['4_row']]
-    [0766] ['expr', 'mov', '4_self', ['3_self']]
-    [0767] ['expr', 'mov', '3_linePtr', ['2_linePtr']]
-    [0768] ['expr', 'mov', '5_latScroll', ['4_latScroll']]
-    [0769] ['expr', 'mov', '3_col', ['2_col']]
-    [0547] ['decl', 't126', 32]
-    [0549] ['expr', 'add', '1_t126', ['3_col', '5_latScroll']]
-    [054A] ['decl', 't127', 32]
-    [054C] ['expr', 'mul', '1_t127', ['1_t126', 32]]
-    [054D] ['decl', 't128', 8]
-    [06D9] ['expr', 'mayread', None, ['3_linePtr', '4_self']]
-    [06DB] ['expr', 'mayread', None, ['3_linePtr', '0_t128']]
-    [06DC] ['expr', 'mayread', None, ['3_linePtr', '1_t127']]
-    [06DD] ['expr', 'mayread', None, ['3_linePtr', '1_t126']]
-    [054F] ['expr', 'ldw', '1_t128', ['3_linePtr', '1_t127']]
-    [0553] ['expr', 'eq', None, ['1_t128', 10]]
+L3 -> ('L6', 'L4') <- J() + N('L2',) *{}:
+  Vars: `{'4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '2_col': ['pre', 'post'], 'char': ['loc', 'loc'], 't126': ['loc', 'loc'], 't127': ['loc', 'loc'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post']}`
+    [026C] ['expr', 'mov', '5_row', ['4_row']]
+    [026D] ['expr', 'mov', '4_self', ['3_self']]
+    [026F] ['expr', 'mov', '5_latScroll', ['4_latScroll']]
+    [0270] ['expr', 'mov', '3_col', ['2_col']]
+    [020F] ['decl', 'char', 8]
+    [0212] ['decl', 't126', 32]
+    [0214] ['expr', 'add', '1_t126', ['2_col', '4_latScroll']]
+    [0216] ['decl', 't127', 32]
+    [0218] ['expr', 'mul', '1_t127', ['1_t126', 32]]
+    [021C] ['expr', 'ld', '1_char', ['2_linePtr', '1_t127', 0]]
+    [021E] ['expr', 'eq', None, ['1_char', 10]]
   ('c.jmp', 'L6')
 
-L4 -> ('L5',) <- J() + N('L3',) *{'self', 't118'}:
-  Vars: `{'3_linePtr': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '4_self': ['pre', 'post'], '3_col': ['pre', 'post'], '1_t128': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '10_row': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post'], '3_row': ['pre', 'post'], '2_self': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_self': ['pre', 'post'], '4_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t126': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post']}`
-    [076A] ['expr', 'mov', '4_linePtr', ['3_linePtr']]
-    [076B] ['expr', 'mov', '6_latScroll', ['5_latScroll']]
-    [076C] ['expr', 'mov', '6_row', ['5_row']]
-    [076D] ['expr', 'mov', '5_self', ['4_self']]
-    [076E] ['expr', 'mov', '4_col', ['3_col']]
-    [076F] ['expr', 'mov', '2_t128', ['1_t128']]
+L4 -> ('L5',) <- J() + N('L3',) *{}:
+  Vars: `{'4_latScroll': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_col': ['pre', 'post'], '1_char': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '1_t126': ['pre', 'post'], '1_t127': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post']}`
   ('jmp', 'L5')
 
-L5 -> ('L8', 'L6') <- J() + N('L4',) *{'self', 't118'}:
-  Vars: `{'4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '10_row': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post'], '3_row': ['pre', 'post'], '2_self': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_self': ['pre', 'post'], '4_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post']}`
-    [0770] ['expr', 'mov', '5_linePtr', ['4_linePtr']]
-    [0771] ['expr', 'mov', '7_latScroll', ['6_latScroll']]
-    [0772] ['expr', 'mov', '7_row', ['6_row']]
-    [0773] ['expr', 'mov', '6_self', ['5_self']]
-    [0774] ['expr', 'mov', '5_col', ['4_col']]
-    [0775] ['expr', 'mov', '3_t128', ['2_t128']]
-    [0554] ['expr', 'eq', None, ['3_t128', 0]]
+L5 -> ('L8', 'L6') <- J() + N('L4',) *{}:
+  Vars: `{'4_latScroll': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_col': ['pre', 'post'], '1_char': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '1_t126': ['pre', 'post'], '1_t127': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post']}`
+    [0278] ['expr', 'mov', '7_latScroll', ['4_latScroll']]
+    [0279] ['expr', 'mov', '7_row', ['4_row']]
+    [027A] ['expr', 'mov', '6_self', ['3_self']]
+    [027B] ['expr', 'mov', '5_col', ['2_col']]
+    [021F] ['expr', 'eq', None, ['1_char', 0]]
   ('cn.jmp', 'L8')
 
-L6 -> ('L9', 'L7') <- J('L3', 'L7') + N('L5',) *{'self', 't118'}:
-  Vars: `{'5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_self': ['pre', 'post'], '4_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '2_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '3_row': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '10_row': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [0776] ['expr', 'phi', '8_latScroll', ['5_latScroll', '7_latScroll', '9_latScroll']]
-    [0777] ['expr', 'phi', '8_row', ['5_row', '7_row', '9_row']]
-    [0778] ['expr', 'phi', '7_self', ['4_self', '6_self', '9_self']]
-    [0779] ['expr', 'phi', '6_col', ['3_col', '5_col', '8_col']]
-    [0555] ['expr', 'ult', None, ['6_col', 64]]
+L6 -> ('L9', 'L7') <- J('L3', 'L7') + N('L5',) *{}:
+  Vars: `{'5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '4_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_self': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post']}`
+    [027D] ['expr', 'phi', '8_latScroll', ['5_latScroll', '7_latScroll', '9_latScroll']]
+    [027E] ['expr', 'phi', '8_row', ['5_row', '7_row', '9_row']]
+    [027F] ['expr', 'phi', '7_self', ['4_self', '6_self', '8_self']]
+    [0280] ['expr', 'phi', '6_col', ['3_col', '5_col', '8_col']]
+    [0220] ['expr', 'ult', None, ['6_col', 64]]
   ('cn.jmp', 'L9')
 
-L7 -> ('L6',) <- J() + N('L6',) *{'self', 't118'}:
-  Vars: `{'8_latScroll': ['pre', 'post'], '6_col': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '8_self': ['pre', 'post'], '9_row': ['pre', 'post'], '7_col': ['pre', 'post'], 't142': ['loc', 'loc'], '1_t142': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_self': ['pre', 'post'], '4_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '2_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '3_row': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '10_row': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [077A] ['expr', 'mov', '9_latScroll', ['8_latScroll']]
-    [077B] ['expr', 'mov', '7_col', ['6_col']]
-    [077C] ['expr', 'mov', '9_row', ['8_row']]
-    [077D] ['expr', 'mov', '8_self', ['7_self']]
-    [0556] ['expr', 'argst', 0, ['8_self']]
-    [0557] ['expr', 'argst', 1, [0]]
-    [0558] ['expr', 'argst', 2, ['9_row']]
-    [0559] ['expr', 'argst', 3, ['7_col']]
-    [06DF] ['expr', 'maywrite', '9_self', []]
-    [055A] ['expr', 'call', '0_u_RenderState____WriteChar', []]
-    [055B] ['decl', 't142', 32]
-    [055D] ['expr', 'add', '1_t142', ['7_col', 1]]
-    [055E] ['expr', 'mov', '8_col', ['1_t142']]
+L7 -> ('L6',) <- J() + N('L6',) *{}:
+  Vars: `{'8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '7_self': ['pre', 'post'], '6_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '4_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_self': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post']}`
+    [0281] ['expr', 'mov', '9_latScroll', ['8_latScroll']]
+    [0283] ['expr', 'mov', '9_row', ['8_row']]
+    [0284] ['expr', 'mov', '8_self', ['7_self']]
+    [0221] ['expr', 'argst', 0, ['7_self']]
+    [0222] ['expr', 'argst', 1, [0]]
+    [0223] ['expr', 'argst', 2, ['8_row']]
+    [0224] ['expr', 'argst', 3, ['6_col']]
+    [0225] ['expr', 'call', '0_u_RenderState____WriteChar', []]
+    [022A] ['expr', 'add', '8_col', ['6_col', 1]]
   ('jmp', 'L6')
 
-L8 -> ('L2',) <- J('L5',) + N() *{'self', 't118'}:
-  Vars: `{'5_linePtr': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '5_col': ['pre', 'post'], '7_row': ['pre', 'post'], '6_self': ['pre', 'post'], '3_t128': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '10_row': ['pre', 'post'], '9_col': ['pre', 'post'], 't146': ['loc', 'loc'], '1_t146': ['pre', 'post'], '3_row': ['pre', 'post'], '2_self': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '7_self': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '5_row': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '9_row': ['pre', 'post'], '9_self': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post']}`
-    [077E] ['expr', 'mov', '6_linePtr', ['5_linePtr']]
-    [077F] ['expr', 'mov', '10_latScroll', ['7_latScroll']]
-    [0780] ['expr', 'mov', '9_col', ['5_col']]
-    [0781] ['expr', 'mov', '10_row', ['7_row']]
-    [0782] ['expr', 'mov', '10_self', ['6_self']]
-    [0783] ['expr', 'mov', '4_t128', ['3_t128']]
-    [055F] ['expr', 'argst', 0, ['10_self']]
-    [0560] ['expr', 'argst', 1, ['4_t128']]
-    [0561] ['expr', 'argst', 2, ['10_row']]
-    [0562] ['expr', 'argst', 3, ['9_col']]
-    [06E1] ['expr', 'maywrite', '11_self', []]
-    [0563] ['expr', 'call', '1_u_RenderState____WriteChar', []]
-    [0564] ['decl', 't146', 32]
-    [0566] ['expr', 'add', '1_t146', ['9_col', 1]]
-    [0567] ['expr', 'mov', '10_col', ['1_t146']]
+L8 -> ('L2',) <- J('L5',) + N() *{}:
+  Vars: `{'2_linePtr': ['pre', 'post'], '4_latScroll': ['pre', 'post'], '4_row': ['pre', 'post'], '3_self': ['pre', 'post'], '1_char': ['pre', 'post'], '2_col': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '1_t126': ['pre', 'post'], '1_t127': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '7_self': ['pre', 'post']}`
+    [0285] ['expr', 'mov', '6_linePtr', ['2_linePtr']]
+    [0286] ['expr', 'mov', '10_latScroll', ['4_latScroll']]
+    [0288] ['expr', 'mov', '10_row', ['4_row']]
+    [028A] ['expr', 'mov', '9_self', ['3_self']]
+    [022C] ['expr', 'argst', 0, ['3_self']]
+    [022D] ['expr', 'argst', 1, ['1_char']]
+    [022E] ['expr', 'argst', 2, ['4_row']]
+    [022F] ['expr', 'argst', 3, ['2_col']]
+    [0230] ['expr', 'call', '1_u_RenderState____WriteChar', []]
+    [0235] ['expr', 'add', '10_col', ['2_col', 1]]
   ('jmp', 'L2')
 
-L9 -> ('L0',) <- J('L2', 'L6') + N() *{'self', 't118'}:
-  Vars: `{'4_latScroll': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '3_self': ['pre', 'post'], '7_self': ['pre', 'post'], '4_row': ['pre', 'post'], '8_row': ['pre', 'post'], 't148': ['loc', 'loc'], '11_row': ['pre', 'post'], '1_t148': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '0_self': ['pre', 'post'], '12_self': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '2_self': ['pre', 'post'], '0_t117_8': ['pre', 'post'], '0_t117_7': ['pre', 'post'], '0_t117_6': ['pre', 'post'], '0_t117_5': ['pre', 'post'], '0_t117_4': ['pre', 'post'], '0_t117_3': ['pre', 'post'], '0_t117_2': ['pre', 'post'], '0_t117_1': ['pre', 'post'], '0_t117_0': ['pre', 'post'], '1_t117_0': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '1_t117_2': ['pre', 'post'], '1_t117_3': ['pre', 'post'], '1_t117_4': ['pre', 'post'], '1_t117_5': ['pre', 'post'], '1_t117_6': ['pre', 'post'], '1_t117_7': ['pre', 'post'], '3_row': ['pre', 'post'], '1_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t120': ['pre', 'post'], '13_self': ['pre', 'post'], '0_t150_8': ['pre', 'post'], '0_t150_7': ['pre', 'post'], '0_t150_6': ['pre', 'post'], '0_t150_5': ['pre', 'post'], '0_t150_4': ['pre', 'post'], '0_t150_3': ['pre', 'post'], '0_t150_2': ['pre', 'post'], '0_t150_1': ['pre', 'post'], '0_t150_0': ['pre', 'post'], '1_t150_0': ['pre', 'post'], '1_t150_1': ['pre', 'post'], '1_t150_2': ['pre', 'post'], '1_t150_3': ['pre', 'post'], '1_t150_4': ['pre', 'post'], '1_t150_5': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t150_7': ['pre', 'post'], '14_self': ['pre', 'post'], '10_row': ['pre', 'post'], '11_self': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '3_col': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '1_t126': ['pre', 'post'], '3_linePtr': ['pre', 'post'], '4_self': ['pre', 'post'], '0_t128': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_t128': ['pre', 'post'], '5_row': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '6_self': ['pre', 'post'], '9_self': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '4_linePtr': ['pre', 'post'], '6_latScroll': ['pre', 'post'], '6_row': ['pre', 'post'], '5_self': ['pre', 'post'], '4_col': ['pre', 'post'], '2_t128': ['pre', 'post'], '3_t128': ['pre', 'post'], '8_self': ['pre', 'post'], '7_col': ['pre', 'post'], '1_t142': ['pre', 'post'], '5_linePtr': ['pre', 'post'], '10_self': ['pre', 'post'], '4_t128': ['pre', 'post'], '9_col': ['pre', 'post'], '1_t146': ['pre', 'post']}`
-    [0784] ['expr', 'phi', '11_latScroll', ['4_latScroll', '8_latScroll']]
-    [0785] ['expr', 'phi', '12_self', ['3_self', '7_self']]
-    [0786] ['expr', 'phi', '11_row', ['4_row', '8_row']]
-    [0568] ['decl', 't148', 32]
-    [056A] ['expr', 'add', '1_t148', ['11_row', 1]]
-    [056B] ['expr', 'mov', '12_row', ['1_t148']]
+L9 -> ('L0',) <- J('L2', 'L6') + N() *{}:
+  Vars: `{'4_latScroll': ['pre', 'post'], '8_latScroll': ['pre', 'post'], '4_row': ['pre', 'post'], '8_row': ['pre', 'post'], '11_row': ['pre', 'post'], '1_latScroll': ['pre', 'post'], '11_latScroll': ['pre', 'post'], '1_row': ['pre', 'post'], '12_row': ['pre', 'post'], '2_row': ['pre', 'post'], '2_latScroll': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t117_1': ['pre', 'post'], '0_t118': ['pre', 'post'], '1_t119': ['pre', 'post'], '1_t150_6': ['pre', 'post'], '1_t151': ['pre', 'post'], '1_t152': ['pre', 'post'], '2_self': ['pre', 'post'], '9_self': ['pre', 'post'], '3_row': ['pre', 'post'], '10_row': ['pre', 'post'], '1_linePtr': ['pre', 'post'], '6_linePtr': ['pre', 'post'], '3_latScroll': ['pre', 'post'], '10_latScroll': ['pre', 'post'], '1_col': ['pre', 'post'], '10_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_self': ['pre', 'post'], '1_t126': ['pre', 'post'], '2_linePtr': ['pre', 'post'], '1_t127': ['pre', 'post'], '1_char': ['pre', 'post'], '5_latScroll': ['pre', 'post'], '7_latScroll': ['pre', 'post'], '9_latScroll': ['pre', 'post'], '5_row': ['pre', 'post'], '7_row': ['pre', 'post'], '9_row': ['pre', 'post'], '4_self': ['pre', 'post'], '6_self': ['pre', 'post'], '8_self': ['pre', 'post'], '3_col': ['pre', 'post'], '5_col': ['pre', 'post'], '8_col': ['pre', 'post'], '6_col': ['pre', 'post'], '7_self': ['pre', 'post']}`
+    [028B] ['expr', 'phi', '11_latScroll', ['4_latScroll', '8_latScroll']]
+    [028D] ['expr', 'phi', '11_row', ['4_row', '8_row']]
+    [023A] ['expr', 'add', '12_row', ['11_row', 1]]
   ('jmp', 'L0')
 
-L10 -> () <- J('L0',) + N() *{'self', 't118'}:
-  Vars: `{'1_self': ['pre', 'loc'], 't150_0': ['loc', 'loc'], 't150_1': ['loc', 'loc'], 't150_2': ['loc', 'loc'], 't150_3': ['loc', 'loc'], 't150_4': ['loc', 'loc'], 't150_5': ['loc', 'loc'], 't150_6': ['loc', 'loc'], 't150_7': ['loc', 'loc'], 't150_8': ['loc', 'loc'], '13_self': ['pre', 'loc'], '0_t150_8': ['pre', 'loc'], '0_t150_7': ['pre', 'loc'], '0_t150_6': ['pre', 'loc'], '0_t150_5': ['pre', 'loc'], '0_t150_4': ['pre', 'loc'], '0_t150_3': ['pre', 'loc'], '0_t150_2': ['pre', 'loc'], '0_t150_1': ['pre', 'loc'], '0_t150_0': ['pre', 'loc'], '1_t150_0': ['pre', 'loc'], '1_t150_1': ['pre', 'loc'], '1_t150_2': ['pre', 'loc'], '1_t150_3': ['pre', 'loc'], '1_t150_4': ['pre', 'loc'], '1_t150_5': ['pre', 'loc'], '1_t150_6': ['pre', 'loc'], '1_t150_7': ['pre', 'loc'], '14_self': ['pre', 'loc']}`
-    [0787] ['expr', 'mov', '13_self', ['1_self']]
-    [056C] ['decl', 't150_0', 32]
-    [056E] ['decl', 't150_1', 32]
-    [0570] ['decl', 't150_2', 32]
-    [0572] ['decl', 't150_3', 32]
-    [0574] ['decl', 't150_4', 32]
-    [0576] ['decl', 't150_5', 32]
-    [0578] ['decl', 't150_6', 32]
-    [057A] ['decl', 't150_7', 32]
-    [057C] ['decl', 't150_8', 32]
-    [06E4] ['expr', 'mayread', None, ['13_self', '13_self']]
-    [06E5] ['expr', 'mayread', None, ['13_self', '0_t150_8']]
-    [06E6] ['expr', 'mayread', None, ['13_self', '0_t150_7']]
-    [06E7] ['expr', 'mayread', None, ['13_self', '0_t150_6']]
-    [06E8] ['expr', 'mayread', None, ['13_self', '0_t150_5']]
-    [06E9] ['expr', 'mayread', None, ['13_self', '0_t150_4']]
-    [06EA] ['expr', 'mayread', None, ['13_self', '0_t150_3']]
-    [06EB] ['expr', 'mayread', None, ['13_self', '0_t150_2']]
-    [06EC] ['expr', 'mayread', None, ['13_self', '0_t150_1']]
-    [06ED] ['expr', 'mayread', None, ['13_self', '0_t150_0']]
-    [057E] ['expr', 'ld', '1_t150_0', ['13_self', 0, 0]]
-    [06F9] ['expr', 'mayread', None, ['13_self', '1_t150_0']]
-    [057F] ['expr', 'ld', '1_t150_1', ['13_self', 32, 0]]
-    [0704] ['expr', 'mayread', None, ['13_self', '1_t150_1']]
-    [0580] ['expr', 'ld', '1_t150_2', ['13_self', 64, 0]]
-    [070F] ['expr', 'mayread', None, ['13_self', '1_t150_2']]
-    [0581] ['expr', 'ld', '1_t150_3', ['13_self', 96, 0]]
-    [071A] ['expr', 'mayread', None, ['13_self', '1_t150_3']]
-    [0582] ['expr', 'ld', '1_t150_4', ['13_self', 128, 0]]
-    [0725] ['expr', 'mayread', None, ['13_self', '1_t150_4']]
-    [0583] ['expr', 'ld', '1_t150_5', ['13_self', 160, 0]]
-    [0730] ['expr', 'mayread', None, ['13_self', '1_t150_5']]
-    [0584] ['expr', 'ld', '1_t150_6', ['13_self', 192, 0]]
-    [073B] ['expr', 'mayread', None, ['13_self', '1_t150_6']]
-    [0585] ['expr', 'ld', '1_t150_7', ['13_self', 224, 0]]
-    [0746] ['expr', 'mayread', None, ['13_self', '1_t150_7']]
-    [0750] ['expr', 'maywrite', '14_self', []]
-    [058D] ['expr', 'stw', 192, ['14_self', 192, 8]]
+L10 -> () <- J('L0',) + N() *{}:
+  Vars: `{'t150_6': ['loc', 'loc'], '1_self': ['pre', 'loc'], 't151': ['loc', 'loc'], '1_t150_6': ['pre', 'loc'], 't152': ['loc', 'loc'], '1_t151': ['pre', 'loc'], '1_t152': ['pre', 'loc']}`
+    [0249] ['decl', 't150_6', 32]
+    [0255] ['expr', 'ld', '1_t150_6', ['1_self', 192, 0]]
+    [0259] ['decl', 't151', 8]
+    [025B] ['expr', 'bsf', '1_t151', ['1_t150_6', 0, 8]]
+    [025D] ['decl', 't152', 8]
+    [025F] ['expr', 'add', '1_t152', ['1_t151', 1]]
+    [0260] ['expr', 'st', '12_self', ['1_t152', '1_self', 192, 8]]
   ('ret', None, None, None, None)
 
-_u_RenderState____WriteChar__ -> ('L3', 'L0') <- J() + N() *{'char', 'self', 'row', 'col'}:
-  Vars: `{'0_self': ['loc', 'post'], '0_char': ['loc', 'post'], '0_row': ['loc', 'post'], '0_col': ['loc', 'post'], 't155_7': ['loc', 'loc'], 't156': ['loc', 'loc'], '1_t155_7': ['loc', 'loc'], 'fore': ['loc', 'loc'], '1_t156': ['loc', 'post'], 't157_8': ['loc', 'loc'], 't158': ['loc', 'loc'], '1_t157_8': ['loc', 'loc'], 'back': ['loc', 'loc'], '1_t158': ['loc', 'post'], 't163_5': ['loc', 'loc'], 't164_1': ['loc', 'loc'], '1_t163_5': ['loc', 'loc'], 't165': ['loc', 'loc'], '1_t164_1': ['loc', 'loc'], '1_t165': ['loc', 'loc'], '2_t158': ['pre', 'post'], '2_t156': ['pre', 'post'], '1_self': ['pre', 'post'], '1_t168_4': ['pre', 'post'], '1_t169_0': ['pre', 'post'], '1_col': ['pre', 'post'], '1_t170': ['pre', 'post'], '1_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '8_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '8_fore': ['pre', 'post'], '2_col': ['pre', 'post'], '3_col': ['pre', 'post'], '1_row': ['pre', 'post'], '2_row': ['pre', 'post'], '3_row': ['pre', 'post'], '1_char': ['pre', 'post'], '2_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '9_fore': ['pre', 'post'], '9_back': ['pre', 'post'], '3_t158': ['pre', 'post'], '3_t156': ['pre', 'post'], '2_self': ['pre', 'post'], '1_t173_6': ['pre', 'post'], '1_t174': ['pre', 'post'], '1_t175': ['pre', 'post'], '4_t158': ['pre', 'post'], '4_t156': ['pre', 'post']}`
-    [07B6] ['expr', 'argld', '0_self', [0]]
-    [07B7] ['expr', 'argld', '0_char', [1]]
-    [07B8] ['expr', 'argld', '0_row', [2]]
-    [07B9] ['expr', 'argld', '0_col', [3]]
-    [07C8] ['decl', 't155_7', 32]
-    [07D3] ['expr', 'ld', '1_t155_7', ['0_self', 224, 0]]
-    [07D5] ['decl', 't156', 32]
-    [07D7] ['expr', 'bsf', '1_t156', ['1_t155_7', 0, 0]]
-    [07D8] ['decl', 'fore', 32]
-    [07DA] ['expr', 'mov', '1_fore', ['1_t156']]
-    [07EB] ['decl', 't157_8', 32]
-    [07F5] ['expr', 'ld', '1_t157_8', ['0_self', 256, 0]]
-    [07F6] ['decl', 't158', 32]
-    [07F8] ['expr', 'bsf', '1_t158', ['1_t157_8', 0, 0]]
-    [07F9] ['decl', 'back', 32]
-    [07FB] ['expr', 'mov', '1_back', ['1_t158']]
-    [0806] ['decl', 't163_5', 32]
-    [0813] ['expr', 'ld', '1_t163_5', ['0_self', 160, 0]]
-    [0819] ['decl', 't164_1', 32]
-    [081C] ['expr', 'bsf', '1_t164_1', ['1_t163_5', 0, 0]]
-    [081D] ['decl', 't165', 32]
-    [081F] ['expr', 'bsf', '1_t165', ['1_t164_1', 0, 0]]
-    [0820] ['expr', 'eq', None, ['0_row', '1_t165']]
+_u_RenderState____WriteChar__ -> ('L3', 'L0') <- J() + N() *{}:
+  Vars: `{'0_self': ['loc', 'post'], '0_char': ['loc', 'post'], '0_row': ['loc', 'post'], '0_col': ['loc', 'post'], 'fore': ['loc', 'loc'], 't155_7': ['loc', 'loc'], '1_t155_7': ['loc', 'loc'], 'back': ['loc', 'loc'], 't157_8': ['loc', 'loc'], '1_t157_8': ['loc', 'loc'], 't163_5': ['loc', 'loc'], 't164_1': ['loc', 'loc'], '1_t163_5': ['loc', 'loc'], 't165': ['loc', 'loc'], '1_t164_1': ['loc', 'loc'], '1_t165': ['loc', 'loc'], '1_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '1_t168_4': ['pre', 'post'], '1_t169_0': ['pre', 'post'], '1_t170': ['pre', 'post'], '2_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '2_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '1_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_col': ['pre', 'post'], '1_row': ['pre', 'post'], '2_row': ['pre', 'post'], '3_row': ['pre', 'post'], '1_char': ['pre', 'post'], '2_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '6_fore': ['pre', 'post'], '6_back': ['pre', 'post'], '1_t173_6': ['pre', 'post'], '1_t174': ['pre', 'post'], '1_t175': ['pre', 'post']}`
+    [028F] ['expr', 'argld', '0_self', [0]]
+    [0290] ['expr', 'argld', '0_char', [1]]
+    [0291] ['expr', 'argld', '0_row', [2]]
+    [0292] ['expr', 'argld', '0_col', [3]]
+    [0294] ['decl', 'fore', 32]
+    [02A5] ['decl', 't155_7', 32]
+    [02B0] ['expr', 'ld', '1_t155_7', ['0_self', 224, 0]]
+    [02B5] ['expr', 'bsf', '1_fore', ['1_t155_7', 0, 0]]
+    [02B8] ['decl', 'back', 32]
+    [02CB] ['decl', 't157_8', 32]
+    [02D5] ['expr', 'ld', '1_t157_8', ['0_self', 256, 0]]
+    [02D9] ['expr', 'bsf', '1_back', ['1_t157_8', 0, 0]]
+    [02E6] ['decl', 't163_5', 32]
+    [02F3] ['expr', 'ld', '1_t163_5', ['0_self', 160, 0]]
+    [02FA] ['decl', 't164_1', 32]
+    [02FD] ['expr', 'bsf', '1_t164_1', ['1_t163_5', 0, 0]]
+    [02FF] ['decl', 't165', 32]
+    [0301] ['expr', 'bsf', '1_t165', ['1_t164_1', 0, 0]]
+    [0302] ['expr', 'eq', None, ['0_row', '1_t165']]
   ('cn.jmp', 'L3')
 
-L0 -> ('L3', 'L1') <- J() + N('_u_RenderState____WriteChar__',) *{'char', 'self', 'row', 'col'}:
-  Vars: `{'0_col': ['pre', 'post'], '0_char': ['pre', 'post'], '0_row': ['pre', 'post'], '0_self': ['pre', 'loc'], '1_t156': ['pre', 'loc'], '1_t158': ['pre', 'loc'], '2_t158': ['pre', 'post'], '2_t156': ['pre', 'post'], 't168_4': ['loc', 'loc'], '1_self': ['pre', 'post'], 't169_0': ['loc', 'loc'], '1_t168_4': ['pre', 'loc'], 't170': ['loc', 'loc'], '1_t169_0': ['pre', 'loc'], '1_col': ['pre', 'post'], '1_t170': ['pre', 'loc'], '1_char': ['pre', 'post'], '1_row': ['pre', 'post'], '3_t158': ['pre', 'post'], '3_t156': ['pre', 'post'], '2_self': ['pre', 'post'], '1_t173_6': ['pre', 'post'], '1_t174': ['pre', 'post'], '1_t175': ['pre', 'post'], '1_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '8_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '8_fore': ['pre', 'post'], '2_col': ['pre', 'post'], '3_col': ['pre', 'post'], '2_row': ['pre', 'post'], '3_row': ['pre', 'post'], '2_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '9_fore': ['pre', 'post'], '9_back': ['pre', 'post'], '4_t158': ['pre', 'post'], '4_t156': ['pre', 'post']}`
-    [0DA8] ['expr', 'mov', '1_col', ['0_col']]
-    [0DA9] ['expr', 'mov', '1_char', ['0_char']]
-    [0DAA] ['expr', 'mov', '1_row', ['0_row']]
-    [0DAB] ['expr', 'mov', '1_self', ['0_self']]
-    [0DAC] ['expr', 'mov', '2_t156', ['1_t156']]
-    [0DAD] ['expr', 'mov', '2_t158', ['1_t158']]
-    [0874] ['expr', 'mov', '3_back', ['2_t158']]
-    [0875] ['expr', 'mov', '3_fore', ['2_t156']]
-    [0829] ['decl', 't168_4', 32]
-    [0C92] ['expr', 'mayread', None, ['1_self', '1_self']]
-    [0837] ['expr', 'ld', '1_t168_4', ['1_self', 128, 0]]
-    [083C] ['decl', 't169_0', 32]
-    [0840] ['expr', 'bsf', '1_t169_0', ['1_t168_4', 0, 0]]
-    [0842] ['decl', 't170', 32]
-    [0844] ['expr', 'bsf', '1_t170', ['1_t169_0', 0, 0]]
-    [0845] ['expr', 'eq', None, ['1_col', '1_t170']]
+L0 -> ('L3', 'L1') <- J() + N('_u_RenderState____WriteChar__',) *{}:
+  Vars: `{'1_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '0_row': ['pre', 'post'], '0_char': ['pre', 'post'], '0_col': ['pre', 'post'], 't168_4': ['loc', 'loc'], '0_self': ['pre', 'post'], 't169_0': ['loc', 'loc'], '1_t168_4': ['pre', 'loc'], 't170': ['loc', 'loc'], '1_t169_0': ['pre', 'loc'], '1_t170': ['pre', 'loc'], '1_t173_6': ['pre', 'post'], '1_t174': ['pre', 'post'], '1_t175': ['pre', 'post'], '2_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '2_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '1_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_col': ['pre', 'post'], '1_row': ['pre', 'post'], '2_row': ['pre', 'post'], '3_row': ['pre', 'post'], '1_char': ['pre', 'post'], '2_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '6_fore': ['pre', 'post'], '6_back': ['pre', 'post']}`
+    [035E] ['expr', 'mov', '2_back', ['1_back']]
+    [035F] ['expr', 'mov', '2_fore', ['1_fore']]
+    [0360] ['expr', 'mov', '1_row', ['0_row']]
+    [0361] ['expr', 'mov', '1_char', ['0_char']]
+    [0362] ['expr', 'mov', '1_col', ['0_col']]
+    [030C] ['decl', 't168_4', 32]
+    [031A] ['expr', 'ld', '1_t168_4', ['0_self', 128, 0]]
+    [0320] ['decl', 't169_0', 32]
+    [0324] ['expr', 'bsf', '1_t169_0', ['1_t168_4', 0, 0]]
+    [0327] ['decl', 't170', 32]
+    [0329] ['expr', 'bsf', '1_t170', ['1_t169_0', 0, 0]]
+    [032A] ['expr', 'eq', None, ['0_col', '1_t170']]
   ('cn.jmp', 'L3')
 
-L1 -> ('L3', 'L2') <- J() + N('L0',) *{'char', 'self', 'row', 'col'}:
-  Vars: `{'1_char': ['pre', 'post'], '1_row': ['pre', 'post'], '1_col': ['pre', 'post'], '1_self': ['pre', 'loc'], '2_t156': ['pre', 'loc'], '2_t158': ['pre', 'loc'], '3_t158': ['pre', 'post'], '3_t156': ['pre', 'post'], 't173_6': ['loc', 'loc'], '2_self': ['pre', 'loc'], 't174': ['loc', 'loc'], '1_t173_6': ['pre', 'loc'], 't175': ['loc', 'loc'], '1_t174': ['pre', 'loc'], '1_t175': ['pre', 'loc'], '2_col': ['pre', 'post'], '2_row': ['pre', 'post'], '2_char': ['pre', 'post'], '4_t158': ['pre', 'post'], '4_t156': ['pre', 'post'], '1_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '8_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '8_fore': ['pre', 'post'], '0_col': ['pre', 'post'], '3_col': ['pre', 'post'], '0_row': ['pre', 'post'], '3_row': ['pre', 'post'], '0_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '9_fore': ['pre', 'post'], '9_back': ['pre', 'post']}`
-    [0DB0] ['expr', 'mov', '2_char', ['1_char']]
-    [0DB1] ['expr', 'mov', '2_row', ['1_row']]
-    [0DB2] ['expr', 'mov', '2_col', ['1_col']]
-    [0DB3] ['expr', 'mov', '2_self', ['1_self']]
-    [0DB4] ['expr', 'mov', '3_t156', ['2_t156']]
-    [0DB5] ['expr', 'mov', '3_t158', ['2_t158']]
-    [087D] ['expr', 'mov', '5_back', ['3_t158']]
-    [087E] ['expr', 'mov', '5_fore', ['3_t156']]
-    [0852] ['decl', 't173_6', 32]
-    [0D21] ['expr', 'mayread', None, ['2_self', '2_self']]
-    [085E] ['expr', 'ld', '1_t173_6', ['2_self', 192, 0]]
-    [0861] ['decl', 't174', 8]
-    [0863] ['expr', 'bsf', '1_t174', ['1_t173_6', 0, 8]]
-    [0864] ['decl', 't175', 1]
-    [0866] ['expr', 'bsf', '1_t175', ['1_t174', 5, 1]]
-    [0867] ['expr', 'eq', None, ['1_t175', 1]]
+L1 -> ('L3', 'L2') <- J() + N('L0',) *{}:
+  Vars: `{'0_col': ['pre', 'post'], '0_row': ['pre', 'post'], '0_char': ['pre', 'post'], '1_back': ['pre', 'post'], '1_fore': ['pre', 'post'], 't173_6': ['loc', 'loc'], '0_self': ['pre', 'loc'], 't174': ['loc', 'loc'], '1_t173_6': ['pre', 'loc'], 't175': ['loc', 'loc'], '1_t174': ['pre', 'loc'], '1_t175': ['pre', 'loc'], '2_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '2_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '1_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_col': ['pre', 'post'], '1_row': ['pre', 'post'], '2_row': ['pre', 'post'], '3_row': ['pre', 'post'], '1_char': ['pre', 'post'], '2_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '6_fore': ['pre', 'post'], '6_back': ['pre', 'post']}`
+    [0364] ['expr', 'mov', '2_col', ['0_col']]
+    [0365] ['expr', 'mov', '2_row', ['0_row']]
+    [0366] ['expr', 'mov', '2_char', ['0_char']]
+    [0367] ['expr', 'mov', '3_back', ['1_back']]
+    [0368] ['expr', 'mov', '3_fore', ['1_fore']]
+    [0338] ['decl', 't173_6', 32]
+    [0344] ['expr', 'ld', '1_t173_6', ['0_self', 192, 0]]
+    [0348] ['decl', 't174', 8]
+    [034A] ['expr', 'bsf', '1_t174', ['1_t173_6', 0, 8]]
+    [034C] ['decl', 't175', 1]
+    [034E] ['expr', 'bsf', '1_t175', ['1_t174', 5, 1]]
+    [034F] ['expr', 'eq', None, ['1_t175', 1]]
   ('cn.jmp', 'L3')
 
-L2 -> ('L3',) <- J() + N('L1',) *{'char', 'self', 'row', 'col'}:
-  Vars: `{'2_col': ['pre', 'post'], '2_row': ['pre', 'post'], '2_char': ['pre', 'post'], '3_t156': ['pre', 'loc'], '3_t158': ['pre', 'loc'], '4_t158': ['pre', 'loc'], '4_t156': ['pre', 'loc'], '1_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '8_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '8_fore': ['pre', 'post'], '0_col': ['pre', 'post'], '1_col': ['pre', 'post'], '3_col': ['pre', 'post'], '0_row': ['pre', 'post'], '1_row': ['pre', 'post'], '3_row': ['pre', 'post'], '0_char': ['pre', 'post'], '1_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '9_fore': ['pre', 'post'], '9_back': ['pre', 'post']}`
-    [0DB8] ['expr', 'mov', '3_col', ['2_col']]
-    [0DB9] ['expr', 'mov', '3_row', ['2_row']]
-    [0DBA] ['expr', 'mov', '3_char', ['2_char']]
-    [0DBB] ['expr', 'mov', '4_t156', ['3_t156']]
-    [0DBC] ['expr', 'mov', '4_t158', ['3_t158']]
-    [086B] ['expr', 'mov', '8_fore', ['4_t158']]
-    [086C] ['expr', 'mov', '8_back', ['4_t156']]
+L2 -> ('L3',) <- J() + N('L1',) *{}:
+  Vars: `{'0_col': ['pre', 'post'], '0_row': ['pre', 'post'], '0_char': ['pre', 'post'], '1_back': ['pre', 'post'], '1_fore': ['pre', 'post'], '2_back': ['pre', 'post'], '3_back': ['pre', 'post'], '5_back': ['pre', 'post'], '2_fore': ['pre', 'post'], '3_fore': ['pre', 'post'], '5_fore': ['pre', 'post'], '1_col': ['pre', 'post'], '2_col': ['pre', 'post'], '3_col': ['pre', 'post'], '1_row': ['pre', 'post'], '2_row': ['pre', 'post'], '3_row': ['pre', 'post'], '1_char': ['pre', 'post'], '2_char': ['pre', 'post'], '3_char': ['pre', 'post'], '4_char': ['pre', 'post'], '4_row': ['pre', 'post'], '4_col': ['pre', 'post'], '6_fore': ['pre', 'post'], '6_back': ['pre', 'post']}`
+    [036A] ['expr', 'mov', '3_col', ['0_col']]
+    [036B] ['expr', 'mov', '3_row', ['0_row']]
+    [036C] ['expr', 'mov', '3_char', ['0_char']]
+    [0354] ['expr', 'mov', '5_fore', ['1_back']]
+    [0355] ['expr', 'mov', '5_back', ['1_fore']]
   ('FALL',)
 
-L3 -> () <- J('_u_RenderState____WriteChar__', 'L0', 'L1') + N('L2',) *{'char', 'self', 'row', 'col'}:
-  Vars: `{'1_back': ['pre', 'loc'], '3_back': ['pre', 'loc'], '5_back': ['pre', 'loc'], '8_back': ['pre', 'loc'], '1_fore': ['pre', 'loc'], '3_fore': ['pre', 'loc'], '5_fore': ['pre', 'loc'], '8_fore': ['pre', 'loc'], '0_col': ['pre', 'loc'], '1_col': ['pre', 'loc'], '2_col': ['pre', 'loc'], '3_col': ['pre', 'loc'], '0_row': ['pre', 'loc'], '1_row': ['pre', 'loc'], '2_row': ['pre', 'loc'], '3_row': ['pre', 'loc'], '0_char': ['pre', 'loc'], '1_char': ['pre', 'loc'], '2_char': ['pre', 'loc'], '3_char': ['pre', 'loc'], '4_char': ['pre', 'loc'], '4_row': ['pre', 'loc'], '4_col': ['pre', 'loc'], '9_fore': ['pre', 'loc'], '9_back': ['pre', 'loc']}`
-    [0DBD] ['expr', 'phi', '9_back', ['1_back', '3_back', '5_back', '8_back']]
-    [0DBE] ['expr', 'phi', '9_fore', ['1_fore', '3_fore', '5_fore', '8_fore']]
-    [0DBF] ['expr', 'phi', '4_col', ['0_col', '1_col', '2_col', '3_col']]
-    [0DC0] ['expr', 'phi', '4_row', ['0_row', '1_row', '2_row', '3_row']]
-    [0DC1] ['expr', 'phi', '4_char', ['0_char', '1_char', '2_char', '3_char']]
-    [086D] ['expr', 'argst', 0, ['4_char']]
-    [086E] ['expr', 'argst', 1, ['4_row']]
-    [086F] ['expr', 'argst', 2, ['4_col']]
-    [0870] ['expr', 'argst', 3, [0]]
-    [0871] ['expr', 'argst', 4, ['9_fore']]
-    [0872] ['expr', 'argst', 5, ['9_back']]
-    [0873] ['expr', 'call', '0_WriteCharFlaggedColored', []]
+L3 -> () <- J('_u_RenderState____WriteChar__', 'L0', 'L1') + N('L2',) *{}:
+  Vars: `{'1_back': ['pre', 'loc'], '2_back': ['pre', 'loc'], '3_back': ['pre', 'loc'], '5_back': ['pre', 'loc'], '1_fore': ['pre', 'loc'], '2_fore': ['pre', 'loc'], '3_fore': ['pre', 'loc'], '5_fore': ['pre', 'loc'], '0_col': ['pre', 'loc'], '1_col': ['pre', 'loc'], '2_col': ['pre', 'loc'], '3_col': ['pre', 'loc'], '0_row': ['pre', 'loc'], '1_row': ['pre', 'loc'], '2_row': ['pre', 'loc'], '3_row': ['pre', 'loc'], '0_char': ['pre', 'loc'], '1_char': ['pre', 'loc'], '2_char': ['pre', 'loc'], '3_char': ['pre', 'loc'], '4_char': ['pre', 'loc'], '4_row': ['pre', 'loc'], '4_col': ['pre', 'loc'], '6_fore': ['pre', 'loc'], '6_back': ['pre', 'loc']}`
+    [036F] ['expr', 'phi', '6_back', ['1_back', '2_back', '3_back', '5_back']]
+    [0370] ['expr', 'phi', '6_fore', ['1_fore', '2_fore', '3_fore', '5_fore']]
+    [0371] ['expr', 'phi', '4_col', ['0_col', '1_col', '2_col', '3_col']]
+    [0372] ['expr', 'phi', '4_row', ['0_row', '1_row', '2_row', '3_row']]
+    [0373] ['expr', 'phi', '4_char', ['0_char', '1_char', '2_char', '3_char']]
+    [0356] ['expr', 'argst', 0, ['4_char']]
+    [0357] ['expr', 'argst', 1, ['4_row']]
+    [0358] ['expr', 'argst', 2, ['4_col']]
+    [0359] ['expr', 'argst', 3, [0]]
+    [035A] ['expr', 'argst', 4, ['6_fore']]
+    [035B] ['expr', 'argst', 5, ['6_back']]
+    [035C] ['expr', 'call', '0_WriteCharFlaggedColored', []]
   ('ret', None, None, None, None)
 
-_u_RenderState____RecalcHeaders__ -> ('L0',) <- J() + N() *{'self'}:
-  Vars: `{'0_self': ['loc', 'post'], 'fileIdx': ['loc', 'loc'], 'ptrIdx': ['loc', 'loc'], '1_fileIdx': ['pre', 'post'], '4_fileIdx': ['pre', 'post'], '2_self': ['pre', 'post'], '1_ptrIdx': ['pre', 'post'], '4_ptrIdx': ['pre', 'post'], '2_ptrIdx': ['pre', 'post'], '2_fileIdx': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t185_8': ['pre', 'post'], '0_t185_7': ['pre', 'post'], '0_t185_6': ['pre', 'post'], '0_t185_5': ['pre', 'post'], '0_t185_4': ['pre', 'post'], '0_t185_3': ['pre', 'post'], '0_t185_2': ['pre', 'post'], '0_t185_1': ['pre', 'post'], '0_t185_0': ['pre', 'post'], '1_t185_0': ['pre', 'post'], '1_t185_1': ['pre', 'post'], '1_t185_2': ['pre', 'post'], '1_t185_3': ['pre', 'post'], '1_t185_4': ['pre', 'post'], '1_t185_5': ['pre', 'post'], '1_t185_6': ['pre', 'post'], '1_t185_7': ['pre', 'post'], '3_fileIdx': ['pre', 'post'], '1_t189': ['pre', 'post'], '3_ptrIdx': ['pre', 'post'], '1_t190': ['pre', 'post']}`
-    [0DDE] ['expr', 'argld', '0_self', [0]]
-    [0DDF] ['decl', 'fileIdx', 32]
-    [0DE1] ['expr', 'mov', '1_fileIdx', [0]]
-    [0DE2] ['decl', 'ptrIdx', 32]
-    [0DE4] ['expr', 'mov', '1_ptrIdx', [0]]
+_u_RenderState____RecalcHeaders__ -> ('L0',) <- J() + N() *{}:
+  Vars: `{'0_self': ['loc', 'post'], 'fileIdx': ['loc', 'loc'], 'ptrIdx': ['loc', 'loc'], '1_fileIdx': ['pre', 'post'], '4_fileIdx': ['pre', 'post'], '2_self': ['pre', 'post'], '1_ptrIdx': ['pre', 'post'], '4_ptrIdx': ['pre', 'post'], '2_ptrIdx': ['pre', 'post'], '1_self': ['pre', 'post'], '2_fileIdx': ['pre', 'post']}`
+    [0374] ['expr', 'argld', '0_self', [0]]
+    [0376] ['decl', 'fileIdx', 32]
+    [0378] ['expr', 'mov', '1_fileIdx', [0]]
+    [037A] ['decl', 'ptrIdx', 32]
+    [037C] ['expr', 'mov', '1_ptrIdx', [0]]
   ('FALL',)
 
-L0 -> ('L2', 'L1') <- J('L2',) + N('_u_RenderState____RecalcHeaders__',) *{'self'}:
-  Vars: `{'1_fileIdx': ['pre', 'post'], '4_fileIdx': ['pre', 'post'], '0_self': ['pre', 'post'], '2_self': ['pre', 'post'], '1_ptrIdx': ['pre', 'post'], '4_ptrIdx': ['pre', 'post'], '2_ptrIdx': ['pre', 'post'], '2_fileIdx': ['pre', 'post'], '1_self': ['pre', 'post'], '0_t185_8': ['pre', 'post'], '0_t185_7': ['pre', 'post'], '0_t185_6': ['pre', 'post'], '0_t185_5': ['pre', 'post'], '0_t185_4': ['pre', 'post'], '0_t185_3': ['pre', 'post'], '0_t185_2': ['pre', 'post'], '0_t185_1': ['pre', 'post'], '0_t185_0': ['pre', 'post'], '1_t185_0': ['pre', 'post'], '1_t185_1': ['pre', 'post'], '1_t185_2': ['pre', 'post'], '1_t185_3': ['pre', 'post'], '1_t185_4': ['pre', 'post'], '1_t185_5': ['pre', 'post'], '1_t185_6': ['pre', 'post'], '1_t185_7': ['pre', 'post'], '3_fileIdx': ['pre', 'post'], '1_t189': ['pre', 'post'], '3_ptrIdx': ['pre', 'post'], '1_t190': ['pre', 'post']}`
-    [0EAE] ['expr', 'phi', '2_fileIdx', ['1_fileIdx', '4_fileIdx']]
-    [0EAF] ['expr', 'phi', '1_self', ['0_self', '2_self']]
-    [0EB0] ['expr', 'phi', '2_ptrIdx', ['1_ptrIdx', '4_ptrIdx']]
-    [0DE5] ['expr', 'ult', None, ['2_ptrIdx', 24]]
+L0 -> ('L2', 'L1') <- J('L2',) + N('_u_RenderState____RecalcHeaders__',) *{}:
+  Vars: `{'1_fileIdx': ['pre', 'post'], '4_fileIdx': ['pre', 'post'], '0_self': ['pre', 'post'], '2_self': ['pre', 'post'], '1_ptrIdx': ['pre', 'post'], '4_ptrIdx': ['pre', 'post'], '2_ptrIdx': ['pre', 'post'], '1_self': ['pre', 'post'], '2_fileIdx': ['pre', 'post']}`
+    [03B4] ['expr', 'phi', '2_fileIdx', ['1_fileIdx', '4_fileIdx']]
+    [03B5] ['expr', 'phi', '1_self', ['0_self', '2_self']]
+    [03B6] ['expr', 'phi', '2_ptrIdx', ['1_ptrIdx', '4_ptrIdx']]
+    [037D] ['expr', 'ult', None, ['2_ptrIdx', 24]]
   ('c.jmp', 'L2')
 
-L1 -> () <- J() + N('L0',) *{'self'}:
+L1 -> () <- J() + N('L0',) *{}:
   Vars: `{}`
   ('ret',)
 
-L2 -> ('L0',) <- J('L0',) + N() *{'self'}:
-  Vars: `{'2_ptrIdx': ['pre', 'post'], '2_fileIdx': ['pre', 'post'], '1_self': ['pre', 'post'], 't185_0': ['loc', 'loc'], 't185_1': ['loc', 'loc'], 't185_2': ['loc', 'loc'], 't185_3': ['loc', 'loc'], 't185_4': ['loc', 'loc'], 't185_5': ['loc', 'loc'], 't185_6': ['loc', 'loc'], 't185_7': ['loc', 'loc'], 't185_8': ['loc', 'loc'], '2_self': ['pre', 'post'], '0_t185_8': ['pre', 'post'], '0_t185_7': ['pre', 'post'], '0_t185_6': ['pre', 'post'], '0_t185_5': ['pre', 'post'], '0_t185_4': ['pre', 'post'], '0_t185_3': ['pre', 'post'], '0_t185_2': ['pre', 'post'], '0_t185_1': ['pre', 'post'], '0_t185_0': ['pre', 'post'], '1_t185_0': ['pre', 'post'], '1_t185_1': ['pre', 'post'], '1_t185_2': ['pre', 'post'], '1_t185_3': ['pre', 'post'], '1_t185_4': ['pre', 'post'], '1_t185_5': ['pre', 'post'], '1_t185_6': ['pre', 'post'], '1_t185_7': ['pre', 'post'], 't189': ['loc', 'loc'], '3_fileIdx': ['pre', 'post'], '1_t189': ['pre', 'post'], 't190': ['loc', 'loc'], '3_ptrIdx': ['pre', 'post'], '1_t190': ['pre', 'post'], '1_fileIdx': ['pre', 'post'], '4_fileIdx': ['pre', 'post'], '0_self': ['pre', 'post'], '1_ptrIdx': ['pre', 'post'], '4_ptrIdx': ['pre', 'post']}`
-    [0EB1] ['expr', 'mov', '3_ptrIdx', ['2_ptrIdx']]
-    [0EB2] ['expr', 'mov', '3_fileIdx', ['2_fileIdx']]
-    [0EB3] ['expr', 'mov', '2_self', ['1_self']]
-    [0DE6] ['decl', 't185_0', 32]
-    [0DE8] ['decl', 't185_1', 32]
-    [0DEA] ['decl', 't185_2', 32]
-    [0DEC] ['decl', 't185_3', 32]
-    [0DEE] ['decl', 't185_4', 32]
-    [0DF0] ['decl', 't185_5', 32]
-    [0DF2] ['decl', 't185_6', 32]
-    [0DF4] ['decl', 't185_7', 32]
-    [0DF6] ['decl', 't185_8', 32]
-    [0E1D] ['expr', 'mayread', None, ['2_self', '2_self']]
-    [0E1E] ['expr', 'mayread', None, ['2_self', '0_t185_8']]
-    [0E1F] ['expr', 'mayread', None, ['2_self', '0_t185_7']]
-    [0E20] ['expr', 'mayread', None, ['2_self', '0_t185_6']]
-    [0E21] ['expr', 'mayread', None, ['2_self', '0_t185_5']]
-    [0E22] ['expr', 'mayread', None, ['2_self', '0_t185_4']]
-    [0E23] ['expr', 'mayread', None, ['2_self', '0_t185_3']]
-    [0E24] ['expr', 'mayread', None, ['2_self', '0_t185_2']]
-    [0E25] ['expr', 'mayread', None, ['2_self', '0_t185_1']]
-    [0E26] ['expr', 'mayread', None, ['2_self', '0_t185_0']]
-    [0DF8] ['expr', 'ld', '1_t185_0', ['2_self', 0, 0]]
-    [0E35] ['expr', 'mayread', None, ['2_self', '1_t185_0']]
-    [0DF9] ['expr', 'ld', '1_t185_1', ['2_self', 32, 0]]
-    [0E43] ['expr', 'mayread', None, ['2_self', '1_t185_1']]
-    [0DFA] ['expr', 'ld', '1_t185_2', ['2_self', 64, 0]]
-    [0E51] ['expr', 'mayread', None, ['2_self', '1_t185_2']]
-    [0DFB] ['expr', 'ld', '1_t185_3', ['2_self', 96, 0]]
-    [0E5F] ['expr', 'mayread', None, ['2_self', '1_t185_3']]
-    [0DFC] ['expr', 'ld', '1_t185_4', ['2_self', 128, 0]]
-    [0E6D] ['expr', 'mayread', None, ['2_self', '1_t185_4']]
-    [0DFD] ['expr', 'ld', '1_t185_5', ['2_self', 160, 0]]
-    [0E7B] ['expr', 'mayread', None, ['2_self', '1_t185_5']]
-    [0DFE] ['expr', 'ld', '1_t185_6', ['2_self', 192, 0]]
-    [0E89] ['expr', 'mayread', None, ['2_self', '1_t185_6']]
-    [0DFF] ['expr', 'ld', '1_t185_7', ['2_self', 224, 0]]
-    [0E97] ['expr', 'mayread', None, ['2_self', '1_t185_7']]
-    [0E0A] ['decl', 't189', 32]
-    [0E0C] ['expr', 'add', '1_t189', ['3_fileIdx', 1]]
-    [0E0D] ['expr', 'mov', '4_fileIdx', ['1_t189']]
-    [0E0E] ['decl', 't190', 32]
-    [0E10] ['expr', 'add', '1_t190', ['3_ptrIdx', 1]]
-    [0E11] ['expr', 'mov', '4_ptrIdx', ['1_t190']]
+L2 -> ('L0',) <- J('L0',) + N() *{}:
+  Vars: `{'1_self': ['pre', 'post'], '2_fileIdx': ['pre', 'post'], '2_ptrIdx': ['pre', 'post'], '1_fileIdx': ['pre', 'post'], '4_fileIdx': ['pre', 'post'], '0_self': ['pre', 'post'], '2_self': ['pre', 'post'], '1_ptrIdx': ['pre', 'post'], '4_ptrIdx': ['pre', 'post']}`
+    [03B9] ['expr', 'mov', '2_self', ['1_self']]
+    [03AD] ['expr', 'add', '4_fileIdx', ['2_fileIdx', 1]]
+    [03B2] ['expr', 'add', '4_ptrIdx', ['2_ptrIdx', 1]]
   ('jmp', 'L0')
 
-_WriteCharFlaggedColored__ -> () <- J() + N() *{'char', 'flags', 'row', 'col', 'backColor', 'foreColor'}:
-  Vars: `{'0_char': ['loc', 'loc'], '0_row': ['loc', 'loc'], '0_col': ['loc', 'loc'], '0_flags': ['loc', 'loc'], '0_foreColor': ['loc', 'loc'], '0_backColor': ['loc', 'loc'], 't193': ['loc', 'loc'], 't194': ['loc', 'loc'], '1_t193': ['loc', 'loc'], 't195': ['loc', 'loc'], 't196': ['loc', 'loc'], '1_t195': ['loc', 'loc'], '1_t196': ['loc', 'loc'], '1_t194': ['loc', 'loc']}`
-    [0EBA] ['expr', 'argld', '0_char', [0]]
-    [0EBB] ['expr', 'argld', '0_row', [1]]
-    [0EBC] ['expr', 'argld', '0_col', [2]]
-    [0EBD] ['expr', 'argld', '0_flags', [3]]
-    [0EBE] ['expr', 'argld', '0_foreColor', [4]]
-    [0EBF] ['expr', 'argld', '0_backColor', [5]]
-    [0EC0] ['decl', 't193', 32]
-    [0EC2] ['expr', 'bsl', '1_t193', ['0_row', 5]]
-    [0EC3] ['decl', 't194', 32]
-    [0EC5] ['expr', 'add', '1_t194', ['1_t193', '0_col']]
-    [0EC9] ['decl', 't195', 8]
-    [0ECB] ['expr', 'bsl', '1_t195', ['0_flags', 7]]
-    [0ECC] ['decl', 't196', 8]
-    [0ECE] ['expr', 'add', '1_t196', ['1_t195', '0_char']]
-    [0ED8] ['expr', 'stchr', None, ['1_t196', '1_t194', '0_foreColor', '0_backColor']]
+_WriteCharFlaggedColored__ -> () <- J() + N() *{}:
+  Vars: `{'0_char': ['loc', 'loc'], '0_row': ['loc', 'loc'], '0_col': ['loc', 'loc'], '0_flags': ['loc', 'loc'], '0_foreColor': ['loc', 'loc'], '0_backColor': ['loc', 'loc'], 'pos': ['loc', 'loc'], 't193': ['loc', 'loc'], '1_t193': ['loc', 'loc'], 'rd': ['loc', 'loc'], 't195': ['loc', 'loc'], '1_t195': ['loc', 'loc'], '1_rd': ['loc', 'loc'], '1_pos': ['loc', 'loc']}`
+    [03BA] ['expr', 'argld', '0_char', [0]]
+    [03BB] ['expr', 'argld', '0_row', [1]]
+    [03BC] ['expr', 'argld', '0_col', [2]]
+    [03BD] ['expr', 'argld', '0_flags', [3]]
+    [03BE] ['expr', 'argld', '0_foreColor', [4]]
+    [03BF] ['expr', 'argld', '0_backColor', [5]]
+    [03C1] ['decl', 'pos', 32]
+    [03C4] ['decl', 't193', 32]
+    [03C6] ['expr', 'bsl', '1_t193', ['0_row', 5]]
+    [03CA] ['expr', 'add', '1_pos', ['1_t193', '0_col']]
+    [03CD] ['decl', 'rd', 8]
+    [03D0] ['decl', 't195', 8]
+    [03D2] ['expr', 'bsl', '1_t195', ['0_flags', 7]]
+    [03D6] ['expr', 'add', '1_rd', ['1_t195', '0_char']]
+    [03E0] ['expr', 'stchr', None, ['1_rd', '1_pos', '0_foreColor', '0_backColor']]
   ('ret', None, None, None, None)
 

@@ -1,4 +1,6 @@
-start: ex_decl+
+start: namespace | ex_decl+
+
+namespace: NAMESPACE ident LCURLY ex_decl+ RCURLY
 
 ex_decl: struct_decl 
        | fn_decl
@@ -30,7 +32,7 @@ declstmt: VAR ident COLON type SEMICOLON
 declexpr: VAR ident [COLON type] EQUAL expr SEMICOLON
 expr: assgexpr
 ?assgexpr: lorexpr
-        | postexpr assgop assgexpr
+        | postexpr assgop [BTICK] assgexpr
 ?lorexpr: landexpr
         | lorexpr OR landexpr
 ?landexpr: lunaryexpr
@@ -42,15 +44,16 @@ expr: assgexpr
 ?borexpr: bxorexpr
 	| TRUE -> true
 	| FALSE -> false
-        | borexpr PIPE bxorexpr
+	| "overflow" -> overflow
+        | borexpr PIPE [BTICK] bxorexpr
 ?bxorexpr: bandexpr
-        | bxorexpr CARROT bandexpr
+        | bxorexpr CARROT [BTICK] bandexpr
 ?bandexpr: addexpr
-        | bandexpr AMPERSAND addexpr
+        | bandexpr AMPERSAND [BTICK] addexpr
 ?addexpr: multexpr
-        | addexpr addop multexpr
+        | addexpr addop [BTICK] multexpr
 ?multexpr: castexpr
-        | multexpr multop castexpr
+        | multexpr multop [BTICK] castexpr
 ?castexpr: unaryexpr
         | "<" type ">" castexpr
 ?unaryexpr: postexpr
@@ -114,12 +117,14 @@ CHAR: /\'(?:.|(?:\\.)|(?:\\x..))\'/
 
 INT: /[ui][0-9]+(?: *)\**(\[[0-9]+\])?/
 
-assgop: EQUAL | PLUSEQUAL | MINUSEQUAL | LANGLEEEEQUAL | RANGLEEEEQUAL | LANGLEEEQUAL | RANGLEEEQUAL | PERCENTEQUAL | SLASHEQUAL | ASTERISKEQUAL | AMPERSANDEQUAL | PIPEEQUAL | CARROTEQUAL
+assgop: EQUAL | PLUSWRAPEQUAL | MINUSWRAPEQUAL | PLUSEQUAL | MINUSEQUAL | LANGLEEEEQUAL | RANGLEEEEQUAL | LANGLEEWRAPEQUAL | LANGLEEEQUAL | RANGLEEEQUAL | PERCENTEQUAL | SLASHEQUAL | ASTERISKEQUAL | AMPERSANDEQUAL | PIPEEQUAL | CARROTEQUAL
 relop: LANGLEQ | RANGLEQ | EQUALL | NEQUAL | LANGLE | RANGLE
-addop: PLUS | MINUS
-multop: LANGLEEE | RANGLEEE | LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISK
+addop: PLUSWRAP | MINUSWRAP | PLUS | MINUS
+multop: LANGLEEE | RANGLEEE | LANGLEEWRAP |LANGLEE | RANGLEE | PERCENT | SLASH | ASTERISKWRAP | ASTERISK
 unaryop: PLUS | MINUS | TILDE
 
+NAMESPACE: "namespace"
+BTICK: "`"
 BREAKPOINT: "BREAKPOINT"
 VOID: "void"
 EQUAL: "="
@@ -136,6 +141,7 @@ DOT: "."
 LBRACK: "["
 RBRACK: "]"
 ASTERISK: "*"
+ASTERISKWRAP: "*%"
 AMPERSAND: "&"
 QMARK: "?"
 OR: "or"
@@ -143,13 +149,18 @@ AND: "and"
 PIPE: "|"
 CARROT: "^"
 PLUS: /\+(?!:)/
+PLUSWRAP: "+%"
 PLUSCOLON: "+:"
 PLUSEQUAL: "+="
+PLUSWRAPEQUAL: "+%="
 MINUS: "-"
+MINUSWRAP: "-%"
 MINUSEQUAL: "-="
+MINUSWRAPEQUAL: "-%="
 LANGLEEEEQUAL: "<<<=" 
 RANGLEEEEQUAL: ">>>=" 
 LANGLEEEQUAL: "<<=" 
+LANGLEEWRAPEQUAL: "<<%=" 
 RANGLEEEQUAL: ">>=" 
 PERCENTEQUAL: "%=" 
 SLASHEQUAL: "/=" 
@@ -159,6 +170,7 @@ PIPEEQUAL: "|="
 CARROTEQUAL: "^=" 
 LANGLEEE: "<<<"
 LANGLEE: "<<"
+LANGLEEWRAP: "<<%"
 LANGLE.10: /<(?![:=<])/
 RANGLEEE: ">>"
 RANGLEE: ">>"

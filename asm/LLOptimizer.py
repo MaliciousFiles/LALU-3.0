@@ -12,7 +12,7 @@ depsGlobal = ['glcd']
 modsRd = ['bst']
 memReads = ['ld', 'lda', 'ldw']
 memWrites = ['st', 'sta', 'stw']
-hasSideEffects = ['susp']+memWrites
+hasSideEffects = ['susp', 'use']+memWrites
 funcRenumId = 0
 NOASSERT = False
 globalticker = 0
@@ -269,7 +269,8 @@ class BlockSet:
             block.EnsureTagged()
 
     #Small note, due to how SSA works, we cannot mov into phi functions as these dont actually exist an when theyre dropped bugs will appear
-    def MovForward(self):
+    #Unless we want to aggressively optimize, we'll keep moves into named variables so that when we MovTrace we get better variable names
+    def MovForward(self, aggressive = False):
         do = True
         while do:
             do = False
@@ -278,23 +279,65 @@ class BlockSet:
                 for line in block.body:
                     if line[0] != 'expr': continue
                     if line[1] != 'mov': continue
-                    reps[line[2]] ,= line[3]
+##                    print(f'LINE: {line}')
+                    if not aggressive and type(line[3][0]) == str and line[3][0].split('_')[1][0] == 't':
+                        reps[line[3][0]] = line[2]
+                    else:
+                        reps[line[2]] ,= line[3]
+            print(reps)
 
             for block in self.blocks:
                 for i, line in enumerate(block.body):
                     if line[0] != 'expr' or line[1] == 'phi': continue
                     for j, arg in enumerate(line[3]):
                         if arg in reps:
-                            if reps[arg] == arg: continue
+                            if reps[arg] == arg or reps[arg] == line[2]: continue
                             block.body[i][3][j] = reps[arg]
                             do = True
 
-    def ElimWritesWithoutRead(self):
+    def MovTrace(self):
+        #Expect SSA
+        #If we find a construct of `op A B C D` and `mov Z A`, we can mov trace and do `op Z B C D`
+        do = True
+        while do:
+            do = False
+            writes = set()
+            reads = {}
+            brep = {}
+
+            for block in self.blocks:
+                for line in block.body:
+                    if line[0] == 'decl': continue
+                    if line[0] != 'expr': continue
+                    if line[1] == 'call': continue
+                    if type(line[2]) == str: writes.add(line[2])
+                    for arg in line[3]:
+                        if type(arg) == str and arg != line[2]:
+                            reads[arg] = reads.get(arg, 0)+1
+                            if line[1] == 'mov':
+                                brep[arg] = line[2]
+            for block in self.blocks:
+                for line in block.body:
+                    if line[0] == 'decl': continue
+                    if line[0] != 'expr': continue
+                    if line[1] == 'call': continue
+                    idx = block.body.index(line)
+                    if reads.get(line[2], 0) == 1 and line[2] in brep:
+                        line[2] = brep[line[2]]
+                        del block.body[idx+1]
+                        do = True
+                        break
+                else: continue
+                break
+            
+
+    def ElimWritesWithoutRead(self) -> bool:
         #Expects SSA, and as such a read of own self write is illegal and illdefined
         writes = set()
         reads = set()
         decls = set()
         names = set()
+        did = False
         for block in self.blocks:
             for line in block.body:
                 if line[0] == 'decl': decls.add(line[1])
@@ -317,18 +360,33 @@ class BlockSet:
                             pass
                         else:
                             continue
-                    elif line[0] == 'expr' and line[1] in hasSideEffects: continue
+                    elif line[0] == 'expr' and (line[1] in hasSideEffects or line[1].endswith('.s')): continue
                     assert block.body[idx] == line
                     del block.body[idx]
                     do = True
-        print(f'Needless declares: `{decls-names}`')
+                    did = True
+##        print(f'Needless declares: `{decls-names}`')
         #Declarations without read
         for decl in decls - names:
             for block in self.blocks:
                 for line in block.body[:]:
-                    if not(line[0] == 'decl' and line[1] == decl): continue
                     idx = block.body.index(line)
+                    if line[0] == 'predecl' and line[1] <= 1:
+                        del block.body[idx]
+                        did = True
+                    if not(line[0] == 'decl' and line[1] == decl): continue
                     del block.body[idx]
+                    did = True
+                    for j in range(1, 1<<100):
+                        line = block.body[idx-j]
+                        if line[0] == 'predecl':
+                            line[1] -= 1
+                            if line[1] <= 1:
+                                del block.body[idx-j]
+                        elif line[0] == 'decl':
+                            continue
+                        break
+        return did
 
     def ComputeRefables(self):
         for block in self.blocks:
@@ -551,12 +609,8 @@ class Block:
                     self.body[i] = tuple(self.body[i])
 
                 if self.body[i][1] == 'argst':
-##                    print('INSERT')
-##                    self.body.insert(i+1, ('expr', 'call_read', globalticker, self.body[i][3][:1]))
-##                    self.body.insert(i+2, ('expr', 'call_use', globalticker+1, self.body[i][3][:1]))
                     globalticker += 2
             if line[0] == 'decl':
-##                self.body.insert(i+1, ('expr', 'decl', line[1], ()))
                 self.body.insert(i+1, ('expr', 'addr', line[1]+'.&', (line[1],)))
                 #Also does double duty as the immediate use means that the variable naming gets properly init'd
                 
@@ -572,6 +626,18 @@ class Block:
 
     def ToLLIR(self):
         out = LHL.Block(self.label, None)
+        for i, line in enumerate(self.body):
+            if line[-1].startswith('eid'): del line[-1]
+            if line[0] == 'expr':
+                nline = ['expr', [line[1], line[2], *line[3]]]
+                if line[1] in usesRd+modsRd:
+                    if line[1] in modsRd:
+                        del nline[1][1]
+                    else:
+                        del nline[1][1]
+                nline[1] = tuple(nline[1])
+                self.body[i] = nline
+            self.body[i] = tuple(self.body[i])
         out.body = self.body
         out.exit = self.exit
         return out
@@ -877,27 +943,34 @@ def Optimize(llir: LHL.LLIR) -> None:
         body.ForwardJumps()
         body.Renumber()
 
-        print(repr(body))
+##        print(repr(body))
 
         
         body.ToSSA()
         body.MovForward()
 
-        print(repr(body))
-        body.ComputeRefables()
-        body.FromSSA()
-        print(repr(body))
-        body.InsertPotMutations()
-        print(repr(body))
-        body.ToSSA()
-        print(repr(body))
+##        print(repr(body))
 
-        body.ElimWritesWithoutRead()
-        body.ComputeRefables()
+        body.MovTrace()
 
-        print(repr(body))
+##        print(repr(body))
+
         
-        body.PropPotValues()
+##        body.ComputeRefables()
+##        body.FromSSA()
+##        print(repr(body))
+##        body.InsertPotMutations()
+##        print(repr(body))
+##        body.ToSSA()
+##        print(repr(body))
+
+        while body.ElimWritesWithoutRead():
+            pass
+        #body.ComputeRefables()
+
+##        print(repr(body))
+        
+        #body.PropPotValues()
         body.EliminateRedundantReads()
         body.ElimWritesWithoutRead()
         body.PropogateUses()
@@ -905,13 +978,13 @@ def Optimize(llir: LHL.LLIR) -> None:
 
         preprune += repr(body)+'\n'
 
-        print(repr(body))
+##        print(repr(body))
         
-        body.FromSSA()
-        body.ToSSA()
-        body.EliminateRedundantReads()
-        body.ElimWritesWithoutRead()
-        body.ElimWritesWithoutRead()
+##        body.FromSSA()
+##        body.ToSSA()
+##        body.EliminateRedundantReads()
+##        body.ElimWritesWithoutRead()
+##        body.ElimWritesWithoutRead()
         body.FromSSA()
 
         body.PruneUnreachable()

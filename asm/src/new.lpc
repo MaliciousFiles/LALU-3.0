@@ -1,0 +1,20 @@
+namespace Std {
+
+fn Main() void {
+  var x: u8 = 0;
+  x += 256;
+  x >>= 8;
+  var y: u32 = x +% 2;
+  var z: u8 = <u8>y +` 255;
+  if (overflow) z = 255;
+  
+  //$r32 = x;
+  @susp(); //Compiler does not recognize this as a end of block, thus no worries about unreachable code
+  
+  //@use(x); //Dropped by the compiler very late, but can force prevent some optimizations
+  //@use(y);
+  //@use(z);
+  return;
+}
+
+}

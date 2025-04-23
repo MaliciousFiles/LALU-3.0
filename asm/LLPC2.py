@@ -14,7 +14,7 @@ import LLOptimizer
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 
 usesRd = ['[]=', '[:]=', '@stchr', '@st', '@sta', '@stw']
-nullret = ['@susp', '@rstkey', '@stchr', '@nop']
+nullret = ['@susp', '@rstkey', '@nop', '@use']
 
 def MapRawName(name):
     if '_' in name or name[0] in 'Lt':
@@ -102,7 +102,7 @@ def GetStrKind(kind):
 @TrackLine
 def Gen(tree, pre = True, fn_pref = None):
     
-    global out, ind, inter, funcs
+    global out, ind, inter, funcs, namespaces
     if type(tree) == Tree:
         data = tree.data
         if data == 'break':
@@ -132,6 +132,13 @@ def Gen(tree, pre = True, fn_pref = None):
             ResolveTypes()
             for child in tree.children:
                 Gen(child, pre = False)
+
+        elif data.type == 'RULE' and data.value == 'namespace':
+            _, x, _, b, _ = tree.children
+            namespaces.append(x)
+            for child in b.children:
+                Gen(child, pre=pre)
+            del namespaces[-1]
 
         elif data.type == 'RULE' and data.value == 'ex_decl':
             Gen(tree.children[0], pre)
@@ -171,6 +178,7 @@ def Gen(tree, pre = True, fn_pref = None):
             inter.Decl(name, kind)
         elif data.type == 'RULE' and data.value == 'declexpr':
             _, name, _, kind, _, expr, _, = tree.children
+            idx = len(inter.body.body)
             rhs = Rvalue(expr.children[0])
             name = TreeToName(name)
             if kind:
@@ -178,7 +186,7 @@ def Gen(tree, pre = True, fn_pref = None):
             else:
                 kind = rhs.kind
             assert rhs.kind.CanCoerceTo(kind), f'Type `{rhs.kind}` cannot coerce into type `{kind}`'
-            inter.Decl(name, kind)
+            inter.Decl(name, kind, idx)
             assert rhs.kind.CanCoerceTo(kind)
             assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime val `{rhs.name}`'
             inter.AddPent(op = '=', D = Var(name, kind), S0 = rhs, S1 = None, S2 = None)
@@ -551,9 +559,11 @@ def Rvalue(expr):
                 args = []
 
             if name in usesRd:
-                assert len(args) <= 4, f'Intrinsic function takes 4 arguments'
-                args += [None]*4
+                assert len(args) == 4, f'Intrinsic function takes 4 arguments'
+##                args += [None]*4
+                print(f'Calling 4I with {args=}')
                 inter.AddPent(op = name, D = args[0], S0 = args[1], S1 = args[2], S2 = args[3])
+                print(f'Line was {inter.body.body[-1]}')
                 return NoVar
             else:
                 assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguments'
@@ -566,6 +576,11 @@ def Rvalue(expr):
             inter.Jump(inter.trues[-1])
             return Var(None, Type(Statics.Bool()))
         elif data == 'false':
+            inter.Jump(inter.falses[-1])
+            return Var(None, Type(Statics.Bool()))
+        elif data == 'overflow':
+##            inter.AddPent(op = 'of', D = None, None, None, None)
+            inter.IfJump(None, 'of', None, inter.trues[-1])
             inter.Jump(inter.falses[-1])
             return Var(None, Type(Statics.Bool()))
         elif type(data) == str:
@@ -601,46 +616,46 @@ def Rvalue(expr):
             Rvalue(rhs)
             return Var(None, Type(Statics.Bool()))
         elif data.value == 'addexpr':
-            le, op, re = expr.children
+            le, op, bt, re = expr.children
             lhs = Rvalue(le)
             rhs = Rvalue(re)
             op = op.children[0].value
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, sticky = bt)
             return tmp
         elif data.value == 'multexpr':
-            le, op, re = expr.children
+            le, op, bt, re = expr.children
             lhs = Rvalue(le)
             rhs = Rvalue(re)
             op = op.children[0].value
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, sticky = bt)
             return tmp
         elif data.value == 'bandexpr':
-            le, _, re = expr.children
+            le, _, bt, re = expr.children
             lhs = Rvalue(le)
             rhs = Rvalue(re)
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.AddPent(op = '&', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = '&', D = tmp, S0 = lhs, S1 = rhs, S2 = None, sticky = bt)
             return tmp
         elif data.value == 'bxorexpr':
-            le, _, re = expr.children
+            le, _, bt, re = expr.children
             lhs = Rvalue(le)
             rhs = Rvalue(re)
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.AddPent(op = '^', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = '^', D = tmp, S0 = lhs, S1 = rhs, S2 = None, sticky = bt)
             return tmp
         elif data.value == 'borexpr':
-            le, _, re = expr.children
+            le, _, bt, re = expr.children
             lhs = Rvalue(le)
             rhs = Rvalue(re)
             kind = lhs.kind.Common(rhs.kind)
             tmp = NewTemp(kind)
-            inter.AddPent(op = '|', D = tmp, S0 = lhs, S1 = rhs, S2 = None)
+            inter.AddPent(op = '|', D = tmp, S0 = lhs, S1 = rhs, S2 = None, sticky = bt)
             return tmp
         elif data.value == 'relexpr':
             le, op, re = expr.children
@@ -660,7 +675,7 @@ def Rvalue(expr):
             inter.Jump(inter.falses[-1])
             return Var(None, Type(Statics.Bool()))
         elif data.value == 'assgexpr':
-            le, op, re = expr.children
+            le, op, bt, re = expr.children
             lhs = Lvalue(le)
             rhs = Rvalue(re)
             if len(op.children[0].value) >= 2:
@@ -670,7 +685,7 @@ def Rvalue(expr):
                 kind = rlhs.kind.Common(rhs.kind)
                 tmp = NewTemp(kind)
                 
-                inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None)
+                inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None, sticky = bt)
                 inter.AddPent(op = '=', D = lhs, S0 = tmp, S1 = None, S2 = None)
 ##                inter.AddPent(op = op, D = lhs, S0 = lhs, S1 = rhs, S2 = None)
             else:
@@ -868,11 +883,14 @@ class HLIR:
                 if nkind == kind:
                     als.append(name)
         return als
-    def Decl(self, name, kind):
+    def Decl(self, name, kind, idx = None):
         if type(kind) == Statics.Void:
             return
         self.Register(name, kind)
-        self.body.Addline(('decl', Var(name, kind), None, None))
+        if idx == None:
+            self.body.Addline(('decl', Var(name, kind), None, None))
+        else:
+            self.body.Insertline(idx, ('decl', Var(name, kind), None, None))
 
     def AddMemStore(self, ary, idx, val):
 ##        self.Use(l)
@@ -908,7 +926,7 @@ class HLIR:
         self.AddPent('[:]=', ary, val, off, width)
 ##        InvalidateAliasFor(inter, ary.kind)
     
-    def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var):
+    def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = None):
         
         D = D if D else Var.FromVal(self, None)
         S0 = S0 if S0 else Var.FromVal(self, None)
@@ -964,7 +982,7 @@ class HLIR:
                     self.AddBitStore(l, r, w, S0)
             return
         
-        self.body.Addline(('expr', (op, D, S0, S1, S2), eid))
+        self.body.Addline(('expr', (op, D, S0, S1, S2), sticky!=None, eid))
     def AddLabel(self, lbl):
         self.body.fall = lbl
         self.body = Block(lbl)
@@ -1035,6 +1053,18 @@ class HLIR:
         fto = {}
         k = {}
         fto[f'_{self.func["name"]}__'] = ['Entry']
+
+        for block in body:
+            for i,b in enumerate(block.body):
+                if b[0] == 'expr':
+                    if b[1][0] in nullret:
+                        l = list(b)
+                        li = list(l[1])
+                        li[1] = NoVar
+                        l[1] = li
+                        block.body[i] = tuple(l)
+
+        return
 
         for block in body:
             ldict = lvars[block.entry] = {}
@@ -1165,6 +1195,8 @@ class Block:
         self.From = None
     def Addline(self, line):
         self.body.append(line)
+    def Insertline(self, idx, line):
+        self.body.insert(idx, line)
 
 def ResolveTypes():
     queue = list(Statics.structs.keys())
@@ -1275,7 +1307,7 @@ def GenAssume(inter, tree):
 
 
 def Compile(filepath, verbose = False, optimize = True):
-    global funcs, syms, ind, tid, eid, srcs, inter, tree, txt
+    global funcs, syms, ind, tid, eid, srcs, inter, tree, txt, namespaces
     with open(filepath, 'r') as f:
         txt = f.read()
         txt = txt.replace('\\"', '\x01')
@@ -1288,6 +1320,7 @@ def Compile(filepath, verbose = False, optimize = True):
     tid = 0
     eid = 0
     srcs=[]
+    namespaces = []
 
     funcs = {}
     inter = HLIR()
