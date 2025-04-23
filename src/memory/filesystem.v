@@ -8,6 +8,8 @@ module filesystem(
 	input swapWren,
 	input [31:0] swapData,
 
+    input [7:0] syscallId,
+
 	input [31:0] pathPtr1,
 	input [31:0] pathPtr2,
 	input [31:0] fileDescriptor,
@@ -34,6 +36,8 @@ module filesystem(
 		.swap_read_data_export(swapQ),
 		.swap_wren_export(swapWren),
 		.swap_write_data_export(swapData),
+
+        .syscall_id_export(syscallId),
 
 		.path_ptr1_export(pathPtr1),
 		.path_ptr2_export(pathPtr2),

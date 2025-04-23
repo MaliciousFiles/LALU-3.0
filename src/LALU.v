@@ -125,26 +125,14 @@ module LALU(input CLOCK_50,
     /*********************
      *      Memory       *
      *********************/
-    wire openFile, delFile;
+    wire [31:0] fsPathPtr1, fsPathPtr2, fsFileDescriptor, fsFileAddress, fsWriteData, fsDataOut;
+    wire [7:0] fsSyscallId;
+    wire [4:0] fsFileReadBits;
+
     wire [31:0] fsSwapQ;
 	filesystem fs(
 	        .CLOCK_50(CLOCK_50),
 
-	/*input swapMeta,
-	input [31:0] swapAddress,
-	input swapRden,
-	output [31:0] swapQ,
-	input swapWren,
-	input [31:0] swapData,
-
-	input [31:0] pathPtr1,
-	input [31:0] pathPtr2,
-	input [31:0] fileDescriptor,
-	input [31:0] fileAddress,
-	input [4:0] fileReadBits,
-	input [31:0] writeData,
-
-	output [31:0] dataOut,*/
 	        .swapMeta(pageFsMeta),
             .swapAddress(pageFsAddress),
             .swapRden(pageFsRden),
@@ -152,18 +140,15 @@ module LALU(input CLOCK_50,
             .swapWren(pageFsWren),
             .swapData(pageFsData),
 
+            .syscallId(fsSyscallId)
+
             .pathPtr1(fsPathPtr1),
-
-
-	        .del(delFile),
-			.rden(pageStall ? pageFsRden : isFileMem_e && memAccessRden),
-			.wren(pageStall ? pageFsWren : ((isMemWrite_m && isFileMem_m) || isFileMem_e) && memAccessWren),
-
-			.filename(pageFsFilename),
-			.address(pageStall ? pageFsAddress : memAccessAddress),
-			.data(pageStall ? pageFsData : memAccessInput),
-
-			.q(fsQ),
+            .pathPtr2(fsPathPtr2),
+            .fileDescriptor(fsFileDescriptor),
+            .fileAddress(fsFileAddress),
+            .fileReadBits(fsFileReadBits),
+            .writeData(fsWriteData),
+            .dataOut(fsDataOut),
 
 			.HPS_DDR3_ADDR(HPS_DDR3_ADDR), .HPS_DDR3_BA(HPS_DDR3_BA), .HPS_DDR3_CAS_N(HPS_DDR3_CAS_N), .HPS_DDR3_CKE(HPS_DDR3_CKE), .HPS_DDR3_CK_N(HPS_DDR3_CK_N), .HPS_DDR3_CK_P(HPS_DDR3_CK_P), .HPS_DDR3_CS_N(HPS_DDR3_CS_N), .HPS_DDR3_DM(HPS_DDR3_DM), .HPS_DDR3_DQ(HPS_DDR3_DQ), .HPS_DDR3_DQS_N(HPS_DDR3_DQS_N), .HPS_DDR3_DQS_P(HPS_DDR3_DQS_P), .HPS_DDR3_ODT(HPS_DDR3_ODT), .HPS_DDR3_RAS_N(HPS_DDR3_RAS_N), .HPS_DDR3_RESET_N(HPS_DDR3_RESET_N), .HPS_DDR3_RZQ(HPS_DDR3_RZQ), .HPS_DDR3_WE_N(HPS_DDR3_WE_N));
 	  
@@ -609,9 +594,6 @@ module LALU(input CLOCK_50,
     assign charWrFlags = Rd[15:8];
     assign charWrX = Rs0[5:0];
     assign charWrY = Rs0[10:6];
-
-    assign openFile = isExecuting && format == NO_WB_TRIP && funcID == OPF;
-    assign delFile = isExecuting && format == NO_WB_TRIP && funcID == DELF;
 
     wire isExecuting = ~totalSuspend && ~stall_e && ~executiveOverride && executeInstr;
     wire executeInstr = isValid_d && ~(conditional && generalFlag == negate);
