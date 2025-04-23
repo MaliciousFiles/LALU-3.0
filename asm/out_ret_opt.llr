@@ -6,39 +6,45 @@ fn Main () 0 {
     ('predecl', 9, 288)
     ('decl', 'rs_0', 32)
     ('expr', ('addr', 'rs_0.&', 'rs_0'))
+    ('decl', 'rs_1', 32)
     ('expr', ('argst', 0, 'rs_0.&'))
     ('expr', ('call', 'u_RenderState____Init'))
+    ('alloc', 't202', 24, 32)
+    ('expr', ('bsf', 't202', 'rs_1', 0, 0))
+    ('decl', 't203', 32)
+    ('expr', ('mul', 't203', 0, 32))
+    ('expr', ('st', 's0:', 't202', 't203', 0))
     ('expr', ('argst', 0, 'rs_0.&'))
     ('expr', ('call', 'u_RenderState____Draw'))
     ('decl', 'ptr', 32)
     ('predecl', 9, 288)
-    ('decl', 't203_0', 32)
-    ('decl', 't203_1', 32)
-    ('decl', 't203_2', 32)
-    ('decl', 't203_3', 32)
-    ('decl', 't203_4', 32)
-    ('decl', 't203_5', 32)
-    ('decl', 't203_6', 32)
-    ('decl', 't203_7', 32)
-    ('decl', 't203_8', 32)
-    ('expr', ('ld', 't203_0', 'rs_0.&', 0, 0))
-    ('expr', ('ld', 't203_1', 'rs_0.&', 32, 0))
-    ('expr', ('ld', 't203_2', 'rs_0.&', 64, 0))
-    ('expr', ('ld', 't203_3', 'rs_0.&', 96, 0))
-    ('expr', ('ld', 't203_4', 'rs_0.&', 128, 0))
-    ('expr', ('ld', 't203_5', 'rs_0.&', 160, 0))
-    ('expr', ('ld', 't203_6', 'rs_0.&', 192, 0))
-    ('expr', ('ld', 't203_7', 'rs_0.&', 224, 0))
-    ('expr', ('ld', 't203_8', 'rs_0.&', 256, 0))
-    ('expr', ('st', 't203_0', 'rs_0.&', 0, 0))
-    ('expr', ('st', 't203_1', 'ptr', 32, 0))
-    ('expr', ('st', 't203_2', 'ptr', 64, 0))
-    ('expr', ('st', 't203_3', 'ptr', 96, 0))
-    ('expr', ('st', 't203_4', 'ptr', 128, 0))
-    ('expr', ('st', 't203_5', 'ptr', 160, 0))
-    ('expr', ('st', 't203_6', 'ptr', 192, 0))
-    ('expr', ('st', 't203_7', 'ptr', 224, 0))
-    ('expr', ('st', 't203_8', 'ptr', 256, 0))
+    ('decl', 't205_0', 32)
+    ('decl', 't205_1', 32)
+    ('decl', 't205_2', 32)
+    ('decl', 't205_3', 32)
+    ('decl', 't205_4', 32)
+    ('decl', 't205_5', 32)
+    ('decl', 't205_6', 32)
+    ('decl', 't205_7', 32)
+    ('decl', 't205_8', 32)
+    ('expr', ('ld', 't205_0', 'rs_0.&', 0, 0))
+    ('expr', ('ld', 't205_1', 'rs_0.&', 32, 0))
+    ('expr', ('ld', 't205_2', 'rs_0.&', 64, 0))
+    ('expr', ('ld', 't205_3', 'rs_0.&', 96, 0))
+    ('expr', ('ld', 't205_4', 'rs_0.&', 128, 0))
+    ('expr', ('ld', 't205_5', 'rs_0.&', 160, 0))
+    ('expr', ('ld', 't205_6', 'rs_0.&', 192, 0))
+    ('expr', ('ld', 't205_7', 'rs_0.&', 224, 0))
+    ('expr', ('ld', 't205_8', 'rs_0.&', 256, 0))
+    ('expr', ('st', 't205_0', 'rs_0.&', 0, 0))
+    ('expr', ('st', 't205_1', 'ptr', 32, 0))
+    ('expr', ('st', 't205_2', 'ptr', 64, 0))
+    ('expr', ('st', 't205_3', 'ptr', 96, 0))
+    ('expr', ('st', 't205_4', 'ptr', 128, 0))
+    ('expr', ('st', 't205_5', 'ptr', 160, 0))
+    ('expr', ('st', 't205_6', 'ptr', 192, 0))
+    ('expr', ('st', 't205_7', 'ptr', 224, 0))
+    ('expr', ('st', 't205_8', 'ptr', 256, 0))
     ('expr', ('argst', 0, 65))
     ('expr', ('argst', 1, 0))
     ('expr', ('argst', 2, 0))
@@ -46,7 +52,7 @@ fn Main () 0 {
     ('expr', ('argst', 4, 16777215))
     ('expr', ('argst', 5, 0))
     ('expr', ('call', 'WriteCharFlaggedColored'))
-  L0:
+  LA0:
 }
 fn u_Block____MemInit (memory) 0 {
   _u_Block____MemInit__:
@@ -82,37 +88,37 @@ fn u_Block____Malloc (memory, size) 1 {
     ('expr', ('mov', 'doSplit', 0))
     ('decl', 'blockptr', 32)
     ('expr', ('mov', 'blockptr', 'memory'))
-  L0:
+  LC0:
     ('expr', ('ne', None, 'blockptr', 'ENDPTR'))
-  L1:
+  LC1:
     ('decl', 't15_1', 32)
     ('expr', ('ld', 't15_1', 'blockptr', 32, 0))
     ('decl', 't16', 1)
     ('expr', ('bsf', 't16', 't15_1', 0, 1))
     ('expr', ('eq', None, 't16', 0))
-  L2:
-  L3:
+  LC2:
+  LC3:
     ('decl', 'bsize', 31)
     ('decl', 't20_1', 32)
     ('expr', ('ld', 't20_1', 'blockptr', 32, 0))
     ('expr', ('bsf', 'bsize', 't20_1', 0, 31))
     ('expr', ('eq', None, 'bsize', 'rsize'))
-  L4:
+  LC4:
     ('expr', ('mov', 'u_target', 'blockptr'))
-  L5:
+  LC5:
     ('decl', 't32', 31)
     ('expr', ('add', 't32', 'rsize', 1))
     ('expr', ('eq', None, 'bsize', 't32'))
-  L6:
+  LC6:
     ('expr', ('mov', 'hijack', 'blockptr'))
-  L7:
+  LC7:
     ('decl', 't38', 31)
     ('expr', ('add', 't38', 'rsize', 1))
     ('expr', ('ugt', None, 'bsize', 't38'))
-  L8:
+  LC8:
     ('expr', ('mov', 'doSplit', 1))
     ('expr', ('mov', 'u_target', 'blockptr'))
-  L9:
+  LC9:
     ('decl', 't42', 32)
     ('expr', ('add', 't42', 'blockptr', 1))
     ('decl', 't43_1', 32)
@@ -120,29 +126,29 @@ fn u_Block____Malloc (memory, size) 1 {
     ('decl', 't44', 31)
     ('expr', ('bsf', 't44', 't43_1', 0, 31))
     ('expr', ('add', 'blockptr', 't42', 't44'))
-  L10:
+  LC10:
     ('expr', ('eq', None, 'doSplit', 0))
-  L11:
+  LC11:
     ('expr', ('ne', None, 'u_target', 0))
-  L12:
+  LC12:
     ('expr', ('st', 0, 'u_target', 63, 1))
     ('decl', 't58', 32)
     ('expr', ('add', 't59', 'u_target', 1))
     ('decl', 't59', 32)
     ('expr', ('mov', 't59', 't58'))
     ('expr', ('retst', 0, 't59'))
-  L13:
+  LC13:
     ('expr', ('ne', None, 'hijack', 0))
-  L14:
+  LC14:
     ('expr', ('st', 0, 'hijack', 63, 1))
     ('decl', 't68', 32)
     ('expr', ('add', 't69', 'hijack', 1))
     ('decl', 't69', 32)
     ('expr', ('mov', 't69', 't68'))
     ('expr', ('retst', 0, 't69'))
-  L15:
+  LC15:
     ('expr', ('retst', 0, 0))
-  L16:
+  LC16:
     ('expr', ('st', 0, 'u_target', 63, 1))
     ('decl', 'oldsize', 31)
     ('decl', 't75_1', 32)
@@ -173,9 +179,9 @@ fn u_Block____Malloc (memory, size) 1 {
     ('expr', ('bsf', 't89', 't88_1', 0, 31))
     ('expr', ('add', 'nextNext', 't87', 't89'))
     ('expr', ('ne', None, 'nextNext', 'ENDPTR'))
-  L17:
+  LC17:
     ('expr', ('st', 'newNext', 'nextNext', 0, 32))
-  L18:
+  LC18:
     ('decl', 't96', 32)
     ('expr', ('add', 't97', 'u_target', 1))
     ('decl', 't97', 32)
@@ -224,9 +230,9 @@ fn u_RenderState____Draw (self) 0 {
     ('expr', ('bsf', 'latScroll', 't110_1', 0, 0))
     ('decl', 'row', 32)
     ('expr', ('mov', 'row', 0))
-  L0:
+  LE0:
     ('expr', ('ult', None, 'row', 24))
-  L1:
+  LE1:
     ('decl', 'linePtr', 32)
     ('decl', 't117_1', 32)
     ('expr', ('ld', 't117_1', 'self', 32, 0))
@@ -237,9 +243,9 @@ fn u_RenderState____Draw (self) 0 {
     ('expr', ('ld', 'linePtr', 't118', 't119', 0))
     ('decl', 'col', 32)
     ('expr', ('mov', 'col', 0))
-  L2:
+  LE2:
     ('expr', ('ult', None, 'col', 64))
-  L3:
+  LE3:
     ('decl', 'char', 8)
     ('decl', 't126', 32)
     ('expr', ('add', 't126', 'col', 'latScroll'))
@@ -247,28 +253,28 @@ fn u_RenderState____Draw (self) 0 {
     ('expr', ('mul', 't127', 't126', 32))
     ('expr', ('ld', 'char', 'linePtr', 't127', 0))
     ('expr', ('eq', None, 'char', 10))
-  L4:
-  L5:
+  LE4:
+  LE5:
     ('expr', ('eq', None, 'char', 0))
-  L6:
+  LE6:
     ('expr', ('ult', None, 'col', 64))
-  L7:
+  LE7:
     ('expr', ('argst', 0, 'self'))
     ('expr', ('argst', 1, 0))
     ('expr', ('argst', 2, 'row'))
     ('expr', ('argst', 3, 'col'))
     ('expr', ('call', 'u_RenderState____WriteChar'))
     ('expr', ('add', 'col', 'col', 1))
-  L8:
+  LE8:
     ('expr', ('argst', 0, 'self'))
     ('expr', ('argst', 1, 'char'))
     ('expr', ('argst', 2, 'row'))
     ('expr', ('argst', 3, 'col'))
     ('expr', ('call', 'u_RenderState____WriteChar'))
     ('expr', ('add', 'col', 'col', 1))
-  L9:
+  LE9:
     ('expr', ('add', 'row', 'row', 1))
-  L10:
+  LE10:
     ('decl', 't150_6', 32)
     ('expr', ('ld', 't150_6', 'self', 192, 0))
     ('decl', 't151', 8)
@@ -298,7 +304,7 @@ fn u_RenderState____WriteChar (self, char, row, col) 0 {
     ('decl', 't165', 32)
     ('expr', ('bsf', 't165', 't164_1', 0, 0))
     ('expr', ('eq', None, 'row', 't165'))
-  L0:
+  LF0:
     ('decl', 't168_4', 32)
     ('expr', ('ld', 't168_4', 'self', 128, 0))
     ('decl', 't169_0', 32)
@@ -306,7 +312,7 @@ fn u_RenderState____WriteChar (self, char, row, col) 0 {
     ('decl', 't170', 32)
     ('expr', ('bsf', 't170', 't169_0', 0, 0))
     ('expr', ('eq', None, 'col', 't170'))
-  L1:
+  LF1:
     ('decl', 't173_6', 32)
     ('expr', ('ld', 't173_6', 'self', 192, 0))
     ('decl', 't174', 8)
@@ -314,10 +320,10 @@ fn u_RenderState____WriteChar (self, char, row, col) 0 {
     ('decl', 't175', 1)
     ('expr', ('bsf', 't175', 't174', 5, 1))
     ('expr', ('eq', None, 't175', 1))
-  L2:
+  LF2:
     ('expr', ('mov', 'fore', 'back'))
     ('expr', ('mov', 'back', 'fore'))
-  L3:
+  LF3:
     ('expr', ('argst', 0, 'char'))
     ('expr', ('argst', 1, 'row'))
     ('expr', ('argst', 2, 'col'))
@@ -333,10 +339,10 @@ fn u_RenderState____RecalcHeaders (self) 0 {
     ('expr', ('mov', 'fileIdx', 0))
     ('decl', 'ptrIdx', 32)
     ('expr', ('mov', 'ptrIdx', 0))
-  L0:
+  LG0:
     ('expr', ('ult', None, 'ptrIdx', 24))
-  L1:
-  L2:
+  LG1:
+  LG2:
     ('expr', ('add', 'fileIdx', 'fileIdx', 1))
     ('expr', ('add', 'ptrIdx', 'ptrIdx', 1))
 }

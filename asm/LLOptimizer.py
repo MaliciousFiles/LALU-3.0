@@ -989,17 +989,21 @@ def Optimize(llir: LHL.LLIR) -> None:
 
         body.PruneUnreachable()
 
-        func['body'] = []
-        for block in body.blocks:
-            func['body'].append(block.ToLLIR())
+##        func['body'] = []
+##        for block in body.blocks:
+##            func['body'].append(block.ToLLIR())
 
 ##        assert '____Init' not in func['name']
 
     funcRenumId = 0
     optlr = ''
-    for func in newfuncs:
-        func.GlobalRenumber()
-        optlr += repr(func)+'\n'
+    for ofunc, ifunc in zip(llir.funcs, newfuncs):
+        ifunc.GlobalRenumber()
+        optlr += repr(ifunc)+'\n'
+        ofunc['body'] = []
+        print(repr(ifunc))
+        for block in ifunc.blocks:
+            ofunc['body'].append(block.ToLLIR())
     with open(f'out_opt.llr', 'w') as f:
         f.write(optlr)
     with open(f'out_preprune_opt.llr', 'w') as f:
