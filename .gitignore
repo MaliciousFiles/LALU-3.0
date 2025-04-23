@@ -7,7 +7,11 @@ c5_pin_model_dump.txt
 *.bak
 RAM.mif
 asm/__pycache__/
+asm/__pycache__/*
 asm/*.txt
 asm/out.*
+asm/*.llr
+asm/*.asm
+asm/*.hlr
 asm/src/*.txt
 asm/expanded.lpc

@@ -10,13 +10,10 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         output                  fsAccess,
         output reg              fsRden=0,
         output reg              fsWren=0,
+        output reg              fsMeta = 0,
         input  [31:0]           fsQ,
-        output reg [31:0]       fsFilename=0,
         output reg [31:0]       fsAddress=0,
         output reg [31:0]       fsData=0);
-        parameter PATH_1 = "/dev";
-        parameter PATH_2 = "/mem";
-        parameter PATH_3 = "meta";
 
         wire [widthad-1:0] upper_addr_a = address_a[widthad-1:hwwidthad-divsize] << (hwwidthad-divsize);
         wire [hwwidthad-divsize-1:0] lower_addr_a = address_a[hwwidthad-divsize-1:0];
@@ -153,18 +150,11 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         always @(posedge clk) begin
             if (update_a || update_b) begin
                 case (state)
-                    // open /dev/mem
+                    // setup
                     0: begin
-                        // progress the filename, then move to state=1
-                        case (fsFilename)
-                            0: fsFilename <= PATH_1;
-                            PATH_1: fsFilename <= PATH_2;
-                            PATH_2: begin
-                                fsFilename <= 0;
-                                state <= hasData[leastRecentlyUsed] ? 1 : 3;
-                                readIdx <= 0;
-                            end
-                        endcase
+                        state <= hasData[leastRecentlyUsed] ? 1 : 3;
+                        readIdx <= 0;
+                        fsMeta <= 0;
                     end
                     // dump the page
                     1,2: begin
@@ -199,21 +189,14 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                     end
                     // open /dev/memmeta
                     5: begin
-                        case (fsFilename)
-                            0: fsFilename <= PATH_1;
-                            PATH_1: fsFilename <= PATH_2;
-                            PATH_2: fsFilename <= PATH_3;
-                            PATH_3: begin
-                                fsFilename <= 0;
-                                state <= 6;
+                        state <= 6;
+                        fsMeta <= 1;
 
-                                if (hasData[leastRecentlyUsed]) begin
-                                    fsWren <= 1;
-                                    fsAddress <= physicalBase[leastRecentlyUsed] >> (hwwidthad-divsize);
-                                    fsData <= {elevated[leastRecentlyUsed], userRead[leastRecentlyUsed], userWrite[leastRecentlyUsed], userExec[leastRecentlyUsed]};
-                                end
-                            end
-                        endcase
+                        if (hasData[leastRecentlyUsed]) begin
+                            fsWren <= 1;
+                            fsAddress <= physicalBase[leastRecentlyUsed] >> (hwwidthad-divsize);
+                            fsData <= {elevated[leastRecentlyUsed], userRead[leastRecentlyUsed], userWrite[leastRecentlyUsed], userExec[leastRecentlyUsed]};
+                        end
                     end
                     // dump the metadata
                     6: begin

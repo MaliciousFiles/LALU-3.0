@@ -126,9 +126,34 @@ module LALU(input CLOCK_50,
      *      Memory       *
      *********************/
     wire openFile, delFile;
-    wire [31:0] fsQ;
+    wire [31:0] fsSwapQ;
 	filesystem fs(
 	        .CLOCK_50(CLOCK_50),
+
+	/*input swapMeta,
+	input [31:0] swapAddress,
+	input swapRden,
+	output [31:0] swapQ,
+	input swapWren,
+	input [31:0] swapData,
+
+	input [31:0] pathPtr1,
+	input [31:0] pathPtr2,
+	input [31:0] fileDescriptor,
+	input [31:0] fileAddress,
+	input [4:0] fileReadBits,
+	input [31:0] writeData,
+
+	output [31:0] dataOut,*/
+	        .swapMeta(pageFsMeta),
+            .swapAddress(pageFsAddress),
+            .swapRden(pageFsRden),
+            .swapQ(fsSwapQ),
+            .swapWren(pageFsWren),
+            .swapData(pageFsData),
+
+            .pathPtr1(fsPathPtr1),
+
 
 	        .del(delFile),
 			.rden(pageStall ? pageFsRden : isFileMem_e && memAccessRden),
@@ -151,8 +176,8 @@ module LALU(input CLOCK_50,
     wire memAccessRden;
     wire [31:0] memAccessOutput;
 
-    wire pageStall, pageFsRden, pageFsWren;
-    wire [31:0] pageFsFilename, pageFsAddress, pageFsData;
+    wire pageStall, pageFsRden, pageFsWren, pageFsMeta;
+    wire [31:0] pageFsAddress, pageFsData;
     paged_RAM MEM(
         .clk(clk),
 
@@ -171,8 +196,8 @@ module LALU(input CLOCK_50,
         .fsAccess(pageStall),
         .fsRden(pageFsRden),
         .fsWren(pageFsWren),
-        .fsQ(fsQ),
-        .fsFilename(pageFsFilename),
+        .fsQ(fsSwapQ),
+        .fsMeta(pageFsMeta),
         .fsAddress(pageFsAddress),
         .fsData(pageFsData));
 //    operational_memory MEM(

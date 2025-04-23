@@ -270,7 +270,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.add_comment(f"alloc `{instr[1]}`: u{instr[3] if len(instr) > 3 else 32}[{instr[2]}]")
 
             width = instr[3] if len(instr) > 3 and instr[3] else 32
-            state.declare_var('_ARRAY_'+instr[1], None, instr[2]*width, AlignOf(width))
+            state.declare_var('_ARRAY_'+instr[1], 32, instr[2]*width, AlignOf(width))
             comp_state.add_comment(f"  decl `{'_ARRAY_'+instr[1]}`: u{instr[2]*width}")
             state.declare_var(instr[1], 32)
             comp_state.add_comment(f"  decl `{instr[1]}`: u32")
