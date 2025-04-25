@@ -78,6 +78,15 @@ def N_CODE(**kwargs):
     assert d['Fmt_Code'] in ['000', '100'], f'Fmt Code `{d["Fmt_Code"]}` is not valid for type Fmt {self}\n'
     assert len(d['Func_ID']) == formats[self]['Func_ID'], f'Func_ID `{d["Func_ID"]}` should have {formats[self]["Func_ID"]} bits\n'
     return d
+def Z_CODE(**kwargs):
+    self = 'T'
+    d = kwargs
+    d['Args'] = ['Rs0']
+    d['fmtpnm'] = self
+    d['Func_ID'] = d['Func_ID'].replace('_', '')
+    assert d['Fmt_Code'] in ['000', '100'], f'Fmt Code `{d["Fmt_Code"]}` is not valid for type Fmt {self}\n'
+    assert len(d['Func_ID']) == formats[self]['Func_ID'], f'Func_ID `{d["Func_ID"]}` should have {formats[self]["Func_ID"]} bits\n'
+    return d
 def V_CODE(**kwargs):
     self = 'T'
     d = kwargs
@@ -211,10 +220,14 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'ncf':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0110'),
     'nof':   N_CODE(Fmt_Code = '100', Func_ID = '0_1001_0111'),
 
-    'opf':   T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1000'),
-    'delf':  T_CODE(Fmt_Code = '100', Func_ID = '0_1001_1001'),
-    'stf':   Q_CODE(Fmt_Code = '101', Func_ID = '1010'),
-    'ldf':   Q_CODE(Fmt_Code = '001', Func_ID = '1011'),
+    'mkd':   Z_CODE(Fmt_Code = '100', Func_ID = '0_1001_1000'),
+    'rmd':   Z_CODE(Fmt_Code = '100', Func_ID = '0_1001_1001'),
+    'opf':   S_CODE(Fmt_Code = '000', Func_ID = '0_0011_0011'),
+    'clf':   Z_CODE(Fmt_Code = '100', Func_ID = '0_1001_1100'),
+    'rmf':   Z_CODE(Fmt_Code = '100', Func_ID = '0_1001_1010'),
+    'rdf':   Q_CODE(Fmt_Code = '001', Func_ID = '1010'),
+    'wrf':   Q_CODE(Fmt_Code = '101', Func_ID = '1011'),
+    'rnf':   V_CODE(Fmt_Code = '100', Func_ID = '0_1001_1011'),
 
     'gcld':  D_CODE(Fmt_Code = '000', Func_ID = '1_1111_1111'),
     'susp':  N_CODE(Fmt_Code = '100', Func_ID = '1_1111_1111'),
@@ -480,7 +493,8 @@ def ParseFile(file):
                 nb = len(bits)
                 lbls[tkn[1]] = addr
                 while bits != '':
-                    mem[addr] = hex(int(bits[:32], 2))[2:].upper().zfill(8)
+                    mem[addr] = ''.join([hex(int(bits[:32], 2))[2:].upper().ljust(8, '0')[i:i+2] for i in range(6, -1, -2)])
+
                     bits = bits[min(len(bits), 32):]
                     addr += 32
                     startaddr += 32
@@ -551,7 +565,7 @@ def UnpackHex(instr):
         tab.append((
             field,
             b[:width],
-            [k for k,v in instrs.items() if 'Func_ID' in v and v['Fmt_Code'] == data['Fmt_Code'] and v['Func_ID'] == b[:width]][0] if field == 'Func_ID' else F if field == 'Fmt_Code' else ''))
+            ([k for k,v in instrs.items() if 'Func_ID' in v and v['Fmt_Code'] == data['Fmt_Code'] and v['Func_ID'] == b[:width]]+["???"])[0] if field == 'Func_ID' else F if field == 'Fmt_Code' else ''))
         b = b[width:]
 
     for j in range(len(tab)):

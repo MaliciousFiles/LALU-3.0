@@ -12,8 +12,11 @@ module LALU_tb();
         $fwrite(fd, "%0d ns: %b %b %b %b %b\n", $time*10, VGA_HS, VGA_VS, VGA_R, VGA_G, VGA_B);
     end
 
+    initial $init_fs("LALU_fs");
+
     // simulate the desired number of cycles
     initial #(`SIM_CYCLES*2) begin
+        $cleanup_fs;
         $finish;
         $fclose(fd);
     end
@@ -23,7 +26,10 @@ module LALU_tb();
     always #1 clk = ~clk;
 
     wire suspended;
-    always @(posedge suspended) $finish;
+    always @(posedge suspended) begin
+        $cleanup_fs;
+        $finish;
+    end
 
     // run simulation
     wire PS2_CLK, PS2_DAT, VGA_CLK, VGA_SYNC_N, VGA_BLANK_N, VGA_HS, VGA_VS;

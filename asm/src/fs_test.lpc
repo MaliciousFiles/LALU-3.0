@@ -1,0 +1,11 @@
+fn Main() void {
+    @mkd("log");
+    @rmf("log/debug.txt");
+    var fd: u32 = @opf("log/debug.txt");
+    @wrf(0x6C6C6548, fd, 0 << 5, 0);
+    @wrf(0x6F57206F, fd, 1 << 5, 0);
+    @wrf(0x21646C72, fd, 2 << 5, 0);
+    @clf(fd);
+
+    @susp();
+}

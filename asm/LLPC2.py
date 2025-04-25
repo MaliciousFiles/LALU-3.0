@@ -13,8 +13,8 @@ import LLOptimizer
 
 parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 
-usesRd = ['[]=', '[:]=', '@stchr', '@st', '@sta', '@stw']
-nullret = ['@susp', '@rstkey', '@nop', '@use']
+usesRd = ['[]=', '[:]=', '@stchr', '@st', '@sta', '@stw', '@wrf']
+nullret = ['@susp', '@rstkey', '@nop', '@use', '@mkd', '@rmd', '@clf', '@rmf', '@rnf']
 
 def MapRawName(name):
     if '_' in name or name[0] in 'Lt':
@@ -1385,8 +1385,8 @@ def Compile(filepath, verbose = False, optimize = True):
         with open("../.sim/Icarus Verilog-sim/RAM.mif", 'w') as f:
             f.write(mif)
 
-        if not os.path.exists("../.sim/Icarus Verilog-sim/dev"): os.mkdir("../.sim/Icarus Verilog-sim/dev")
-        with open("../.sim/Icarus Verilog-sim/dev/mem", "wb") as f:
+        if not os.path.exists("../.sim/Icarus Verilog-sim/LALU_fs"): os.mkdir("../.sim/Icarus Verilog-sim/LALU_fs")
+        with open("../.sim/Icarus Verilog-sim/LALU_fs/bios", "wb") as f:
             for _,hx in sorted(program.items(), key=lambda x:x[0]):
                 f.write(bytearray.fromhex(hx)[::-1])
     else:
