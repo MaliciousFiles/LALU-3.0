@@ -57,6 +57,7 @@ class LLIR:
 
 def IsNative(var):
     var = Var(var.name, Type.FromStr(str(var.kind)) if var.kind else var.kind)
+    var = Var(var.name, Type.FromStr(str(var.kind)) if var.kind else var.kind)
     return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.IsBasicInt() or type(var.kind.body) in [Pointer, C_Array] or var.kind.comptime)
 
 def SubRegs(var):
@@ -181,6 +182,7 @@ def Store(nblock, val, array, offset, width, sticky):
 def Load(nblock, res, array, offset, sticky):
     assert not sticky
     opWidth = array.kind.ElementSize()
+    print(f'{array=}')
     perOpWidth = 32 if opWidth >= 32 else opWidth #How many bits per read
 
     bitwidth = res.kind.OpWidth()

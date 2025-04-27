@@ -1,5 +1,6 @@
 module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width=32, parameter divsize=6) (
         input                   clk,
+        input                   dump_all,
 
         input [widthad-1:0]     address_a,  address_b,
         input                   wren_a,     wren_b,
@@ -37,7 +38,7 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         reg userExec [0:(1<<divsize)-1];
 
         always @(posedge clk, posedge page_valid_a, posedge page_valid_b) begin
-            if ((page_valid_a && (wren_a || rden_a)) || (page_valid_b && (wren_b || rden_b))) begin
+            if (!dump_all && ((page_valid_a && (wren_a || rden_a)) || (page_valid_b && (wren_b || rden_b)))) begin
                 if (page_valid_a && (wren_a || rden_a)) begin
                     if (wren_a) hasData[page_idx_a] <= 1;
                     lastAccessed[page_idx_a] = accessCounter;
@@ -86,13 +87,13 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                     .clk(clk),
 
                     .address_a(update_a ? (state == 3 ? readIdx-2 : readIdx) : lower_addr_a),
-                    .wren_a((upper_addr_a == physicalBase[ii] && page_valid_a && wren_a) || (update_a && ii == leastRecentlyUsed && state == 3 && readIdx >= 2)),
+                    .wren_a((upper_addr_a === physicalBase[ii] && page_valid_a && wren_a) || (update_a && ii == leastRecentlyUsed && state == 3 && readIdx >= 2)),
                     .data_a(update_a ? fsQ : data_a),
                     .rden_a((page_valid_a && rden_a) || (update_a && state == 1)),
                     .q_a(out_a),
 
                     .address_b(do_update_b ? (state == 3 ? readIdx-2 : readIdx) : lower_addr_b),
-                    .wren_b((upper_addr_b == physicalBase[ii] && page_valid_b && wren_b) || (do_update_b && ii == leastRecentlyUsed && state == 3 && readIdx >= 2)),
+                    .wren_b((upper_addr_b === physicalBase[ii] && page_valid_b && wren_b) || (do_update_b && ii == leastRecentlyUsed && state == 3 && readIdx >= 2)),
                     .data_b(do_update_b ? fsQ : data_b),
                     .rden_b((page_valid_b && rden_b) || (do_update_b && state == 1)),
                     .q_b(out_b));
@@ -138,11 +139,12 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
         assign q_a = page_valid_a ? internal_q_a[old_page_idx_a] : 0;
         assign q_b = page_valid_b ? internal_q_b[old_page_idx_b] : 0;
 
-        wire update_a = ~page_valid_a && (wren_a || rden_a);
+        wire update_a = (~done_dumping && dump_all) || (~page_valid_a && (wren_a || rden_a));
         wire update_b = ~page_valid_b && (wren_b || rden_b);
         assign fsAccess = update_a || update_b;
 
         // state machine
+        reg done_dumping = 0;
         reg [2:0] state = 0;
         reg [hwwidthad-divsize-1:0] readIdx = 0;
         // page table update
@@ -152,9 +154,16 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                 case (state)
                     // setup
                     0: begin
-                        state <= hasData[leastRecentlyUsed] ? 1 : 3;
-                        readIdx <= 0;
-                        fsMeta <= 0;
+                        if (!dump_all) begin
+                            state <= hasData[leastRecentlyUsed] ? 1 : 3;
+                            readIdx <= 0;
+                            fsMeta <= 0;
+                        end else begin
+                            leastRecentlyUsed <= 0;
+                            readIdx <= 0;
+                            fsMeta <= 0;
+                            state <= 1;
+                        end
                     end
                     // dump the page
                     1,2: begin
@@ -168,8 +177,20 @@ module paged_RAM #(parameter widthad=32, parameter hwwidthad=16, parameter width
                         if (&readIdx) begin
                             state <= 2;
                             readIdx <= 0;
-                        end else if (state == 2) state <= 3; // writing to addr [-1]
-                        else readIdx <= readIdx + 1;
+                        end else if (state == 2) begin
+                            if (!dump_all) begin
+                                state <= 3; // writing to addr [-1]
+                            end else begin
+                                if (&leastRecentlyUsed || leastRecentlyUsed === 'bx) begin
+                                    state <= 0;
+                                    done_dumping <= 1;
+                                end else begin
+                                    state <= 1;
+                                    readIdx <= 0;
+                                    leastRecentlyUsed <= leastRecentlyUsed + 1;
+                                end
+                            end
+                        end else readIdx <= readIdx + 1;
                     end
                     // read in the new page
                     3,4: begin

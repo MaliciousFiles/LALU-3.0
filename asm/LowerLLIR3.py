@@ -181,7 +181,7 @@ class BlockState:
         else:
             var_addr = self.find_free_addr(width, alignment) if addr is None else addr
         self.variables[name] = Variable(name, width, var_addr, addr is not None)
-        self.stack_top += 1
+        self.stack_top += ceil(width/32)
 
     def use_var(self, name: str, state: CompilerState, reg=None) -> str:
         if name[-1] == ":": return name     # handled in the data segment
@@ -221,7 +221,7 @@ class BlockState:
             if my_var != other_var:
                 if my_var is not None:
                     stores.append(self.variables[my_var].store(i, mods))
-                elif other_var is not None:
+                if other_var is not None:
                     loads.append(self.variables[other_var].load(i, mods))
 
         return stores + loads
@@ -255,10 +255,10 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.add_comment(f"decl `{instr[1]}`: u{instr[2] if len(instr) > 2 else 32}")
 
             state.declare_var(instr[1], instr[2] if len(instr) > 2 else 32)
-        elif instr[0] == 'predecl': # ('decl', amt, totalwidth)
+        elif instr[0] == 'predecl': # ('predecl', amt, totalwidth)
             comp_state.add_comment(f"predecl {instr[2]}/{instr[1]}")
 
-            state.predeclare(instr[1], instr[2])
+            if (instr[1] != 0 and instr[2] != 0): state.predeclare(instr[1], instr[2])
         elif instr[0] == 'undecl': # ('undecl', name)
             comp_state.add_comment(f"undecl `{instr[1]}`")
 
@@ -270,7 +270,7 @@ def CompileBlock(comp_state: CompilerState, block: Block):
             comp_state.add_comment(f"alloc `{instr[1]}`: u{instr[3] if len(instr) > 3 else 32}[{instr[2]}]")
 
             width = instr[3] if len(instr) > 3 and instr[3] else 32
-            state.declare_var('_ARRAY_'+instr[1], 32, instr[2]*width, AlignOf(width))
+            state.declare_var('_ARRAY_'+instr[1], instr[2]*width, None, AlignOf(width))
             comp_state.add_comment(f"  decl `{'_ARRAY_'+instr[1]}`: u{instr[2]*width}")
             state.declare_var(instr[1], 32)
             comp_state.add_comment(f"  decl `{instr[1]}`: u32")

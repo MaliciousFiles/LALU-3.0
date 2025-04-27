@@ -419,10 +419,10 @@ def Rvalue(expr):
             rhs = Rvalue(re)
             lhs = Rvalue(le)
             prod = NewTemp(Type())
-            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.OpWidth()), S2 = None)
+            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.Deref().OpWidth()), S2 = None)
             tmp = NewTemp(lhs.kind.Deref())
             EvictAliasFor(inter, tmp.kind)
-            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = prod, S2 = None)
+            inter.AddPent(op = '=[]', D = tmp, S0 = lhs, S1 = prod, S2 = Var(lhs.kind.Deref().OpWidth(), Type(Comp())))
             return tmp
         elif data == 'derefexpr':
             le, _, _, = expr.children
@@ -561,9 +561,7 @@ def Rvalue(expr):
             if name in usesRd:
                 assert len(args) == 4, f'Intrinsic function takes 4 arguments'
 ##                args += [None]*4
-                print(f'Calling 4I with {args=}')
                 inter.AddPent(op = name, D = args[0], S0 = args[1], S1 = args[2], S2 = args[3])
-                print(f'Line was {inter.body.body[-1]}')
                 return NoVar
             else:
                 assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguments'
@@ -753,7 +751,7 @@ def Lvalue(expr):
             rhs = Rvalue(re)
             lhs = Rvalue(le)
             prod = NewTemp(Type())
-            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(None, lhs.kind.OpWidth()), S2 = None)
+            inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(None, lhs.kind.Deref().OpWidth()), S2 = None)
             tmp = f'{lhs.name}[{prod.name}]'
             return Var(tmp, lhs.kind.Deref())
         elif data == 'sliceexpr':

@@ -105,9 +105,11 @@ void tick(bool* swapMeta, uint32_t* swapAddress, bool* swapRden, uint32_t* swapR
             read(*fileDescriptor, &readData, 4);
 
             lseek(*fileDescriptor, (*fileAddress >> 5) * 4, SEEK_SET);
-            *fileWriteData = (*fileWriteData << (*fileAddress % 32)) | (readData & ~((*fileBits == 0 ? 0xFFFFFFFF : (1<<(*fileBits))-1) << (*fileAddress % 32)));
+
+            uint32_t mask = *fileBits == 0 ? 0xFFFFFFFF : (1<<(*fileBits))-1;
+
+            *fileWriteData = ((*fileWriteData & mask) << (*fileAddress % 32)) | (readData & ~(mask << (*fileAddress % 32)));
             write(*fileDescriptor, fileWriteData, 4); // write a 32-bit word
-            printf("wrote 0x%x to 0x%x\n", *fileWriteData, (*fileAddress >> 5) * 4);
             break;
         case SYSCALL_MKDIR:
             path = getString(swapFd, *pathPtr);

@@ -178,6 +178,7 @@ module LALU(input CLOCK_50,
     wire [31:0] pageFsAddress, pageFsData;
     paged_RAM MEM(
         .clk(clk),
+        .dump_all(halt_e),
 
         .address_a(fetchAddress),
         .wren_a(1'b0),
@@ -560,17 +561,17 @@ module LALU(input CLOCK_50,
     wire executiveOverride = isValid_d && expectedIP != IP_d; // whether to override IP with EIP
 
     wire [31:0] Rs0 = i0
-        ? exImm[0] ? fetchOutput : Rs0_d
+        ? exImm[0] ? activeInstruction : Rs0_d
         : isValid_e && isWriteback_e && Rs0_d == Rd_e ? result_e
         : isValid_m && isWriteback_m && Rs0_d == Rd_m ? finalResult_w
         : registers[Rs0_d];
     wire [31:0] Rs1 = i1
-        ? exImm[1] ? fetchOutput : Rs1_d
+        ? exImm[1] ? activeInstruction : Rs1_d
         : isValid_e && isWriteback_e && Rs1_d == Rd_e ? result_e
         : isValid_m && isWriteback_m && Rs1_d == Rd_m ? finalResult_w
         : registers[Rs1_d];
     wire [31:0] Rs2 = i2
-        ? exImm[2] ? fetchOutput : Rs2_d
+        ? exImm[2] ? activeInstruction : Rs2_d
         : isValid_e && isWriteback_e && Rs2_d == Rd_e ? result_e
         : isValid_m && isWriteback_m && Rs2_d == Rd_m ? finalResult_w
         : registers[Rs2_d];

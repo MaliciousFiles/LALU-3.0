@@ -328,6 +328,8 @@ class Type:
             return False
         if skind == C_Array and okind == Pointer:
             return True
+        if skind == C_Array and okind == C_Array:
+            return True
         if skind == Pointer:
             if okind == Pointer:
                 return True
