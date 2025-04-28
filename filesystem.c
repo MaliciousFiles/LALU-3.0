@@ -12,10 +12,11 @@
 #define SYSCALL_CLOSE 2
 #define SYSCALL_RMFILE 3
 #define SYSCALL_RENAME 4
-#define SYSCALL_READ 5
-#define SYSCALL_WRITE 6
-#define SYSCALL_MKDIR 7
-#define SYSCALL_RMDIR 8
+#define SYSCALL_SIZE 5
+#define SYSCALL_READ 6
+#define SYSCALL_WRITE 7
+#define SYSCALL_MKDIR 8
+#define SYSCALL_RMDIR 9
 
 // returns string ON HEAP (must be freed)
 char* getString(int swapFd, uint32_t addr) {
@@ -92,6 +93,9 @@ void tick(bool* swapMeta, uint32_t* swapAddress, bool* swapRden, uint32_t* swapR
 
             free(path);
             free(path2);
+            break;
+        case SYSCALL_SIZE:
+            *dataOut = lseek(*fileDescriptor, 0, SEEK_END);
             break;
         case SYSCALL_READ:
             lseek(*fileDescriptor, (*fileAddress >> 5) * 4, SEEK_SET);

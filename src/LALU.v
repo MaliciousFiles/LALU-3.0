@@ -2,10 +2,11 @@
 `define SYSCALL_CLOSE 2
 `define SYSCALL_RMFILE 3
 `define SYSCALL_RENAME 4
-`define SYSCALL_READ 5
-`define SYSCALL_WRITE 6
-`define SYSCALL_MKDIR 7
-`define SYSCALL_RMDIR 8
+`define SYSCALL_SIZE 5
+`define SYSCALL_READ 6
+`define SYSCALL_WRITE 7
+`define SYSCALL_MKDIR 8
+`define SYSCALL_RMDIR 9
 
 module LALU(input CLOCK_50,
     inout PS2_CLK, inout PS2_DAT,
@@ -106,6 +107,7 @@ module LALU(input CLOCK_50,
     parameter OPF               = 9'b0_0011_0011;
     parameter CLF               = 9'b0_1001_1100;
     parameter RMF               = 9'b0_1001_1010;
+    parameter SZF               = 9'b0_0011_0100;
     parameter RDF               = 4'b1010;
     parameter WRF               = 4'b1011;
     parameter RNF               = 9'b0_1001_1011;
@@ -826,6 +828,10 @@ module LALU(input CLOCK_50,
                     OPF: begin
                         syscallId_e <= `SYSCALL_OPEN;
                         fsPathPtr1 <= Rs0;
+                    end
+                    SZF: begin
+                        syscallId_e <= `SYSCALL_SIZE;
+                        fsFileDescriptor <= Rs0;
                     end
                     GCLD: begin
                         result_e <= globalCounter;

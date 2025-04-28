@@ -1,0 +1,223 @@
+// NOTE: not buffered!
+
+#include malloc
+
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
+struct FILE {
+    fd: u32,
+
+    isRead: bool,
+    isWrite: bool,
+    isAppend: bool,
+
+    cursor: u32,
+
+    eof: bool,
+    err: bool,
+    closed: bool
+}
+
+fn fopen(filename: u8*, mode: u8*) FILE* {
+    var fd: u32 = @opf(filename);
+    if (fd == -1) { return NULLPTR; } // shouldn't really happen, but worth checking
+
+    var isRead: bool;
+    var isWrite: bool;
+    var isAppend: bool = false;
+
+    isRead = isWrite = mode[1] == '+'; // default to both true if + is present
+
+    var cursor: u32 = 0;
+    if (mode[0] == 'r') {
+        if (@szf(fd) == 0) { // file doesn't exist
+            @clf(fd);
+            return NULLPTR;
+        }
+
+        isRead = true;
+    } else if (mode[0] == 'w') {
+        // truncate
+        @clf(fd);
+        @rmf(filename);
+        fd = @opf(filename);
+
+        isWrite = true;
+    } else if (mode[0] == 'a') {
+        isWrite = true;
+        isRead = mode[1] == '+' || mode[2] == '+';
+        isAppend = true;
+
+        cursor = @szf(fd); // init to end, in case next op is a read
+    } else {
+        @clf(fd);
+        return NULLPTR;
+    }
+
+    FILE* stream = malloc(#BitSizeOf(FILE));
+    stream.*.fd = fd;
+    stream.*.isRead = isRead;
+    stream.*.isWrite = isWrite;
+    stream.*.isAppend = isAppend;
+    stream.*.isBinary = isBinary;
+    stream.*.cursor = cursor;
+    stream.*.eof = stream.*.err = stream.*.closed = false;
+}
+
+// 0 = success, 1 = error
+fn fclose(stream: FILE*) u1 {
+    if (stream.*.closed) { return 1; }
+
+    $clf(stream.*.fd);
+    stream.*.closed = true;
+
+    free(stream);
+    return 0;
+}
+
+fn feof(stream: FIE*) u1 {
+    return stream.*.eof;
+}
+
+fn ferror(stream: FILE*) u1 {
+    return stream.*.err;
+}
+
+fn fgetc(stream: FILE*) u8 {
+    if (stream.*.closed || !stream.*.isRead) { return 0; }
+
+    stream.*.eof = stream.*.cursor >= @szf(stream.*.fd);
+
+    var ret: u8 = @rdf(stream.*.fd, stream.*.cursor, 8);
+    stream.*.cursor += 1;
+
+    return ret;
+}
+
+fn fgets(stream: FILE*, buffer: u8*, size: u32) u8* {
+    if (stream.*.closed || !stream.*.isRead) { return 0; }
+
+    var cursor: u32 = stream.*.cursor;
+    var fileSize: u32 = @szf(stream.*.fd);
+    var i: u32 = 0;
+
+    while (i < size - 1) {
+        if (cursor + i >= fileSize) {
+            stream.*.eof = true;
+            break;
+        }
+
+        var c: u8 = @rdf(stream.*.fd, cursor + i, 8);
+
+        buffer[i] = c;
+        i += 1;
+
+        if (c == '\n') { break; }
+    }
+
+    buffer[i] = '\x00';
+    stream.*.cursor += i;
+
+    return buffer;
+}
+
+// TODO: fprintf/fscanf?
+
+fn fputs(str: u8*, stream: FILE*) u32 {
+    if (stream.*.closed || !stream.*.isWrite) { return -1; }
+    if (stream.*.isAppend) { stream.*.cursor = @szf(stream.*.fd); }
+
+    var cursor: u32 = stream.*.cursor;
+    var i: u32 = 0;
+    while (str[i] != '\x00') {
+        @wrf(str[i], stream.*.fd, cursor + i, 8);
+        i += 1;
+    }
+
+    stream.*.cursor += i;
+
+    return i;
+}
+
+fn fread(destination: any*, size: u32, amount: u32, stream: FILE*) u32 {
+    if (stream.*.closed || !stream.*.isReada) { return 0; }
+
+    var cursor: u32 = stream.*.cursor;
+    var fileSize: u32 = @szf(stream.*.fd);
+    var i: u32;
+
+    var bytePtr: u8* = <u8*> destination;
+
+    for (i = 0; i < size * amount; i += 1) {
+        if (cursor + i >= fileSize) {
+            stream.*.eof = true;
+            break;
+        }
+
+        bytePtr[i] = @rdf(stream.*.fd, cursor + i, 8);
+    }
+
+    stream.*.cursor += i;
+
+    return i / size;
+}
+
+fn fwrite(source: any*, size: u32, amount: u32, stream: FILE*) u1 {
+    if (stream.*.closed || !stream.*.isWrite) { return -1; }
+    if (stream.*.isAppend) { stream.*.cursor = @szf(stream.*.fd); }
+
+    var cursor: u32 = stream.*.cursor;
+    var i: u32;
+
+    var bytePtr: u8* = <u8*> source;
+
+    for (i = 0; i < size * amount; i += 1) {
+        @wrf(bytePtr[i], stream.*.fd, cursor + i, 8);
+    }
+
+    stream.*.cursor += i;
+
+    return 0;
+}
+
+fn remove(filename: u8*) void {
+    @rmf(filename);
+}
+
+fn rename(oldname: u8*, newname: u8*) void {
+    @rmf(newname);
+    @rnf(oldname, newname);
+}
+
+fn rewind(stream: FILE*) u1 {
+    if (stream.*.closed) { return 1; }
+
+    stream.*.cursor = 0;
+    stream.*.eof = false;
+    stream.*.err = false;
+
+    return 0;
+}
+
+// returns new cursor location, from the start of the file
+fn fseek(stream: FILE*, offset: s32, whence: u8) u32 {
+    if (stream.*.closed) { return -1; }
+
+    if (whence == SEEK_SET) {
+        stream.*.cursor = offset;
+    } else if (whence == SEEK_CUR) {
+        stream.*.cursor += offset;
+    } else if (whence == SEEK_END) {
+        stream.*.cursor = @szf(stream.*.fd) + offset;
+    } else { return -1; }
+
+    return stream.*.cursor;
+}
+
+fn ftell(stream: FILE*) {
+    if (stream.*.closed) { return -1; }
+
+    return stream.*.cursor;
+}

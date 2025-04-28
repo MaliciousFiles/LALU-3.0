@@ -225,6 +225,7 @@ instrs = { #An instruction must have a format pnumonic called its fmtpnm, which 
     'opf':   S_CODE(Fmt_Code = '000', Func_ID = '0_0011_0011'),
     'clf':   Z_CODE(Fmt_Code = '100', Func_ID = '0_1001_1100'),
     'rmf':   Z_CODE(Fmt_Code = '100', Func_ID = '0_1001_1010'),
+    'szf':   S_CODE(Fmt_Code = '000', Func_ID = '0_0011_0100'),
     'rdf':   Q_CODE(Fmt_Code = '001', Func_ID = '1010'),
     'wrf':   Q_CODE(Fmt_Code = '101', Func_ID = '1011'),
     'rnf':   V_CODE(Fmt_Code = '100', Func_ID = '0_1001_1011'),
