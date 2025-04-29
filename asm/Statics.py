@@ -132,6 +132,9 @@ class Comp(QuafType):
 
     def _sub_eq(self, other):
         return True
+
+    def OpWidth(self):
+        return 1<<1024 #Just a big ass number
     
 
 class Bool(QuafType):

@@ -1,0 +1,6 @@
+fn Main() u64 {
+  var x: u64 = 1;
+  var ptr = x.&;
+  ptr.* = 2;
+  return x;
+}
