@@ -8,11 +8,13 @@ module filesystem(
 	input swapWren,
 	input [31:0] swapData,
 
+    input [7:0] syscallId,
+
 	input [31:0] pathPtr1,
 	input [31:0] pathPtr2,
 	input [31:0] fileDescriptor,
 	input [31:0] fileAddress,
-	input [4:0] fileReadBits,
+	input [4:0] fileBits,
 	input [31:0] writeData,
 
 	output [31:0] dataOut,
@@ -35,11 +37,13 @@ module filesystem(
 		.swap_wren_export(swapWren),
 		.swap_write_data_export(swapData),
 
+        .syscall_id_export(syscallId),
+
 		.path_ptr1_export(pathPtr1),
 		.path_ptr2_export(pathPtr2),
 		.file_descriptor_export(fileDescriptor),
 		.file_address_export(fileAddress),
-		.file_read_bits_export(fileReadBits),
+		.file_read_bits_export(fileBits),
 		.write_data_export(writeData),
 		.data_out_export(dataOut),
 
@@ -61,60 +65,13 @@ module filesystem(
 		.memory_oct_rzqin(HPS_DDR3_RZQ),
 		.reset_reset_n(1'b1));
 `else
-    reg[0:1024*8-1] name;
-    initial name[0 +: 8] = ".";  // relativize everything
+    reg [63:0] tickResult;
+    assign dataOut = tickResult[31:0];
+    assign swapQ = tickResult[63:32];
 
-    integer nameIdx = -1;
-    integer fp = 0;
-    integer scratch;
-
-    integer i, j;
-    reg break;
-
-    reg [31:0] rawRead, outData;
-    assign q = outData;
     always @(posedge CLOCK_50) begin
-        break = 0;
-        for (i = 0; !break && i < 4; i = i+1) begin
-            if (filename[i*8 +: 8] == 8'b0) begin
-                if (nameIdx != -1) begin
-                    name[8+(nameIdx+1)*8 +: 8] = 8'b0;
-
-                    if (fp != 0) $fclose(fp);
-                    fp = $fopen(name >> ((1024-nameIdx-2)*8), "rb+");
-
-                    if (fp == 0) begin
-                        $mkdir(name);
-                        fp = $fopen(name >> ((1024-nameIdx-2)*8), "wb+");
-                    end
-                end
-
-                nameIdx = -1;
-                break = 1;
-            end else begin
-                nameIdx = nameIdx + 1;
-                name[8+nameIdx*8 +: 8] = filename[24-i*8 +: 8];
-            end
-        end
-
-        if (del) begin
-            if (fp != 0) begin
-                $fclose(fp);
-                $delfile(name);
-            end
-            fp = 0;
-            rawRead = 0;
-        end
-
-        if (fp != 0) begin
-            scratch = $fseek(fp, address * 4, 0);
-            if (rden) begin
-                scratch = $fread(rawRead, fp);
-                if (rawRead === 'bx || $feof(fp)) rawRead = 0;
-                for (j = 0; j < 32; j = j+8) outData[j +: 8] = rawRead[31-j -: 8];
-            end
-            if (wren) $fwrite(fp, "%u", data);
-        end
+        tickResult = $tick_fs(swapMeta, swapAddress, swapRden, swapWren, swapData,
+            syscallId, pathPtr1, pathPtr2, fileDescriptor, fileAddress, fileBits, writeData);
     end
 `endif
 endmodule

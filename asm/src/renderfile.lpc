@@ -30,6 +30,9 @@ fn RenderState__Init(self: *RenderState) void {
   self.*.tick = 0;
   self.*.foreColor = WHITE;
   self.*.backColor = BLACK;
+
+  @mkd("log");
+  @rmf("log/debug.txt");
 }
 
 
@@ -78,6 +81,10 @@ fn RenderState__RecalcHeaders(self: *RenderState) void {
 fn WriteCharFlaggedColored(char: u8, row: u32, col: u32, flags: u8, foreColor: Color, backColor: Color) void {
   var pos = row << 5 + col;
   var rd = flags << 8 + char;
+
+  var fd: u32 = @opf("log/debug.txt");
+  @wrf(<u32> char, fd, pos << 5, 0);
+  @clf(fd);
 
   @stchr(rd, pos, <u32>foreColor, <u32>backColor);
 }

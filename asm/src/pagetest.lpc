@@ -2,10 +2,6 @@
 #define PAGE_SIZE 0x400
 
 fn Main() void {
-	var x: u32 = Stackify(Fac(9), 1000);
-	-x;
-	@susp();
-
 	for (var page: u32 = 1; page <= N; page += 1) {
 	    var addr: u32* = page * PAGE_SIZE << 5;
 	    addr.* = page;

@@ -6,15 +6,18 @@ fn Main() void {
     memory:MemInit();
 
     var rs: RenderState;
+    var heads: u8*[24]; rs.lineHeads = heads; // actually initialize the array >﹏<
     rs.&:Init();
 
     rs.lineHeads[0] = "Hello World!";
 
-    rs.&:Draw();
-    var ptr = rs.&;
-    ptr.* = ptr.*;
+    for (var i: u32 = 0; i < 12; i+=1) {
+        rs.&:WriteChar('A'+i, 0, i); // write alphabet where hello world will be, to make sure it overwrites properly
+    }
 
-    WriteCharFlaggedColored('A', 0, 0, 0, 0xFFFFFF, 0x000000);
+    rs.&:Draw();
+
+    rs.&:WriteChar('X', 0, 0);
 
     while (true) {}
     
