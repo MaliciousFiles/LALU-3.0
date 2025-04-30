@@ -1,10 +1,8 @@
 fn memchr(ptr: any*, ch: any, count: u32) any* {
     var i: u32 = 0;
 
-    var size: u32 = <u32>ptr[1] - <u32>ptr[0];
-
     var cPtr: u8* = <u8*>ptr;
-    for (var i: u32 = 0; i < size*count; i += 1) {
+    for (var i: u32 = 0; i < count; i += 1) {
         if (cPtr[i] == ch) { return pointer + i; }
     }
 
@@ -38,10 +36,8 @@ fn memmove(dst: any*, src: any*, count: u32) any* {
 }
 
 fn memset(dst: any*, ch: u8, count: u32) any* {
-    var size: u32 = <u32>dst[1] - <u32>dst[0];
-
     var cPtr: u8* = <u8*>dst;
-    for (var i: u32 = 0; i < size*count; i += 1) { cPtr[i] = ch; }
+    for (var i: u32 = 0; i < count; i += 1) { cPtr[i] = ch; }
 
     return dst;
 }
