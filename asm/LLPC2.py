@@ -570,6 +570,14 @@ def Rvalue(expr):
                 tmp = NewTemp(tk)
                 inter.AddPent(op = name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
                 return tmp
+        elif data == 'bitsizeof':
+            _, _, kind, _ = expr.children
+            kind = TreeToKind(kind)
+            return Var(kind.OpWidth(), 'comptime')
+        elif data == 'elemsizeof':
+            _, _, kind, _ = expr.children
+            kind = TreeToKind(kind)
+            return Var(kind.AsElementSizeOf(), 'comptime')
         elif data == 'true':
             inter.Jump(inter.trues[-1])
             return Var(None, Type(Statics.Bool()))
