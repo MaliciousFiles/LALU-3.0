@@ -986,7 +986,7 @@ def R_Constant(inter, expr):
 def R_String(inter, expr):
     val = eval(GetBackingStr(expr))
     ref = inter.AddString(val)
-    return Value(Var(ref, Statics.Pointer(Int(8, False))))
+    return Location(Var(ref, Statics.Pointer(Int(8, False))), Int(8, False))
 
 ##############################
 
@@ -1046,7 +1046,7 @@ def L_Assg(inter, expr):
 @TrackLine
 def L_Ident(inter, expr):
     lhs = inter.LookupVar(TreeToName(expr))
-    addr = Var(lhs.name+'.&', Comp())
+    addr = Var(lhs.name+'.&', Statics.Pointer(lhs.kind))
     return Location(addr, lhs.kind)
 
 @logerror
@@ -1056,8 +1056,8 @@ def L_Index(inter, expr):
     rhs = Rvalue(inter, re).var
     lhs = Lvalue(inter, le)
     prod = NewTemp(inter, Type(Int(PTRWIDTH, False)))
-    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.Deref().OpWidth()), S2 = None)
-    EvictAliasFor(inter, lhs.kind.Deref())
+    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.OpWidth()), S2 = None)
+    EvictAliasFor(inter, lhs.kind)
     return lhs.Offset(inter, Var(prod.name, Int(32, False))).Deref(inter)
 
 @logerror
