@@ -56,7 +56,7 @@ fn fopen(filename: u8*, mode: u8*) FILE* {
         return NULLPTR;
     }
 
-    FILE* stream = malloc(#BitSizeOf(FILE));
+    FILE* stream = malloc(#BitSizeOf(FILE)*8);
     stream.*.fd = fd;
     stream.*.isRead = isRead;
     stream.*.isWrite = isWrite;
