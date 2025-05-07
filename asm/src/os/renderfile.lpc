@@ -24,7 +24,7 @@ struct Color {
   r: u8,
 }
 
-fn RenderState__Init(self: RenderState*) void {
+fn RenderState:Init(self: RenderState*) void {
   self.*.topLeft = Pos{x := 0, y := 0};
   self.*.curPos = Pos{x := 0, y := 0};
   self.*.tick = 0;
@@ -38,7 +38,7 @@ fn RenderState__Init(self: RenderState*) void {
 }
 
 
-fn RenderState__Draw(self: RenderState*) void {
+fn RenderState:Draw(self: RenderState*) void {
   var latScroll = self.*.topLeft.y;
 
   for range(row, 0, 24) {
@@ -59,7 +59,7 @@ fn RenderState__Draw(self: RenderState*) void {
   return;
 }
 
-fn RenderState__WriteChar(self: RenderState*, char: u8, row: u32, col: u32) void {
+fn RenderState:WriteChar(self: RenderState*, char: u8, row: u32, col: u32) void {
   var fore = self.*.foreColor;
   var back = self.*.backColor;
   if (row == self.*.curPos.y 
@@ -73,7 +73,7 @@ fn RenderState__WriteChar(self: RenderState*, char: u8, row: u32, col: u32) void
   return;
 }
 
-fn RenderState__RecalcHeaders(self: RenderState*) void {
+fn RenderState:RecalcHeaders(self: RenderState*) void {
   var fileIdx: u32 = 0;
   for range(ptrIdx, 0, 24) {
     var char = self.*.file[fileIdx];

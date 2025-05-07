@@ -54,11 +54,12 @@ def Expand(sbuf, s):
         else:
             s = sbuf[3][0] + sbuf[3][1] + s
             l, s = PopLine(s, exp=False)
-            reps[0][name] = ((), ''.join([x+y for x, y in l]))
+            reps[0][name] = ((), ''.join([x+y for x, y in l])[:-1])
             #reps[0][name] = ((), sbuf[3][0])
             return [], '\n'+s
 
     if sbuf[1][0] == '#' and sbuf[2][0] == 'define': return sbuf, s
+##    print(reps)
     for scope in reps[::-1]:
         for k, v in scope.items():
             if sbuf[-1][0] == k and v[0]==():

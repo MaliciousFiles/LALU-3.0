@@ -200,7 +200,9 @@ class BlockSet:
                     predblock = self.ByName(pred)
                     for var, life in block.localvars.items():
                         if life[0] != 'pre': continue
-                        pre = 'pre' if block.label != self.blocks[0].label else 'loc'
+##                        print(f'{var=}, {block.label=}, {self.blocks[0].label=}')
+                        pre = 'loc' if predblock.label == self.blocks[0].label else 'pre'
+##                        pre = 'pre'
                         prelife = predblock.localvars[var] = predblock.localvars.get(var, [pre, 'loc'])
 ##                        print(f'Local variable `{var}` of `{block.label}` has life in predecessor block `{pred}` of `{prelife}`')
                         if prelife[1] != 'post':
@@ -217,6 +219,7 @@ class BlockSet:
             phiblocks |= k
         varsonexit = {}
         for block in self.blocks:
+            print(f'block `{block.label}` has vars `{block.localvars}`')
             isphi = block.label in phiblocks
             if isphi:
                 for var, life in block.localvars.items():
@@ -267,6 +270,153 @@ class BlockSet:
                     line[3].append(f'{idx}_{redname}')
                     line[1] = 'mov'
             block.EnsureTagged()
+
+    def PointerAnalysis(self):
+        sets = {-1: set()}
+        setmap = {}
+        returns = {}
+        
+        def Join(a, b):
+            a = a.replace('.&.*', '')
+            a += '.'
+            a, s = a.split('.', maxsplit=1)
+            if a.count('_') >= 2 and a[::-1].find('_') != a[::-1].find('__'):
+                a = a[::-1].split('_', maxsplit=1)[1][::-1]
+            a += '.'+s
+            a = a[:-1]
+            if a not in setmap:
+                setmap[a] = max(sets.keys())+1
+                sets[setmap[a]] = set([a])
+
+            b = b.replace('.&.*', '')
+            b += '.'
+            b, s = b.split('.', maxsplit=1)
+            if b.count('_') >= 2 and b[::-1].find('_') != b[::-1].find('__'):
+                b = b[::-1].split('_', maxsplit=1)[1][::-1]
+            b += '.'+s
+            b = b[:-1]
+            if b not in setmap:
+                setmap[b] = max(sets.keys())+1
+                sets[setmap[b]] = set([b])
+
+            if setmap[a] != setmap[b]:
+                nset = min(setmap[a], setmap[b])
+                l = b if setmap[a] < setmap[b] else a
+                h = setmap[l]
+                sets[nset] |= sets[setmap[l]]
+##                print(f'{sets=}, {setmap=}')
+                for x in sets[h]:
+                    setmap[x] = nset
+##                print(f'{sets=}, {setmap=}, {setmap[l]=}')
+                del sets[h]
+
+        def AddSet(x):
+            for a, b in zip(x[:-1], x[1:]):
+                Join(a, b)
+        
+        for block in self.blocks:
+            for line in block.body:
+                if line[0] != 'expr': continue
+                if line[1] == 'mov':
+                    arg = line[3][0]
+                    if type(arg) == str:
+                        Join(line[2]+'.*', arg+'.*')
+                elif line[1] == 'addr':
+                    pass
+##                    Join(line[2]+'.*', line[3][0])
+                elif line[1] == 'ld': #x = y.*
+                    for arg in line[3][:2]:
+                        if type(arg) != str: continue
+                        Join(line[2]+'.*', arg+'.*.*')
+                elif line[1] == 'st': #x.* = y
+                    val, addr, off, width = line[3]
+                    items = []
+                    if type(val) == str:    items.append(val+'.*')
+                    if type(addr) == str:   items.append(addr+'.*.*')
+                    if type(off) == str:    items.append(val+'.*.*')
+                    AddSet(items)
+                elif line[1] == 'phi':
+                    for arg in line[3]:
+                        if type(arg) != str: continue
+                        Join(line[2]+'.*', arg+'.*')
+                elif line[1] == 'argld':
+                    Join(line[2]+'.*', f'@{line[3][0]}.*')
+                elif line[1] == 'retst' and type(line[3][0]) == str:
+                    returns[line[2]] = returns.get(line[2], set()) | set([setmap.get(line[3][0]+'.*', -1)])
+                elif type(line[2]) == str: #Any other expression
+                    for arg in line[3]:
+                        if type(arg) != str: continue
+                        Join(line[2]+'.*', arg+'.*')
+
+        aliases = {}
+        for _set in sets.values():
+            for x in _set:
+                if x.endswith('.*') and not x.endswith('.*.*'):
+                    for y in _set:
+                        if '.*' not in y:
+                            aliases[x] = aliases.get(x, set()) | set([y.split('_', maxsplit=1)[1]])
+
+        rsets = []
+        reps = []
+
+        def RenameVariableToExtern(name):
+            x = name
+            for _y, o in zip(reps, rsets):
+                for y in _y:
+                    if x.startswith(y) and len(o) != 0:
+                        if x not in reps[-1]: reps[-1].append(x)
+                        x = x.replace(y, list(o)[0])
+            return x
+        
+        for _set in sets.values():
+            rsets.append(set())
+            reps.append([])
+            for x in _set:
+                x = RenameVariableToExtern(x)
+                if x[0] == '@':
+                    rsets[-1] |= set([x])
+                else:
+                    reps[-1].append(x)
+
+        contracts = []
+        for block in self.blocks:
+            for line in block.body:
+                if line[0] != 'expr': continue
+                if line[1] in memReads:
+                    for arg in line[3]:
+                        if type(arg) != str: continue
+                        arg += '.*.*'
+                        arg = arg.replace('.&.*', '')
+                        arg = RenameVariableToExtern(arg)
+                        if arg[0]=='@':
+                            nc = ('mayread', arg[:-2])
+                            if nc not in contracts: contracts.append(nc)
+                if line[1] in memWrites:
+                    for arg in line[3][:]:
+                        if type(arg) != str: continue
+                        arg = arg[:]
+                        arg += '.*'
+                        arg = arg.replace('.&.*', '')
+                        arg = RenameVariableToExtern(arg)
+                        if arg[0]=='@':
+                            nc = ('maywrite', arg)
+                            if nc not in contracts: contracts.append(nc)
+##                            assert False, f'{x}, {contracts=}'
+##                        assert arg != '0_w'
+##                        print(arg)
+##                        assert '0_w' not in line[3], f'{line=}'
+        print(f'{contracts=}')
+##        assert contracts in [[], [('mayread', '@0.*')], [('mayread', '@1.*')]], f'{contracts=}'
+##        print(f'Sets = {sets}')
+##        print(f'Aliases: {aliases}')
+##        print(f'Returns: {returns}')
+##        print(f'{rsets=}; {reps=}')
+        mayrets = {k: [rsets[list(sets.keys()).index(x)] for x in _x] for k, _x in returns.items()}
+##        mayrets = [sets[x] for x in returns]
+##        print(f'Return may alias set: {mayrets}')
+        print(f'{contracts=}')
+        return aliases, rsets, sets, mayrets, contracts
+##        assert False
 
     #Small note, due to how SSA works, we cannot mov into phi functions as these dont actually exist an when theyre dropped bugs will appear
     #Unless we want to aggressively optimize, we'll keep moves into named variables so that when we MovTrace we get better variable names
@@ -603,10 +753,10 @@ class Block:
                         self.body[i] = ('expr', line[1][0], None, tuple([x for x in line[1][1:] if x != None]))
                 else:
                     self.body[i] = ('expr', line[1][0], line[1][1], tuple([x for x in line[1][2:] if x != None]))
-                if line[1][0] in memWrites:
-                    self.body[i] = list(self.body[i])
-                    self.body[i][2] = self.body[i][3][1]
-                    self.body[i] = tuple(self.body[i])
+##                if line[1][0] in memWrites:
+##                    self.body[i] = list(self.body[i])
+##                    self.body[i][2] = self.body[i][3][1]
+##                    self.body[i] = tuple(self.body[i])
 
                 if self.body[i][1] == 'argst':
                     globalticker += 2
@@ -627,8 +777,12 @@ class Block:
     def ToLLIR(self):
         out = LHL.Block(self.label, None)
         for i, line in enumerate(self.body):
+            i = self.body.index(line)
             if line[-1].startswith('eid'): del line[-1]
             if line[0] == 'expr':
+                if line[1] == 'addr':
+                    del self.body[i]
+                    continue
                 nline = ['expr', [line[1], line[2], *line[3]]]
                 if line[1] in usesRd+modsRd:
                     if line[1] in modsRd:
@@ -947,10 +1101,35 @@ def Optimize(llir: LHL.LLIR) -> None:
 
         
         body.ToSSA()
-        body.MovForward()
+        info = body.PointerAnalysis()
+        aliases, rsets, sets, mayrets, contracts = info
+
+        preprune += 'Internal Aliasing:\n'
+        for k,v in aliases.items():
+            preprune += f'  {k}: {list(v)}\n'
+        preprune += 'Return Potential Aliases:\n'
+        for k,v in mayrets.items():
+            preprune += f'  {k}: {sum([list(x) for x in v], [])}\n'
+##        preprune += f'{mayrets!r}'
+        preprune += 'Contracts:\n'
+        for x in contracts:
+            preprune += f'  {x[0]}    {x[1]}\n'
+        preprune += 'Equivilence Sets:\n'
+        for x in sets.values():
+            if len(x) <= 1: continue
+            preprune += f'  {x}\n'
+        preprune += 'External Merges:\n'
+        for x in rsets:
+            if len(x) <= 1: continue
+            preprune += f'  {x}\n'
+        preprune += 'Func Body:\n'
+
+
+        preprune += repr(body)+'\n'
 
 ##        print(repr(body))
 
+        body.MovForward()
         body.MovTrace()
 
 ##        print(repr(body))
@@ -976,7 +1155,7 @@ def Optimize(llir: LHL.LLIR) -> None:
         body.PropogateUses()
 
 
-        preprune += repr(body)+'\n'
+        
 
 ##        print(repr(body))
         

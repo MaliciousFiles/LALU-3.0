@@ -1,0 +1,48 @@
+fn Deref(x: any*) any* {
+  return (<any**>x).*;
+}
+
+fn ID(x: any*) any* {
+  return x;
+}
+
+fn LocalAddr() u32* {
+  var local: u32;
+  return local.&;
+}
+
+fn ZeroAddr() u32* {
+  return (<u32*>0);
+}
+
+fn Either(a: any*, b: any*) any* {
+  if (a & 1 == 0) return a;
+  if (b & 1 == 0) return (<any**>b).*;
+  return b;
+}
+
+fn WriteZero(w: u32*) void {
+  w.* = 0;
+  return;
+}
+
+fn Main() u32 {
+  var x: u32 = 1;
+  var y: u32 = 2;
+  
+  var ptr: u32*;
+  
+  if (x == 1) {
+    ptr = x.&;
+    y = ptr.*;
+  } else {
+    ptr = y.&;
+  }
+
+  ptr = ID(ptr);
+
+  var z: u32 = x;
+  ptr.* = 1;
+
+  return x + y + z;
+}

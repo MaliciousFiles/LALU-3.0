@@ -46,6 +46,10 @@ class LLIR:
                 for line in block.body:
                     o += '    '+repr(line) + '\n'
             o += ('}') + '\n'
+        
+        o += f'\nDATA:\n'
+        for k,v in self.data.items():
+            o += f'{k!r} => {v!r}\n'
         return o
     def NewFunc(self, name, args, ret):
         self.funcs.append({})
@@ -56,6 +60,7 @@ class LLIR:
         func['body'] = []
 
 def IsNative(var):
+    if var == None: return True
     var = Var(var.name, Type.FromStr(str(var.kind)) if var.kind else var.kind)
     var = Var(var.name, Type.FromStr(str(var.kind)) if var.kind else var.kind)
     return var == None or (var.kind == var.name == None) or var.kind != None and (var.kind.IsBasicInt() or type(var.kind.body) in [Pointer, C_Array] or var.kind.comptime)
@@ -553,7 +558,11 @@ def Lower(hlir):
                         elif all([IsNative(x) for x in [D, S0, S1, S2]]) or op == 'breakpoint':
                             Native(nblock, op, D, S0, S1, S2, sticky = line[2])
                         else:
-                            assert op[0] != '@', f'Cannot perform instrincs on non 32 width instructions'
+                            if op[0] == '@':
+                                for arg in [D, S0, S1, S2]:
+                                    if not IsNative(arg):
+                                        print(f'Arg {arg} is not native')
+                            assert op[0] != '@', f'Cannot perform instrincs on non-native operands'
 
                             OpHandler = OPMAP[op]
                             numargs = OpHandler.__code__.co_argcount - 2 #1 is always `nblock`, and one is sticky
@@ -595,7 +604,7 @@ def Lower(hlir):
     with open('HLIR_typeinfo.txt', 'w') as f:
         f.write(repr(assocs))
     for i, func in enumerate(llir.funcs):
-        if func['name'] == 'Main':
+        if func['name'] == 'Boot':
             llir.funcs.insert(0, llir.funcs[i])
             del llir.funcs[i+1]
     #print(llir.funcs)

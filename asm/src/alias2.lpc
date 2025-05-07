@@ -1,0 +1,24 @@
+struct Node {
+    next: Node*,
+    val: u32,
+}
+
+fn SetAll(node: Node*, val: u32) void {
+    for (var curr = node; curr.*.next != 0; curr = curr.*.next) {
+        curr.*.val = val;
+    }
+    return;
+}
+
+fn Main() u32 {
+  var a = Node {val := 1};
+  var b = Node {val := 2};
+  var c = Node {val := 3};
+  var d = Node {val := 4};
+  a.next = b.&;
+  b.next = c.&;
+  c.next = d.&;
+  d.next = <u32*>0;
+  SetAll(a, 2);
+  return d.val;
+}

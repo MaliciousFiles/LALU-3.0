@@ -1,17 +1,23 @@
-start: ex_decl+
+start: tl_unit
 
-namespace: NAMESPACE ident LCURLY ex_decl+ RCURLY
+tl_unit: ex_decl+
 
 ex_decl: namespace
+       | using_stmt
        | struct_decl 
        | fn_decl
+       | global_decl
 
-//include_dir: INCLUDE ident
+namespace: NAMESPACE ident LCURLY tl_unit RCURLY
 
-struct_decl: STRUCT ident LCURLY struct_expr RCURLY
+using_stmt: USING NAMESPACE ident SEMICOLON
+
+struct_decl: [EXPORT] STRUCT ident LCURLY struct_expr RCURLY
 struct_expr: args fn_decl* [struct_expr]
 
-fn_decl: FN ident LPAREN [args] RPAREN type stmt
+fn_decl: [EXPORT] FN ident LPAREN [args] RPAREN type stmt
+
+global_decl: [EXPORT] declexpr
 
 stmt: blockstmt 
     | declexpr
@@ -70,45 +76,36 @@ expr: assgexpr
         | postexpr DOT QMARK -> denullexpr
         | postexpr DOT ident -> fieldexpr
         | postexpr COLON ident -> colonexpr
-        | BITSIZEOF LPAREN type RPAREN -> bitsizeof
-        | ELEMSIZEOF LPAREN type RPAREN -> elemsizeof
 	| BREAKPOINT -> breakpoint
 ?primexpr: constant
         | ident
         | string
         | LPAREN expr RPAREN
 
-?jumpstmt: CONTINUE SEMICOLON -> continue
+jumpstmt: jstmt
+?jstmt: CONTINUE SEMICOLON -> continue
 	| BREAK SEMICOLON -> break
 	| RETURN SEMICOLON -> return
 	| RETURN expr SEMICOLON -> returnexpr
-?iterstmt: whileelsestmt
-	| whilestmt
-	| forelsestmt
+iterstmt: istmt
+?istmt: whilestmt
 	| forstmt
-	| doelsestmt
-	| dostmt
-?selstmt: ifelsestmt
-	| ifstmt
+selstmt: sstmt
+?sstmt: ifstmt
 
 structassgs: structassg (COMMA structassg)* COMMA?
 structassg: ident COLONEQUALS assgexpr
 
-whileelsestmt: WHILE LPAREN expr RPAREN stmt ELSE stmt
-whilestmt: WHILE LPAREN expr RPAREN stmt
-forelsestmt: FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt ELSE stmt
-forstmt: FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt
-doelsestmt: DO LPAREN expr RPAREN stmt ELSE stmt
-dostmt: DO LPAREN expr RPAREN stmt
+whilestmt: [DO] WHILE LPAREN expr RPAREN stmt [ELSE stmt]
+forstmt: [DO] FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt [ELSE stmt]
 
-ifelsestmt: IF LPAREN expr RPAREN stmt ELSE stmt
-ifstmt: IF LPAREN expr RPAREN stmt
+ifstmt: IF LPAREN expr RPAREN stmt [ELSE stmt]
 
 argexprs: assgexpr (COMMA assgexpr)* COMMA?
 args: arg (COMMA arg)* COMMA?
 arg: ident COLON type
 
-ident: /[_a-zA-Z]([_a-zA-Z0-9]|::)*/
+ident: /[_a-zA-Z](\:?\:?[_a-zA-Z0-9])*/
 identtype: ident ASTERISK* [LBRACK constant RBRACK]
 type: INT | VOID | identtype
 string: /"([^\x00"]*\x01)*[^\x01"]*"/
@@ -201,10 +198,10 @@ TRUE: "true"
 FALSE: "false"
 STRUCT: "struct"
 INCLUDE: "#include"
-BITSIZEOF: "#BitSizeOf"
-ELEMSIZEOF: "#SizeInArrayOf"
 COLONEQUALS: ":="
 ASSUME: "assume"
+USING: "using"
+EXPORT: "export"
 
 COMMENT: /\/\/[^\r\n]*/
 

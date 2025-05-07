@@ -5,34 +5,6 @@ def RoundUp(x, k):
 
 PTRWIDTH = 32
 
-class Var():
-    def __init__(self, name, kind):
-        object.__setattr__(self, 'name', name)
-        if type(kind) == str:
-            object.__setattr__(self, 'kind', Type.FromStr(kind))
-        else:
-            object.__setattr__(self, 'kind', kind)
-    def __hash__(self):
-        return hash(repr(self.__dict__))
-    def __eq__(self, other):
-        return type(self) == type(other) and self.kind == other.kind and hash(self) == hash(other)
-    def FromName(inter, name):
-        return Var(name, inter.Lookup(name))
-    def FromVal(inter, val):
-        if val == None: return Var(None, None)
-        if type(val) == int: return Var(val, Type(Comp()))
-        if val.isnumeric(): return Var(int(val), Type(Comp()))
-        return Var.FromName(inter, val)
-    def __repr__(self):
-        if self.name == self.kind == None: return f'NoVar'
-        pkind = str(self.kind) if type(self.kind) == Type else self.kind
-        return f'Var({self.name!r}, {pkind!r})'
-    def __setattr__(self, *args):
-        raise TypeError
-    def __delattr__(self, *args):
-        raise TypeError
-
-NoVar = Var(None, None)
 structs = {}
 quafs = ['const', 'mut']
 
@@ -66,6 +38,9 @@ class QuafType():
 
     def OpWidth(self):
         return NotImplemented
+
+    def TraverseChildren(self, func):
+        func(self)
 
 class Int(QuafType):
     def __init__(self, width: int, signed: bool):
@@ -132,6 +107,9 @@ class Comp(QuafType):
 
     def _sub_eq(self, other):
         return True
+
+    def OpWidth(self):
+        return 1<<1024 #Just a big ass number
     
 
 class Bool(QuafType):
@@ -153,6 +131,7 @@ class Struct(QuafType):
         super().__init__()
         self.refable = True
         self.name = name
+        self._width = ...
 
     def _sub_repr(self):
         return f'Struct({self.name!r})'
@@ -161,6 +140,7 @@ class Struct(QuafType):
         return f'{self.name!s}'
 
     def OpWidth(self):
+        if self._width != ...: return self._width
         if self.name in structs:
             return structs[self.name]['size']
         else:
@@ -187,6 +167,10 @@ class Pointer(QuafType):
 
     def _sub_eq(self, other):
         return self.Deref() == other.Deref()
+
+    def TraverseChildren(self, func):
+        func(self)
+        self.referent.TraverseChildren(func)
     
 
 class C_Array(QuafType):
@@ -207,7 +191,10 @@ class C_Array(QuafType):
 
     def _sub_eq(self, other):
         return self.Deref() == other.Deref()
-    
+
+    def TraverseChildren(self, func):
+        func(self)
+        self.referent.TraverseChildren(func)
 
 class Type:
     def __init__(self, val: str|QuafType = ...):
@@ -236,12 +223,12 @@ class Type:
                 nqt = Pointer(self.body)
                 self.body = nqt
 
-            elif initstr[0].isidentifier():
+            elif initstr[0].isidentifier() or initstr[0]==':':
                 assert not hasRoot, f'Already has roottype `{self.body!s}`, cannot append `{initstr}`'
                 hasRoot = True
                 o = ''
                 for i in range(len(initstr)):
-                    if (o+initstr[i]).isidentifier():
+                    if (o+initstr[i]).replace(':','').isidentifier():
                         o += initstr[i]
                     else:
                         break
@@ -314,6 +301,8 @@ class Type:
             raise
         if skind == okind == Struct:
             return self.body.name == other.body.name
+        if skind == Struct or okind == Struct:
+            return False
         if skind == okind == Void:
             return True
         if skind == Bool or skind == Void:
@@ -391,6 +380,37 @@ class Type:
     def IsBasicInt(self):
         return type(self.body) == Int
 
+class Var():
+    def __init__(self, name, kind):
+        object.__setattr__(self, 'name', name)
+        if type(kind) == str:
+            object.__setattr__(self, 'kind', Type.FromStr(kind))
+        elif type(kind) in [Int, Comp, C_Array, Pointer, Struct, Bool, Void]:
+            object.__setattr__(self, 'kind', Type(kind))
+        else:
+            object.__setattr__(self, 'kind', kind)
+    def __hash__(self):
+        return hash(repr(self.__dict__))
+    def __eq__(self, other):
+        return type(self) == type(other) and self.kind == other.kind and hash(self) == hash(other)
+    def FromName(inter, name):
+        return Var(name, inter.Lookup(name))
+    def FromVal(inter, val):
+        if val == None: return Var(None, None)
+        if type(val) == int: return Var(val, Type(Comp()))
+        if val.isnumeric(): return Var(int(val), Type(Comp()))
+        return Var.FromName(inter, val)
+    def __repr__(self):
+        if self.name == self.kind == None: return f'NoVar'
+        pkind = str(self.kind) if type(self.kind) == Type else self.kind
+        assert pkind != 'None', f'{self.name=}; {self.kind=}'
+        return f'Var({self.name!r}, {pkind!r})'
+    def __setattr__(self, *args):
+        raise TypeError
+    def __delattr__(self, *args):
+        raise TypeError
+
+NoVar = Var(None, None)
 
 def AlignOf(bitwidth):
     if bitwidth == 1: return 1

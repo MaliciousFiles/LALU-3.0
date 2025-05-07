@@ -1,5 +1,5 @@
 #define MALLOC_SIZE 	0x8000
-#define CEILDIV(n, d) 	(n-1)>>(d-1)
+#define CEILDIV(n, d) 	((n-1)>>(d-1))
 #define TO_NEXT(ptr) 	(ptr + 1 + ptr.*.size)
 #define TO_DATA(ptr)	(<any*>(ptr + 1))
 #define NULLPTR 	0
@@ -12,7 +12,7 @@ struct Block {
   isFree: u1,
 }
 
-fn Block__MemInit(memory: Block*) void {
+fn Block:MemInit(memory: Block*) void {
   var nblock: Block;
   nblock.prevPtr = NULLPTR;
   nblock.size = MALLOC_SIZE;
@@ -22,7 +22,7 @@ fn Block__MemInit(memory: Block*) void {
 }
 
 //Allocate `size` bits of data, may be given more
-fn Block__Malloc(memory: Block*, size: u31) any* {
+fn Block:Malloc(memory: Block*, size: u31) any* {
   var ENDPTR: Block* = memory + MALLOC_SIZE;
   var rsize: u31 = <u31>CEILDIV(size, 6); //Round bits up to nearest 64 bit amt
   
