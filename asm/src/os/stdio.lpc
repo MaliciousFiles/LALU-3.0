@@ -202,7 +202,7 @@ fn rewind(stream: FILE*) u1 {
 }
 
 // returns new cursor location, from the start of the file
-fn fseek(stream: FILE*, offset: s32, whence: u8) u32 {
+fn fseek(stream: FILE*, offset: i32, whence: u8) u32 {
     if (stream.*.closed) { return -1; }
 
     if (whence == SEEK_SET) {

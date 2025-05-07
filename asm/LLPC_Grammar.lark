@@ -70,6 +70,8 @@ expr: assgexpr
         | postexpr DOT QMARK -> denullexpr
         | postexpr DOT ident -> fieldexpr
         | postexpr COLON ident -> colonexpr
+        | BITSIZEOF LPAREN type RPAREN -> bitsizeof
+        | ELEMSIZEOF LPAREN type RPAREN -> elemsizeof
 	| BREAKPOINT -> breakpoint
 ?primexpr: constant
         | ident
@@ -199,6 +201,8 @@ TRUE: "true"
 FALSE: "false"
 STRUCT: "struct"
 INCLUDE: "#include"
+BITSIZEOF: "#BitSizeOf"
+ELEMSIZEOF: "#SizeInArrayOf"
 COLONEQUALS: ":="
 ASSUME: "assume"
 

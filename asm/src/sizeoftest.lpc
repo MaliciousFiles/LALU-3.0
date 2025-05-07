@@ -1,0 +1,8 @@
+fn Main() void {
+    var x: u32 = #BitSizeOf(u2138);
+    var y: u32 = #SizeInArrayOf(u3);
+
+    return;
+    @uses(x);
+    @uses(y);
+}
