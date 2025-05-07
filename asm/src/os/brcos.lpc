@@ -2,17 +2,17 @@
 #include renderfile
 
 fn Main() void {
-    var memory: Block[MALLOC_SIZE];
+    var memory: malloc::Block[MALLOC_SIZE];
     memory:MemInit();
 
-    var rs: RenderState;
+    var rs: renderfile::RenderState;
     var heads: u8*[24]; rs.lineHeads = heads; // actually initialize the array >﹏<
     rs.&:Init();
 
     rs.lineHeads[0] = "Hello World!";
 
-    for (var i: u32 = 0; i < 12; i+=1) {
-        rs.&:WriteChar('A'+i, 0, i); // write alphabet where hello world will be, to make sure it overwrites properly
+    for (var i: u32 = 0; i < 12; i += 1) {
+        rs.&:WriteChar('A' + i, 0, i); // write alphabet where hello world will be, to make sure it overwrites properly
     }
 
     rs.&:Draw();

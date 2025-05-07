@@ -6,102 +6,1113 @@ from math import log2
 import sys
 import os
 import pyperclip
-from Statics import Type, Var, NoVar, AlignOf, Void, Comp, Int
+##from Statics import *
+from Statics import Type, Var, NoVar, AlignOf, Void, Comp, Int, Struct, PTRWIDTH
 import Statics
 import LLOptimizer
+import inspect
 
+####################################################################################################
 
-parser = Lark.open("LLPC_grammar.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
+def __CALL_LINE__() -> int:
+    return inspect.currentframe().f_back.f_back.f_lineno
+
+def __SMART_CALL_LINE__() -> int:
+    frame = inspect.currentframe().f_back.f_back
+    name = frame.f_code.co_name
+    while name in ['inner', '<lambda>']:
+        frame = frame.f_back
+        name = frame.f_code.co_name
+    return frame.f_lineno
+
+def __CALL_NAME__() -> str:
+    frame = inspect.currentframe().f_back.f_back
+    name = frame.f_code.co_name
+    while name == 'inner':
+        frame = frame.f_back
+        name = frame.f_code.co_name
+    return name
+
+WarnAsErr = False
+CensAsWarn = False
+TodoAsErr = True
+TodoFuncName = True
+
+class CompileError(Exception):
+    pass
+
+class _Warning(CompileError):
+    pass
+
+class _Censure(CompileError):
+    pass
+
+class _Error(CompileError):
+    pass
+
+def Warn(tree, msg = ...):
+    if msg == ...:
+        msg = _
+    msg += f' (Py-{__SMART_CALL_LINE__()})'
+    if WarnAsErr: raise _Warning(msg)
+    if msg != ...: PrintTokenSource(tree)
+    print(f'Warning: {msg}\n\n')
+
+def Censure(tree, msg = ...):
+    nosrc = False
+    if msg == ...:
+        msg = tree
+        nosrc = True
+    msg += f' (Py-{__SMART_CALL_LINE__()})'
+    if not CensAsWarn: raise _Censure(msg)
+    if not nosrc: PrintTokenSource(tree)
+    print(f'Censure: {msg}\n\n')
+
+def Error(_, msg = ...):
+    if msg == ...:
+        msg = _
+    msg += f' (Py-{__SMART_CALL_LINE__()})'
+    raise _Error(msg)
+
+if TodoAsErr:
+    if TodoFuncName:
+        TODO = lambda _: Error(_, f'TODO: `{__CALL_NAME__()}`')
+    else:
+        TODO = lambda _: Error(_, f'TODO')
+else:
+    def TODO(*args):
+        raise NotImplementedError
+
+####################################################################################################
+
+parser = Lark.open("LLPC_grammar2.lark", rel_to=__file__, parser="lalr", propagate_positions = True)
 
 usesRd = ['[]=', '[:]=', '@stchr', '@st', '@sta', '@stw', '@wrf']
 nullret = ['@susp', '@rstkey', '@nop', '@use', '@mkd', '@rmd', '@clf', '@rmf', '@rnf']
 
-def MapRawName(name):
-    if '_' in name or name[0] in 'Lt':
-        name = 'u_'+name.replace('_', '__')
-    return name
+####################################################################################################
+
+def GetBackingStr(tree):
+    start = tree.meta.start_pos
+    end = tree.meta.end_pos
+    return txt[start:end]
 
 def TreeToName(tree):
-    return MapRawName(tree.children[0].value)
+    return MapRawName(GetBackingStr(tree))
+
+def MapRawName(name):
+    return 'u_'+name.replace('_', '__')
 
 def TreeToKind(kind):
-    start = kind.meta.start_pos
-    end = kind.meta.end_pos
-    return Type(txt[start:end])
+    rawType = Type(GetBackingStr(kind))
+    def RenameStructs(obj):
+        if type(obj) == Struct:
+            obj.name = MapRawName(obj.name)
+    rawType.TraverseChildren(RenameStructs)
+    return rawType
+
+def GetStrKind(kind):
+    return str(TreeToKind(kind))
+
+def IsRule(data, expected):
+    assert type(data) == Token, f'Expected data to be `Token`, not `{type(data)}`; Data = `{data}`'
+    return data.type == 'RULE' and data.value == expected
+
+def IsTree(tree, expected):
+    assert type(tree) == Tree, f'{type(tree)=}'
+    data = tree.data
+    assert IsRule(data, expected), f'{data=}'
+    return data
+
+####################################################################################################
 
 def TrackLine(func):
-    global inter, srcs
+    global srcs
     def inner(*args, **kwargs):
         ret = func(*args, **kwargs)
-        if inter.func == {}:
-            return ret
-        for i, block in enumerate(inter.func['body']):
-            for j, line in enumerate(block.body):
-                nsrc = func.__name__
-                if type(args[0]) == Tree:
-                    nsrc = nsrc + f'({args[0].meta.start_pos}, {args[0].meta.end_pos})'
-                if line[-2] != 'src':
-                    srcs.append([nsrc])
-                    inter.func['body'][i].body[j] = line + ('src', len(srcs)-1,)
-                else:
-                    src = line[-1]
-                    srcs[src].append(nsrc)
+##        for i, block in enumerate(inter.func['body']):
+##            for j, line in enumerate(block.body):
+##                nsrc = func.__name__
+##                if type(args[0]) == Tree:
+##                    nsrc = nsrc + f'({args[0].meta.start_pos}, {args[0].meta.end_pos})'
+##                if line[-2] != 'src':
+##                    srcs.append([nsrc])
+####                    inter.func['body'][i].body[j] = line + ('src', len(srcs)-1,)
+##                else:
+##                    src = line[-1]
+##                    srcs[src].append(nsrc)
         return ret
     return inner
 
+def PrintTokenSource(tree):
+    global FAILEDLINE
+    start = tree.meta.start_pos
+    end = tree.meta.end_pos
+    line = txt[:start].count('\n')
+    if '\n//NEWFILEBEGIN `' in txt[:start]:
+        ntxt = txt[:start]
+        while '\n//NEWFILEBEGIN `' in ntxt:
+            idx = ntxt.index('\n//NEWFILEBEGIN `')
+            ntxt=ntxt[idx+1:]
+        if '\n//NEWFILEEND `' in ntxt:
+            qf = ''
+        else:
+            fileline = ntxt.split('\n')[0]
+            fline = txt[:txt.index(fileline)].count('\n')
+            line -= fline + 2
+            qf = f' in {fileline.split("`")[1]}'
+    else:
+        qf = ''
+    pline = txt[:start].split('\n')[-1]
+    body = txt[start:].split('\n')[0]
+    body = pline + body
+    if FAILEDLINE != body:
+        FAILEDLINE = body
+        print(f'Error on line {line+1}{qf}:\n  ' + body.lstrip(' \t'))
+        print(f'  ' + ' '*len(pline.lstrip(' \t'))+'^'*min((end-start), len(body)-len(pline)))
+
 def logerror(func):
     def inner(*args, **kwargs):
-        global FAILEDLINE
         try:
             return func(*args, **kwargs)
-        except Exception as e:
-            tree = args[0]
-            start = tree.meta.start_pos
-            end = tree.meta.end_pos
-            line = txt[:start].count('\n')
-            if '\n//NEWFILEBEGIN `' in txt[:start]:
-                ntxt = txt[:start]
-                while '\n//NEWFILEBEGIN `' in ntxt:
-                    idx = ntxt.index('\n//NEWFILEBEGIN `')
-                    ntxt=ntxt[idx+1:]
-                if '\n//NEWFILEEND `' in ntxt:
-                    qf = ''
-                else:
-                    fileline = ntxt.split('\n')[0]
-                    fline = txt[:txt.index(fileline)].count('\n')
-                    line -= fline + 1
-                    qf = f' in {fileline.split("`")[1]}'
+        except:
+            if len(args) > 1:
+                tree = args[1]
             else:
-                qf = ''
-            pline = txt[:start].split('\n')[-1]
-            body = txt[start:].split('\n')[0]
-            body = pline + body
-            if FAILEDLINE != body:
-                FAILEDLINE = body
-                print(f'\nError on line {line+1}{qf}:\n  ' + body.lstrip(' ').lstrip('\t'))
-            raise e
+                tree = args[0]
+            if tree == None: raise
+            PrintTokenSource(tree)
+            raise
     return inner
 
 FAILEDLINE = None
 
-def GetStrKind(kind):
-    return str(TreeToKind(kind))
-    if type(kind.children[0]) != Tree:
-        strk = kind.children[0].value
-    else:
-        o = ''
-        for child in kind.children[0].children:
-            if type(child) == Tree:
-                o += child.children[0].value
+####################################################################################################
+
+class Value():
+    def __init__(self, var: Var):
+        self.var = var
+    def __repr__(self):
+        return f'Value({self.var!r})'
+
+class Location():
+    def __init__(self, addr: Var|None, kind: Type, offset: Var|None = None):
+        self.addr = addr
+        self.offset = offset
+        self.kind = kind
+    def __repr__(self):
+        return f'Value({self.addr!r}'+f', {self.kind!r}, {self.offset!r}'*(self.offset!=None)+')'
+
+    def Copy(self):
+        return Location(self.addr, self.kind, self.offset)
+
+    def Offset(self, inter, delta: Var):
+        nself = self.Copy()
+        if delta.kind.comptime:
+            if nself.offset == None:
+                nself.offset = delta
             else:
-                o += child.value
-        strk = o
-    return strk
+                nself.offset = Var(nself.offset.name + delta.name, Comp())
+##                nself.offset.name += delta.name
+        else:
+            newtmp = NewTemp(inter, Type('u32'))
+            inter.AddPent('+', newtmp, nself.addr, delta, None)
+            nself.addr = newtmp
+        return nself
+
+    def Retype(self, newtype: Type):
+        nself = self.Copy()
+        nself.kind = newtype
+        return nself
+
+    def ToValue(self, inter):
+        if self.addr.name.endswith('.&'):
+            rawname = self.addr.name.removesuffix('.&')
+            if self.offset == None or self.offset.name == 0:
+                return Value(Var(rawname, self.kind))
+            res = NewTemp(inter, self.kind)
+            inter.AddPent('=[:]', res, rawname, self.offset, self.kind.OpWidth())
+            return Value(res)
+        res = NewTemp(inter, self.kind)
+        inter.AddPent('=[]', res, self.addr, self.offset, self.kind.OpWidth())
+        return Value(res)
+
+    def Deref(self, inter):
+        if self.addr.name.endswith('.&'):
+            rawname = self.addr.name.removesuffix('.&')
+            if self.offset == None or self.offset.name == 0:
+                return Location(Var(rawname, self.kind), self.kind.Deref())
+        res = NewTemp(inter, self.kind)
+        inter.AddPent('+', res, self.addr, self.offset, None)
+        return Location(res, self.kind.Deref())
+
+    def EmitAssg(self, inter, val):
+        if self.addr.name.endswith('.&'):
+            rawname = self.addr.name.removesuffix('.&')
+            if self.offset == None:
+                self.offset = Var(0, Comp())
+            inter.AddPent('[:]=', Var(rawname, self.kind), val, self.offset, self.kind.OpWidth())
+            return
+        inter.AddPent('[]=', self.addr, self.offset, val, self.kind.OpWidth())
+        
+        
+
+####################################################################################################
+
+def Gen_Start(tree):
+    assert type(tree) == Tree
+    data = tree.data
+    assert IsRule(data, 'start'), f'{data=}'
+
+    return Gen_Unit(tree.children[0])
+
+
+def Gen_Unit(tree):
+    assert type(tree) == Tree, f'{type(tree)}='
+    data = tree.data
+    assert IsRule(data, 'tl_unit'), f'{data=}'
+
+    inter = HLIR()
+
+    for exdecl in tree.children:
+        Prep_ExDecl(inter, exdecl)
+
+##    print(f'{FormatDict(Statics.structs)}')
+    ResolveTypes()
+##    print(f'{FormatDict(Statics.structs)}')
+    
+    for exdecl in tree.children:
+        Gen_ExDecl(inter, exdecl)
+    return inter
+
+
+#@logerror
+#@TrackLine
+def Prep_ExDecl(inter, tree):
+    data = IsTree(tree, 'ex_decl')
+
+    child ,= tree.children
+    assert type(child) == Tree
+    data = child.data
+    
+    if IsRule(data, 'namespace'):      Prep_Namespace(inter, child)
+    elif IsRule(data, 'using_stmt'):   pass
+    elif IsRule(data, 'struct_decl'):  Prep_StructDecl(inter, child)
+    elif IsRule(data, 'fn_decl'):      Prep_FnDecl(inter, child)
+    elif IsRule(data, 'global_decl'):  Prep_GlobalDecl(inter, child)
+    else: assert False, f'Unreachable'
+
+  
+#@logerror
+#@TrackLine
+def Gen_ExDecl(inter, tree):
+    data = IsTree(tree, 'ex_decl')
+
+    child ,= tree.children
+    assert type(child) == Tree
+    data = child.data
+    
+    if IsRule(data, 'namespace'):      Gen_Namespace(inter, child)
+    elif IsRule(data, 'using_stmt'):   Gen_UsingStmt(inter, child)
+    elif IsRule(data, 'struct_decl'):  Gen_StructDecl(inter, child)
+    elif IsRule(data, 'fn_decl'):      Gen_FnDecl(inter, child)
+    elif IsRule(data, 'global_decl'):  Gen_GlobalDecl(inter, child)
+    else: assert False, f'Unreachable'
+
+
+@logerror
+@TrackLine
+def Prep_Namespace(inter, tree):
+    _, name, _, body, _ = tree.children
+    name = TreeToName(name)
+    IsTree(body, f'tl_unit')
+    inner = Gen_Unit(body)
+    print(inner)
+    Warn(tree, f'Namespaces are incomplete')
+    
+
+
+@logerror
+@TrackLine
+def Prep_StructDecl(inter, tree):
+    exp, _, name, _, _args, _, = tree.children
+    fns = _args.children[1:-1]
+    args = _args.children[0]
+    name = TreeToName(name)
+    assert _args.children[-1] == None
+
+    for fn in fns:
+        Prep_FnDecl(inter, fn, fn_pref = name)
+
+    self = Statics.structs[name] = {'size': ..., 'args': {}}
+
+    for arg in args.children:
+        if type(arg) != Tree: continue
+        argname, _, argkind = arg.children
+        argname = TreeToName(argname)
+        assert argname not in self['args']
+        self['args'][argname] = {'offset': ..., 'width': ..., 'type': argkind}
+
+
+@logerror
+@TrackLine
+def Prep_FnDecl(inter, tree, fn_pref = None):
+    exp, _, name, _, rawargs, _, ret, _ = tree.children
+    if fn_pref != None:
+        name = MapRawName(fn_pref+':'+name.children[0].value)
+    else:
+        name = TreeToName(name)
+    
+    args = []
+    if rawargs:
+        for arg in rawargs.children:
+            if type(arg) == Token: continue
+            argname, _, argkind = arg.children
+            newarg = Var(TreeToName(argname), TreeToKind(argkind))
+            args.append(newarg)
+    ret = TreeToKind(ret)
+    funcs[name] = (args, ret)
+
+
+@logerror
+@TrackLine
+def Prep_GlobalDecl(inter, tree):
+    TODO(...)
+
+
+@logerror
+@TrackLine
+def Gen_Namespace(inter, tree):
+    Warn(tree, 'Generate Namespace maybe does nothing???')
+##    TODOO(...)
+
+
+@logerror
+@TrackLine
+def Gen_UsingStmt(inter, tree):
+    TODO(...)
+
+@logerror
+@TrackLine
+def Gen_StructDecl(inter, tree):
+    exp, _, name, _, _args, _, = tree.children
+    fns = _args.children[1:-1]
+    name = TreeToName(name)
+    assert _args.children[-1] == None
+    for fn in fns:
+        Gen_FnDecl(inter, fn, fn_pref = name)
+
+
+@logerror
+@TrackLine
+def Gen_FnDecl(inter, tree, fn_pref = None):
+    exp, _, name, _, _, _, _, body = tree.children
+    if fn_pref != None:
+        name = MapRawName(fn_pref+':'+name.children[0].value)
+    else:
+        name = TreeToName(name)
+    
+    (args, ret) = funcs[name]
+
+    inter.NewFunc(name, args, ret)
+    for i, arg in enumerate(args):
+        inter.AddPent('argld', arg, Var.FromVal(inter, i), None, None)
+    Gen_Stmt(inter, body)
+    inter.PopEnv()
+    inter.EndFunc()
+
+
+@logerror
+@TrackLine
+def Gen_GlobalDecl(inter, tree):
+    TODO(...)
+
+
+#@logerror
+#@TrackLine
+def Gen_Stmt(inter, tree):
+    child ,= tree.children
+    assert type(child) == Tree
+    data = child.data
+    
+    if IsRule(data, 'blockstmt'):       Gen_BlockStmt(inter, child)
+    elif IsRule(data, 'declexpr'):      Gen_DeclExpr(inter, child)
+    elif IsRule(data, 'declstmt'):      Gen_DeclStmt(inter, child)
+    elif IsRule(data, 'exprstmt'):      Gen_ExprStmt(inter, child)
+    elif IsRule(data, 'jumpstmt'):      Gen_JumpStmt(inter, child)
+    elif IsRule(data, 'iterstmt'):      Gen_IterStmt(inter, child)
+    elif IsRule(data, 'selstmt'):       Gen_SelStmt(inter, child)
+    elif IsRule(data, 'assumestmt'):    Gen_AssumeStmt(inter, child)
+    else: assert False, f'Unreachable. Data = {data}'
+
+
+@logerror
+@TrackLine
+def Gen_BlockStmt(inter, tree):
+    stmts = tree.children[1:-1]
+    inter.NewEnv()
+    for stmt in stmts:
+        Gen_Stmt(inter, stmt)
+    inter.PopEnv()
+
+@logerror
+@TrackLine
+def Gen_DeclExpr(inter, tree):
+    _, name, _, kind, _, expr, _, = tree.children
+    idx = len(inter.body.body)
+    rhs = Rvalue(inter, expr).var
+    name = TreeToName(name)
+    if kind:
+        kind = TreeToKind(kind)
+    else:
+        kind = rhs.kind
+    
+    assert rhs.kind.CanCoerceTo(kind), f'Type `{rhs.kind}` cannot coerce into type `{kind}`'
+    assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime val `{rhs.name}`'
+
+    inter.Decl(name, kind, idx)
+    addr = addr = Var(name+'.&', Comp())
+    lhs = Location(addr, kind)
+    lhs.EmitAssg(inter, rhs)
+
+@logerror
+@TrackLine
+def Gen_DeclStmt(inter, tree):
+    _, name, _, kind, _, = tree.children
+    kind = TreeToKind(kind)
+    name = TreeToName(name)
+    assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime type'
+    inter.Decl(name, kind)
+
+
+@logerror
+@TrackLine
+def Gen_ExprStmt(inter, tree):
+    expr, _, = tree.children
+    if expr:
+        return Rvalue(inter, expr.children[0])
+
+@logerror
+@TrackLine
+def Gen_ExprNoSemi(inter, tree):
+    return Rvalue(inter, tree)
+
+@logerror
+@TrackLine
+def Gen_JumpStmt(inter, tree):
+    child ,= tree.children
+    assert type(child) == Tree
+    data = child.data
+    
+    if data == 'continue':      return Gen_Continue(inter, child)
+    elif data == 'break':       return Gen_Break(inter, child)
+    elif data == 'return':      return Gen_Return(inter, None)
+    elif data == 'returnexpr':  return Gen_Return(inter, child)
+    else: assert False, f'Unreachable, {data=}'
+
+@logerror
+@TrackLine
+def Gen_IterStmt(inter, tree):
+    child ,= tree.children
+    assert type(child) == Tree
+    data = child.data
+    
+    if data == 'forstmt':      return Gen_For(inter, child)
+    elif data == 'whilestmt':  return Gen_While(inter, child)
+    else: assert False, f'Unreachable, {data=}'
+
+
+@logerror
+@TrackLine
+def Gen_SelStmt(inter, tree):
+    child ,= tree.children
+    assert type(child) == Tree
+    data = child.data
+    
+    if data == 'ifstmt': return Gen_If(inter, child)
+    else: assert False, f'Unreachable, {data=}'
+
+
+@logerror
+@TrackLine
+def Gen_AssumeStmt(inter, tree):
+    TODO(...)
+
+####################################################################################################
+
+@logerror
+@TrackLine
+def Gen_Continue(inter, tree):
+    assert len(inter.loops) > 0, f'Cannot continue from no loop'
+    top, bot = inter.loops[-1]
+    inter.Jump(top)
+
+@logerror
+@TrackLine
+def Gen_Break(inter, tree):
+    assert len(inter.loops) > 0, f'Cannot continue from no loop'
+    top, bot = inter.loops[-1]
+    inter.Jump(bot)
+
+@logerror
+@TrackLine
+def Gen_Return(inter, tree):
+    if tree != None:
+        inter.Return(Rvalue(inter, tree.children[1]).var)
+    else:
+        inter.Return()
+
+####################################################################################################
+
+@logerror
+@TrackLine
+def Gen_For(inter, tree):
+    #[DO] FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt [ELSE stmt]
+    do, _, _, preexpr, condexpr, postexpr, _, bodyexpr, _else, elseexpr = tree.children
+    #[do] for (e0; e1; e2) e3 else e4
+    #--------
+    #  e0
+    #if (not DO) jmp condition
+    #body:
+    #  e3
+    #  e2
+    #condition:
+    #  e1
+    #  c.jmp body
+    #else:
+    #  e4
+    #then:
+    
+    lbl_body = NewLabel()
+    lbl_cond = NewLabel()
+    lbl_else = NewLabel()
+    lbl_then = NewLabel()
+
+    inter.NewEnv()
+    
+    inter.PushLoopLabels(lbl_cond, lbl_then) #If continue, go to condition, if break, skip to then
+
+    #PRE
+    Gen_Stmt(inter, preexpr)
+    if do != None:
+        inter.Jump(lbl_cond)
+
+    #BODY
+    inter.AddLabel(lbl_body)
+    Gen_Stmt(inter, bodyexpr)
+    if type(postexpr.children[0]) == Tree:
+        Gen_ExprNoSemi(inter, postexpr)
+    inter.Jump(lbl_cond)
+
+    #COND
+    inter.trues.append(lbl_body) #On True condition test, go to body
+    inter.falses.append(lbl_else) #On false go to else
+    inter.AddLabel(lbl_cond)
+    assert len(inter.trues) == 1, f'Len(Trues) should be 1, got {inter.trues}'
+    assert len(inter.falses) == 1, f'Len(Falses) should be 1, got {inter.falses}'
+    cond = Gen_ExprStmt(inter, condexpr)
+    inter.trues = []; inter.falses = []
+    if cond and cond.var.name:
+        inter.CJump(cond, lbl_else)
+
+    inter.PopLoopLabels(lbl_cond, lbl_then) #Once we exit the main loop, disallow pop our loop stack
+
+    #ELSE
+    inter.AddLabel(lbl_else)
+    if _else != None:
+        Gen_Stmt(inter, elseexpr)
+
+    inter.AddLabel(lbl_then)
+
+    inter.PopEnv()
+
+@logerror
+@TrackLine
+def Gen_While(inter, tree):
+    TODO(...)
+
+@logerror
+@TrackLine
+def Gen_If(inter, tree):
+    #IF LPAREN expr RPAREN stmt [ELSE stmt]
+    _, _, condexpr, _, bodyexpr, _else, elseexpr = tree.children
+    lbl_true = NewLabel()
+    lbl_false = NewLabel()
+    lbl_then = NewLabel()
+
+    inter.trues.append(lbl_true) 
+    inter.falses.append(lbl_false)
+    
+    cond = Gen_ExprNoSemi(inter, condexpr)
+    inter.trues.pop(-1); inter.falses.pop(-1)
+    if cond and cond.var.name:
+        inter.CJump(cond, lbl_else)
+
+    inter.AddLabel(lbl_true)
+    Gen_Stmt(inter, bodyexpr)
+
+    inter.AddLabel(lbl_false)
+    if _else != None:
+        Gen_Stmt(inter, elseexpr)
+
+    inter.AddLabel(lbl_then)
+    
+##    TODO(...)
+
+####################################################################################################
+
+def _Rvalue(inter, tree) -> Value:
+    data = tree.data
+
+    if data == 'indexpr':       return L_Index(inter, tree)
+    elif data == 'derefexpr':   return L_Deref(inter, tree)
+    elif data == 'structinit':  return L_StructInit(inter, tree)
+    elif data == 'colonexpr':   Error(f'Cannot take R-Value of type {data}')
+    elif data == 'addrexpr':    return R_Addr(inter, tree)
+    elif data == 'breakpoint':  return R_Breakpoint(inter, tree)
+    elif data == 'sliceexpr':   return L_Slice(inter, tree)
+    elif data == 'fieldexpr':   return L_Field(inter, tree)
+    elif data == 'callexpr':    return R_Call(inter, tree)
+    elif data == 'intrinsic':   return R_Intrinsic(inter, tree)
+    elif data == 'true':        return R_Bool(inter, tree, True)
+    elif data == 'false':       return R_Bool(inter, tree, False)
+    elif data == 'overflow':    return R_Flag(inter, tree, 'overflow')
+    
+    if IsRule(data, 'assgexpr'):     return L_Assg(inter, tree)
+    elif IsRule(data, 'lorexpr'):    return R_Log_Or(inter, tree)
+    elif IsRule(data, 'landexpr'):   return R_Log_And(inter, tree)
+    elif IsRule(data, 'lunaryexpr'): return R_Log_Unary(inter, tree)
+    elif IsRule(data, 'relexpr'):    return R_Rel(inter, tree)
+    elif IsRule(data, 'broexpr'):    return R_Bin_Or(inter, tree)
+    elif IsRule(data, 'bxorexpr'):   return R_Bin_Xor(inter, tree)
+    elif IsRule(data, 'bandexpr'):   return R_Bin_And(inter, tree)
+    elif IsRule(data, 'addexpr'):    return R_Add(inter, tree)
+    elif IsRule(data, 'mulexpr'):    return R_Mul(inter, tree)
+    elif IsRule(data, 'castexpr'):   return L_Cast(inter, tree)
+    elif IsRule(data, 'unaryexpr'):  return R_Unary(inter, tree)
+    elif IsRule(data, 'postexpr'):   return R_Post(inter, tree)
+    elif IsRule(data, 'primexpr'):   return R_Prime(inter, tree)
+    elif IsRule(data, 'constant'):   return R_Constant(inter, tree)
+    else: assert False, f'Unreachable, {data=}'
+
+def _Lvalue(inter, tree) -> Location:
+    data = tree.data
+
+    if data == 'indexpr':       return L_Index(inter, tree)
+    elif data == 'derefexpr':   return L_Deref(inter, tree)
+    elif data == 'structinit':  Error(f'Cannot take L-Value of type {data}')
+    elif data == 'colonexpr':   Error(f'Cannot take L-Value of type {data}')
+    elif data == 'addrexpr':    Error(f'Cannot take L-Value of type {data}')
+    elif data == 'breakpoint':  Error(f'Cannot take L-Value of type {data}')
+    elif data == 'sliceexpr':   return L_Slice(inter, tree)
+    elif data == 'fieldexpr':   return L_Field(inter, tree)
+    elif data == 'callexpr':    Error(f'Cannot take L-Value of type {data}')
+    elif data == 'intrinsic':   Error(f'Cannot take L-Value of type {data}')
+    elif data == 'true':        Error(f'Cannot take L-Value of type {data}')
+    elif data == 'false':       Error(f'Cannot take L-Value of type {data}')
+    elif data == 'overflow':    Error(f'Cannot take L-Value of type {data}')
+
+    elif IsRule(data, 'ident'):   return L_Ident(inter, tree)
+    Error(f'Cannot take L-Value of type {data.value}')
+
+####################################################################################################
+
+def Rvalue(inter, tree) -> Value:
+    ret = Gen_Value(inter, tree)
+    if type(ret) == Location:
+        ret = ret.ToValue(inter)
+    assert type(ret) == Value, (f'Cannot coerce `{ret}`({type(ret)}) to Value')
+    return ret
+
+def Lvalue(inter, tree) -> Location:
+    ret = Gen_Value(inter, tree)
+    if type(ret) == Value:
+        _Error(f'Cannot coerce Value `{ret}` to Location')
+    assert type(ret) == Location, (f'Cannot coerce Value `{ret}`({type(ret)}) to Location')
+    return ret
+
+def Gen_Value(inter, tree) -> Location|Value:
+    data = tree.data
+    
+    if data == 'indexpr':       return L_Index(inter, tree)
+    elif data == 'derefexpr':   return L_Deref(inter, tree)
+    elif data == 'structinit':  return L_StructInit(inter, tree)
+    elif data == 'colonexpr':   Error(f'Cannot take R-Value of type {data}')
+    elif data == 'addrexpr':    return R_Addr(inter, tree)
+    elif data == 'breakpoint':  return R_Breakpoint(inter, tree)
+    elif data == 'sliceexpr':   return L_Slice(inter, tree)
+    elif data == 'fieldexpr':   return L_Field(inter, tree)
+    elif data == 'callexpr':    return R_Call(inter, tree)
+    elif data == 'intrinsic':   return R_Intrinsic(inter, tree)
+    elif data == 'true':        return R_Bool(inter, tree, True)
+    elif data == 'false':       return R_Bool(inter, tree, False)
+    elif data == 'overflow':    return R_Flag(inter, tree, 'overflow')
+
+    if   IsRule(data, 'expr'):       return Gen_Value(inter, tree.children[0])
+    elif IsRule(data, 'encexprsmt'):   return Gen_Value(inter, tree.children[0])
+    elif IsRule(data, 'assgexpr'):   return L_Assg(inter, tree)
+    elif IsRule(data, 'lorexpr'):    return R_Log_Or(inter, tree)
+    elif IsRule(data, 'landexpr'):   return R_Log_And(inter, tree)
+    elif IsRule(data, 'lunaryexpr'): return R_Log_Unary(inter, tree)
+    elif IsRule(data, 'relexpr'):    return R_Rel(inter, tree)
+    elif IsRule(data, 'broexpr'):    return R_Bin_Or(inter, tree)
+    elif IsRule(data, 'bxorexpr'):   return R_Bin_Xor(inter, tree)
+    elif IsRule(data, 'bandexpr'):   return R_Bin_And(inter, tree)
+    elif IsRule(data, 'addexpr'):    return R_Add(inter, tree)
+    elif IsRule(data, 'multexpr'):    return R_Mul(inter, tree)
+    elif IsRule(data, 'castexpr'):   return X_Cast(inter, tree)
+    elif IsRule(data, 'unaryexpr'):  return R_Unary(inter, tree)
+    elif IsRule(data, 'postexpr'):   return R_Post(inter, tree)
+    elif IsRule(data, 'primexpr'):   return R_Prime(inter, tree)
+    elif IsRule(data, 'constant'):   return R_Constant(inter, tree)
+    elif IsRule(data, 'ident'):      return L_Ident(inter, tree)
+    elif IsRule(data, 'string'):     return R_String(inter, tree)
+    else: assert False, f'Unreachable, {data=}'
+
+####################################################################################################
+
+@logerror
+@TrackLine
+def R_SimpleBinary(inter, expr):
+    le, op, bt, re = expr.children
+    lhs = Rvalue(inter, le).var
+    rhs = Rvalue(inter, re).var
+    op = op.children[0].value
+    kind = lhs.kind.Common(rhs.kind)
+    tmp = NewTemp(inter, kind)
+    inter.AddPent(op = op, D = tmp, S0 = lhs, S1 = rhs, S2 = None, sticky = bt != None)
+    return Value(tmp)
+
+@logerror
+@TrackLine
+def R_Log_Or(inter, expr):
+    lhs, _, rhs = expr.children
+    lbl = NewLabel()
+    inter.falses.append(lbl)
+    Rvalue(inter, lhs)
+    inter.AddLabel(lbl)
+    del inter.falses[-1]
+    Rvalue(inter, rhs)
+    return Value(Var(None, Type(Statics.Bool())))
+
+@logerror
+@TrackLine
+def R_Log_And(inter, expr):
+    lhs, _, rhs = expr.children
+    lbl = NewLabel()
+    inter.trues.append(lbl)
+    Rvalue(inter, lhs)
+    inter.AddLabel(lbl)
+    del inter.trues[-1]
+    Rvalue(inter, rhs)
+    return Value(Var(None, Type(Statics.Bool())))
+
+@logerror
+@TrackLine
+def R_Log_Unary(inter, expr):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Rel(inter, expr):
+    le, op, re = expr.children
+    lhs = Rvalue(inter, le).var
+    rhs = Rvalue(inter, re).var
+    op = op.children[0].value
+    assert lhs.kind.CanCoerceTo(rhs.kind) or rhs.kind.CanCoerceTo(lhs.kind), f'Cannot do comparison on uncoerceable types `{lhs.kind}` and `{rhs.kind}`'
+    if op in ['>', '>=', '<=', '<']:
+        if type(lhs.kind.body) == Int:
+            signed = lhs.kind.signed
+        elif type(rhs.kind.body) == Int:
+            signed = rhs.kind.signed
+        else: assert False, f'Comparison of non-numbers {lhs}({type(lhs.kind.body)}) and {rhs}({type(rhs.kind.body)})'
+        inter.IfJump(lhs, '+-'[signed]+op, rhs, inter.trues[-1])
+    else:
+        inter.IfJump(lhs, op, rhs, inter.trues[-1])
+    inter.Jump(inter.falses[-1])
+    return Value(Var(None, Type(Statics.Bool())))
+
+@logerror
+@TrackLine
+def R_Bin_Or(inter, expr):
+    return R_SimpleBinary(inter, expr)
+
+@logerror
+@TrackLine
+def R_Bin_Xor(inter, expr):
+    return R_SimpleBinary(inter, expr)
+
+@logerror
+@TrackLine
+def R_Bin_And(inter, expr):
+    return R_SimpleBinary(inter, expr)
+
+@logerror
+@TrackLine
+def R_Add(inter, expr):
+    return R_SimpleBinary(inter, expr)
+
+@logerror
+@TrackLine
+def R_Mul(inter, expr):
+    return R_SimpleBinary(inter, expr)
+
+@logerror
+@TrackLine
+def R_Unary(inter, expr):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Post(inter, expr):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Prime(inter, expr):
+    child = expr.children[0]
+    if type(expr.children[0]) == Token: #Parenthesis
+        child = expr.children[1]
+    return Gen_Value(inter, child)
+##    print(f'{expr.children[0]=}')
+##    TODO(...)
+
+@logerror
+@TrackLine
+def R_Colon(inter, expr):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Addr(inter, expr):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Breakpoint(inter, expr):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Call(inter, expr):
+    func, _, args, _ = expr.children
+    prearg = None
+    prefu = False
+
+    func = TreeToName(func)
+    if func.count(':') == 1:
+        l, r = func.split(':')
+        if l in Statics.structs:
+            prearg = None
+            func = MapRawName(l+':'+r)
+            prefu = True
+        else:
+            prearg = inter.LookupVar(l)
+            func = str(inter.LookupVar(l).kind).replace('*','').split('[')[0]+':'+r
+            prefu = True
+    elif func.count(':') > 1: Censure('Violation of naming rules, use only 1 `:` in a method name to indicate root class')
+
+    if args:
+        nargs = []
+        for arg in args.children:
+            if type(arg)==Tree:
+                v = Rvalue(inter, arg).var
+                assert type(v) == Var, f'{v=}; {arg=}'
+                nargs.append(v)
+        args = nargs
+    else:
+        args = []
+    if prearg:
+        args.insert(0, prearg)
+    if not func in funcs: Error(f'Cannot find function name `{func}` of any:\n  {"\n  ".join(funcs)}')
+##    print(f'Found `{func}`')
+    funargs, funret = funcs[func]
+    assert len(funargs) == len(args), f'Function `{func}` has arity `{len(funargs)}`, but was given `{len(args)}` args'
+    for i, arg in enumerate(args):
+        inter.AddPent('argst', Var.FromVal(inter, i), arg, None, None)
+    inter.AddPent('call', Var(func, Type()), None, None, None)
+    tmp = NewTemp(inter, funret)
+    inter.AddPent('retld', tmp, Var.FromVal(inter, 0), None, None)
+    return Value(tmp)
+
+@logerror
+@TrackLine
+def R_Intrinsic(inter, expr):
+    _, name, _, args, _, = expr.children
+    name = '@' + GetBackingStr(name)
+    ct = False
+    if args:
+        ct=True
+        nargs = []
+        for arg in args.children:
+            if type(arg)==Tree:
+                var = Rvalue(inter, arg).var
+                nargs.append(var)
+                if not var.kind.comptime:
+                    ct = False
+        args = nargs
+    else:
+        args = []
+
+    if name in usesRd:
+        if len(args) != 4: Error(f'Intrinsic function takes 4 arguments')
+        inter.AddPent(op = name, D = args[0], S0 = args[1], S1 = args[2], S2 = args[3])
+        return Value(NoVar)
+    else:
+        if len(args) > 3: Error(f'Intrinsic functions do not support more than 3 arguments')
+        args += [None]*4
+        tk = Type(Statics.Comptime() if ct else Statics.Int(32, False))
+        tmp = NewTemp(inter, tk)
+        inter.AddPent(op = name, D = tmp, S0 = args[0], S1 = args[1], S2 = args[2])
+        return Value(tmp)
+
+@logerror
+@TrackLine
+def R_Bool(inter, expr, value):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Flag(inter, expr, flag_type):
+    TODO(...)
+
+@logerror
+@TrackLine
+def R_Constant(inter, expr):
+    return Value(Var(eval(GetBackingStr(expr)), Type(Comp())))
+
+@logerror
+@TrackLine
+def R_String(inter, expr):
+    val = eval(GetBackingStr(expr))
+    ref = inter.AddString(val)
+    return Value(Var(ref, Statics.Pointer(Int(8, False))))
+
+##############################
+
+@logerror
+@TrackLine
+def L_StructInit(inter, expr):
+    k, _, args, _, = expr.children
+    kind = TreeToKind(k)
+    tmp = NewTemp(inter, kind)
+    kind = str(kind)
+
+    addr = Var(tmp.name+'.&', Comp())
+    tmploc = Location(addr, kind)
+
+    if args:
+        nargs = []
+        for arg in args.children:
+            if type(arg)==Tree:
+                v = Rvalue(inter, arg.children[2])
+                nargs.append((TreeToName(arg.children[0]), v))
+        args = nargs
+    else: args = []
+    
+    for i, (arg, val) in enumerate(args):
+        
+        field = arg
+        fieldargs = Statics.structs[kind]['args'][field]    
+        off = fieldargs['offset']
+        desttype = fieldargs['type']
+
+        nlhs = tmploc.Offset(_, Var(off, Comp())).Retype(desttype)
+        
+        nlhs.EmitAssg(inter, val)
+    return tmploc
+
+@logerror
+@TrackLine
+def L_Assg(inter, expr):
+    le, op, bt, re = expr.children
+    lhs = Lvalue(inter, le)
+    rhs = Rvalue(inter, re).var
+    if len(op.children[0].value) >= 2:
+        op = op.children[0].value[:-1]
+        assert rhs.kind.CanCoerceTo(lhs.kind)
+        rlhs = Rvalue(inter, le).var
+        kind = rlhs.kind.Common(rhs.kind)
+        tmp = NewTemp(inter, kind)
+        inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None, sticky = bt)
+        lhs.EmitAssg(inter, tmp)
+    else:
+        assert rhs.kind.CanCoerceTo(lhs.kind), f'Cannot coerce `{rhs.kind}` into type `{lhs.kind}`'
+        lhs.EmitAssg(inter, rhs)
+    return lhs
+
+
+@logerror
+@TrackLine
+def L_Ident(inter, expr):
+    lhs = inter.LookupVar(TreeToName(expr))
+    addr = Var(lhs.name+'.&', Comp())
+    return Location(addr, lhs.kind)
+
+@logerror
+@TrackLine
+def L_Index(inter, expr):
+    le, _, re, _, = expr.children
+    rhs = Rvalue(inter, re).var
+    lhs = Lvalue(inter, le)
+    prod = NewTemp(inter, Type(Int(PTRWIDTH, False)))
+    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.Deref().OpWidth()), S2 = None)
+    EvictAliasFor(inter, lhs.kind.Deref())
+    return lhs.Offset(inter, Var(prod.name, Int(32, False))).Deref(inter)
+
+@logerror
+@TrackLine
+def L_Slice(inter, expr):
+    #postexpr LBRACK expr PLUSCOLON expr RBRACK
+    le, _, off, _, width, _, = expr.children
+    lhs = Lvalue(inter, le)
+    if type(lhs.kind.body) != Int: Censure(f'Can only bit slice unsigned integer types, not `{type(lhs.kind)}`')
+    if lhs.kind.signed: Censure(f'Integer must be Unsigned for bitslices')
+    off = Rvalue(inter, off).var
+    width = Rvalue(inter, width).var
+    if not width.kind.comptime: Error(f'Slice width must be comptime known')
+    return lhs.Offset(inter, off).Retype(Int(width, False))
+
+@logerror
+@TrackLine
+def L_Field(inter, expr):
+    le, _, re, = expr.children
+    lhs = Lvalue(inter, le)
+    field = TreeToName(re)
+    fieldargs = Statics.structs[str(lhs.kind)]['args'][field]    
+    off = fieldargs['offset']
+    desttype = fieldargs['type']
+
+    assert off != ..., f'Struct `{lhs.kind!s}.{field!s}` has offset `...`'
+
+    return lhs.Offset(_, Var(off, Comp())).Retype(desttype)
+
+@logerror
+@TrackLine
+def L_Deref(inter, expr):
+    le, _, _, = expr.children
+    lhs = Lvalue(inter, le)
+    EvictAliasFor(inter, lhs.kind.Deref())
+    return lhs.Deref(inter)
+##    return lhs.Retype(lhs.kind.Deref())
+
+@logerror
+@TrackLine
+def X_Cast(inter, expr):
+    lk, re, = expr.children
+    lkind = TreeToKind(lk)
+    rhs = Gen_Value(inter, re)
+    if type(rhs) == Location:
+        return Lvalue(inter, re).Retype(lkind)
+    else:
+        return Value(Var(rhs.var.name, lkind))
+    
+
+####################################################################################################
 
 @logerror
 @TrackLine
 def Gen(tree, pre = True, fn_pref = None):
-    
     global out, ind, inter, funcs, namespaces
     if type(tree) == Tree:
         data = tree.data
@@ -120,9 +1131,6 @@ def Gen(tree, pre = True, fn_pref = None):
             inter.Return(Rvalue(expr.children[0]))
         elif type(data) == str:
             assert False, f'Cannot generate shortnamed tree of name {data=}; {expr=}'
-##            print(data)
-##            print(expr)
-##            err
         
         elif data.type == 'RULE' and data.value == 'start':
             bds = []
@@ -145,52 +1153,11 @@ def Gen(tree, pre = True, fn_pref = None):
         elif data.type == 'RULE' and data.value == 'ex_decl':
             Gen(tree.children[0], pre)
         elif data.type == 'RULE' and data.value == 'fn_decl':
-            _, name, _, rargs, _, ret, body = tree.children
-            if fn_pref != None:
-                name = MapRawName(fn_pref+'__'+name.children[0].value)
-            else:
-                name = TreeToName(name)
-            name = '::'.join(namespaces+[name])
-            
-            args = []
-            if rargs:
-                for arg in rargs.children:
-                    if type(arg) == Token:
-                        continue
-                    aname, _, akind = arg.children
-                    ak = TreeToKind(akind)
-                    nak = Type(str(ak))
-                    while True:
-                        if type(nak.body) == Statics.Pointer:
-                            nak = nak.Deref()
-                            continue
-                        break
-                    if type(nak.body) == Statics.Struct:
-                        ak = str(ak)
-                        ak = Type('::'.join(namespaces+[ak]))
-                    narg = Var(TreeToName(aname), ak)
-                    args.append(narg)
-            ret = TreeToKind(ret)
-            funcs[name] = (args, ret)
-            if not pre:
-                inter.NewFunc(name, args, ret)
-                for i, arg in enumerate(args):
-                    inter.AddPent('argld', arg, Var.FromVal(inter, i), None, None)
-                Gen(body)
-                inter.PopEnv()
-                inter.EndFunc()
-            else:
-                return
+            return
         elif data.type == 'RULE' and data.value == 'assumestmt':
             GenAssume(inter, tree.children[1])
         elif data.type == 'RULE' and data.value == 'declstmt':
-            _, name, _, kind, _, = tree.children
-            kind = TreeToKind(kind)
-            if type(kind.body) == Statics.Struct:
-                kind = Type('::'.join(namespaces+[str(kind)]))
-            name = TreeToName(name)
-            assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime type'
-            inter.Decl(name, kind)
+            return
         elif data.type == 'RULE' and data.value == 'declexpr':
             _, name, _, kind, _, expr, _, = tree.children
             idx = len(inter.body.body)
@@ -215,9 +1182,7 @@ def Gen(tree, pre = True, fn_pref = None):
             assert not kind.comptime, f'Cannot instantiate variable `{name}` with comptime val `{rhs.name}`'
             inter.AddPent(op = '=', D = Var(name, kind), S0 = rhs, S1 = None, S2 = None)
         elif data.type == 'RULE' and data.value == 'exprstmt':
-            expr, _, = tree.children
-            if expr:
-                _ = Rvalue(expr.children[0])
+            return
         elif data.type == 'RULE' and data.value == 'encexprstmt':
             if type(tree.children[0]) == Tree:
                 _ = Rvalue(expr.children[0])
@@ -405,27 +1370,6 @@ def Gen(tree, pre = True, fn_pref = None):
             Gen(tree.children[0])
 
         elif data.type == 'RULE' and data.value == 'struct_decl':
-            _, name, _, _args, _, = tree.children
-            fns = _args.children[1:-1]
-            args = _args.children[0]
-            rname = TreeToName(name)
-            name = name = '::'.join(namespaces+[TreeToName(name)])
-            assert _args.children[-1] == None
-            if not pre:
-                for fn in fns:
-                    Gen(fn, pre = pre, fn_pref = name)
-                return
-            self = Statics.structs[name] = {'size': None, 'args': {}}
-            for arg in args.children:
-                if type(arg) != Tree: continue
-                argname, _, argkind = arg.children
-##                argname = '::'.join(namespaces+[TreeToName(argname)])
-                argname = TreeToName(argname)
-                assert argname not in self['args']
-                self['args'][argname] = {'offset': None, 'width': None, 'type': argkind}
-            for fn in fns:
-                fn
-                Gen(fn, pre = pre, fn_pref = name)
             return
             
         else:
@@ -436,7 +1380,7 @@ def Gen(tree, pre = True, fn_pref = None):
 
 @logerror
 @TrackLine
-def Rvalue(expr):
+def _Rvalue(expr):
     
     global inter, structs
     if type(expr) == Tree:
@@ -581,7 +1525,7 @@ def Rvalue(expr):
             if prearg:
                 args.insert(0, prearg)
             assert func in funcs, f'Cannot find function name `{func}` of any:\n  {"\n  ".join(funcs)}\nRoot function name is `{ofunc}` in namespace `{namespaces}` with `{en}`'
-            print(f'Found `{func}`')
+##            print(f'Found `{func}`')
             funargs, funret = funcs[func]
             assert len(funargs) == len(args), f'Function `{func}` has arity `{len(funargs)}`, but was given `{len(args)}` args'
             for i, arg in enumerate(args):
@@ -612,7 +1556,7 @@ def Rvalue(expr):
                 assert len(args) == 4, f'Intrinsic function takes 4 arguments'
 ##                args += [None]*4
                 inter.AddPent(op = name, D = args[0], S0 = args[1], S1 = args[2], S2 = args[3])
-                return NoVar
+                return Value(NoVar)
             else:
                 assert len(args) <= 3, f'Intrinsic functions do not support more than 3 arguments'
                 args += [None]*4
@@ -791,7 +1735,7 @@ def Rvalue(expr):
 
 @logerror
 @TrackLine
-def Lvalue(expr):
+def _Lvalue(expr):
     global inter
     if type(expr) == Tree:
         data = expr.data
@@ -861,7 +1805,7 @@ def Lvalue(expr):
         print(expr)
         err
 
-def NewTemp(kind):
+def NewTemp(inter, kind):
     global tid
     tid += 1; ID = f't{tid}'
     inter.Decl(ID, kind)
@@ -926,11 +1870,15 @@ class HLIR:
     def Register(self, name, kind):
         self.envs[-1][name] = kind
 
-    def Lookup(self, name):
+    def LookupKind(self, name):
         for env in self.envs[::-1]:
             if name in env:
                 return env[name]
-        assert False, f'Cannot find name: `{name}` in current scope'
+        Error(f'Cannot find name: `{name}` in current scope')
+
+    def LookupVar(self, name):
+        return Var(name, self.LookupKind(name))
+
     def PotAliases(self, kind):
         als = []
         for env in self.envs[::-1]:
@@ -938,22 +1886,14 @@ class HLIR:
                 if nkind == kind:
                     als.append(name)
         return als
+
     def Decl(self, name, kind, idx = None):
-        if type(kind) == Statics.Void:
-            return
+        if type(kind) == Statics.Void: return
         self.Register(name, kind)
-        if idx == None:
-            self.body.Addline(('decl', Var(name, kind), None, None))
-        else:
-            self.body.Insertline(idx, ('decl', Var(name, kind), None, None))
+        if idx == None:     self.body.Addline(('decl', Var(name, kind), None, None))
+        else:       self.body.Insertline(idx, ('decl', Var(name, kind), None, None))
 
     def AddMemStore(self, ary, idx, val):
-##        self.Use(l)
-##        if idx.name.isnumeric():
-##            idx = int(idx)
-##        else:
-##            self.Use(idx)
-##        self.Use(val)
         EvictAliasFor(inter, ary.kind.Deref())
         self.AddPent('[]=', val, ary, idx, None)
         InvalidateAliasFor(inter, ary.kind.Deref())
@@ -964,24 +1904,22 @@ class HLIR:
         InvalidateAliasFor(inter, ary.kind.Deref())
 
     def AddBitStore(self, ary, off, width, val):
-##        ary, aryk = ary if ary else (None, None)
-##        off, offk = off if off else (None, None)
-##        width, widthk = width if width else (None, None)
-##        val, valk = val if val else (None, None)
-##        self.Use(val)
-##        if off.isnumeric():
-##            off = int(off)
-##        else:
-##            self.Use(off)
-##        assert width.isnumeric(), f'Must use a comptime known width, not `{width}`, to use runtime use @bst'
         assert width.kind.comptime, f'Must use a comptime known width, not `{width}`. To use runtime use @bst'
-##        width = int(width)
-##        self.Use(ary)
         EvictAliasFor(inter, ary.kind)
         self.AddPent('[:]=', ary, val, off, width)
-##        InvalidateAliasFor(inter, ary.kind)
-    
-    def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = None):
+
+    def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = False):
+        D = D if D else Var.FromVal(self, None)
+        S0 = S0 if S0 else Var.FromVal(self, None)
+        S1 = S1 if S1 else Var.FromVal(self, None)
+        S2 = S2 if S2 else Var.FromVal(self, None)
+        D = D if type(D) != int else Var.FromVal(self, D)
+        S0 = S0 if type(S0) != int else Var.FromVal(self, S0)
+        S1 = S1 if type(S1) != int else Var.FromVal(self, S1)
+        S2 = S2 if type(S2) != int else Var.FromVal(self, S2)
+        self.body.Addline(('expr', (op, D, S0, S1, S2), sticky))
+
+    def _AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = None):
         
         D = D if D else Var.FromVal(self, None)
         S0 = S0 if S0 else Var.FromVal(self, None)
@@ -1004,20 +1942,16 @@ class HLIR:
                 S0 = tmp
                 S2 = Var.FromVal(None)
                 op = '='
-##                assert False, 'Maybe this will get deprecated'
             
             l, r = D.name[:-1].split('[', maxsplit=1)
             
             l = Var.FromVal(self, l)
             if '[' in r:
-##                assert False, f'{D=}'
                 aryidx, r = r.split('][')
                 aryidx = Var.FromVal(self, aryidx)
-##                aryidx = int(aryidx)
                 r, w = r.split('+:')
                 r = Var.FromVal(self, r)
                 w = Var.FromVal(self, w)
-##                assert False, f'{(aryidx, r, w)}'
                 tmp = NewTemp(r.kind)
                 self.AddPent('+', tmp, aryidx, r, None)
                 self.AddBitMemStore(l, tmp, w, S0)
@@ -1121,118 +2055,6 @@ class HLIR:
 
         return
 
-        for block in body:
-            ldict = lvars[block.entry] = {}
-            if block.exloc != None:
-                ito[block.exloc] = ito.get(block.exloc, []) + [block.entry]
-                to[block.entry] = to.get(block.entry, []) + [block.exloc]
-            if block.fall != 'EOF' and block.fall != None:
-                ito[block.fall] = ito.get(block.fall, []) + [block.entry]
-                fto[block.fall] = fto.get(block.fall, []) + [block.entry]
-                to[block.entry] = to.get(block.entry, []) + [block.fall]
-            
-            for i,line in enumerate(block.body):
-                if line[0] == 'decl':
-                    ldict[line[1]] = [i, None]
-                    k[line[1]] = line[2]
-                elif line[0] == 'expr':
-                    if line[1][0] in ['call']:
-                        continue
-                    if line[1][0] == 'argld':
-
-                        ldict[line[1][1]] = [i, None]
-                        k[line[1][1]] = line[1][3]
-
-                    if line[1][0] in usesRd:
-                        args = line[1][1:][:4]
-                    else:
-                        args = line[1][2:][:3]
-
-                    for arg in args:
-                        if type(arg.name) == str and arg.name[-1]!=':':
-                            if arg.name[-2:] == '.&':
-                                arg = Var(arg.name[:-2], arg.kind.Deref())
-                            if arg not in ldict:
-                                ldict[arg] = ['pre', line[2]]
-                            elif type(ldict[arg][1]) != str:
-                                ldict[arg][1] = line[2]
-                            else:
-                                pass
-
-                elif line[0] in ['regrst', 'memsave', 'regrstbit', 'memsavebit', 'unreachable']: pass
-                else: assert False, f'Unknown command `{line[0]}` of `{line}`'
-##                    print(line)
-##                    err
-
-        From = False
-        for block in body[:]:
-            if block.entry not in fto or fto[block.entry] == []:
-                if block.entry not in ito or ito[block.entry] == []:
-                    self.func['body'].remove(block)
-                    if block.fall != 'EOF' and block.fall != None:
-                        ito[block.fall].remove(block.entry)
-                        fto[block.fall].remove(block.entry)
-                else:
-                    block.From = ito[block.entry][0]
-        run = True
-        while run:
-            run = False
-            for block in body:
-                ldict = lvars[block.entry]
-                for var, life in ldict.items():
-                    if life[0] == 'pre':
-                        for precur in ito.get(block.entry, []):
-                            if var not in lvars[precur]:
-                                lvars[precur][var] = ['pre', 'post']
-                                run = True
-                                continue
-                            if lvars[precur][var][1] != 'post':
-                                lvars[precur][var][1] = 'post'
-                                run = True
-        for block in body:
-            ldict = lvars[block.entry]
-            for var, life in ldict.items():
-                if life[1] == 'post':
-                    for succ in to.get(block.entry, []):
-                        if var not in lvars[succ]:
-                            for i,b in enumerate(body):
-                                if b.entry == succ:
-                                    nline = ('undecl', var, k[var])
-                                    if nline not in body[i].body:
-                                        body[i].body.insert(0, nline)
-                                    break
-                            else:
-                                bad
-                else:
-                    for i,b in enumerate(block.body):
-                        if b[0] == 'expr' and b[2] == life[1]:
-
-                            block.body.insert(i+1, ('undecl', var, None))
-                            break
-                    else:
-                        r = 0
-                        for i,b in enumerate(block.body):
-                            if b[0] == 'expr' and b[1][1] == var:
-                                if b[1][0] in nullret:
-                                    l = list(b)
-                                    li = list(l[1])
-                                    li[1] = NoVar
-                                    l[1] = li
-                                    block.body[i] = tuple(l)
-                                else:
-                                    idx = block.body.index(b)
-                                    r = i - idx
-                                    assert block.body[i-r] == b, f'Ummm, desync internally tried to delete wrong expr\n`{block.body[i-r]}`\nInstead Of:\n`{b}`'
-                                    del block.body[i-r]
-                                    r += 1
-                        for i,b in enumerate(block.body):
-                            if b[0] == 'decl' and b[1] == var:
-                                del block.body[i]
-                                break
-                        else:
-                            print(f'Failed to delete declare {var=}')
-                            print(f'Last used at {life[1]} from {life}')
-                            bad
         
     def AddString(self, txt):
         key = f's{len(self.data.keys())}:'
@@ -1257,14 +2079,14 @@ def ResolveTypes():
     queue = list(Statics.structs.keys())
     while queue != []:
         n = queue[0]
-        if Statics.structs[n]['size']:
+        if Statics.structs[n]['size'] != ...:
             del queue[0]
             continue
         RecuSolveType(queue[0])
         del queue[0]
 
 def RecuSolveType(name, stk = ()):
-    assert name not in stk, f'Type `{name}` is self referential'
+    if name in stk: Error(f'Type `{name}` is self referential')
     stk = stk + (name,)
     for argname, arg in Statics.structs[name]['args'].items():
         kind = arg['type']
@@ -1273,7 +2095,7 @@ def RecuSolveType(name, stk = ()):
         for k in Statics.structs:
             if strk == k.split('::')[-1]:
                 strk = k
-        if strk in Statics.structs and Statics.structs[strk]['size']:
+        if strk in Statics.structs and Statics.structs[strk]['size'] != ...:
             width = Statics.structs[strk]['size']
         elif strk in Statics.structs:
             RecuSolveType(strk, stk)
@@ -1281,7 +2103,7 @@ def RecuSolveType(name, stk = ()):
             assert width != None, f'Recu failure'
         else:
             kind = Type.FromStr(strk)
-            print(f'Structs is:\n{FormatDict(Statics.structs)=}\n')
+##            print(f'Structs is:\n{FormatDict(Statics.structs)=}\n')
             width = kind.OpWidth()
             assert width != None, f'Bad kind `{strk}` has no width'
         align = AlignOf(width)
@@ -1371,7 +2193,7 @@ def BuildBoot():
     ret = Int(32, False)
     funcs[name] = (args, ret)
     inter.NewFunc(name, args, ret)
-    inter.AddPent('call', Var('Main', Type()), None, None, None)
+    inter.AddPent('call', Var('u_Main', Type()), None, None, None)
     inter.AddPent('@susp', None, None, None, None)
     inter.PopEnv()
     inter.EndFunc()
@@ -1406,16 +2228,15 @@ def Compile(filepath, verbose = False, optimize = True):
     namespaces = []
 
     funcs = {}
-    inter = HLIR()
+##    inter = HLIR()
 
     LHL.Init(sys.modules[__name__])
 
     try:
-        Gen(tree)
+        inter = Gen_Start(tree)
         BuildBoot()
     except Exception as e:
-        
-        raise e
+        raise
 
     with open('struct_dump.txt', 'w') as f:
         f.write(repr(Statics.structs))
@@ -1441,12 +2262,6 @@ def Compile(filepath, verbose = False, optimize = True):
             print(repr(llir))
         with open('out_ret_opt.llr', 'w') as f:
             f.write(repr(llir))
-
-##    if verbose:
-##        print('\nOptimized LLIR:')
-##        print(repr(llir))
-##    with open('out.llr', 'w') as f:
-##        f.write(repr(llir))
 
     asm = LLL.Lower(llir)
 
