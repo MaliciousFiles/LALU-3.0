@@ -199,6 +199,8 @@ class Location():
     def __init__(self, addr: Var|None, kind: Type, offset: Var|None = None):
         self.addr = addr
         self.offset = offset
+        if type(kind) != Type:
+            kind = Type(kind)
         self.kind = kind
     def __repr__(self):
         return f'Value({self.addr!r}'+f', {self.kind!r}, {self.offset!r}'*(self.offset!=None)+')'
@@ -234,6 +236,8 @@ class Location():
             inter.AddPent('=[:]', res, rawname, self.offset, self.kind.OpWidth())
             return Value(res)
         res = NewTemp(inter, self.kind)
+        if self.offset == None:
+            self.offset = Var(0, Comp())
         inter.AddPent('=[]', res, self.addr, self.offset, self.kind.OpWidth())
         return Value(res)
 
@@ -243,6 +247,8 @@ class Location():
             if self.offset == None or self.offset.name == 0:
                 return Location(Var(rawname, self.kind), self.kind.Deref())
         res = NewTemp(inter, self.kind)
+        if self.offset == None:
+            self.offset = Var(0, Comp())
         inter.AddPent('+', res, self.addr, self.offset, None)
         return Location(res, self.kind.Deref())
 
@@ -1047,7 +1053,7 @@ def L_Assg(inter, expr):
 def L_Ident(inter, expr):
     lhs = inter.LookupVar(TreeToName(expr))
     addr = Var(lhs.name+'.&', Statics.Pointer(lhs.kind))
-    return Location(addr, lhs.kind)
+    return Location(addr, Statics.Pointer(lhs.kind))
 
 @logerror
 @TrackLine
@@ -1909,10 +1915,10 @@ class HLIR:
         self.AddPent('[:]=', ary, val, off, width)
 
     def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = False):
-        D = D if D else Var.FromVal(self, None)
-        S0 = S0 if S0 else Var.FromVal(self, None)
-        S1 = S1 if S1 else Var.FromVal(self, None)
-        S2 = S2 if S2 else Var.FromVal(self, None)
+        D = D if D != None else Var.FromVal(self, None)
+        S0 = S0 if S0 != None else Var.FromVal(self, None)
+        S1 = S1 if S1 != None else Var.FromVal(self, None)
+        S2 = S2 if S2 != None else Var.FromVal(self, None)
         D = D if type(D) != int else Var.FromVal(self, D)
         S0 = S0 if type(S0) != int else Var.FromVal(self, S0)
         S1 = S1 if type(S1) != int else Var.FromVal(self, S1)

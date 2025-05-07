@@ -171,7 +171,9 @@ class Pointer(QuafType):
     def TraverseChildren(self, func):
         func(self)
         self.referent.TraverseChildren(func)
-    
+
+    def Deref(self):
+        return Type(self.referent)
 
 class C_Array(QuafType):
     def __init__(self, referent: QuafType, count: int):
@@ -196,6 +198,9 @@ class C_Array(QuafType):
         func(self)
         self.referent.TraverseChildren(func)
 
+    def Deref(self):
+        return Type(self.referent)
+
 class Type:
     def __init__(self, val: str|QuafType = ...):
         assert type(val) in [type(...), str, Type, QuafType, type(None)] or hasattr(val, 'quaf'), f'Bad initialization value of `{val!r}`'
@@ -203,12 +208,15 @@ class Type:
             self.body = Type.FromStr('u32').body
         elif val == None:
             self.body = None
+        elif type(val) == Type:
+            self.body = val.body
         elif type(val) == str:
             self.body = Type.FromStr(val).body
         else:
             self.body = val
 
     def __getattr__(self, name):
+        assert issubclass(type(self.body), QuafType), f'{type(self.body)=}'
         return self.body.__getattribute__(name)
 
     def FromStr(initstr: str):
@@ -291,6 +299,8 @@ class Type:
     def ElementSize(self):
         return self.Deref().AsElementSizeOf()
     def CanCoerceTo(self, other):
+        assert type(self) == Type, f'{self=}'
+        assert type(other) == Type, f'{other=}'
         skind = type(self.body)
         okind = type(other.body)
         try:
