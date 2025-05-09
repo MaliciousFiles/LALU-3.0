@@ -197,24 +197,30 @@ def EnforceTypeHints(func):
 ####################################################################################################
 
 class Value():
+    @EnforceTypeHints
     def __init__(self, var: Var):
         self.var = var
+    @EnforceTypeHints
     def __repr__(self):
         return f'Value({self.var!r})'
 
 class Location():
+    @EnforceTypeHints
     def __init__(self, addr: Var|None, kind: Type, offset: Var|None = None):
         self.addr = addr
         self.offset = offset
         if type(kind) != Type:
             kind = Type(kind)
         self.kind = kind
+    @EnforceTypeHints
     def __repr__(self):
         return f'Location({self.addr!r}'+f', {self.kind!r}, {self.offset!r}'*(self.offset!=None)+')'
 
+    @EnforceTypeHints
     def Copy(self):
         return Location(self.addr, self.kind, self.offset)
 
+    @EnforceTypeHints
     def Offset(self, inter, delta: Var):
         nself = self.Copy()
         if delta.kind.comptime:
@@ -229,6 +235,7 @@ class Location():
             nself.addr = newtmp
         return nself
 
+    @EnforceTypeHints
     def Retype(self, newtype: Type):
         nself = self.Copy()
         if type(newtype) != Type:
@@ -236,6 +243,7 @@ class Location():
         nself.kind = newtype
         return nself
 
+    @EnforceTypeHints
     def ToValue(self, inter):
         if self.addr.name.endswith('.&'):
             rawname = self.addr.name.removesuffix('.&')
@@ -250,6 +258,7 @@ class Location():
         inter.AddPent('=[]', res, self.addr, self.offset, self.kind.Deref().OpWidth())
         return Value(res)
 
+    @EnforceTypeHints
     def Deref(self, inter):
         if self.addr.name.endswith('.&'):
             rawname = self.addr.name.removesuffix('.&')
@@ -261,6 +270,7 @@ class Location():
         inter.AddPent('+', res, self.addr, self.offset, None)
         return Location(res, self.kind.Deref())
 
+    @EnforceTypeHints
     def EmitAssg(self, inter, val):
         if self.addr.name.endswith('.&'):
             rawname = self.addr.name.removesuffix('.&')
@@ -274,6 +284,7 @@ class Location():
 
 ####################################################################################################
 
+@EnforceTypeHints
 def Gen_Start(tree):
     assert type(tree) == Tree
     data = tree.data
@@ -282,6 +293,7 @@ def Gen_Start(tree):
     return Gen_Unit(tree.children[0])
 
 
+@EnforceTypeHints
 def Gen_Unit(tree):
     assert type(tree) == Tree, f'{type(tree)}='
     data = tree.data
@@ -303,6 +315,7 @@ def Gen_Unit(tree):
 
 #@logerror
 #@TrackLine
+@EnforceTypeHints
 def Prep_ExDecl(inter, tree):
     data = IsTree(tree, 'ex_decl')
 
@@ -320,6 +333,7 @@ def Prep_ExDecl(inter, tree):
   
 #@logerror
 #@TrackLine
+@EnforceTypeHints
 def Gen_ExDecl(inter, tree):
     data = IsTree(tree, 'ex_decl')
 
@@ -337,6 +351,7 @@ def Gen_ExDecl(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Prep_Namespace(inter, tree):
     _, name, _, body, _ = tree.children
     name = TreeToName(name)
@@ -349,6 +364,7 @@ def Prep_Namespace(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Prep_StructDecl(inter, tree):
     exp, _, name, _, _args, _, = tree.children
     fns = _args.children[1:-1]
@@ -371,6 +387,7 @@ def Prep_StructDecl(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Prep_FnDecl(inter, tree, fn_pref = None):
     exp, _, name, _, rawargs, _, ret, _ = tree.children
     if fn_pref != None:
@@ -391,12 +408,14 @@ def Prep_FnDecl(inter, tree, fn_pref = None):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Prep_GlobalDecl(inter, tree):
     TODO(...)
 
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_Namespace(inter, tree):
     Warn(tree, 'Generate Namespace maybe does nothing???')
 ##    TODOO(...)
@@ -404,11 +423,13 @@ def Gen_Namespace(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_UsingStmt(inter, tree):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_StructDecl(inter, tree):
     exp, _, name, _, _args, _, = tree.children
     fns = _args.children[1:-1]
@@ -420,6 +441,7 @@ def Gen_StructDecl(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_FnDecl(inter, tree, fn_pref = None):
     exp, _, name, _, _, _, _, body = tree.children
     if fn_pref != None:
@@ -439,12 +461,14 @@ def Gen_FnDecl(inter, tree, fn_pref = None):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_GlobalDecl(inter, tree):
     TODO(...)
 
 
 #@logerror
 #@TrackLine
+@EnforceTypeHints
 def Gen_Stmt(inter, tree):
     child ,= tree.children
     assert type(child) == Tree
@@ -463,6 +487,7 @@ def Gen_Stmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_BlockStmt(inter, tree):
     stmts = tree.children[1:-1]
     inter.NewEnv()
@@ -472,6 +497,7 @@ def Gen_BlockStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_DeclExpr(inter, tree):
     _, name, _, kind, _, expr, _, = tree.children
     idx = len(inter.body.body)
@@ -492,6 +518,7 @@ def Gen_DeclExpr(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_DeclStmt(inter, tree):
     _, name, _, kind, _, = tree.children
     kind = TreeToKind(kind)
@@ -502,6 +529,7 @@ def Gen_DeclStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_ExprStmt(inter, tree):
     expr, _, = tree.children
     if expr:
@@ -509,11 +537,13 @@ def Gen_ExprStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_ExprNoSemi(inter, tree):
     return Rvalue(inter, tree)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_JumpStmt(inter, tree):
     child ,= tree.children
     assert type(child) == Tree
@@ -527,6 +557,7 @@ def Gen_JumpStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_IterStmt(inter, tree):
     child ,= tree.children
     assert type(child) == Tree
@@ -539,6 +570,7 @@ def Gen_IterStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_SelStmt(inter, tree):
     child ,= tree.children
     assert type(child) == Tree
@@ -550,6 +582,7 @@ def Gen_SelStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_AssumeStmt(inter, tree):
     TODO(...)
 
@@ -557,6 +590,7 @@ def Gen_AssumeStmt(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_Continue(inter, tree):
     assert len(inter.loops) > 0, f'Cannot continue from no loop'
     top, bot = inter.loops[-1]
@@ -564,6 +598,7 @@ def Gen_Continue(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_Break(inter, tree):
     assert len(inter.loops) > 0, f'Cannot continue from no loop'
     top, bot = inter.loops[-1]
@@ -571,6 +606,7 @@ def Gen_Break(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_Return(inter, tree):
     if tree != None:
         inter.Return(Rvalue(inter, tree.children[1]).var)
@@ -581,6 +617,7 @@ def Gen_Return(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_For(inter, tree):
     #[DO] FOR LPAREN stmt exprstmt encexprsmt RPAREN stmt [ELSE stmt]
     do, _, _, preexpr, condexpr, postexpr, _, bodyexpr, _else, elseexpr = tree.children
@@ -643,11 +680,13 @@ def Gen_For(inter, tree):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_While(inter, tree):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen_If(inter, tree):
     #IF LPAREN expr RPAREN stmt [ELSE stmt]
     _, _, condexpr, _, bodyexpr, _else, elseexpr = tree.children
@@ -676,6 +715,7 @@ def Gen_If(inter, tree):
 
 ####################################################################################################
 
+@EnforceTypeHints
 def _Rvalue(inter, tree) -> Value:
     data = tree.data
 
@@ -710,6 +750,7 @@ def _Rvalue(inter, tree) -> Value:
     elif IsRule(data, 'constant'):   return R_Constant(inter, tree)
     else: assert False, f'Unreachable, {data=}'
 
+@EnforceTypeHints
 def _Lvalue(inter, tree) -> Location:
     data = tree.data
 
@@ -732,6 +773,7 @@ def _Lvalue(inter, tree) -> Location:
 
 ####################################################################################################
 
+@EnforceTypeHints
 def Rvalue(inter, tree) -> Value:
     ret = Gen_Value(inter, tree)
     if type(ret) == Location:
@@ -739,6 +781,7 @@ def Rvalue(inter, tree) -> Value:
     assert type(ret) == Value, (f'Cannot coerce `{ret}`({type(ret)}) to Value')
     return ret
 
+@EnforceTypeHints
 def Lvalue(inter, tree) -> Location:
     ret = Gen_Value(inter, tree)
     if type(ret) == Value:
@@ -746,6 +789,7 @@ def Lvalue(inter, tree) -> Location:
     assert type(ret) == Location, (f'Cannot coerce Value `{ret}`({type(ret)}) to Location')
     return ret
 
+@EnforceTypeHints
 def Gen_Value(inter, tree) -> Location|Value:
     data = tree.data
     
@@ -788,6 +832,7 @@ def Gen_Value(inter, tree) -> Location|Value:
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_SimpleBinary(inter, expr):
     le, op, bt, re = expr.children
     lhs = Rvalue(inter, le).var
@@ -800,6 +845,7 @@ def R_SimpleBinary(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Log_Or(inter, expr):
     lhs, _, rhs = expr.children
     lbl = NewLabel()
@@ -812,6 +858,7 @@ def R_Log_Or(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Log_And(inter, expr):
     lhs, _, rhs = expr.children
     lbl = NewLabel()
@@ -824,11 +871,13 @@ def R_Log_And(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Log_Unary(inter, expr):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Rel(inter, expr):
     le, op, re = expr.children
     lhs = Rvalue(inter, le).var
@@ -849,41 +898,49 @@ def R_Rel(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Bin_Or(inter, expr):
     return R_SimpleBinary(inter, expr)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Bin_Xor(inter, expr):
     return R_SimpleBinary(inter, expr)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Bin_And(inter, expr):
     return R_SimpleBinary(inter, expr)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Add(inter, expr):
     return R_SimpleBinary(inter, expr)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Mul(inter, expr):
     return R_SimpleBinary(inter, expr)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Unary(inter, expr):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Post(inter, expr):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Prime(inter, expr):
     child = expr.children[0]
     if type(expr.children[0]) == Token: #Parenthesis
@@ -894,21 +951,25 @@ def R_Prime(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Colon(inter, expr):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Addr(inter, expr):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Breakpoint(inter, expr):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Call(inter, expr):
     func, _, args, _ = expr.children
     prearg = None
@@ -952,6 +1013,7 @@ def R_Call(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Intrinsic(inter, expr):
     _, name, _, args, _, = expr.children
     name = '@' + GetBackingStr(name)
@@ -983,21 +1045,25 @@ def R_Intrinsic(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Bool(inter, expr, value):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Flag(inter, expr, flag_type):
     TODO(...)
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_Constant(inter, expr):
     return Value(Var(eval(GetBackingStr(expr)), Type(Comp())))
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def R_String(inter, expr):
     val = eval(GetBackingStr(expr))
     ref = inter.AddString(val)
@@ -1007,6 +1073,7 @@ def R_String(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_StructInit(inter, expr):
     k, _, args, _, = expr.children
     kind = TreeToKind(k)
@@ -1041,6 +1108,7 @@ def L_StructInit(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_Assg(inter, expr):
     le, op, bt, re = expr.children
     lhs = Lvalue(inter, le)
@@ -1061,6 +1129,7 @@ def L_Assg(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_Ident(inter, expr):
     lhs = inter.LookupVar(TreeToName(expr))
     addr = Var(lhs.name+'.&', Statics.Pointer(lhs.kind))
@@ -1068,6 +1137,7 @@ def L_Ident(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_Index(inter, expr):
     le, _, re, _, = expr.children
     rhs = Rvalue(inter, re).var
@@ -1081,6 +1151,7 @@ def L_Index(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_Slice(inter, expr):
     #postexpr LBRACK expr PLUSCOLON expr RBRACK
     le, _, off, _, width, _, = expr.children
@@ -1094,6 +1165,7 @@ def L_Slice(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_Field(inter, expr):
     le, _, re, = expr.children
     lhs = Lvalue(inter, le)
@@ -1108,6 +1180,7 @@ def L_Field(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def L_Deref(inter, expr):
     le, _, _, = expr.children
     lhs = Lvalue(inter, le)
@@ -1117,6 +1190,7 @@ def L_Deref(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def X_Cast(inter, expr):
     lk, re, = expr.children
     lkind = TreeToKind(lk)
@@ -1131,6 +1205,7 @@ def X_Cast(inter, expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def Gen(tree, pre = True, fn_pref = None):
     global out, ind, inter, funcs, namespaces
     if type(tree) == Tree:
@@ -1399,6 +1474,7 @@ def Gen(tree, pre = True, fn_pref = None):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def _Rvalue(expr):
     
     global inter, structs
@@ -1754,6 +1830,7 @@ def _Rvalue(expr):
 
 @logerror
 @TrackLine
+@EnforceTypeHints
 def _Lvalue(expr):
     global inter
     if type(expr) == Tree:
@@ -1824,12 +1901,14 @@ def _Lvalue(expr):
         print(expr)
         err
 
+@EnforceTypeHints
 def NewTemp(inter, kind):
     global tid
     tid += 1; ID = f't{tid}'
     inter.Decl(ID, kind)
     return Var(ID, kind)
 
+@EnforceTypeHints
 def NewLabel():
     global tid
     tid += 1; ID = f'L{tid}'
@@ -1838,6 +1917,7 @@ def NewLabel():
 
 
 class HLIR:
+    @EnforceTypeHints
     def __init__(self):
         self.funcs = []
         self.envs = []
@@ -1847,6 +1927,7 @@ class HLIR:
         self.func = {}
         self.data = {}
 
+    @EnforceTypeHints
     def __repr__(self):
         o = ''
         for func in self.funcs:
@@ -1860,6 +1941,7 @@ class HLIR:
             o += ('}') + '\n'
         return o
 
+    @EnforceTypeHints
     def NewFunc(self, name, args, ret):
         self.funcs.append({})
         func = self.func = self.funcs[-1]
@@ -1873,8 +1955,11 @@ class HLIR:
         for arg in args:
             self.Register(arg.name, arg.kind)
 
+    @EnforceTypeHints
     def NewEnv(self):
         self.envs.append({})
+    
+    @EnforceTypeHints
     
     def PopEnv(self):
         for env in self.envs[:-1]:
@@ -1886,18 +1971,22 @@ class HLIR:
             pass
         del self.envs[-1]
 
+    @EnforceTypeHints
     def Register(self, name, kind):
         self.envs[-1][name] = kind
 
+    @EnforceTypeHints
     def LookupKind(self, name):
         for env in self.envs[::-1]:
             if name in env:
                 return env[name]
         Error(f'Cannot find name: `{name}` in current scope')
 
+    @EnforceTypeHints
     def LookupVar(self, name):
         return Var(name, self.LookupKind(name))
 
+    @EnforceTypeHints
     def PotAliases(self, kind):
         als = []
         for env in self.envs[::-1]:
@@ -1906,27 +1995,32 @@ class HLIR:
                     als.append(name)
         return als
 
+    @EnforceTypeHints
     def Decl(self, name, kind, idx = None):
         if type(kind) == Statics.Void: return
         self.Register(name, kind)
         if idx == None:     self.body.Addline(('decl', Var(name, kind), None, None))
         else:       self.body.Insertline(idx, ('decl', Var(name, kind), None, None))
 
+    @EnforceTypeHints
     def AddMemStore(self, ary, idx, val):
         EvictAliasFor(inter, ary.kind.Deref())
         self.AddPent('[]=', val, ary, idx, None)
         InvalidateAliasFor(inter, ary.kind.Deref())
 
+    @EnforceTypeHints
     def AddBitMemStore(self, ary, idx, width, val):
         EvictAliasFor(inter, ary.kind.Deref())
         self.AddPent('[]=', val, ary, idx, width)
         InvalidateAliasFor(inter, ary.kind.Deref())
 
+    @EnforceTypeHints
     def AddBitStore(self, ary, off, width, val):
         assert width.kind.comptime, f'Must use a comptime known width, not `{width}`. To use runtime use @bst'
         EvictAliasFor(inter, ary.kind)
         self.AddPent('[:]=', ary, val, off, width)
 
+    @EnforceTypeHints
     def AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = False):
         D = D if D != None else Var.FromVal(self, None)
         S0 = S0 if S0 != None else Var.FromVal(self, None)
@@ -1938,6 +2032,7 @@ class HLIR:
         S2 = S2 if type(S2) != int else Var.FromVal(self, S2)
         self.body.Addline(('expr', (op, D, S0, S1, S2), sticky))
 
+    @EnforceTypeHints
     def _AddPent(self, op: str, D: Var, S0: Var, S1: Var, S2: Var, sticky = None):
         
         D = D if D else Var.FromVal(self, None)
@@ -1991,47 +2086,60 @@ class HLIR:
             return
         
         self.body.Addline(('expr', (op, D, S0, S1, S2), sticky!=None, eid))
+    @EnforceTypeHints
     def AddLabel(self, lbl):
         self.body.fall = lbl
         self.body = Block(lbl)
         self.func['body'].append(self.body)
 
+    @EnforceTypeHints
     def Evict(self, name):
         self.body.Addline(('memsave', name))
+    @EnforceTypeHints
     def EvictBits(self, name, offset, width):
         self.body.Addline(('memsavebit', name, offset, width))
+    @EnforceTypeHints
     def Invalidate(self, name):
         self.body.Addline(('regrst', name))
+    @EnforceTypeHints
     def InvalidateBits(self, name, offset, width):
         self.body.Addline(('regrstbit', name, offset, width))
+    @EnforceTypeHints
     def NoFallLabel(self, lbl):
         self.body = Block(lbl)
         self.func['body'].append(self.body)
+    @EnforceTypeHints
     def IfJump(self, lhs, op, rhs, lbl):
         self.AddPent(op, None, lhs, rhs, None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
+    @EnforceTypeHints
     def IfFalseJump(self, lhs, op, rhs, lbl):
         self.AddPent(op, None, lhs, rhs, None)
         self.body.exit = ('cn.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
+    @EnforceTypeHints
     def CJump(self, cond, lbl):
         self.Use(cond)
         self.AddPent('==', None, cond, Var(0, 'comptime'), None)
         self.body.exit = ('c.jmp', (lbl))
         self.body.exloc = lbl
         self.AddLabel('_'+NewLabel())
+    @EnforceTypeHints
     def Jump(self, lbl):
         self.body.exit = ('goto', (lbl))
         self.body.exloc = lbl
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
+    @EnforceTypeHints
     def PushLoopLabels(self, pre, post):
         self.loops.append([pre, post])
+    @EnforceTypeHints
     def PopLoopLabels(self, pre, post):
         del self.loops[-1]
+    @EnforceTypeHints
     def Return(self, *args):
         for arg in args:
             assert arg.kind.CanCoerceTo(self.func['ret']), f'Cannot coerce type `{arg.kind}` to `{self.func["ret"]}`'
@@ -2042,16 +2150,19 @@ class HLIR:
         self.body.exit = ('return', eid)
         self.body.fall = None
         self.NoFallLabel('_'+NewLabel())
+    @EnforceTypeHints
     def PreUse(self, name):
         global eid
         eid += 1
         self.Use(name)
         eid -= 1
+    @EnforceTypeHints
     def Use(self, name):
         for j, block in enumerate(self.func['body']):
             for i, line in enumerate(block.body):
                 if line[0] == 'decl' and line[1] == name:
                     self.func['body'][j].body[i] = line[:3] + (-1,)
+    @EnforceTypeHints
     def EndFunc(self):
 
         body = self.func['body']
@@ -2075,6 +2186,8 @@ class HLIR:
         return
 
         
+    @EnforceTypeHints
+        
     def AddString(self, txt):
         key = f's{len(self.data.keys())}:'
         self.data[key] = txt
@@ -2082,6 +2195,7 @@ class HLIR:
 
 
 class Block:
+    @EnforceTypeHints
     def __init__(self, entry):
         self.entry = entry
         self.body = []
@@ -2089,11 +2203,14 @@ class Block:
         self.exloc = None
         self.fall = 'EOF'
         self.From = None
+    @EnforceTypeHints
     def Addline(self, line):
         self.body.append(line)
+    @EnforceTypeHints
     def Insertline(self, idx, line):
         self.body.insert(idx, line)
 
+@EnforceTypeHints
 def ResolveTypes():
     queue = list(Statics.structs.keys())
     while queue != []:
@@ -2104,6 +2221,7 @@ def ResolveTypes():
         RecuSolveType(queue[0])
         del queue[0]
 
+@EnforceTypeHints
 def RecuSolveType(name, stk = ()):
     if name in stk: Error(f'Type `{name}` is self referential')
     stk = stk + (name,)
@@ -2130,6 +2248,7 @@ def RecuSolveType(name, stk = ()):
         Statics.structs[name]['args'][argname]['width'] = width
     PackArgs(name)
 
+@EnforceTypeHints
 def PackArgs(name):
     words = {}
     laddr = 0
@@ -2159,6 +2278,9 @@ def PackArgs(name):
     Statics.structs[name]['size'] = 32 * laddr
     
 
+@EnforceTypeHints
+    
+
 def EvictAliasFor(inter, kind):
     for env in inter.envs[::-1]:
         for varname, varkind in env.items():
@@ -2179,6 +2301,7 @@ def EvictAliasFor(inter, kind):
                             carg['offset'] += arg['offset']
                             cstk.append(carg)
 
+@EnforceTypeHints
 def InvalidateAliasFor(inter, kind):
     for env in inter.envs[::-1]:
         for varname, varkind in env.items():
@@ -2198,6 +2321,7 @@ def InvalidateAliasFor(inter, kind):
                             carg['offset'] += arg['offset']
                             cstk.append(carg)
 
+@EnforceTypeHints
 def GenAssume(inter, tree):
     data = tree.data
     if data == 'assumeunreachable':
@@ -2205,6 +2329,7 @@ def GenAssume(inter, tree):
         return
     assert False, str(tree.pretty())
 
+@EnforceTypeHints
 def BuildBoot():
     name = 'Boot'
 
@@ -2217,6 +2342,7 @@ def BuildBoot():
     inter.PopEnv()
     inter.EndFunc()
 
+@EnforceTypeHints
 def FormatDict(x, idt = 0):
     if type(x) != dict:
         print(repr(x), end = '')
@@ -2230,6 +2356,7 @@ def FormatDict(x, idt = 0):
         idt -= 1
         print('  '*idt+'}', end = '')
 
+@EnforceTypeHints
 def Compile(filepath, verbose = False, optimize = True):
     global funcs, syms, ind, tid, eid, srcs, inter, tree, txt, namespaces
     with open(filepath, 'r') as f:
