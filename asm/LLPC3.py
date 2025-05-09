@@ -203,7 +203,7 @@ class Location():
             kind = Type(kind)
         self.kind = kind
     def __repr__(self):
-        return f'Value({self.addr!r}'+f', {self.kind!r}, {self.offset!r}'*(self.offset!=None)+')'
+        return f'Location({self.addr!r}'+f', {self.kind!r}, {self.offset!r}'*(self.offset!=None)+')'
 
     def Copy(self):
         return Location(self.addr, self.kind, self.offset)
@@ -231,14 +231,14 @@ class Location():
         if self.addr.name.endswith('.&'):
             rawname = self.addr.name.removesuffix('.&')
             if self.offset == None or self.offset.name == 0:
-                return Value(Var(rawname, self.kind))
+                return Value(Var(rawname, self.kind.Deref()))
             res = NewTemp(inter, self.kind)
             inter.AddPent('=[:]', res, rawname, self.offset, self.kind.OpWidth())
             return Value(res)
         res = NewTemp(inter, self.kind)
         if self.offset == None:
             self.offset = Var(0, Comp())
-        inter.AddPent('=[]', res, self.addr, self.offset, self.kind.OpWidth())
+        inter.AddPent('=[]', res, self.addr, self.offset, self.kind.Deref().OpWidth())
         return Value(res)
 
     def Deref(self, inter):
@@ -259,7 +259,7 @@ class Location():
                 self.offset = Var(0, Comp())
             inter.AddPent('[:]=', Var(rawname, self.kind), val, self.offset, self.kind.OpWidth())
             return
-        inter.AddPent('[]=', self.addr, self.offset, val, self.kind.OpWidth())
+        inter.AddPent('[]=', self.addr, self.offset, val, self.kind.Deref().OpWidth())
         
         
 
@@ -992,7 +992,7 @@ def R_Constant(inter, expr):
 def R_String(inter, expr):
     val = eval(GetBackingStr(expr))
     ref = inter.AddString(val)
-    return Location(Var(ref, Statics.Pointer(Int(8, False))), Int(8, False))
+    return Value(Var(ref, Statics.Pointer(Int(8, False))))
 
 ##############################
 
@@ -1060,11 +1060,13 @@ def L_Ident(inter, expr):
 def L_Index(inter, expr):
     le, _, re, _, = expr.children
     rhs = Rvalue(inter, re).var
-    lhs = Lvalue(inter, le)
+    lhs = Rvalue(inter, le).var
+    print(f'{lhs=}; {type(lhs)=}; {le=}')
     prod = NewTemp(inter, Type(Int(PTRWIDTH, False)))
-    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.OpWidth()), S2 = None)
+    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.Deref().OpWidth()), S2 = None)
     EvictAliasFor(inter, lhs.kind)
-    return lhs.Deref(inter).Offset(inter, Var(prod.name, Int(32, False)))
+    return Location(lhs, lhs.kind).Offset(inter, Var(prod.name, Int(32, False)))
+    #return lhs.Deref(inter).Offset(inter, Var(prod.name, Int(32, False)))
 
 @logerror
 @TrackLine
