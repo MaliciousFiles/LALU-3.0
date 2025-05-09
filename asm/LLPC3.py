@@ -200,7 +200,7 @@ class Value():
     @EnforceTypeHints
     def __init__(self, var: Var):
         self.var = var
-    @EnforceTypeHints
+    
     def __repr__(self):
         return f'Value({self.var!r})'
 
@@ -212,7 +212,7 @@ class Location():
         if type(kind) != Type:
             kind = Type(kind)
         self.kind = kind
-    @EnforceTypeHints
+    
     def __repr__(self):
         return f'Location({self.addr!r}'+f', {self.kind!r}, {self.offset!r}'*(self.offset!=None)+')'
 
@@ -1927,7 +1927,7 @@ class HLIR:
         self.func = {}
         self.data = {}
 
-    @EnforceTypeHints
+    
     def __repr__(self):
         o = ''
         for func in self.funcs:
