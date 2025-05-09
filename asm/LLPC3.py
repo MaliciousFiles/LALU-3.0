@@ -985,16 +985,14 @@ def R_Flag(inter, expr, flag_type):
 @logerror
 @TrackLine
 def R_Constant(inter, expr):
-    val = eval(GetBackingStr(expr))
-    if type(val) == str: val = ord(val)
-    return Value(Var(val, Type(Comp())))
+    return Value(Var(eval(GetBackingStr(expr)), Type(Comp())))
 
 @logerror
 @TrackLine
 def R_String(inter, expr):
     val = eval(GetBackingStr(expr))
     ref = inter.AddString(val)
-    return Value(Var(ref, Statics.Pointer(Int(8, False))))
+    return Location(Var(ref, Statics.Pointer(Int(8, False))), Int(8, False))
 
 ##############################
 
@@ -1064,9 +1062,9 @@ def L_Index(inter, expr):
     rhs = Rvalue(inter, re).var
     lhs = Lvalue(inter, le)
     prod = NewTemp(inter, Type(Int(PTRWIDTH, False)))
-    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.Deref().OpWidth()), S2 = None)
-    EvictAliasFor(inter, lhs.kind.Deref())
-    return lhs.Offset(inter, Var(prod.name, Int(32, False))).Deref(inter)
+    inter.AddPent(op = '*', D = prod, S0 = rhs, S1 = Var.FromVal(inter, lhs.kind.OpWidth()), S2 = None)
+    EvictAliasFor(inter, lhs.kind)
+    return lhs.Deref(inter).Offset(inter, Var(prod.name, Int(32, False)))
 
 @logerror
 @TrackLine
