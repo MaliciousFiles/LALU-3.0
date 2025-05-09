@@ -153,6 +153,8 @@ class Struct(QuafType):
 class Pointer(QuafType):
     def __init__(self, referent: QuafType):
         super().__init__()
+        if type(referent) == Type:
+            referent = referent.body
         self.referent = referent
         self.refable = True
 

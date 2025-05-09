@@ -187,6 +187,13 @@ def logerror(func):
 
 FAILEDLINE = None
 
+def EnforceTypeHints(func):
+    def inner(*args, **kwargs):
+        print(func.co_args)
+        ret = func(*args, **kwargs)
+        return ret
+    return inner
+
 ####################################################################################################
 
 class Value():
@@ -224,6 +231,8 @@ class Location():
 
     def Retype(self, newtype: Type):
         nself = self.Copy()
+        if type(newtype) != Type:
+            newtype = Type(newtype)
         nself.kind = newtype
         return nself
 
@@ -232,10 +241,10 @@ class Location():
             rawname = self.addr.name.removesuffix('.&')
             if self.offset == None or self.offset.name == 0:
                 return Value(Var(rawname, self.kind.Deref()))
-            res = NewTemp(inter, self.kind)
-            inter.AddPent('=[:]', res, rawname, self.offset, self.kind.OpWidth())
+            res = NewTemp(inter, self.kind.Deref())
+            inter.AddPent('=[:]', res, rawname, self.offset, self.kind.Deref().OpWidth())
             return Value(res)
-        res = NewTemp(inter, self.kind)
+        res = NewTemp(inter, self.kind.Deref())
         if self.offset == None:
             self.offset = Var(0, Comp())
         inter.AddPent('=[]', res, self.addr, self.offset, self.kind.Deref().OpWidth())
@@ -1002,10 +1011,12 @@ def L_StructInit(inter, expr):
     k, _, args, _, = expr.children
     kind = TreeToKind(k)
     tmp = NewTemp(inter, kind)
-    kind = str(kind)
+    
 
-    addr = Var(tmp.name+'.&', Comp())
-    tmploc = Location(addr, kind)
+    addr = Var(tmp.name+'.&', Statics.Pointer(tmp.kind))
+    tmploc = Location(addr, Statics.Pointer(tmp.kind))
+
+    kind = str(kind)
 
     if args:
         nargs = []
@@ -1043,7 +1054,7 @@ def L_Assg(inter, expr):
         inter.AddPent(op = op, D = tmp, S0 = rlhs, S1 = rhs, S2 = None, sticky = bt)
         lhs.EmitAssg(inter, tmp)
     else:
-        assert rhs.kind.CanCoerceTo(lhs.kind), f'Cannot coerce `{rhs.kind}` into type `{lhs.kind}`'
+        assert rhs.kind.CanCoerceTo(lhs.kind.Deref()), f'Cannot coerce `{rhs.kind}` into type `{lhs.kind.Deref()}`'
         lhs.EmitAssg(inter, rhs)
     return lhs
 
@@ -1074,8 +1085,8 @@ def L_Slice(inter, expr):
     #postexpr LBRACK expr PLUSCOLON expr RBRACK
     le, _, off, _, width, _, = expr.children
     lhs = Lvalue(inter, le)
-    if type(lhs.kind.body) != Int: Censure(f'Can only bit slice unsigned integer types, not `{type(lhs.kind)}`')
-    if lhs.kind.signed: Censure(f'Integer must be Unsigned for bitslices')
+    if type(lhs.kind.body.Deref().body) != Int: Censure(f'Can only bit slice unsigned integer types, not `{lhs.kind!s}` ({type(lhs.kind.body.Deref().body)}).')
+    if lhs.kind.Deref().body.signed: Censure(f'Integer must be Unsigned for bitslices')
     off = Rvalue(inter, off).var
     width = Rvalue(inter, width).var
     if not width.kind.comptime: Error(f'Slice width must be comptime known')
@@ -1087,13 +1098,13 @@ def L_Field(inter, expr):
     le, _, re, = expr.children
     lhs = Lvalue(inter, le)
     field = TreeToName(re)
-    fieldargs = Statics.structs[str(lhs.kind)]['args'][field]    
+    fieldargs = Statics.structs[str(lhs.kind.Deref())]['args'][field]    
     off = fieldargs['offset']
     desttype = fieldargs['type']
 
     assert off != ..., f'Struct `{lhs.kind!s}.{field!s}` has offset `...`'
 
-    return lhs.Offset(_, Var(off, Comp())).Retype(desttype)
+    return lhs.Offset(_, Var(off, Comp())).Retype(Statics.Pointer(desttype.body))
 
 @logerror
 @TrackLine
